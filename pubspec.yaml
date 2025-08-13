@@ -1,0 +1,56 @@
+name: prioris
+description: Application de productivité personnelle avec système de priorisation Elo
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  
+  # State Management
+  flutter_riverpod: ^2.4.9
+  
+  # Local Storage
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  
+  # UI
+  cupertino_icons: ^1.0.6
+  google_fonts: ^6.1.0
+  fl_chart: ^1.0.0
+  
+  # Utils
+  uuid: ^4.2.1
+  intl: ^0.20.2
+  
+  # Haptic Feedback
+  vibration: ^1.8.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  hive_generator: ^2.0.1
+  build_runner: ^2.5.4
+  hive_test: ^1.0.1
+  integration_test:
+    sdk: flutter
+  mockito: ^5.4.4
+
+  path: any
+flutter:
+  uses-material-design: true
+  generate: true
+  
+  # fonts:
+    # Les polices Noto sont gérées par Google Fonts automatiquement
+    # - family: NotoSans
+  
+  assets:
+    - assets/images/
+    - assets/icons/ 
