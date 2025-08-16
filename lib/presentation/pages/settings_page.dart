@@ -43,18 +43,6 @@ class SettingsPage extends ConsumerWidget {
                   );
                 },
               ),
-              _buildSettingTile(
-                icon: Icons.admin_panel_settings_outlined,
-                title: '🛠️ Administration',
-                subtitle: 'Nettoyage global de la base de données',
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => const AdminCleanupDialog(),
-                  );
-                },
-                isDestructive: true,
-              ),
             ],
           ),
           const SizedBox(height: 16),

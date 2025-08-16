@@ -94,31 +94,37 @@ class UserDataService {
     final userId = _auth.currentUser!.id;
     
     try {
-      // Compter les listes
-      final listsResponse = await _supabase.client
+      // Compter les listes (sans filtre is_deleted d'abord pour voir s'il y en a)
+      final allListsResponse = await _supabase.client
           .from('custom_lists')
-          .select('id')
-          .eq('user_id', userId)
-          .eq('is_deleted', false);
+          .select('id, is_deleted')
+          .eq('user_id', userId);
+      
+      final activeLists = allListsResponse.where((item) => item['is_deleted'] != true).length;
       
       // Compter les éléments de liste
-      final itemsResponse = await _supabase.client
+      final allItemsResponse = await _supabase.client
           .from('list_items')
-          .select('id')
-          .eq('user_id', userId)
-          .eq('is_deleted', false);
+          .select('id, is_deleted')
+          .eq('user_id', userId);
+          
+      final activeItems = allItemsResponse.where((item) => item['is_deleted'] != true).length;
       
       // Compter les habitudes
-      final habitsResponse = await _supabase.client
+      final allHabitsResponse = await _supabase.client
           .from('habits')
-          .select('id')
-          .eq('user_id', userId)
-          .eq('is_deleted', false);
+          .select('id, is_deleted')
+          .eq('user_id', userId);
+          
+      final activeHabits = allHabitsResponse.where((item) => item['is_deleted'] != true).length;
       
       return {
-        'lists': listsResponse.length,
-        'items': itemsResponse.length,
-        'habits': habitsResponse.length,
+        'lists': activeLists,
+        'items': activeItems,
+        'habits': activeHabits,
+        'totalLists': allListsResponse.length,
+        'totalItems': allItemsResponse.length,
+        'totalHabits': allHabitsResponse.length,
       };
     } catch (e) {
       throw Exception('Failed to get user data stats: $e');
