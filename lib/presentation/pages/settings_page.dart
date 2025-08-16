@@ -4,7 +4,6 @@ import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 import 'package:prioris/presentation/pages/agents_monitoring_page.dart';
 import 'package:prioris/presentation/widgets/dialogs/clear_data_dialog.dart';
-import 'package:prioris/presentation/widgets/dialogs/admin_cleanup_dialog.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});

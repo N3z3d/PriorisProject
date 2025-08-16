@@ -24,7 +24,9 @@
       "Bash(git push:*)",
       "WebSearch",
       "Bash(r)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Bash(rm:*)",
+      "Bash(mv:*)"
     ],
     "deny": []
   }
