@@ -2,6 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/data/repositories/custom_list_repository.dart';
 import 'package:prioris/data/repositories/hive_custom_list_repository.dart';
 import 'package:prioris/data/repositories/list_item_repository.dart';
+import 'package:prioris/data/repositories/supabase/supabase_custom_list_repository.dart';
+import 'package:prioris/data/repositories/supabase/supabase_list_item_repository.dart';
+import 'package:prioris/data/repositories/interfaces/repository_interfaces.dart';
+import 'package:prioris/data/providers/auth_providers.dart';
 
 /// Provider asynchrone pour le repository Hive des listes personnalisées
 /// 
@@ -44,4 +48,59 @@ final customListRepositoryAsyncProvider = FutureProvider<CustomListRepository>((
 /// Utilise InMemoryListItemRepository pour la gestion en mémoire des éléments.
 final listItemRepositoryProvider = Provider<ListItemRepository>((ref) {
   return InMemoryListItemRepository();
-}); 
+});
+
+/// Provider adaptatif pour les éléments de liste (Hive/Supabase selon auth)
+final adaptiveListItemRepositoryProvider = Provider<ListItemRepository>((ref) {
+  final isSignedIn = ref.watch(isSignedInProvider);
+  
+  // Si connecté, utilise Supabase, sinon utilise InMemory (simple)
+  if (isSignedIn) {
+    return SupabaseListItemRepository();
+  } else {
+    return InMemoryListItemRepository();
+  }
+});
+
+/// Provider pour repository Supabase des éléments de liste
+final supabaseListItemRepositoryProvider = Provider<SupabaseListItemRepository>((ref) {
+  return SupabaseListItemRepository();
+});
+
+// ========== NOUVEAUX PROVIDERS SUPABASE ==========
+
+/// Provider pour choisir entre repository Hive (offline) et Supabase (online)
+final adaptiveCustomListRepositoryProvider = Provider<CustomListCrudRepositoryInterface>((ref) {
+  final isSignedIn = ref.watch(isSignedInProvider);
+  
+  // Si connecté, utilise Supabase, sinon utilise Hive
+  if (isSignedIn) {
+    return SupabaseCustomListRepository();
+  } else {
+    // Fallback vers Hive pour mode offline
+    final hiveRepoAsync = ref.watch(hiveCustomListRepositoryProvider);
+    return hiveRepoAsync.when(
+      data: (repo) => repo,
+      loading: () => InMemoryCustomListRepository(),
+      error: (_, __) => InMemoryCustomListRepository(),
+    );
+  }
+});
+
+/// Provider pour repository Supabase (force online)
+final supabaseCustomListRepositoryProvider = Provider<SupabaseCustomListRepository>((ref) {
+  return SupabaseCustomListRepository();
+});
+
+/// Enum pour choisir la stratégie de repository
+enum RepositoryStrategy {
+  auto,      // Auto: Supabase si connecté, sinon Hive
+  supabase,  // Force Supabase (online only)
+  hive,      // Force Hive (offline only)
+  hybrid,    // Hybrid: Supabase + Hive en sync
+}
+
+/// Provider pour la stratégie de repository
+final repositoryStrategyProvider = StateProvider<RepositoryStrategy>((ref) {
+  return RepositoryStrategy.auto; // Par défaut : automatique
+});
