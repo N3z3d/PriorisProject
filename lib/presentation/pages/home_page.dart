@@ -9,6 +9,7 @@ import 'package:prioris/presentation/pages/statistics_page.dart';
 import 'package:prioris/presentation/pages/lists_page.dart';
 import 'package:prioris/presentation/pages/settings_page.dart';
 import 'package:prioris/domain/services/ui/accessibility_service.dart';
+import 'package:prioris/data/providers/auth_providers.dart';
 
 final currentPageProvider = StateProvider<int>((ref) => 0);
 
@@ -69,6 +70,29 @@ class HomePage extends ConsumerWidget {
           ),
         ),
         actions: [
+          // Bouton de déconnexion
+          Semantics(
+            label: 'Se déconnecter',
+            button: true,
+            hint: 'Déconnecte l\'utilisateur actuel',
+            child: Container(
+              constraints: const BoxConstraints(
+                minWidth: 48,
+                minHeight: 48,
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.logout_outlined),
+                tooltip: 'Déconnexion',
+                iconSize: 24,
+                onPressed: () async {
+                  final authController = ref.read(authControllerProvider);
+                  await authController.signOut();
+                },
+              ),
+            ),
+          ),
+          
+          // Bouton paramètres
           Semantics(
             label: 'Ouvrir les paramètres',
             button: true,

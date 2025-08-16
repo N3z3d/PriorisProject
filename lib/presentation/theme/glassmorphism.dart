@@ -317,6 +317,41 @@ class Glassmorphism {
       ],
     );
   }
+
+  /// Crée un FloatingActionButton avec effet de verre
+  static Widget glassFAB({
+    required VoidCallback onPressed,
+    required Widget child,
+    Color? backgroundColor,
+    double elevation = 6.0,
+    String? heroTag,
+  }) {
+    return FloatingActionButton(
+      onPressed: onPressed,
+      heroTag: heroTag,
+      elevation: elevation,
+      backgroundColor: backgroundColor?.withOpacity(0.1) ?? 
+                      Colors.white.withOpacity(0.1),
+      foregroundColor: Colors.white,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: Colors.white.withOpacity(0.2),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: child,
+      ),
+    );
+  }
 }
 
 /// Énumération pour position des toasts

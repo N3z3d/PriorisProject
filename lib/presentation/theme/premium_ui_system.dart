@@ -400,7 +400,7 @@ class _PremiumFAB extends StatelessWidget {
     if (enableGlass) {
       fab = Glassmorphism.glassFAB(
         onPressed: onPressed,
-        color: color ?? Theme.of(context).primaryColor,
+        backgroundColor: color ?? Theme.of(context).primaryColor,
         child: child,
       );
     }

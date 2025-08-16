@@ -64,7 +64,7 @@ class ListItem extends HiveObject {
     this.completedAt,
     this.dueDate,
     this.notes,
-    required this.listId,
+    this.listId = 'default', // Valeur par défaut pour compatibilité
   }) {
     _validate();
   }

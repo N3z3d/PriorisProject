@@ -8,7 +8,9 @@ import 'package:prioris/domain/models/core/enums/list_enums.dart';
 import 'package:prioris/domain/services/ui/cross_browser_compatibility_service.dart';
 import 'package:prioris/domain/services/ui/responsive_service.dart';
 import 'package:prioris/domain/services/core/language_service.dart';
+import 'package:prioris/infrastructure/services/supabase_service.dart';
 import 'package:prioris/presentation/routes/app_routes.dart';
+import 'package:prioris/presentation/pages/auth/auth_wrapper.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/animations/page_transitions.dart';
@@ -24,6 +26,9 @@ void main() async {
   Hive.registerAdapter(CustomListAdapter());
   Hive.registerAdapter(ListItemAdapter());
   Hive.registerAdapter(ListTypeAdapter());
+  
+  // Initialiser Supabase
+  await SupabaseService.initialize();
   
   // Initialiser le service de langue
   final languageService = LanguageService();
@@ -67,7 +72,7 @@ class PriorisApp extends ConsumerWidget {
       ),
       // Removed darkTheme and set themeMode to light
       themeMode: ThemeMode.light,
-      initialRoute: AppRoutes.home,
+      home: const AuthWrapper(),
       onGenerateRoute: AppRoutes.generateRoute,
       debugShowCheckedModeBanner: false,
       

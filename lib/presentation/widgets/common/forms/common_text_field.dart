@@ -100,7 +100,6 @@ class CommonTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accessibilityService = AccessibilityService();
     final hasError = errorText != null;
     
     return Column(

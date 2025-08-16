@@ -17,6 +17,7 @@ void main() {
                 await showDialog<ListItem>(
                   context: context,
                   builder: (context) => ListItemFormDialog(
+                    listId: 'test-list-id',
                     onSubmit: (_) {},
                   ),
                 );
@@ -52,6 +53,7 @@ void main() {
                 await showDialog<ListItem>(
                   context: context,
                   builder: (context) => ListItemFormDialog(
+                    listId: 'test-list-id',
                     onSubmit: (item) {
                       result = item;
                     },
@@ -94,6 +96,7 @@ void main() {
                 await showDialog<ListItem>(
                   context: context,
                   builder: (context) => ListItemFormDialog(
+                    listId: 'test-list-id',
                     onSubmit: (item) {},
                   ),
                 );
@@ -119,6 +122,7 @@ void main() {
       // Arrange
       final existingItem = ListItem(
         id: 'test_id',
+        listId: 'test-list-id',
         title: 'Item Existant',
         description: 'Description existante',
         category: 'Catégorie existante',
@@ -137,6 +141,7 @@ void main() {
                 await showDialog<ListItem>(
                   context: context,
                   builder: (context) => ListItemFormDialog(
+                    listId: 'test-list-id',
                     initialItem: existingItem,
                     onSubmit: (item) {
                       result = item;
@@ -184,6 +189,7 @@ void main() {
                 result = await showDialog<ListItem>(
                   context: context,
                   builder: (context) => ListItemFormDialog(
+                    listId: 'test-list-id',
                     onSubmit: (item) {
                       result = item;
                     },
@@ -219,6 +225,7 @@ void main() {
                 await showDialog<ListItem>(
                   context: context,
                   builder: (context) => ListItemFormDialog(
+                    listId: 'test-list-id',
                     onSubmit: (item) {},
                   ),
                 );
@@ -253,6 +260,7 @@ void main() {
                 await showDialog<ListItem>(
                   context: context,
                   builder: (context) => ListItemFormDialog(
+                    listId: 'test-list-id',
                     onSubmit: (item) {
                       result = item;
                     },

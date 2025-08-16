@@ -3,6 +3,9 @@
 /// Ce fichier regroupe tous les exports des fonctionnalités premium
 /// pour faciliter leur importation dans l'application.
 
+import 'package:flutter/material.dart';
+import 'premium_ui_system.dart';
+
 // ============ SYSTÈME UI UNIFIÉ ============
 export 'premium_ui_system.dart';
 

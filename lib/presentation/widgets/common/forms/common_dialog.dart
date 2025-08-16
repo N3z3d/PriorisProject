@@ -41,9 +41,6 @@ class CommonDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accessibilityService = AccessibilityService();
-    final focusService = FocusManagementService();
-    
     return Semantics(
       scopesRoute: true,
       explicitChildNodes: true,

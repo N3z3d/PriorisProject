@@ -131,9 +131,9 @@ class Habit extends HiveObject {
     this.yearlyMonth,
     this.yearlyDay,
     this.hourlyInterval,
-    this.color,
-    this.icon,
-    this.currentStreak,
+    this.color = 0xFF2196F3, // Bleu par défaut
+    this.icon = 0xe5ca, // Icons.check_circle par défaut  
+    this.currentStreak = 0, // Pas de streak initial
   }) : id = id ?? const Uuid().v4(),
        createdAt = createdAt ?? DateTime.now(),
        completions = completions ?? {};

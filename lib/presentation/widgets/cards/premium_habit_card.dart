@@ -182,7 +182,7 @@ class _PremiumHabitCardState extends State<PremiumHabitCard> {
 
     // Animation spéciale pour les milestones
     if (isMilestone && enableEffects) {
-      badge = PhysicsAnimations.pulseAnimation(
+      badge = MicroInteractions.pulseAnimation(
         duration: const Duration(seconds: 2),
         child: badge,
       );
