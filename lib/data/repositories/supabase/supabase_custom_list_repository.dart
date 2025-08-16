@@ -70,6 +70,7 @@ class SupabaseCustomListRepository implements CustomListCrudRepositoryInterface 
 
       final listData = list.toJson();
       listData['user_id'] = _auth.currentUser!.id;
+      listData['user_email'] = _auth.currentUser!.email;
       listData['created_at'] = DateTime.now().toIso8601String();
       listData['updated_at'] = DateTime.now().toIso8601String();
       

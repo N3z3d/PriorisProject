@@ -223,3 +223,15 @@ class AuditLog<T> {
     );
   }
 }
+
+// ========== INTERFACES SPÉCIFIQUES ==========
+
+/// Interface spécifique pour CustomListRepository
+abstract class CustomListRepositoryInterface {
+  Future<String> create(Object list);
+  Future<Object?> getById(String id);
+  Future<List<Object>> getAll();
+  Future<void> update(Object list);
+  Future<void> delete(String id);
+  Future<List<Object>> getByType(String type);
+}

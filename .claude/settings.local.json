@@ -23,7 +23,8 @@
       "Bash(git remote add:*)",
       "Bash(git push:*)",
       "WebSearch",
-      "Bash(r)"
+      "Bash(r)",
+      "Bash(timeout:*)"
     ],
     "deny": []
   }

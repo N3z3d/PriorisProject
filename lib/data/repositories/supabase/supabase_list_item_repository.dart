@@ -54,6 +54,7 @@ class SupabaseListItemRepository implements ListItemRepository {
 
       final itemData = _toSupabaseJson(item);
       itemData['user_id'] = _auth.currentUser!.id;
+      itemData['user_email'] = _auth.currentUser!.email;
       itemData['created_at'] = DateTime.now().toIso8601String();
       itemData['updated_at'] = DateTime.now().toIso8601String();
       

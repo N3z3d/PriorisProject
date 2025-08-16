@@ -10,6 +10,7 @@
 -- ===================================
 CREATE TABLE public.profiles (
   id UUID REFERENCES auth.users(id) PRIMARY KEY,
+  email TEXT NOT NULL, -- Email de l'utilisateur récupéré depuis auth.users
   username TEXT UNIQUE,
   full_name TEXT,
   avatar_url TEXT,
@@ -28,12 +29,32 @@ CREATE POLICY "Users can view own profile" ON public.profiles
 CREATE POLICY "Users can update own profile" ON public.profiles
   FOR UPDATE USING (auth.uid() = id);
 
+-- Fonction pour créer automatiquement un profil lors de l'inscription
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS trigger AS $$
+BEGIN
+  INSERT INTO public.profiles (id, email, full_name)
+  VALUES (
+    new.id,
+    new.email,
+    COALESCE(new.raw_user_meta_data->>'full_name', '')
+  );
+  RETURN new;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Trigger pour exécuter la fonction lors de l'inscription
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+
 -- ===================================
 -- 2. CUSTOM LISTS TABLE
 -- ===================================
 CREATE TABLE public.custom_lists (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES auth.users(id) NOT NULL,
+  user_email TEXT, -- Email pour faciliter le debug
   title TEXT NOT NULL,
   description TEXT,
   color INTEGER DEFAULT 0xFF2196F3,
@@ -65,6 +86,7 @@ CREATE POLICY "Users can delete own lists" ON public.custom_lists
 CREATE TABLE public.list_items (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES auth.users(id) NOT NULL,
+  user_email TEXT, -- Email pour faciliter le debug
   list_id UUID REFERENCES public.custom_lists(id) NOT NULL,
   title TEXT NOT NULL,
   description TEXT,
