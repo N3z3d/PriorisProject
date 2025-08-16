@@ -23,48 +23,7 @@ class InMemoryTaskRepository implements TaskRepository {
   Future<void> _initializeWithSampleData() async {
     if (_initialized) return;
     
-    // Ajouter des tâches d'exemple
-    _tasks.addAll([
-      Task(
-        title: 'Réviser le rapport mensuel',
-        description: 'Analyser les métriques et préparer la présentation',
-        category: 'Travail',
-        eloScore: 1450.0,
-      ),
-      Task(
-        title: 'Faire du sport',
-        description: 'Séance de cardio 30 minutes',
-        category: 'Santé',
-        eloScore: 1200.0,
-      ),
-      Task(
-        title: 'Lire 20 pages',
-        description: 'Continuer le livre sur la productivité',
-        category: 'Éducation',
-        eloScore: 1350.0,
-      ),
-      Task(
-        title: 'Appeler maman',
-        description: 'Prendre des nouvelles de la famille',
-        category: 'Famille',
-        eloScore: 1180.0,
-      ),
-      Task(
-        title: 'Planifier les vacances',
-        description: 'Rechercher destinations et réserver',
-        category: 'Personnel',
-        eloScore: 1280.0,
-      ),
-      Task(
-        title: 'Finir le projet Flutter',
-        description: 'Implémenter les dernières fonctionnalités',
-        category: 'Travail',
-        eloScore: 1600.0,
-        isCompleted: true,
-        completedAt: DateTime.now().subtract(const Duration(hours: 2)),
-      ),
-    ]);
-    
+    // Pas de données d'exemple - démarrage avec une liste vide
     _initialized = true;
   }
 

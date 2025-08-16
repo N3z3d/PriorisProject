@@ -26,7 +26,8 @@
       "Bash(r)",
       "Bash(timeout:*)",
       "Bash(rm:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(true)"
     ],
     "deny": []
   }

@@ -5,9 +5,7 @@ import 'package:prioris/domain/models/core/entities/list_item.dart';
 import 'package:prioris/data/repositories/custom_list_repository.dart';
 import 'package:prioris/data/repositories/list_item_repository.dart';
 import 'package:prioris/data/providers/repository_providers.dart';
-import 'package:prioris/data/repositories/sample_data_service.dart';
 import 'package:prioris/domain/services/core/lists_filter_service.dart';
-import 'package:flutter/foundation.dart';
 
 /// État du controller des listes
 /// 
@@ -73,13 +71,11 @@ class ListsState {
 class ListsController extends StateNotifier<ListsState> {
   final CustomListRepository _listRepository;
   final ListItemRepository _itemRepository;
-  final SampleDataService _sampleDataService;
   final ListsFilterService _filterService;
 
   ListsController(
     this._listRepository, 
     this._itemRepository, 
-    this._sampleDataService,
     this._filterService,
   ) : super(const ListsState());
 
@@ -93,13 +89,7 @@ class ListsController extends StateNotifier<ListsState> {
 
   /// Gère les listes chargées
   Future<void> _handleListsLoaded(List<CustomList> lists) async {
-    if (lists.isEmpty) {
-      await _loadSampleDataIfNeeded();
-      final updatedLists = await _listRepository.getAllLists();
-      _updateListsAndApplyFilters(updatedLists);
-    } else {
-      _updateListsAndApplyFilters(lists);
-    }
+    _updateListsAndApplyFilters(lists);
   }
 
   /// Met à jour la requête de recherche
@@ -240,14 +230,6 @@ class ListsController extends StateNotifier<ListsState> {
 
   // --- Méthodes privées ---
 
-  /// Charge les données d'exemple si nécessaire
-  Future<void> _loadSampleDataIfNeeded() async {
-    try {
-      await _sampleDataService.importSampleData();
-    } catch (e) {
-      debugPrint('Erreur lors du chargement des données d\'exemple: $e');
-    }
-  }
 
   /// Exécute une fonction avec gestion du loading et des erreurs
   Future<void> _executeWithLoading(Future<void> Function() action) async {
@@ -338,9 +320,8 @@ final listsFilterServiceProvider = Provider<ListsFilterService>((ref) {
 final listsControllerProvider = StateNotifierProvider<ListsController, ListsState>((ref) {
   final listRepository = ref.read(customListRepositoryProvider);
   final itemRepository = ref.read(listItemRepositoryProvider);
-  final sampleDataService = ref.read(sampleDataServiceProvider);
   final filterService = ref.read(listsFilterServiceProvider);
-  return ListsController(listRepository, itemRepository, sampleDataService, filterService);
+  return ListsController(listRepository, itemRepository, filterService);
 });
 
 /// Provider pour les listes filtrées

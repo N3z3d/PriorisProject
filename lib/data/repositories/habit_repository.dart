@@ -20,66 +20,7 @@ class InMemoryHabitRepository implements HabitRepository {
   Future<void> _initializeWithSampleData() async {
     if (_initialized) return;
     
-    // Ajouter des habitudes d'exemple
-    final now = DateTime.now();
-    
-    final meditationHabit = Habit(
-      name: 'Méditation matinale',
-      type: HabitType.quantitative,
-      category: 'Santé',
-      recurrenceType: RecurrenceType.dailyInterval,
-      targetValue: 10.0,
-      unit: 'minutes',
-    );
-    
-    final readingHabit = Habit(
-      name: 'Lecture quotidienne',
-      type: HabitType.binary,
-      category: 'Développement personnel',
-      recurrenceType: RecurrenceType.dailyInterval,
-    );
-    
-    final exerciseHabit = Habit(
-      name: 'Exercice physique',
-      type: HabitType.binary,
-      category: 'Sport',
-      recurrenceType: RecurrenceType.weekdays,
-    );
-    
-    final waterHabit = Habit(
-      name: 'Boire de l\'eau',
-      type: HabitType.quantitative,
-      category: 'Santé',
-      recurrenceType: RecurrenceType.dailyInterval,
-      targetValue: 8.0,
-      unit: 'verres',
-    );
-    
-    // Simuler quelques jours d'accomplissement
-    for (int i = 0; i < 5; i++) {
-      final date = now.subtract(Duration(days: i));
-      final dateKey = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-      
-      // Méditation : 10-15 minutes
-      meditationHabit.completions[dateKey] = 10.0 + (i * 1.0);
-      
-      // Lecture : fait 4 jours sur 5
-      if (i < 4) readingHabit.completions[dateKey] = true;
-      
-      // Exercice : fait 3 jours sur 5
-      if (i < 3) exerciseHabit.completions[dateKey] = true;
-      
-      // Eau : 6-9 verres
-      waterHabit.completions[dateKey] = 6.0 + (i * 0.5);
-    }
-    
-    _habits.addAll([
-      meditationHabit,
-      readingHabit,
-      exerciseHabit,
-      waterHabit,
-    ]);
-    
+    // Pas de données d'exemple - démarrage avec une liste vide
     _initialized = true;
   }
 
