@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 import 'package:prioris/presentation/pages/agents_monitoring_page.dart';
+import 'package:prioris/presentation/widgets/dialogs/clear_data_dialog.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -64,6 +65,18 @@ class SettingsPage extends ConsumerWidget {
                 title: 'Sauvegarde',
                 subtitle: 'Exporter et importer vos données',
                 onTap: () {},
+              ),
+              _buildSettingTile(
+                icon: Icons.delete_sweep_outlined,
+                title: 'Nettoyer les données',
+                subtitle: 'Supprimer toutes vos données personnelles',
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => const ClearDataDialog(),
+                  );
+                },
+                isDestructive: true,
               ),
             ],
           ),
@@ -131,17 +144,20 @@ class SettingsPage extends ConsumerWidget {
     required String title,
     required String subtitle,
     required VoidCallback onTap,
+    bool isDestructive = false,
   }) {
     return ListTile(
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: AppTheme.primaryColor.withValues(alpha: 0.1),
+          color: isDestructive 
+            ? Colors.red.withValues(alpha: 0.1)
+            : AppTheme.primaryColor.withValues(alpha: 0.1),
           borderRadius: BorderRadiusTokens.button,
         ),
         child: Icon(
           icon,
-          color: AppTheme.primaryColor,
+          color: isDestructive ? Colors.red : AppTheme.primaryColor,
           size: 20,
         ),
       ),

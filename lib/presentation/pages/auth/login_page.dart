@@ -4,6 +4,8 @@ import 'package:prioris/data/providers/auth_providers.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/widgets/common/forms/common_text_field.dart';
 import 'package:prioris/presentation/widgets/common/forms/common_button.dart';
+import 'package:prioris/presentation/widgets/common/forms/password_text_field.dart';
+import 'package:prioris/presentation/widgets/dialogs/forgot_password_dialog.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -128,11 +130,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     const SizedBox(height: 16),
                     
                     // Password Field
-                    CommonTextField(
+                    PasswordTextField(
                       controller: _passwordController,
                       label: 'Mot de passe',
                       hint: '••••••••',
-                      obscureText: true,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Mot de passe requis';
@@ -196,7 +197,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     if (!_isSignUp)
                       TextButton(
                         onPressed: () {
-                          // TODO: Implement forgot password dialog
+                          showDialog(
+                            context: context,
+                            builder: (context) => const ForgotPasswordDialog(),
+                          );
                         },
                         child: const Text('Mot de passe oublié ?'),
                       ),
