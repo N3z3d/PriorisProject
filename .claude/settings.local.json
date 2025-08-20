@@ -1,4 +1,10 @@
 {
+  "env": {
+    "ORCHESTRATION_ENABLED": "true",
+    "AUTO_AGENT_SELECTION": "true",
+    "RESEARCH_FIRST": "true",
+    "TRACK_PROGRESS": "true"
+  },
   "permissions": {
     "allow": [
       "Bash(flutter pub:*)",
@@ -27,8 +33,41 @@
       "Bash(timeout:*)",
       "Bash(rm:*)",
       "Bash(mv:*)",
-      "Bash(true)"
+      "Bash(true)",
+      "Bash(cp:*)",
+      "Bash(touch:*)",
+      "Task(*)",
+      "Bash(powershell:*)",
+      "Bash(curl:*)"
     ],
-    "deny": []
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/secrets/**)",
+      "Write(**/.env)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -Command \"New-Item -ItemType Directory -Force -Path docs\\references, docs\\ADR, tests | Out-Null; Write-Host '✅ Project structure initialized'\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '💡 Consider running tests after code changes'"
+          }
+        ]
+      }
+    ]
   }
 }

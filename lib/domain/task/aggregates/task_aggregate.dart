@@ -20,6 +20,7 @@ class TaskAggregate extends AggregateRoot {
   DateTime? _completedAt;
   String? _category;
   DateTime? _dueDate;
+  DateTime? _lastChosenAt;
 
   TaskAggregate._({
     required this.id,
@@ -31,6 +32,7 @@ class TaskAggregate extends AggregateRoot {
     DateTime? completedAt,
     String? category,
     DateTime? dueDate,
+    DateTime? lastChosenAt,
   }) : _title = title,
        _description = description,
        _eloScore = eloScore,
@@ -38,7 +40,8 @@ class TaskAggregate extends AggregateRoot {
        _createdAt = createdAt,
        _completedAt = completedAt,
        _category = category,
-       _dueDate = dueDate;
+       _dueDate = dueDate,
+       _lastChosenAt = lastChosenAt;
 
   /// Factory pour créer une nouvelle tâche
   factory TaskAggregate.create({
@@ -65,6 +68,7 @@ class TaskAggregate extends AggregateRoot {
       createdAt: createdAt,
       category: category?.trim(),
       dueDate: dueDate,
+      lastChosenAt: null, // Nouvelle tâche, jamais choisie
     );
 
     // Publier l'événement de création
@@ -112,6 +116,7 @@ class TaskAggregate extends AggregateRoot {
   DateTime? get completedAt => _completedAt;
   String? get category => _category;
   DateTime? get dueDate => _dueDate;
+  DateTime? get lastChosenAt => _lastChosenAt;
 
   /// Calcule la priorité actuelle de la tâche
   Priority get priority {

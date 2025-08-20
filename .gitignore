@@ -50,4 +50,9 @@ app.*.map.json
 
 # Hive databases
 *.hive
-*.lock 
+*.lock
+
+# Environment variables
+.env
+.env.local
+.env.*.local 

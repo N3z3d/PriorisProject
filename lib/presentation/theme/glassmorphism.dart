@@ -115,7 +115,7 @@ class Glassmorphism {
     double height = 400,
     bool enableDragHandle = true,
   }) {
-    return Container(
+    return SizedBox(
       height: height,
       width: double.infinity,
       child: ClipRRect(
@@ -170,7 +170,7 @@ class Glassmorphism {
   }) {
     return Align(
       alignment: alignment,
-      child: Container(
+      child: SizedBox(
         width: width ?? 200,
         height: height,
         child: ClipRRect(

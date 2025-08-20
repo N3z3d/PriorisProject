@@ -1,5 +1,6 @@
 import '../../core/services/domain_service.dart';
 import '../../core/value_objects/export.dart';
+import '../../core/value_objects/elo_variation_settings.dart';
 import '../aggregates/task_aggregate.dart';
 
 /// Service du domaine pour la gestion des scores ELO des tâches
@@ -242,6 +243,101 @@ class TaskEloService extends LoggableDomainService {
       log('ELO initial suggéré: $finalElo');
       
       return EloScore.fromValue(finalElo.toDouble());
+    });
+  }
+
+  /// Sélectionne une tâche aléatoire parmi les tâches non complétées
+  /// 
+  /// Retourne null si aucune tâche valide n'est disponible.
+  /// Utilisé pour le mode "aléatoire" quand l'utilisateur ne sait pas quoi prioriser.
+  TaskAggregate? selectRandomTask(List<TaskAggregate> tasks) {
+    return executeOperation(() {
+      log('Sélection aléatoire parmi ${tasks.length} tâches');
+      
+      // Filtrer les tâches non complétées
+      final availableTasks = tasks.where((task) => !task.isCompleted).toList();
+      
+      if (availableTasks.isEmpty) {
+        log('Aucune tâche disponible pour la sélection aléatoire');
+        return null;
+      }
+      
+      // Sélection aléatoire
+      final random = DateTime.now().millisecondsSinceEpoch;
+      final selectedIndex = random % availableTasks.length;
+      final selectedTask = availableTasks[selectedIndex];
+      
+      log('Tâche sélectionnée aléatoirement: ${selectedTask.title} (ELO: ${selectedTask.eloScore.value})');
+      
+      return selectedTask;
+    });
+  }
+
+  /// Effectue un duel avec variation dynamique d'ELO
+  /// 
+  /// Applique les multiplicateurs basés sur l'ancienneté des tâches
+  DuelResult performDuelWithVariation(
+    TaskAggregate task1, 
+    TaskAggregate task2, 
+    EloVariationSettings settings,
+  ) {
+    return executeOperation(() {
+      log('Duel avec variation ELO entre ${task1.title} et ${task2.title}');
+      
+      // Effectuer le duel normal d'abord
+      final baseResult = performDuel(task1, task2);
+      
+      // Calculer les multiplicateurs pour chaque tâche
+      final multiplier1 = settings.calculateMultiplier(lastChosenAt: task1.lastChosenAt);
+      final multiplier2 = settings.calculateMultiplier(lastChosenAt: task2.lastChosenAt);
+      
+      log('Multiplicateurs ELO - ${task1.title}: ${multiplier1}x, ${task2.title}: ${multiplier2}x');
+      
+      // Appliquer la variation au gagnant
+      final winnerMultiplier = baseResult.winner.id == task1.id ? multiplier1 : multiplier2;
+      final adjustedWinnerChange = baseResult.winnerEloChange * winnerMultiplier;
+      
+      // Mettre à jour les scores avec la variation
+      final finalWinnerElo = baseResult.winner.eloScore.value + (adjustedWinnerChange - baseResult.winnerEloChange);
+      final finalWinnerEloScore = EloScore.fromValue(finalWinnerElo.clamp(0, 3000));
+      
+      log('ELO final du gagnant avec variation: ${finalWinnerEloScore.value}');
+      
+      return DuelResult(
+        winner: baseResult.winner,
+        loser: baseResult.loser,
+        winnerEloChange: adjustedWinnerChange,
+        loserEloChange: baseResult.loserEloChange,
+        winProbability: baseResult.winProbability,
+      );
+    });
+  }
+
+  /// Calcule le changement d'ELO dynamique basé sur l'ancienneté
+  double calculateDynamicEloChange({
+    required double baseEloChange,
+    DateTime? lastChosenAt,
+    required EloVariationSettings settings,
+  }) {
+    return executeOperation(() {
+      final multiplier = settings.calculateMultiplier(lastChosenAt: lastChosenAt);
+      final dynamicChange = baseEloChange * multiplier;
+      
+      log('Changement ELO dynamique: $baseEloChange x $multiplier = $dynamicChange');
+      
+      return dynamicChange;
+    });
+  }
+
+  /// Met à jour la date de dernier choix d'une tâche
+  void updateLastChosenAt(TaskAggregate task) {
+    executeOperation(() {
+      // Cette méthode sera implémentée dans TaskAggregate
+      // Pour l'instant, on log juste l'action
+      log('Mise à jour lastChosenAt pour ${task.title}');
+      
+      // TODO: Implémenter la méthode updateLastChosenAt dans TaskAggregate
+      // task.updateLastChosenAt(DateTime.now());
     });
   }
 

@@ -1,0 +1,83 @@
+{
+  "project": "Prioris",
+  "orchestration": {
+    "enabled": true,
+    "methodology": "TDD",
+    "auto_agent_selection": true,
+    "quality_gates": true
+  },
+  "agents": {
+    "tdd_orchestrator": {
+      "triggers": [
+        "implement * with tdd",
+        "add * following tdd", 
+        "create * using test-first",
+        "build complete *"
+      ],
+      "coordinates": ["flutter_tester", "dart_implementer", "widget_builder", "repository_manager"]
+    },
+    "flutter_tester": {
+      "triggers": [
+        "write tests for *",
+        "test *",
+        "create test suite for *"
+      ],
+      "priority": "highest",
+      "run_before": ["dart_implementer", "widget_builder", "repository_manager"]
+    },
+    "dart_implementer": {
+      "triggers": [
+        "implement *",
+        "create * service",
+        "add * logic"
+      ],
+      "requires": ["flutter_tester"],
+      "patterns": ["domain", "services", "aggregates"]
+    },
+    "widget_builder": {
+      "triggers": [
+        "create * widget",
+        "build * component", 
+        "add * ui"
+      ],
+      "requires": ["flutter_tester"],
+      "patterns": ["glassmorphism", "premium_design"]
+    },
+    "repository_manager": {
+      "triggers": [
+        "add * repository",
+        "implement * persistence",
+        "create * data layer"
+      ],
+      "requires": ["flutter_tester"],
+      "patterns": ["supabase", "repository_pattern"]
+    }
+  },
+  "workflows": {
+    "tdd_cycle": {
+      "steps": [
+        {"agent": "flutter_tester", "phase": "red", "description": "Create failing test"},
+        {"agent": "dart_implementer", "phase": "green", "description": "Minimal implementation"},
+        {"agent": "flutter_tester", "phase": "verify", "description": "Ensure test passes"},
+        {"agent": "dart_implementer", "phase": "refactor", "description": "Improve code quality"},
+        {"agent": "flutter_tester", "phase": "validate", "description": "All tests still pass"}
+      ]
+    }
+  },
+  "commands": {
+    "test_all": "flutter test --coverage",
+    "test_unit": "flutter test test/unit/",
+    "test_widget": "flutter test test/widget/", 
+    "test_integration": "flutter test test/integration/",
+    "generate_code": "flutter packages pub run build_runner build",
+    "analyze": "dart analyze",
+    "format": "dart format .",
+    "coverage_report": "genhtml coverage/lcov.info -o coverage/html"
+  },
+  "quality_gates": {
+    "required_coverage": 80,
+    "max_analyzer_warnings": 0,
+    "tdd_validation": true,
+    "accessibility_check": true
+  }
+}

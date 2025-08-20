@@ -257,8 +257,8 @@ class CommonButton extends StatelessWidget {
       case ButtonType.primary:
         return AppTheme.primaryColor;
       case ButtonType.secondary:
-        // Fond légèrement coloré pour améliorer le contraste
-        return AppTheme.primaryColor.withValues(alpha: 0.1);
+        // Fond plus foncé pour améliorer le contraste
+        return AppTheme.primaryColor.withValues(alpha: 0.2);
       case ButtonType.danger:
         return Colors.red;
     }

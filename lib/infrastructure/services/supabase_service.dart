@@ -1,23 +1,34 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../core/config/app_config.dart';
 
 /// Service de configuration et gestion Supabase
+/// Utilise maintenant les variables d'environnement pour la sécurité
 class SupabaseService {
   static SupabaseService? _instance;
   static SupabaseService get instance => _instance ??= SupabaseService._();
   
   SupabaseService._();
-
-  // Configuration Supabase
-  static const String supabaseUrl = 'https://vgowxrktjzgwrfivtvse.supabase.co';
-  static const String supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnb3d4cmt0anpnd3JmaXZ0dnNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUzNDY1OTEsImV4cCI6MjA3MDkyMjU5MX0.cwwBY55OYIVtQPCy5OoD4_TkSf2OFAuLe43BKo7Z-lE';
   
-  /// Initialise Supabase
+  /// Initialise Supabase avec les variables d'environnement
   static Future<void> initialize() async {
-    await Supabase.initialize(
-      url: supabaseUrl,
-      anonKey: supabaseAnonKey,
-      debug: true, // Pour le développement
-    );
+    try {
+      final config = AppConfig.instance;
+      
+      await Supabase.initialize(
+        url: config.supabaseUrl,
+        anonKey: config.supabaseAnonKey,
+        debug: config.isDebugMode,
+      );
+      
+      print('✅ Supabase initialisé avec succès');
+      if (config.isDebugMode) {
+        print('🔧 Mode debug activé');
+        config.printConfigurationInfo();
+      }
+    } catch (e) {
+      print('❌ Erreur lors de l\'initialisation de Supabase: $e');
+      rethrow;
+    }
   }
   
   /// Client Supabase global

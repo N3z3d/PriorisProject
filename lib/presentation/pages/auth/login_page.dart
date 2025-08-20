@@ -59,7 +59,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       setState(() {
         _errorMessage = 'Erreur: ${e.toString()}';
       });
-      print('AUTH ERROR: $e'); // Debug
+      // TODO: Remplacer par un logger approprié
     } finally {
       setState(() {
         _isLoading = false;

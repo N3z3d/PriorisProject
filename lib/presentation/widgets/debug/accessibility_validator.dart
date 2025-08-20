@@ -73,7 +73,7 @@ class AccessibilityValidator {
         message: 'Contraste insuffisant: ${ratio.toStringAsFixed(2)}:1 '
             '(requis: ${requiredRatio}:1 pour ${isLargeText ? 'texte large' : 'texte normal'})',
         wcagGuideline: 'WCAG 1.4.3 (AA)',
-        recommendation: 'Ajustez les couleurs pour atteindre un ratio de ${requiredRatio}:1 minimum',
+        recommendation: 'Ajustez les couleurs pour atteindre un ratio de $requiredRatio:1 minimum',
         foregroundColor: foreground,
         backgroundColor: background,
       ));

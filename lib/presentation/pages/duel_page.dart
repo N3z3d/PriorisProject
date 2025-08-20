@@ -2,11 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/domain/models/core/entities/task.dart';
 import '../../data/repositories/task_repository.dart';
+import '../../data/providers/prioritization_providers.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
+import 'package:prioris/presentation/widgets/dialogs/list_selection_dialog.dart';
+import 'package:prioris/presentation/widgets/dialogs/task_edit_dialog.dart';
+import 'package:prioris/domain/core/value_objects/list_prioritization_settings.dart';
+import 'package:prioris/presentation/pages/lists/controllers/lists_controller.dart';
 import 'duel/widgets/export.dart';
 
 // Provider pour masquer/afficher les scores ELO
 final hideEloScoresProvider = StateProvider<bool>((ref) => false);
+
+// Provider pour les paramètres de priorisation des listes
+final listPrioritizationSettingsProvider = StateProvider<ListPrioritizationSettings>((ref) => 
+    ListPrioritizationSettings.defaultSettings());
 
 class DuelPage extends ConsumerStatefulWidget {
   const DuelPage({super.key});
@@ -29,9 +38,23 @@ class _DuelPageState extends ConsumerState<DuelPage>
     // Déplacer l'accès aux providers après l'initialisation complète
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        _loadNewDuel();
+        _initializeData();
       }
     });
+  }
+
+  /// Initialise les données nécessaires pour la priorisation
+  Future<void> _initializeData() async {
+    try {
+      // Charger les listes en premier (OBLIGATOIRE pour la priorisation des ListItems)
+      await ref.read(listsControllerProvider.notifier).loadLists();
+      
+      // Ensuite charger le duel avec les listes disponibles
+      await _loadNewDuel();
+    } catch (e) {
+      // En cas d'erreur, charger quand même le duel avec les Tasks classiques
+      await _loadNewDuel();
+    }
   }
 
   // Suppression de didChangeDependencies qui causait des rechargements en boucle
@@ -86,6 +109,11 @@ class _DuelPageState extends ConsumerState<DuelPage>
         },
         icon: Icon(hideElo ? Icons.visibility : Icons.visibility_off),
         tooltip: hideElo ? 'Afficher les scores ELO' : 'Masquer les scores ELO',
+      ),
+      IconButton(
+        onPressed: _showListSelectionDialog,
+        icon: const Icon(Icons.tune),
+        tooltip: 'Paramètres des listes',
       ),
       IconButton(
         onPressed: _loadNewDuel,
@@ -163,7 +191,7 @@ class _DuelPageState extends ConsumerState<DuelPage>
           const SizedBox(height: 32),
           _buildDuelCards(task1, task2, hideElo),
           const SizedBox(height: 16),
-          _buildSkipButton(),
+          _buildActionButtons(),
         ],
       ),
     );
@@ -184,6 +212,7 @@ class _DuelPageState extends ConsumerState<DuelPage>
             child: DuelTaskCard(
               task: task1,
               onTap: () => _selectWinner(task1, task2),
+              onEdit: () => _showEditTaskDialog(task1),
               hideElo: hideElo,
             ),
           ),
@@ -193,6 +222,7 @@ class _DuelPageState extends ConsumerState<DuelPage>
             child: DuelTaskCard(
               task: task2,
               onTap: () => _selectWinner(task2, task1),
+              onEdit: () => _showEditTaskDialog(task2),
               hideElo: hideElo,
             ),
           ),
@@ -202,14 +232,78 @@ class _DuelPageState extends ConsumerState<DuelPage>
   }
 
   /// Construit le bouton pour passer le duel actuel
-  Widget _buildSkipButton() {
-    return TextButton.icon(
-      onPressed: _loadNewDuel,
-      icon: const Icon(Icons.skip_next),
-      label: const Text('Passer ce duel'),
+  /// Construit les boutons d'action (Passer et Aléatoire)
+  Widget _buildActionButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        TextButton.icon(
+          onPressed: _loadNewDuel,
+          icon: const Icon(Icons.skip_next),
+          label: const Text('Passer ce duel'),
+        ),
+        ElevatedButton.icon(
+          onPressed: _selectRandomTask,
+          icon: const Icon(Icons.shuffle),
+          label: const Text('Aléatoire'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.secondary,
+            foregroundColor: Theme.of(context).colorScheme.onSecondary,
+          ),
+        ),
+      ],
     );
   }
 
+  /// Affiche le dialogue d'édition de tâche
+  void _showEditTaskDialog(Task task) {
+    showDialog(
+      context: context,
+      builder: (context) => TaskEditDialog(
+        initialTask: task,
+        onSubmit: (updatedTask) async {
+          await _handleTaskUpdate(updatedTask);
+        },
+      ),
+    );
+  }
+
+  /// Gère la mise à jour d'une tâche
+  Future<void> _handleTaskUpdate(Task updatedTask) async {
+    try {
+      final taskRepository = ref.read(taskRepositoryProvider);
+      await taskRepository.updateTask(updatedTask);
+      
+      // Invalider les caches
+      ref.invalidate(tasksSortedByEloProvider);
+      ref.invalidate(allPrioritizationTasksProvider);
+      
+      // Recharger le duel avec les données mises à jour
+      await _loadNewDuel();
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Tâche "${updatedTask.title}" mise à jour avec succès'),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur lors de la mise à jour: $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
+  }
+
+  /// Charge un nouveau duel en utilisant le service unifié
   Future<void> _loadNewDuel() async {
     // Éviter les rechargements multiples simultanés
     if (_isLoading) return;
@@ -217,7 +311,21 @@ class _DuelPageState extends ConsumerState<DuelPage>
     setState(() => _isLoading = true);
     
     try {
-      final allTasks = await ref.read(tasksSortedByEloProvider.future);
+      // Utiliser le nouveau service unifié de priorisation
+      final unifiedService = ref.read(unifiedPrioritizationServiceProvider);
+      final allTasks = await unifiedService.getTasksForPrioritization();
+      
+      // Vérifier s'il y a aussi des ListItems à inclure
+      final listsState = ref.read(listsControllerProvider);
+      if (listsState.lists.isNotEmpty) {
+        // Combiner les Task avec les ListItem convertis
+        final allListItems = listsState.lists.expand((list) => list.items).toList();
+        final listItemTasks = unifiedService.getListItemsAsTasks(allListItems);
+        
+        // Fusionner toutes les tâches
+        allTasks.addAll(listItemTasks);
+      }
+      
       final incompleteTasks = allTasks.where((task) => !task.isCompleted).toList();
       
       if (incompleteTasks.length >= 2) {
@@ -235,18 +343,226 @@ class _DuelPageState extends ConsumerState<DuelPage>
     }
   }
 
+  /// Sélectionne une tâche aléatoire (mode aléatoire)
+  Future<void> _selectRandomTask() async {
+    if (_isLoading) return;
+    
+    setState(() => _isLoading = true);
+    
+    try {
+      // Utiliser le service unifié pour la sélection aléatoire
+      final unifiedService = ref.read(unifiedPrioritizationServiceProvider);
+      final allTasks = await unifiedService.getTasksForPrioritization();
+      
+      // Ajouter les ListItems convertis
+      final listsState = ref.read(listsControllerProvider);
+      if (listsState.lists.isNotEmpty) {
+        final allListItems = listsState.lists.expand((list) => list.items).toList();
+        final listItemTasks = unifiedService.getListItemsAsTasks(allListItems);
+        allTasks.addAll(listItemTasks);
+      }
+      
+      final incompleteTasks = allTasks.where((task) => !task.isCompleted).toList();
+      
+      if (incompleteTasks.isNotEmpty) {
+        // Sélection aléatoire simple
+        final random = DateTime.now().millisecondsSinceEpoch;
+        final selectedIndex = random % incompleteTasks.length;
+        final selectedTask = incompleteTasks[selectedIndex];
+        
+        // Afficher la tâche sélectionnée
+        _showRandomTaskSelected(selectedTask);
+      } else {
+        _currentDuel = null;
+      }
+    } catch (e) {
+      _currentDuel = null;
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  /// Affiche le dialog de sélection des listes
+  Future<void> _showListSelectionDialog() async {
+    final currentSettings = ref.read(listPrioritizationSettingsProvider);
+    
+    // Récupérer les vraies listes depuis le ListsController avec watch pour la réactivité
+    final listsState = ref.read(listsControllerProvider);
+    
+    // S'assurer que les listes sont chargées
+    if (listsState.lists.isEmpty && !listsState.isLoading) {
+      // Afficher un indicateur de chargement pendant le chargement des listes
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Row(
+              children: [
+                SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                ),
+                SizedBox(width: 16),
+                Text('Chargement des listes...'),
+              ],
+            ),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+      
+      await ref.read(listsControllerProvider.notifier).loadLists();
+    }
+    
+    final updatedListsState = ref.read(listsControllerProvider);
+    
+    // Gestion des erreurs de chargement
+    if (updatedListsState.error != null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur lors du chargement des listes: ${updatedListsState.error}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
+    
+    // Vérifier s'il y a des listes disponibles
+    if (updatedListsState.lists.isEmpty) {
+      _showNoListsDialog();
+      return;
+    }
+    
+    // Transformer les CustomList en format attendu par le dialog
+    final availableLists = updatedListsState.lists.map((customList) => {
+      'id': customList.id,
+      'title': customList.name,
+    }).toList();
+
+    if (mounted) {
+      await showListSelectionDialog(
+        context,
+        currentSettings: currentSettings,
+        availableLists: availableLists,
+        onSettingsChanged: (newSettings) {
+          ref.read(listPrioritizationSettingsProvider.notifier).state = newSettings;
+          // TODO: Sauvegarder en base de données
+          _loadNewDuel(); // Recharger le duel avec les nouvelles préférences
+        },
+      );
+    }
+  }
+
+  /// Affiche la tâche sélectionnée aléatoirement
+  void _showRandomTaskSelected(Task task) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                '🎲 Tâche sélectionnée aléatoirement :',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 4),
+              Text(task.title),
+              if (task.description != null) ...[
+                const SizedBox(height: 2),
+                Text(
+                  task.description!,
+                  style: const TextStyle(fontSize: 12, color: Colors.white70),
+                ),
+              ],
+            ],
+          ),
+          backgroundColor: Theme.of(context).primaryColor,
+          duration: const Duration(seconds: 4),
+          action: SnackBarAction(
+            label: 'Terminer',
+            textColor: Colors.white,
+            onPressed: () {
+              // TODO: Marquer la tâche comme terminée
+            },
+          ),
+        ),
+      );
+    }
+  }
+
+  /// Affiche un dialog informatif quand aucune liste n'est disponible
+  void _showNoListsDialog() {
+    if (mounted) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          icon: Icon(
+            Icons.list_alt_outlined,
+            size: 48,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          title: const Text('Aucune liste disponible'),
+          content: const Text(
+            'Vous devez d\'abord créer des listes pour pouvoir les sélectionner dans le mode priorisation.\n\n'
+            'Rendez-vous dans l\'onglet "Listes" pour créer votre première liste.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Annuler'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                // Navigation vers l'onglet des listes
+                // Utiliser DefaultTabController ou le contrôleur de navigation approprié
+                // Pour l'instant, on affiche juste un message
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Naviguez vers l\'onglet "Listes" pour créer vos listes'),
+                    duration: Duration(seconds: 3),
+                  ),
+                );
+              },
+              child: const Text('Aller aux listes'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  /// Sélectionne le gagnant d'un duel en utilisant le service unifié
   void _selectWinner(Task winner, Task loser) async {
     setState(() => _isLoading = true);
     
-    final repository = ref.read(taskRepositoryProvider);
-    await repository.updateEloScores(winner, loser);
-    
-    // Invalider le cache pour rafraîchir les autres pages
-    ref.invalidate(tasksSortedByEloProvider);
-    
-    // Afficher le résultat
-    if (mounted) {
-      _showDuelResult(winner, loser);
+    try {
+      // Utiliser le service unifié pour mettre à jour les scores ELO
+      final unifiedService = ref.read(unifiedPrioritizationServiceProvider);
+      final duelResult = await unifiedService.updateEloScoresFromDuel(winner, loser);
+      
+      // Invalider les caches pour rafraîchir les autres pages
+      ref.invalidate(tasksSortedByEloProvider);
+      ref.invalidate(allPrioritizationTasksProvider);
+      
+      // Afficher le résultat
+      if (mounted) {
+        _showDuelResult(duelResult.winner, duelResult.loser);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur lors de la mise à jour: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
     
     // Charger un nouveau duel après un délai
@@ -270,4 +586,3 @@ class _DuelPageState extends ConsumerState<DuelPage>
     );
   }
 } 
-

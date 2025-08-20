@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
 import 'package:prioris/presentation/widgets/dialogs/dialogs.dart';
-import 'package:prioris/presentation/widgets/dialogs/quick_add_dialog.dart';
+import 'package:prioris/presentation/widgets/dialogs/bulk_add_dialog.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
+import 'package:prioris/presentation/theme/glassmorphism.dart';
 import 'package:prioris/presentation/pages/lists/controllers/lists_controller.dart';
 import 'package:prioris/presentation/pages/lists/widgets/list_detail_header.dart';
 import 'package:prioris/presentation/pages/lists/widgets/list_search_bar.dart';
@@ -33,19 +34,32 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Écouter les changements de la liste spécifique
+    final currentList = ref.watch(listByIdProvider(widget.list.id));
+    
+    // Si la liste n'existe plus, revenir en arrière
+    if (currentList == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).pop();
+      });
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
-      appBar: _buildAppBar(),
-      body: _buildBody(),
+      appBar: _buildAppBar(currentList),
+      body: _buildBody(currentList),
       floatingActionButton: _buildFloatingActionButton(),
     );
   }
 
   /// Construit l'AppBar
-  PreferredSizeWidget _buildAppBar() {
+  PreferredSizeWidget _buildAppBar(CustomList currentList) {
     return AppBar(
       title: Text(
-        widget.list.name,
+        currentList.name,
         style: const TextStyle(
           fontWeight: FontWeight.bold,
           color: AppTheme.textPrimary,
@@ -57,7 +71,7 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
       actions: [
         IconButton(
           icon: const Icon(Icons.edit, color: AppTheme.textSecondary),
-          onPressed: _showEditListDialog,
+          onPressed: () => _showEditListDialog(currentList),
           tooltip: 'Modifier la liste',
         ),
       ],
@@ -67,20 +81,20 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
   // Supprimé: la méthode _buildAppBarBackground n'est plus nécessaire
 
   /// Construit le corps de la page
-  Widget _buildBody() {
+  Widget _buildBody(CustomList currentList) {
     return CustomScrollView(
       slivers: [
-        _buildHeader(),
+        _buildHeader(currentList),
         _buildSearchBar(),
-        _buildItemsList(),
+        _buildItemsList(currentList),
       ],
     );
   }
 
   /// Construit le header avec statistiques
-  Widget _buildHeader() {
+  Widget _buildHeader(CustomList currentList) {
     return SliverToBoxAdapter(
-      child: ListDetailHeader(list: widget.list),
+      child: ListDetailHeader(list: currentList),
     );
   }
 
@@ -99,21 +113,21 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
   }
 
   /// Construit la liste des éléments
-  Widget _buildItemsList() {
+  Widget _buildItemsList(CustomList currentList) {
     return SliverPadding(
       padding: const EdgeInsets.all(16),
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate(
-          _buildItemsListDelegate,
-          childCount: _getItemsListChildCount(),
+          (context, index) => _buildItemsListDelegate(context, index, currentList),
+          childCount: _getItemsListChildCount(currentList),
         ),
       ),
     );
   }
 
   /// Délégué pour construire les éléments de la liste
-  Widget? _buildItemsListDelegate(BuildContext context, int index) {
-    final items = _filterAndSortItems();
+  Widget? _buildItemsListDelegate(BuildContext context, int index, CustomList currentList) {
+    final items = _filterAndSortItems(currentList);
     
     if (items.isEmpty) {
       return ListEmptyState(searchQuery: _searchQuery);
@@ -135,30 +149,44 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
   }
 
   /// Calcule le nombre d'enfants pour la liste
-  int _getItemsListChildCount() {
-    final items = _filterAndSortItems();
+  int _getItemsListChildCount(CustomList currentList) {
+    final items = _filterAndSortItems(currentList);
     return items.isEmpty ? 1 : items.length;
   }
 
-  /// Construit le bouton d'action flottant
+  /// Construit le bouton d'action flottant avec design glassmorphisme
   Widget _buildFloatingActionButton() {
-    return FloatingActionButton(
+    return Glassmorphism.glassFAB(
       heroTag: "list_detail_fab",
-      onPressed: _showAddItemDialog,
+      onPressed: _showBulkAddDialog,
       backgroundColor: AppTheme.primaryColor,
-      child: const Icon(Icons.add, color: Colors.white),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.add, color: Colors.white, size: 20),
+          const SizedBox(width: 8),
+          const Text(
+            'Ajouter',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   /// Filtre et trie les éléments selon les critères sélectionnés
-  List<ListItem> _filterAndSortItems() {
-    final filteredItems = _filterItems();
+  List<ListItem> _filterAndSortItems(CustomList currentList) {
+    final filteredItems = _filterItems(currentList);
     return _sortItems(filteredItems);
   }
 
   /// Filtre les éléments selon la requête de recherche
-  List<ListItem> _filterItems() {
-    return widget.list.items.where((item) {
+  List<ListItem> _filterItems(CustomList currentList) {
+    return currentList.items.where((item) {
       return _itemMatchesSearch(item);
     }).toList();
   }
@@ -186,22 +214,15 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
     return items;
   }
 
-  /// Affiche le dialogue d'ajout rapide d'élément
-  void _showAddItemDialog() {
+  /// Affiche le dialogue d'ajout en masse d'éléments
+  void _showBulkAddDialog() {
     showDialog(
       context: context,
-      builder: (context) => QuickAddDialog(
-        title: 'Nouvel élément',
+      builder: (context) => BulkAddDialog(
+        title: 'Ajouter à "${widget.list.name}"',
         hintText: 'Titre de l\'élément...',
-        onSubmit: (title) async {
-          // Création rapide avec titre uniquement
-          final newItem = ListItem(
-            id: DateTime.now().millisecondsSinceEpoch.toString(),
-            title: title,
-            createdAt: DateTime.now(),
-            listId: widget.list.id,
-          );
-          await _handleAddItem(newItem);
+        onSubmit: (items) async {
+          await _handleAddMultipleItems(items);
         },
       ),
     );
@@ -212,6 +233,18 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
     await _performItemAction(
       () => ref.read(listsControllerProvider.notifier).addItemToList(widget.list.id, newItem),
       '${newItem.title} ajouté à la liste',
+    );
+  }
+
+  /// Gère l'ajout de plusieurs éléments
+  Future<void> _handleAddMultipleItems(List<String> itemTitles) async {
+    if (itemTitles.isEmpty) return;
+    
+    await _performItemAction(
+      () => ref.read(listsControllerProvider.notifier).addMultipleItemsToList(widget.list.id, itemTitles),
+      itemTitles.length == 1 
+        ? '${itemTitles.first} ajouté à la liste'
+        : '${itemTitles.length} éléments ajoutés à la liste',
     );
   }
 
@@ -286,11 +319,11 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
   }
 
   /// Affiche le dialogue d'édition de liste
-  void _showEditListDialog() {
+  void _showEditListDialog(CustomList currentList) {
     showDialog(
       context: context,
       builder: (context) => ListFormDialog(
-        initialList: widget.list,
+        initialList: currentList,
         onSubmit: (updatedList) async {
           await _handleEditList(updatedList);
         },

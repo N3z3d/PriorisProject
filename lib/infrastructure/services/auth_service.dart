@@ -65,7 +65,7 @@ class AuthService {
       
       return response;
     } catch (e) {
-      print('Erreur Google Sign-In: $e');
+      // TODO: Remplacer par un logger approprié
       return false;
     }
   }

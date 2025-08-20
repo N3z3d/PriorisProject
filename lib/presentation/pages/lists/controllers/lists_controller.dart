@@ -180,9 +180,46 @@ class ListsController extends StateNotifier<ListsState> {
     });
   }
 
+  /// Ajoute plusieurs éléments à une liste en une seule opération
+  Future<void> addMultipleItemsToList(String listId, List<String> itemTitles) async {
+    if (itemTitles.isEmpty) return;
+    
+    await _executeWithLoading(() async {
+      final items = <ListItem>[];
+      
+      // Créer tous les éléments
+      for (int i = 0; i < itemTitles.length; i++) {
+        final title = itemTitles[i].trim();
+        if (title.isNotEmpty) {
+          final item = ListItem(
+            id: '${DateTime.now().millisecondsSinceEpoch}_$i',
+            title: title,
+            createdAt: DateTime.now(),
+            listId: listId,
+          );
+          items.add(item);
+        }
+      }
+      
+      // Sauvegarder tous les éléments
+      for (final item in items) {
+        await _itemRepository.add(item);
+      }
+      
+      // Mettre à jour l'état
+      _addMultipleItemsToListState(listId, items);
+    });
+  }
+
   /// Ajoute un élément à une liste dans l'état
   void _addItemToListState(String listId, ListItem item) {
     final updatedLists = _updateListItems(listId, (items) => [...items, item]);
+    _updateListsAndApplyFilters(updatedLists);
+  }
+
+  /// Ajoute plusieurs éléments à une liste dans l'état
+  void _addMultipleItemsToListState(String listId, List<ListItem> newItems) {
+    final updatedLists = _updateListItems(listId, (items) => [...items, ...newItems]);
     _updateListsAndApplyFilters(updatedLists);
   }
 
@@ -337,4 +374,11 @@ final listsLoadingProvider = Provider<bool>((ref) {
 /// Provider pour les erreurs
 final listsErrorProvider = Provider<String?>((ref) {
   return ref.watch(listsControllerProvider).error;
+});
+
+/// Provider pour une liste spécifique par ID
+/// Ce provider écoute les changements d'état et retourne la liste mise à jour
+final listByIdProvider = Provider.family<CustomList?, String>((ref, listId) {
+  final listsState = ref.watch(listsControllerProvider);
+  return listsState.lists.where((list) => list.id == listId).firstOrNull;
 }); 

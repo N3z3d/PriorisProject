@@ -31,6 +31,22 @@
 
   <title>prioris</title>
   <link rel="manifest" href="manifest.json">
+  
+  <style>
+    /* Fix text selection issues */
+    * {
+      user-select: auto !important;
+      -webkit-user-select: auto !important;
+      -moz-user-select: auto !important;
+      -ms-user-select: auto !important;
+    }
+    
+    /* Ensure text is visible in dev tools */
+    body, html {
+      font-family: system-ui, -apple-system, sans-serif;
+      color: #000 !important;
+    }
+  </style>
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>

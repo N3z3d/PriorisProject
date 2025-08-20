@@ -28,13 +28,14 @@ class ListItemAdapter extends TypeAdapter<ListItem> {
       dueDate: fields[8] as DateTime?,
       notes: fields[9] as String?,
       listId: fields[10] as String,
+      lastChosenAt: fields[11] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ListItem obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -54,7 +55,11 @@ class ListItemAdapter extends TypeAdapter<ListItem> {
       ..writeByte(8)
       ..write(obj.dueDate)
       ..writeByte(9)
-      ..write(obj.notes);
+      ..write(obj.notes)
+      ..writeByte(10)
+      ..write(obj.listId)
+      ..writeByte(11)
+      ..write(obj.lastChosenAt);
   }
 
   @override

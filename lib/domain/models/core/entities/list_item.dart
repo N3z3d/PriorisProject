@@ -52,6 +52,10 @@ class ListItem extends HiveObject {
   @HiveField(10)
   final String listId;
 
+  /// Date de dernier choix dans un duel/priorisation (pour variation ELO dynamique)
+  @HiveField(11)
+  final DateTime? lastChosenAt;
+
   /// Constructeur avec paramètres nommés
   ListItem({
     required this.id,
@@ -65,6 +69,7 @@ class ListItem extends HiveObject {
     this.dueDate,
     this.notes,
     this.listId = 'default', // Valeur par défaut pour compatibilité
+    this.lastChosenAt,
   }) {
     _validate();
   }

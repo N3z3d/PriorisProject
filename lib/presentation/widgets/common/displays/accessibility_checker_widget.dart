@@ -79,7 +79,7 @@ class _AccessibilityCheckerWidgetState extends State<AccessibilityCheckerWidget>
         violations.add(AccessibilityViolation(
           type: AccessibilityViolationType.contrastInsufficient,
           message: 'Contraste insuffisant: ${contrastRatio.toStringAsFixed(2)}:1 '
-              '(requis: ${requiredRatio}:1)',
+              '(requis: $requiredRatio:1)',
           severity: AccessibilityViolationSeverity.error,
           guideline: 'WCAG 1.4.3 (AA)',
         ));

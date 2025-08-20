@@ -11,6 +11,7 @@ import 'package:prioris/presentation/pages/lists/controllers/lists_controller.da
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/domain/models/core/builders/custom_list_builder.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
+import 'package:prioris/presentation/widgets/common/displays/daily_overview_widget.dart';
 
 /// Page principale pour la gestion des listes personnalisées
 /// 
@@ -70,7 +71,12 @@ class _ListsPageState extends ConsumerState<ListsPage> with SingleTickerProvider
           ? const CommonLoadingState(message: 'Chargement des listes...')
           : error != null
               ? _buildErrorState(error)
-              : _buildListsContent(listsState),
+              : Column(
+                  children: [
+                    const DailyOverviewWidget(),
+                    Expanded(child: _buildListsContent(listsState)),
+                  ],
+                ),
       floatingActionButton: Semantics(
         label: 'Créer une nouvelle liste',
         button: true,

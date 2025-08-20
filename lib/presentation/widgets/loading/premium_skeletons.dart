@@ -361,6 +361,7 @@ class PremiumSkeletons {
       itemBuilder: (context, index) {
         return _SkeletonContainer(
           borderRadius: BorderRadiusTokens.card,
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

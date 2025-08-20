@@ -2,18 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:prioris/domain/models/core/entities/task.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
+import 'package:prioris/presentation/theme/glassmorphism.dart';
 import 'package:prioris/presentation/widgets/common/displays/premium_card.dart';
 
 /// Widget représentant une carte de tâche dans le système de duel ELO
 /// 
 /// Cette carte affiche une tâche avec son titre, description, score ELO
-/// et permet à l'utilisateur de la sélectionner comme prioritaire.
+/// et permet à l'utilisateur de la sélectionner comme prioritaire ou de l'éditer.
 class DuelTaskCard extends StatelessWidget {
   /// La tâche à afficher
   final Task task;
   
   /// Callback appelé lorsque l'utilisateur sélectionne cette tâche
   final VoidCallback onTap;
+  
+  /// Callback appelé lorsque l'utilisateur veut éditer cette tâche
+  final VoidCallback? onEdit;
   
   /// Indique si les scores ELO doivent être masqués
   final bool hideElo;
@@ -22,6 +26,7 @@ class DuelTaskCard extends StatelessWidget {
     super.key,
     required this.task,
     required this.onTap,
+    this.onEdit,
     required this.hideElo,
   });
 
@@ -31,17 +36,49 @@ class DuelTaskCard extends StatelessWidget {
       onTap: onTap,
       child: PremiumCard(
         elevation: 4,
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
+        padding: EdgeInsets.zero,
+        child: Stack(
           children: [
-            _buildTaskHeader(context),
-            _buildTaskDescription(context),
-            const SizedBox(height: 12),
-            _buildTaskChips(),
+            // Contenu principal de la carte
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildTaskHeader(context),
+                  _buildTaskDescription(context),
+                  const SizedBox(height: 12),
+                  _buildTaskChips(),
+                ],
+              ),
+            ),
+            // Bouton d'édition en haut à droite
+            if (onEdit != null)
+              Positioned(
+                top: 8,
+                right: 8,
+                child: _buildEditButton(),
+              ),
           ],
         ),
+      ),
+    );
+  }
+
+  /// Construit le bouton d'édition avec glassmorphisme
+  Widget _buildEditButton() {
+    return Glassmorphism.glassButton(
+      onPressed: onEdit!,
+      color: AppTheme.textSecondary,
+      blur: 8.0,
+      opacity: 0.1,
+      padding: const EdgeInsets.all(8),
+      borderRadius: BorderRadius.circular(20),
+      child: const Icon(
+        Icons.edit,
+        size: 16,
+        color: AppTheme.textSecondary,
       ),
     );
   }

@@ -36,7 +36,7 @@ class _PremiumHabitCardState extends State<PremiumHabitCard> {
   @override
   void initState() {
     super.initState();
-    _currentStreak = widget.habit.habitCurrentStreak ?? 0;
+    _currentStreak = widget.habit.habitCurrentStreak;
   }
 
   @override
@@ -336,12 +336,14 @@ class _PremiumHabitCardState extends State<PremiumHabitCard> {
     }
 
     // Feedback visuel premium
-    context.showPremiumSuccess(
+    if (context.mounted) {
+      context.showPremiumSuccess(
       'Habitude accomplie !',
       type: (_currentStreak + 1) % 7 == 0 
         ? SuccessType.milestone 
         : SuccessType.standard,
-    );
+      );
+    }
 
     // Appeler le callback
     widget.onRecordValue?.call(true);

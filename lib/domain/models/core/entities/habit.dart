@@ -276,7 +276,7 @@ class Habit extends HiveObject {
 
   // Helpers pour l'UI
   Color get habitColor => color != null ? Color(color!) : Colors.blue;
-  IconData get habitIcon => icon != null ? IconData(icon!, fontFamily: 'MaterialIcons') : const IconData(0xe5ca, fontFamily: 'MaterialIcons');
+  IconData get habitIcon => icon != null ? const IconData(0xe5ca, fontFamily: 'MaterialIcons') : const IconData(0xe5ca, fontFamily: 'MaterialIcons');
   int get habitCurrentStreak => currentStreak ?? 0;
 
   @override

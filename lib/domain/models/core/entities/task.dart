@@ -42,6 +42,9 @@ class Task extends HiveObject {
   @HiveField(11)
   late DateTime updatedAt;
 
+  @HiveField(12)
+  DateTime? lastChosenAt;
+
   Task({
     String? id,
     required this.title,
@@ -55,6 +58,7 @@ class Task extends HiveObject {
     this.tags = const [],
     this.priority = 0,
     DateTime? updatedAt,
+    this.lastChosenAt,
   }) {
     this.id = id ?? const Uuid().v4();
     this.createdAt = createdAt ?? DateTime.now();
