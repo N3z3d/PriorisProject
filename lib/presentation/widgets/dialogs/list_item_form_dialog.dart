@@ -60,7 +60,7 @@ class _ListItemFormDialogState extends State<ListItemFormDialog> {
                     decoration: const InputDecoration(
                       labelText: 'Titre',
                       border: OutlineInputBorder(),
-                      hintText: 'Ex: Acheter du pain, Réserver hôtel...',
+                      hintText: 'Ex: Terminer rapport projet, Réserver salle réunion...',
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
@@ -93,32 +93,27 @@ class _ListItemFormDialogState extends State<ListItemFormDialog> {
                     decoration: const InputDecoration(
                       labelText: 'Catégorie (optionnel)',
                       border: OutlineInputBorder(),
+                      hintText: 'Ex: Travail, Personnel, Urgent...',
                     ),
                     onSaved: (value) => _category = value?.trim() ?? '',
                   ),
-                  const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: const Text('Annuler'),
-                      ),
-                      const SizedBox(width: 12),
-                      ElevatedButton(
-                        onPressed: _submit,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadiusTokens.button,
-                          ),
-                        ),
-                        child: Text(widget.initialItem == null ? 'Ajouter' : 'Enregistrer'),
-                      ),
-                    ],
-                  ),
                 ],
               ),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Annuler'),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: _handleSubmit,
+                  child: Text(widget.initialItem == null ? 'Ajouter' : 'Modifier'),
+                ),
+              ],
             ),
           ],
         ),
@@ -126,22 +121,24 @@ class _ListItemFormDialogState extends State<ListItemFormDialog> {
     );
   }
 
-  void _submit() {
-    if (_formKey.currentState?.validate() ?? false) {
-      _formKey.currentState?.save();
-      final item = ListItem(
-        id: widget.initialItem?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
-        title: _title,
-        description: _description.isEmpty ? null : _description,
-        category: _category.isEmpty ? null : _category,
-        eloScore: widget.initialItem?.eloScore ?? 1200.0, // Score ELO par défaut
-        isCompleted: widget.initialItem?.isCompleted ?? false,
-        createdAt: widget.initialItem?.createdAt ?? DateTime.now(),
-        listId: widget.listId,
-      );
-      widget.onSubmit(item);
-      Navigator.of(context).pop();
-    }
-  }
-} 
+  void _handleSubmit() {
+    if (!_formKey.currentState!.validate()) return;
 
+    _formKey.currentState!.save();
+
+    final item = ListItem(
+      id: widget.initialItem?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      title: _title,
+      description: _description.isEmpty ? null : _description,
+      category: _category.isEmpty ? null : _category,
+      listId: widget.listId,
+      createdAt: widget.initialItem?.createdAt ?? DateTime.now(),
+      isCompleted: widget.initialItem?.isCompleted ?? false,
+      completedAt: widget.initialItem?.completedAt,
+      eloScore: widget.initialItem?.eloScore ?? 1200.0,
+    );
+
+    widget.onSubmit(item);
+    Navigator.of(context).pop();
+  }
+}

@@ -3,12 +3,14 @@ import 'package:prioris/domain/models/core/entities/task.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 import 'package:prioris/presentation/theme/glassmorphism.dart';
-import 'package:uuid/uuid.dart';
 
-/// Dialogue d'ajout/édition de tâche avec design glassmorphisme
+/// Dialog d'édition/création de tâche avec design glassmorphisme
 class TaskEditDialog extends StatefulWidget {
+  /// Tâche existante à éditer (null pour création)
   final Task? initialTask;
-  final void Function(Task) onSubmit;
+  
+  /// Callback appelé lors de la soumission
+  final Function(Task) onSubmit;
 
   const TaskEditDialog({
     super.key,
@@ -21,241 +23,251 @@ class TaskEditDialog extends StatefulWidget {
 }
 
 class _TaskEditDialogState extends State<TaskEditDialog> {
+  late TextEditingController _titleController;
+  late TextEditingController _descriptionController;
+  late TextEditingController _categoryController;
+  
   final _formKey = GlobalKey<FormState>();
-  late String _title;
-  late String _description;
-  late String _category;
+  final _titleFocusNode = FocusNode();
+  
+  bool get _isEditing => widget.initialTask != null;
 
   @override
   void initState() {
     super.initState();
-    _title = widget.initialTask?.title ?? '';
-    _description = widget.initialTask?.description ?? '';
-    _category = widget.initialTask?.category ?? '';
+    _initializeControllers();
+    
+    // Focus automatique sur le champ titre
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _titleFocusNode.requestFocus();
+    });
+  }
+
+  void _initializeControllers() {
+    _titleController = TextEditingController(
+      text: widget.initialTask?.title ?? '',
+    );
+    _descriptionController = TextEditingController(
+      text: widget.initialTask?.description ?? '',
+    );
+    _categoryController = TextEditingController(
+      text: widget.initialTask?.category ?? '',
+    );
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    _categoryController.dispose();
+    _titleFocusNode.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Colors.transparent,
-      elevation: 0,
-      child: Glassmorphism.glassCard(
-        borderRadius: BorderRadiusTokens.modal,
-        blur: 20.0,
-        opacity: 0.15,
-        width: MediaQuery.of(context).size.width * 0.9,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 25,
-            offset: const Offset(0, 15),
-          ),
-        ],
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxHeight: 500),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeader(),
-                  const SizedBox(height: 24),
-                  _buildTitleField(),
-                  const SizedBox(height: 20),
-                  _buildDescriptionField(),
-                  const SizedBox(height: 20),
-                  _buildCategoryField(),
-                  const SizedBox(height: 32),
-                  _buildActions(),
-                ],
-              ),
-            ),
+      child: _buildGlassmorphismContainer(),
+    );
+  }
+
+  /// Construit le container principal avec effet glassmorphisme
+  Widget _buildGlassmorphismContainer() {
+    return Glassmorphism.glassCard(
+      blur: 20.0,
+      opacity: 0.1,
+      borderRadius: BorderRadiusTokens.modal,
+      border: Border.all(
+        color: Colors.white.withValues(alpha: 0.2),
+        width: 1,
+      ),
+      padding: const EdgeInsets.all(24),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.3),
+          blurRadius: 20,
+          offset: const Offset(0, 10),
+        ),
+      ],
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 500),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildHeader(),
+              const SizedBox(height: 24),
+              _buildFormFields(),
+              const SizedBox(height: 24),
+              _buildActionButtons(),
+            ],
           ),
         ),
       ),
     );
   }
 
+  /// Construit l'en-tête du dialog
   Widget _buildHeader() {
     return Row(
       children: [
-        Icon(
-          widget.initialTask == null ? Icons.add_task : Icons.edit,
-          color: AppTheme.primaryColor,
-          size: 28,
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: AppTheme.primaryColor.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Icon(
+            _isEditing ? Icons.edit : Icons.add_task,
+            color: AppTheme.primaryColor,
+            size: 24,
+          ),
         ),
-        const SizedBox(width: 12),
-        Text(
-          widget.initialTask == null ? 'Ajouter une tâche' : 'Modifier la tâche',
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: AppTheme.textPrimary,
+        const SizedBox(width: 16),
+        Expanded(
+          child: Text(
+            _isEditing ? 'Modifier la tâche' : 'Ajouter une tâche',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: AppTheme.textPrimary,
+            ),
           ),
         ),
       ],
     );
   }
 
+  /// Construit les champs de formulaire
+  Widget _buildFormFields() {
+    return Column(
+      children: [
+        _buildTitleField(),
+        const SizedBox(height: 16),
+        _buildDescriptionField(),
+        const SizedBox(height: 16),
+        _buildCategoryField(),
+      ],
+    );
+  }
+
+  /// Construit le champ titre
   Widget _buildTitleField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Titre',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: AppTheme.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Glassmorphism.glassCard(
-          blur: 6.0,
-          opacity: 0.05,
+    return TextFormField(
+      controller: _titleController,
+      focusNode: _titleFocusNode,
+      decoration: InputDecoration(
+        labelText: 'Titre',
+        hintText: 'Entrez le titre de la tâche',
+        filled: true,
+        fillColor: Colors.white.withValues(alpha: 0.1),
+        border: OutlineInputBorder(
           borderRadius: BorderRadiusTokens.input,
-          padding: EdgeInsets.zero,
-          child: TextFormField(
-            initialValue: _title,
-            style: const TextStyle(color: AppTheme.textPrimary),
-            decoration: InputDecoration(
-              hintText: 'Ex: Terminer le rapport, Appeler le client...',
-              hintStyle: TextStyle(color: AppTheme.textSecondary.withValues(alpha: 0.7)),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadiusTokens.input,
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadiusTokens.input,
-                borderSide: BorderSide(
-                  color: AppTheme.primaryColor,
-                  width: 2,
-                ),
-              ),
-              filled: true,
-              fillColor: Colors.transparent,
-              contentPadding: const EdgeInsets.all(16),
-            ),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Le titre est obligatoire pour identifier cette tâche';
-              }
-              if (value.trim().length < 2) {
-                return 'Le titre doit contenir au moins 2 caractères';
-              }
-              if (value.length > 200) {
-                return 'Le titre ne peut pas dépasser 200 caractères (actuellement ${value.length})';
-              }
-              return null;
-            },
-            onSaved: (value) => _title = value!.trim(),
-            textCapitalization: TextCapitalization.sentences,
+          borderSide: BorderSide(
+            color: Colors.white.withValues(alpha: 0.3),
           ),
         ),
-      ],
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadiusTokens.input,
+          borderSide: BorderSide(
+            color: Colors.white.withValues(alpha: 0.3),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadiusTokens.input,
+          borderSide: BorderSide(
+            color: AppTheme.primaryColor,
+            width: 2,
+          ),
+        ),
+        prefixIcon: Icon(
+          Icons.title,
+          color: AppTheme.textSecondary,
+        ),
+      ),
+      textCapitalization: TextCapitalization.sentences,
+      validator: _validateTitle,
     );
   }
 
+  /// Construit le champ description
   Widget _buildDescriptionField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Description (optionnel)',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: AppTheme.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Glassmorphism.glassCard(
-          blur: 6.0,
-          opacity: 0.05,
+    return TextFormField(
+      controller: _descriptionController,
+      decoration: InputDecoration(
+        labelText: 'Description (optionnel)',
+        hintText: 'Ajoutez une description détaillée',
+        filled: true,
+        fillColor: Colors.white.withValues(alpha: 0.1),
+        border: OutlineInputBorder(
           borderRadius: BorderRadiusTokens.input,
-          padding: EdgeInsets.zero,
-          child: TextFormField(
-            initialValue: _description,
-            style: const TextStyle(color: AppTheme.textPrimary),
-            decoration: InputDecoration(
-              hintText: 'Détails additionnels sur la tâche...',
-              hintStyle: TextStyle(color: AppTheme.textSecondary.withValues(alpha: 0.7)),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadiusTokens.input,
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadiusTokens.input,
-                borderSide: BorderSide(
-                  color: AppTheme.primaryColor,
-                  width: 2,
-                ),
-              ),
-              filled: true,
-              fillColor: Colors.transparent,
-              contentPadding: const EdgeInsets.all(16),
-            ),
-            maxLines: 3,
-            maxLength: 1000,
-            onSaved: (value) => _description = value?.trim() ?? '',
-            textCapitalization: TextCapitalization.sentences,
+          borderSide: BorderSide(
+            color: Colors.white.withValues(alpha: 0.3),
           ),
         ),
-      ],
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadiusTokens.input,
+          borderSide: BorderSide(
+            color: Colors.white.withValues(alpha: 0.3),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadiusTokens.input,
+          borderSide: BorderSide(
+            color: AppTheme.primaryColor,
+            width: 2,
+          ),
+        ),
+        prefixIcon: Icon(
+          Icons.description,
+          color: AppTheme.textSecondary,
+        ),
+      ),
+      maxLines: 3,
+      textCapitalization: TextCapitalization.sentences,
     );
   }
 
+  /// Construit le champ catégorie
   Widget _buildCategoryField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Catégorie (optionnel)',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: AppTheme.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Glassmorphism.glassCard(
-          blur: 6.0,
-          opacity: 0.05,
+    return TextFormField(
+      controller: _categoryController,
+      decoration: InputDecoration(
+        labelText: 'Catégorie (optionnel)',
+        hintText: 'Travail, Personnel, etc.',
+        filled: true,
+        fillColor: Colors.white.withValues(alpha: 0.1),
+        border: OutlineInputBorder(
           borderRadius: BorderRadiusTokens.input,
-          padding: EdgeInsets.zero,
-          child: TextFormField(
-            initialValue: _category,
-            style: const TextStyle(color: AppTheme.textPrimary),
-            decoration: InputDecoration(
-              hintText: 'Ex: Travail, Personnel, Urgent...',
-              hintStyle: TextStyle(color: AppTheme.textSecondary.withValues(alpha: 0.7)),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadiusTokens.input,
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadiusTokens.input,
-                borderSide: BorderSide(
-                  color: AppTheme.primaryColor,
-                  width: 2,
-                ),
-              ),
-              filled: true,
-              fillColor: Colors.transparent,
-              contentPadding: const EdgeInsets.all(16),
-            ),
-            onSaved: (value) => _category = value?.trim() ?? '',
-            textCapitalization: TextCapitalization.words,
+          borderSide: BorderSide(
+            color: Colors.white.withValues(alpha: 0.3),
           ),
         ),
-      ],
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadiusTokens.input,
+          borderSide: BorderSide(
+            color: Colors.white.withValues(alpha: 0.3),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadiusTokens.input,
+          borderSide: BorderSide(
+            color: AppTheme.primaryColor,
+            width: 2,
+          ),
+        ),
+        prefixIcon: Icon(
+          Icons.category,
+          color: AppTheme.textSecondary,
+        ),
+      ),
+      textCapitalization: TextCapitalization.words,
     );
   }
 
-  Widget _buildActions() {
+  /// Construit les boutons d'action
+  Widget _buildActionButtons() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -266,75 +278,86 @@ class _TaskEditDialogState extends State<TaskEditDialog> {
     );
   }
 
+  /// Construit le bouton d'annulation
   Widget _buildCancelButton() {
     return Glassmorphism.glassButton(
       onPressed: () => Navigator.of(context).pop(),
       color: AppTheme.textSecondary,
-      blur: 8.0,
+      blur: 10.0,
       opacity: 0.1,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      borderRadius: BorderRadiusTokens.button,
-      child: const Text(
+      borderRadius: BorderRadiusTokens.input,
+      child: Text(
         'Annuler',
         style: TextStyle(
           color: AppTheme.textSecondary,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
   }
 
+  /// Construit le bouton de soumission
   Widget _buildSubmitButton() {
     return Glassmorphism.glassButton(
-      onPressed: _submit,
+      onPressed: _handleSubmit,
       color: AppTheme.primaryColor,
-      blur: 12.0,
-      opacity: 0.9,
+      blur: 10.0,
+      opacity: 0.2,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      borderRadius: BorderRadiusTokens.button,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            widget.initialTask == null ? Icons.add : Icons.save,
-            size: 16,
-            color: Colors.white,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            widget.initialTask == null ? 'Ajouter' : 'Enregistrer',
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
+      borderRadius: BorderRadiusTokens.input,
+      child: Text(
+        _isEditing ? 'Enregistrer' : 'Ajouter',
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
 
-  void _submit() {
-    if (_formKey.currentState?.validate() ?? false) {
-      _formKey.currentState?.save();
-      
-      final task = Task(
-        id: widget.initialTask?.id ?? const Uuid().v4(),
-        title: _title,
-        description: _description.isEmpty ? null : _description,
-        category: _category.isEmpty ? null : _category,
-        eloScore: widget.initialTask?.eloScore ?? 1200.0,
-        isCompleted: widget.initialTask?.isCompleted ?? false,
-        createdAt: widget.initialTask?.createdAt ?? DateTime.now(),
-        completedAt: widget.initialTask?.completedAt,
-        dueDate: widget.initialTask?.dueDate,
-        tags: widget.initialTask?.tags ?? [],
-        priority: widget.initialTask?.priority ?? 0,
-        updatedAt: DateTime.now(),
-        lastChosenAt: widget.initialTask?.lastChosenAt,
-      );
-      
-      widget.onSubmit(task);
-      Navigator.of(context).pop();
+  /// Valide le champ titre
+  String? _validateTitle(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Le titre est obligatoire pour identifier cette tâche';
     }
+    
+    if (value.trim().length < 2) {
+      return 'Le titre doit contenir au moins 2 caractères';
+    }
+    
+    if (value.length > 200) {
+      return 'Le titre ne peut pas dépasser 200 caractères';
+    }
+    
+    return null;
+  }
+
+  /// Gère la soumission du formulaire
+  void _handleSubmit() {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    final title = _titleController.text.trim();
+    final description = _descriptionController.text.trim();
+    final category = _categoryController.text.trim();
+
+    final task = _isEditing
+        ? widget.initialTask!.copyWith(
+            title: title,
+            description: description.isEmpty ? null : description,
+            category: category.isEmpty ? null : category,
+            updatedAt: DateTime.now(),
+          )
+        : Task(
+            title: title,
+            description: description.isEmpty ? null : description,
+            category: category.isEmpty ? null : category,
+            eloScore: 1200.0,
+          );
+
+    widget.onSubmit(task);
+    Navigator.of(context).pop();
   }
 }

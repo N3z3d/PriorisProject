@@ -111,6 +111,23 @@ class ListTemplateService {
     return _templates.values.map(_buildCustomList).toList();
   }
 
+  /// Obtient des templates selon la catégorie (pour compatibilité avec les tests)
+  Future<List<TemplateItem>> getTemplatesForCategory(String category) async {
+    switch (category.toLowerCase()) {
+      case 'courses':
+      case 'shopping':
+        return _shoppingItems;
+      case 'travail':
+      case 'work':
+        return _workItems;
+      case 'personnel':
+      case 'personal':
+        return _personalItems;
+      default:
+        return _shoppingItems;
+    }
+  }
+
   /// Méthodes spécifiques pour compatibilité (délèguent vers createFromTemplate)
   CustomList createShoppingListTemplate() => createFromTemplate('shopping');
   CustomList createHouseworkListTemplate() => createFromTemplate('housework');
@@ -154,17 +171,34 @@ class ListTemplateService {
     }).toList();
   }
 
-  // === Données des templates ===
+  // === Données des templates (MISES À JOUR avec exemples universels) ===
+
+  /// Templates de travail professionnel
+  static const List<TemplateItem> _workItems = [
+    TemplateItem(title: 'Terminer rapport projet', description: 'Finaliser le rapport mensuel', category: 'Travail', eloScore: 1600.0),
+    TemplateItem(title: 'Préparer présentation client', description: 'Slides pour la réunion de demain', category: 'Travail', eloScore: 1550.0),
+    TemplateItem(title: 'Réviser documentation technique', description: 'Mise à jour des spécifications', category: 'Travail', eloScore: 1500.0),
+    TemplateItem(title: 'Planifier réunion équipe', description: 'Organiser la réunion hebdomadaire', category: 'Travail', eloScore: 1450.0),
+    TemplateItem(title: 'Répondre aux emails urgents', description: 'Traiter les messages prioritaires', category: 'Travail', eloScore: 1400.0),
+  ];
+
+  /// Templates personnels
+  static const List<TemplateItem> _personalItems = [
+    TemplateItem(title: 'Organiser rendez-vous médical', description: 'Prendre RDV chez le médecin', category: 'Personnel', eloScore: 1500.0),
+    TemplateItem(title: 'Planifier vacances été', description: 'Rechercher destinations et réserver', category: 'Personnel', eloScore: 1450.0),
+    TemplateItem(title: 'Réviser budget mensuel', description: 'Analyser les dépenses du mois', category: 'Personnel', eloScore: 1400.0),
+    TemplateItem(title: 'Organiser soirée entre amis', description: 'Planifier la soirée du weekend', category: 'Personnel', eloScore: 1350.0),
+    TemplateItem(title: 'Nettoyer et ranger maison', description: 'Grand ménage hebdomadaire', category: 'Personnel', eloScore: 1300.0),
+  ];
 
   static const List<TemplateItem> _shoppingItems = [
-    TemplateItem(title: 'Pain', description: 'Baguette tradition', category: 'Boulangerie', eloScore: 1500.0),
-    TemplateItem(title: 'Lait', description: 'Lait demi-écrémé 1L', category: 'Produits laitiers', eloScore: 1500.0),
-    TemplateItem(title: 'Oeufs', description: 'Boîte de 12 oeufs', category: 'Produits frais', eloScore: 1400.0),
-    TemplateItem(title: 'Fruits et légumes', description: 'Pommes, bananes, carottes', category: 'Fruits et légumes', eloScore: 1400.0),
-    TemplateItem(title: 'Riz', description: 'Riz basmati 1kg', category: 'Féculents', eloScore: 1300.0),
-    TemplateItem(title: 'Pâtes', description: 'Spaghettis 500g', category: 'Féculents', eloScore: 1300.0),
-    TemplateItem(title: 'Huile d\'olive', description: 'Huile d\'olive extra vierge', category: 'Condiments', eloScore: 1200.0),
-    TemplateItem(title: 'Yaourts', description: 'Pack de yaourts nature', category: 'Produits laitiers', eloScore: 1200.0),
+    TemplateItem(title: 'Produits d\'épicerie', description: 'Articles de première nécessité', category: 'Courses', eloScore: 1500.0),
+    TemplateItem(title: 'Fournitures bureau', description: 'Matériel de travail et papeterie', category: 'Courses', eloScore: 1450.0),
+    TemplateItem(title: 'Articles ménagers', description: 'Produits d\'entretien et nettoyage', category: 'Courses', eloScore: 1400.0),
+    TemplateItem(title: 'Équipement informatique', description: 'Accessoires et composants tech', category: 'Courses', eloScore: 1350.0),
+    TemplateItem(title: 'Vêtements saison', description: 'Habits adaptés à la météo', category: 'Courses', eloScore: 1300.0),
+    TemplateItem(title: 'Articles de sport', description: 'Équipement pour activités physiques', category: 'Courses', eloScore: 1250.0),
+    TemplateItem(title: 'Cadeaux et occasions', description: 'Présents pour anniversaires et fêtes', category: 'Courses', eloScore: 1200.0),
   ];
 
   static const List<TemplateItem> _houseworkItems = [
@@ -212,7 +246,7 @@ class ListTemplateService {
     TemplateItem(title: 'Cuisines du monde', description: 'Restaurants internationaux', category: 'International', eloScore: 1300.0),
     TemplateItem(title: 'Restaurants végétariens', description: 'Cuisine végétarienne et végane', category: 'Végétarien', eloScore: 1300.0),
     TemplateItem(title: 'Brasseries et bistrots', description: 'Cuisine traditionnelle française', category: 'Traditionnel', eloScore: 1300.0),
-    TemplateItem(title: 'Food trucks et street food', description: 'Cuisine de rue et concepts originaux', category: 'Street Food', eloScore: 1100.0),
+    TemplateItem(title: 'Concept culinaires originaux', description: 'Cuisine créative et concepts innovants', category: 'Créatif', eloScore: 1100.0),
   ];
 
   static const List<TemplateItem> _projectsItems = [
@@ -222,4 +256,4 @@ class ListTemplateService {
     TemplateItem(title: 'Décomposer les tâches', description: 'Diviser le projet en sous-tâches', category: 'Organisation', eloScore: 1400.0),
     TemplateItem(title: 'Suivre l\'avancement', description: 'Monitoring et contrôle qualité', category: 'Suivi', eloScore: 1300.0),
   ];
-} 
+}

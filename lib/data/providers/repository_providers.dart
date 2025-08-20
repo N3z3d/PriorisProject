@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/data/repositories/custom_list_repository.dart';
 import 'package:prioris/data/repositories/hive_custom_list_repository.dart';
 import 'package:prioris/data/repositories/list_item_repository.dart';
+import 'package:prioris/data/repositories/hive_list_item_repository.dart';
 import 'package:prioris/data/repositories/supabase/supabase_custom_list_repository.dart';
 import 'package:prioris/data/repositories/supabase/supabase_list_item_repository.dart';
 import 'package:prioris/data/repositories/interfaces/repository_interfaces.dart';
@@ -13,6 +14,19 @@ import 'package:prioris/data/providers/auth_providers.dart';
 /// et s'initialise automatiquement au démarrage de l'application.
 final hiveCustomListRepositoryProvider = FutureProvider<HiveCustomListRepository>((ref) async {
   final repository = HiveCustomListRepository();
+  
+  // Initialiser automatiquement le repository
+  await repository.initialize();
+  
+  return repository;
+});
+
+/// Provider asynchrone pour le repository Hive des éléments de liste
+/// 
+/// Ce provider utilise HiveListItemRepository pour la persistance locale des items
+/// et s'initialise automatiquement au démarrage de l'application.
+final hiveListItemRepositoryProvider = FutureProvider<HiveListItemRepository>((ref) async {
+  final repository = HiveListItemRepository();
   
   // Initialiser automatiquement le repository
   await repository.initialize();
@@ -45,20 +59,42 @@ final customListRepositoryAsyncProvider = FutureProvider<CustomListRepository>((
 
 /// Provider pour le repository des éléments de liste
 /// 
-/// Utilise InMemoryListItemRepository pour la gestion en mémoire des éléments.
+/// CORRIGÉ: Utilise maintenant HiveListItemRepository pour la persistance locale
+/// au lieu de InMemoryListItemRepository qui perdait les données au redémarrage.
 final listItemRepositoryProvider = Provider<ListItemRepository>((ref) {
-  return InMemoryListItemRepository();
+  final hiveRepositoryAsync = ref.watch(hiveListItemRepositoryProvider);
+  
+  // Retourner un repository temporaire pendant le chargement
+  return hiveRepositoryAsync.when(
+    data: (repository) => repository,
+    loading: () => InMemoryListItemRepository(),
+    error: (error, stack) => InMemoryListItemRepository(),
+  );
+});
+
+/// Provider pour le repository des éléments de liste (version asynchrone)
+/// 
+/// Utilisé quand on a besoin d'attendre l'initialisation complète
+final listItemRepositoryAsyncProvider = FutureProvider<ListItemRepository>((ref) async {
+  final repository = await ref.watch(hiveListItemRepositoryProvider.future);
+  return repository;
 });
 
 /// Provider adaptatif pour les éléments de liste (Hive/Supabase selon auth)
 final adaptiveListItemRepositoryProvider = Provider<ListItemRepository>((ref) {
   final isSignedIn = ref.watch(isSignedInProvider);
   
-  // Si connecté, utilise Supabase, sinon utilise InMemory (simple)
+  // Si connecté, utilise Supabase, sinon utilise Hive pour persistance locale
   if (isSignedIn) {
     return SupabaseListItemRepository();
   } else {
-    return InMemoryListItemRepository();
+    // Utilise maintenant Hive au lieu de InMemory pour la persistance
+    final hiveRepositoryAsync = ref.watch(hiveListItemRepositoryProvider);
+    return hiveRepositoryAsync.when(
+      data: (repository) => repository,
+      loading: () => InMemoryListItemRepository(),
+      error: (error, stack) => InMemoryListItemRepository(),
+    );
   }
 });
 
