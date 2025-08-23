@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
@@ -224,7 +225,7 @@ class _CustomListFormDialogState extends State<CustomListFormDialog> {
       } else {
         // Création d'une nouvelle liste
         list = CustomList(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          id: const Uuid().v4(),
           name: name,
           type: _selectedType,
           description: description.isEmpty ? null : description,

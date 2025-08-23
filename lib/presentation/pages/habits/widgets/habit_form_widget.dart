@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
 import 'package:prioris/presentation/widgets/common/forms/common_text_field.dart';
 import 'package:prioris/presentation/widgets/common/forms/common_button.dart';
@@ -333,7 +334,7 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
     }
 
     final habit = Habit(
-      id: widget.initialHabit?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      id: widget.initialHabit?.id ?? const Uuid().v4(),
       name: _nameController.text.trim(),
       category: _selectedCategory,
       type: _selectedType,

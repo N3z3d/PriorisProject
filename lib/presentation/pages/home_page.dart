@@ -84,9 +84,10 @@ class HomePage extends ConsumerWidget {
                 icon: const Icon(Icons.logout_outlined),
                 tooltip: 'Déconnexion',
                 iconSize: 24,
-                onPressed: () async {
-                  final authController = ref.read(authControllerProvider);
-                  await authController.signOut();
+                onPressed: () {
+                  // Déconnexion simple sans dialogue
+                  print('🔒 Déconnexion simple'); 
+                  ref.read(authControllerProvider).signOut();
                 },
               ),
             ),

@@ -47,11 +47,16 @@ class HiveCustomListRepository implements CustomListRepository {
 
   /// Initialise la box Hive
   Future<void> initialize() async {
-    if (_isInitialized) return;
+    if (_isInitialized && _box.isOpen) return;
     
     try {
-      _box = await Hive.openBox<CustomList>(_boxName);
-      _isInitialized = true;
+      // Si une box existe mais est fermée, essayer de la rouvrir
+      if (_isInitialized && !_box.isOpen) {
+        _box = await Hive.openBox<CustomList>(_boxName);
+      } else {
+        _box = await Hive.openBox<CustomList>(_boxName);
+        _isInitialized = true;
+      }
     } catch (e, stackTrace) {
       throw _errorService.handleError(
         e,
@@ -60,27 +65,56 @@ class HiveCustomListRepository implements CustomListRepository {
       );
     }
   }
+  
+  /// Réinitialise le repository (pour recovery après erreur)
+  Future<void> reinitialize() async {
+    _isInitialized = false;
+    await initialize();
+  }
 
-  /// Vérifie que Hive est initialisé
-  void _ensureInitialized() {
+  /// Vérifie que Hive est initialisé et que la box est ouverte
+  Future<void> _ensureInitialized() async {
     if (!_isInitialized) {
       throw _errorService.businessError(
         'HiveCustomListRepository n\'est pas initialisé. Appelez initialize() d\'abord.',
         operation: 'ensureInitialized',
       );
     }
+    
+    if (!_box.isOpen) {
+      // CRITICAL FIX: Attempt automatic recovery when box is closed
+      try {
+        print('🔄 Auto-recovering closed Hive box...');
+        _box = await Hive.openBox<CustomList>(_boxName);
+        print('✅ Hive box auto-recovery successful');
+      } catch (e) {
+        throw _errorService.businessError(
+          'La box Hive est fermée et la récupération automatique a échoué: $e',
+          operation: 'autoRecovery',
+        );
+      }
+    }
   }
 
   @override
   Future<List<CustomList>> getAllLists() async {
-    _ensureInitialized();
+    await _ensureInitialized();
     
     try {
       final lists = _box.values.toList();
       
+      // ARCHITECTURE FIX: Utiliser le repository partagé via Provider
+      // Ne pas créer une nouvelle instance
+      final listsWithItems = <CustomList>[];
+      for (final list in lists) {
+        // Les items seront chargés par le repository partagé
+        // Cette méthode ne charge que la structure des listes
+        listsWithItems.add(list);
+      }
+      
       // Trier par date de création (plus récent en premier)
-      lists.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-      return lists;
+      listsWithItems.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return listsWithItems;
     } catch (e, stackTrace) {
       throw _errorService.handleError(
         e,
@@ -92,10 +126,15 @@ class HiveCustomListRepository implements CustomListRepository {
 
   @override
   Future<CustomList?> getListById(String id) async {
-    _ensureInitialized();
+    await _ensureInitialized();
     
     try {
-      return _box.get(id);
+      final list = _box.get(id);
+      if (list == null) return null;
+      
+      // ARCHITECTURE FIX: Retourner la liste sans charger les items ici
+      // Les items seront gérés par la couche controller avec le repository partagé
+      return list;
     } catch (e) {
       throw Exception('Erreur lors de la récupération de la liste $id: $e');
     }
@@ -103,7 +142,7 @@ class HiveCustomListRepository implements CustomListRepository {
 
   @override
   Future<void> saveList(CustomList list) async {
-    _ensureInitialized();
+    await _ensureInitialized();
     _validateList(list, isNew: true);
     
     try {
@@ -115,7 +154,7 @@ class HiveCustomListRepository implements CustomListRepository {
 
   @override
   Future<void> updateList(CustomList list) async {
-    _ensureInitialized();
+    await _ensureInitialized();
     
     if (!_box.containsKey(list.id)) {
       throw Exception('Liste non trouvée');
@@ -132,7 +171,7 @@ class HiveCustomListRepository implements CustomListRepository {
 
   @override
   Future<void> deleteList(String id) async {
-    _ensureInitialized();
+    await _ensureInitialized();
     
     try {
       await _box.delete(id);
@@ -167,7 +206,7 @@ class HiveCustomListRepository implements CustomListRepository {
 
   @override
   Future<void> clearAllLists() async {
-    _ensureInitialized();
+    await _ensureInitialized();
     
     try {
       await _box.clear();
@@ -196,8 +235,8 @@ class HiveCustomListRepository implements CustomListRepository {
       throw ArgumentError('Le nom de la liste ne peut pas être vide');
     }
 
-    // ID unique lors de la création
-    if (isNew && _box.containsKey(list.id)) {
+    // ID unique lors de la création - SEULEMENT si la box est ouverte
+    if (isNew && _isInitialized && _box.isOpen && _box.containsKey(list.id)) {
       throw Exception('Une liste avec cet ID existe déjà');
     }
 
@@ -209,7 +248,7 @@ class HiveCustomListRepository implements CustomListRepository {
 
   /// Statistiques de la box Hive (pour debug/monitoring)
   Future<Map<String, dynamic>> getStats() async {
-    _ensureInitialized();
+    await _ensureInitialized();
     
     return {
       'totalLists': _box.length,
@@ -222,7 +261,7 @@ class HiveCustomListRepository implements CustomListRepository {
 
   /// Compacte la base de données Hive (optimisation)
   Future<void> compact() async {
-    _ensureInitialized();
+    await _ensureInitialized();
     
     try {
       await _box.compact();

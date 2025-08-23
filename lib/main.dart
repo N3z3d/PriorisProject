@@ -10,6 +10,7 @@ import 'package:prioris/domain/services/ui/responsive_service.dart';
 import 'package:prioris/domain/services/core/language_service.dart';
 import 'package:prioris/core/config/app_config.dart';
 import 'package:prioris/infrastructure/services/supabase_service.dart';
+import 'package:prioris/data/providers/repository_providers.dart';
 import 'package:prioris/presentation/routes/app_routes.dart';
 import 'package:prioris/presentation/pages/auth/auth_wrapper.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
@@ -34,6 +35,10 @@ void main() async {
   // Initialiser Supabase avec la configuration sécurisée
   await SupabaseService.initialize();
   
+  // ARCHITECTURE FIX: Initialiser les repositories Hive AVANT les providers
+  // Ceci élimine les race conditions et fallbacks temporaires vers InMemory
+  await HiveRepositoryRegistry.initialize();
+  
   // Initialiser le service de langue
   final languageService = LanguageService();
   await languageService.initialize();
@@ -44,6 +49,10 @@ void main() async {
   // Activer l'audit des overflows en mode debug
   OverflowAuditService.enable();
   
+  // CRITICAL FIX: Add app lifecycle observer for proper cleanup
+  final appLifecycleObserver = _AppLifecycleObserver();
+  WidgetsBinding.instance.addObserver(appLifecycleObserver);
+  
   runApp(
     ProviderScope(
       overrides: [
@@ -52,6 +61,56 @@ void main() async {
       child: const PriorisApp(),
     ),
   );
+}
+
+/// App lifecycle observer to handle proper Hive cleanup
+class _AppLifecycleObserver with WidgetsBindingObserver {
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.detached:
+        // App is about to be killed - dispose repositories safely
+        HiveRepositoryRegistry.dispose().catchError((e) {
+          print('Warning: Error during app shutdown cleanup: $e');
+        });
+        break;
+      case AppLifecycleState.paused:
+        // App moved to background - compact Hive for optimization
+        _compactHiveBoxes().catchError((e) {
+          print('Warning: Error during Hive compaction: $e');
+        });
+        break;
+      case AppLifecycleState.resumed:
+        // App returned to foreground - ensure repositories are ready
+        _ensureRepositoriesReady().catchError((e) {
+          print('Warning: Error during repository recovery: $e');
+        });
+        break;
+      default:
+        break;
+    }
+  }
+  
+  Future<void> _compactHiveBoxes() async {
+    try {
+      if (HiveRepositoryRegistry.instance.isInitialized) {
+        await HiveRepositoryRegistry.instance.customListRepository.compact();
+      }
+    } catch (e) {
+      // Non-critical error - log and continue
+      print('Hive compaction failed: $e');
+    }
+  }
+  
+  Future<void> _ensureRepositoriesReady() async {
+    try {
+      if (!HiveRepositoryRegistry.instance.isInitialized) {
+        await HiveRepositoryRegistry.initialize();
+      }
+    } catch (e) {
+      print('Repository recovery failed: $e');
+    }
+  }
 }
 
 class PriorisApp extends ConsumerWidget {

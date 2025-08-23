@@ -34,9 +34,19 @@ class _ListsPageState extends ConsumerState<ListsPage> with SingleTickerProvider
       duration: const Duration(milliseconds: 200),
       vsync: this,
     );
-    // Charger les listes au démarrage
+    
+    // PERFORMANCE FIX: Charger les listes au démarrage avec vérification
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(listsControllerProvider.notifier).loadLists();
+      final controller = ref.read(listsControllerProvider.notifier);
+      final currentState = ref.read(listsControllerProvider);
+      
+      print('📱 ListsPage initState - état actuel: ${currentState.lists.length} listes, isLoading: ${currentState.isLoading}');
+      
+      // Force le rechargement si aucune donnée n'est présente
+      if (currentState.lists.isEmpty && !currentState.isLoading) {
+        print('🔄 Forçage du rechargement depuis la persistance...');
+        controller.forceReloadFromPersistence();
+      }
     });
   }
 

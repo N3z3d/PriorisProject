@@ -227,8 +227,23 @@ class CustomList extends HiveObject {
     };
   }
 
-  /// Convertit la liste en Map pour la sérialisation JSON
+  /// Convertit la liste en Map pour la sérialisation JSON (format Supabase)
   Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': name,           // Supabase uses 'title' column
+      'list_type': type.name,  // Supabase uses 'list_type'
+      'description': description,
+      'color': 2196243,        // Valeur plus petite pour éviter l'overflow PostgreSQL (bleu)
+      'icon': 58826,           // 0xe5ca en decimal
+      'items': items.map((item) => item.toJson()).toList(),
+      'created_at': createdAt.toIso8601String(),  // Supabase uses snake_case
+      'updated_at': updatedAt.toIso8601String(),  // Supabase uses snake_case
+    };
+  }
+
+  /// Convertit la liste en Map pour compatibilité locale (Hive/tests)
+  Map<String, dynamic> toLocalJson() {
     return {
       'id': id,
       'name': name,
@@ -244,17 +259,20 @@ class CustomList extends HiveObject {
   factory CustomList.fromJson(Map<String, dynamic> json) {
     return CustomList(
       id: json['id'] as String,
-      name: json['name'] as String,
+      // Support both 'title' (Supabase) and 'name' (backward compatibility)
+      name: (json['title'] ?? json['name']) as String,
       type: ListType.values.firstWhere(
-        (e) => e.name == json['type'],
+        // Support both 'list_type' (Supabase) and 'type' (backward compatibility)
+        (e) => e.name == (json['list_type'] ?? json['type']),
         orElse: () => ListType.CUSTOM,
       ),
       description: json['description'] as String?,
       items: (json['items'] as List<dynamic>?)
           ?.map((itemJson) => ListItem.fromJson(itemJson as Map<String, dynamic>))
           .toList() ?? [],
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
+      // Support both snake_case (Supabase) and camelCase (backward compatibility)
+      createdAt: DateTime.parse((json['created_at'] ?? json['createdAt']) as String),
+      updatedAt: DateTime.parse((json['updated_at'] ?? json['updatedAt']) as String),
     );
   }
 

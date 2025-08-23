@@ -46,12 +46,22 @@ class _DuelPageState extends ConsumerState<DuelPage>
   /// Initialise les données nécessaires pour la priorisation
   Future<void> _initializeData() async {
     try {
-      // Charger les listes en premier (OBLIGATOIRE pour la priorisation des ListItems)
+      print('🔍 DEBUG: Initialisation des données pour priorisation');
+      
+      // CORRECTION: Attendre explicitement que les listes soient chargées
       await ref.read(listsControllerProvider.notifier).loadLists();
+      
+      // Vérifier que les listes sont bien chargées
+      final listsState = ref.read(listsControllerProvider);
+      print('🔍 DEBUG: Après chargement explicite - ${listsState.lists.length} listes');
+      
+      // Attendre un délai pour s'assurer que l'état est propagé
+      await Future.delayed(const Duration(milliseconds: 100));
       
       // Ensuite charger le duel avec les listes disponibles
       await _loadNewDuel();
     } catch (e) {
+      print('🔍 DEBUG: Erreur lors de l\'initialisation: $e');
       // En cas d'erreur, charger quand même le duel avec les Tasks classiques
       await _loadNewDuel();
     }
@@ -311,26 +321,44 @@ class _DuelPageState extends ConsumerState<DuelPage>
     setState(() => _isLoading = true);
     
     try {
+      print('🔍 DEBUG: Début de _loadNewDuel');
+      
       // Utiliser le nouveau service unifié de priorisation
       final unifiedService = ref.read(unifiedPrioritizationServiceProvider);
       final allTasks = await unifiedService.getTasksForPrioritization();
+      print('🔍 DEBUG: Tasks classiques trouvées: ${allTasks.length}');
       
       // Vérifier s'il y a aussi des ListItems à inclure
       final listsState = ref.read(listsControllerProvider);
+      print('🔍 DEBUG: Listes disponibles: ${listsState.lists.length}');
+      
       if (listsState.lists.isNotEmpty) {
         // Combiner les Task avec les ListItem convertis
         final allListItems = listsState.lists.expand((list) => list.items).toList();
+        print('🔍 DEBUG: Items de liste trouvés: ${allListItems.length}');
+        
         final listItemTasks = unifiedService.getListItemsAsTasks(allListItems);
+        print('🔍 DEBUG: Items convertis en tasks: ${listItemTasks.length}');
         
         // Fusionner toutes les tâches
         allTasks.addAll(listItemTasks);
       }
       
       final incompleteTasks = allTasks.where((task) => !task.isCompleted).toList();
+      print('🔍 DEBUG: Total tasks: ${allTasks.length}, Incomplètes: ${incompleteTasks.length}');
       
-      if (incompleteTasks.length >= 2) {
-        incompleteTasks.shuffle();
-        _currentDuel = incompleteTasks.take(2).toList();
+      // CORRECTION: Limiter le nombre de tâches pour éviter la surcharge
+      const maxTasksForPrioritization = 50;
+      List<Task> tasksForDuel = incompleteTasks;
+      
+      if (incompleteTasks.length > maxTasksForPrioritization) {
+        print('🔍 DEBUG: Limitation à $maxTasksForPrioritization tâches pour les performances');
+        tasksForDuel = incompleteTasks.take(maxTasksForPrioritization).toList();
+      }
+      
+      if (tasksForDuel.length >= 2) {
+        tasksForDuel.shuffle();
+        _currentDuel = tasksForDuel.take(2).toList();
       } else {
         _currentDuel = null;
       }

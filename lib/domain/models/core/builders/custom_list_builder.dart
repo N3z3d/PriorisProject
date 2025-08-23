@@ -1,3 +1,4 @@
+import 'package:uuid/uuid.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
@@ -52,7 +53,7 @@ class CustomListBuilder {
   CustomList build() {
     final now = DateTime.now();
     return CustomList(
-      id: _id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      id: _id ?? const Uuid().v4(),
       name: _name ?? 'Nouvelle liste',
       description: _description,
       type: _type,

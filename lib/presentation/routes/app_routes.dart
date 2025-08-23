@@ -4,12 +4,8 @@ import 'package:prioris/presentation/pages/list_detail_page.dart';
 import 'package:prioris/presentation/pages/list_detail_loader_page.dart';
 import 'package:prioris/presentation/pages/agents_monitoring_page.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
-import 'dart:core';
 
 /// Gestionnaire des routes de l'application
-/// 
-/// Définit toutes les routes disponibles et leur configuration
-/// pour une navigation cohérente et maintenable.
 class AppRoutes {
   /// Noms de routes
   static const String home = '/';
@@ -22,7 +18,7 @@ class AppRoutes {
     agentsMonitoring: (context) => const AgentsMonitoringPage(),
   };
 
-  /// Générateur de routes dynamique – gère également les deep-links
+  /// Générateur de routes dynamique
   static Route<dynamic> generateRoute(RouteSettings settings) {
     // 1) Route statique connue dans le tableau
     final staticBuilder = routes[settings.name];
@@ -32,7 +28,7 @@ class AppRoutes {
 
     // 2) Deep-link vers /list-detail
     if (settings.name != null && settings.name!.startsWith(listDetail)) {
-      // arguments via Navigator ou via query string
+      // arguments via Navigator
       CustomList? list;
       if (settings.arguments is CustomList) {
         list = settings.arguments as CustomList;
@@ -52,8 +48,13 @@ class AppRoutes {
         }
       }
 
+      // CORRECTION UX: Si pas d'ID, utiliser ListDetailLoaderPage avec null pour fallback automatique
       if (list == null) {
-        return _errorRoute('Liste non trouvée');
+        print('🔧 CORRECTION UX: Pas d\'ID de liste fourni, fallback vers première liste');
+        return MaterialPageRoute(
+          builder: (context) => const ListDetailLoaderPage(listId: null),
+          settings: settings,
+        );
       }
 
       return MaterialPageRoute(
@@ -62,7 +63,7 @@ class AppRoutes {
       );
     }
 
-    // 3) Inconnue → erreur
+    // 3) Route inconnue → erreur
     return _errorRoute('Route non trouvée');
   }
   

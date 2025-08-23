@@ -1,4 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 /// Repository de base avec implémentation générique pour Hive
 /// 
@@ -30,7 +31,7 @@ abstract class BaseRepository<T> {
   /// Crée une nouvelle entité
   Future<String> create(T entity) async {
     final db = await box;
-    final key = DateTime.now().millisecondsSinceEpoch.toString();
+    final key = const Uuid().v4();
     await db.put(key, entity);
     return key;
   }
@@ -158,7 +159,7 @@ class InMemoryRepository<T> extends BaseRepository<T> {
 
   @override
   Future<String> create(T entity) async {
-    final key = DateTime.now().millisecondsSinceEpoch.toString();
+    final key = const Uuid().v4();
     _storage[key] = entity;
     return key;
   }

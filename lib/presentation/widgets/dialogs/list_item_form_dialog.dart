@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
@@ -127,7 +128,7 @@ class _ListItemFormDialogState extends State<ListItemFormDialog> {
     _formKey.currentState!.save();
 
     final item = ListItem(
-      id: widget.initialItem?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      id: widget.initialItem?.id ?? const Uuid().v4(),
       title: _title,
       description: _description.isEmpty ? null : _description,
       category: _category.isEmpty ? null : _category,

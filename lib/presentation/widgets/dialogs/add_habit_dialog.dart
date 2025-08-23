@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uuid/uuid.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
 import 'package:prioris/data/repositories/habit_repository.dart';
 import '../forms/habit_basic_info_form.dart';
@@ -131,7 +132,7 @@ class _AddHabitDialogState extends ConsumerState<AddHabitDialog> {
   void _saveHabit() {
     if (_formKey.currentState!.validate()) {
       final habit = Habit(
-        id: widget.habit?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+        id: widget.habit?.id ?? const Uuid().v4(),
         name: _nameController.text.trim(),
         description: _descriptionController.text.trim().isEmpty 
             ? null 

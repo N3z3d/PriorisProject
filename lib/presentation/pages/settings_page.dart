@@ -46,6 +46,57 @@ class SettingsPage extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           _buildSection(
+            title: 'Données et synchronisation',
+            children: [
+              _buildSettingTile(
+                icon: Icons.sync_outlined,
+                title: 'État de synchronisation',
+                subtitle: 'Voir où sont stockées vos données',
+                onTap: () {
+                  // TODO: Implémenter la page de statut de synchronisation
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Page en cours de développement')),
+                  );
+                },
+              ),
+              _buildSettingTile(
+                icon: Icons.backup_outlined,
+                title: 'Sauvegarde et export',
+                subtitle: 'Exporter et importer vos données',
+                onTap: () {
+                  // TODO: Implémenter la page de sauvegarde
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Page en cours de développement')),
+                  );
+                },
+              ),
+              _buildSettingTile(
+                icon: Icons.storage_outlined,
+                title: 'Gestion du stockage',
+                subtitle: 'Contrôler où vos données sont sauvegardées',
+                onTap: () {
+                  // TODO: Implémenter la page de paramètres de stockage
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Page en cours de développement')),
+                  );
+                },
+              ),
+              _buildSettingTile(
+                icon: Icons.delete_sweep_outlined,
+                title: 'Nettoyer les données',
+                subtitle: 'Supprimer toutes vos données personnelles',
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => const ClearDataDialog(),
+                  );
+                },
+                isDestructive: true,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildSection(
             title: 'Général',
             children: [
               _buildSettingTile(
@@ -59,24 +110,6 @@ class SettingsPage extends ConsumerWidget {
                 title: 'Thème',
                 subtitle: 'Personnaliser l\'apparence',
                 onTap: () {},
-              ),
-              _buildSettingTile(
-                icon: Icons.backup_outlined,
-                title: 'Sauvegarde',
-                subtitle: 'Exporter et importer vos données',
-                onTap: () {},
-              ),
-              _buildSettingTile(
-                icon: Icons.delete_sweep_outlined,
-                title: 'Nettoyer les données',
-                subtitle: 'Supprimer toutes vos données personnelles',
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => const ClearDataDialog(),
-                  );
-                },
-                isDestructive: true,
               ),
             ],
           ),

@@ -1,4 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:uuid/uuid.dart';
 import 'dart:collection';
 
 /// Repository Hive avec indexation pour performances optimales
@@ -163,7 +164,7 @@ class IndexedHiveRepository<T> {
 
   /// Crée une nouvelle entité
   Future<String> create(T entity) async {
-    final key = DateTime.now().millisecondsSinceEpoch.toString();
+    final key = const Uuid().v4();
     final data = toJson(entity);
     
     await _box.put(key, data);

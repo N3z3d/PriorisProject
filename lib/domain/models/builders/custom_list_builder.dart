@@ -1,3 +1,4 @@
+import 'package:uuid/uuid.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
@@ -115,9 +116,9 @@ class CustomListBuilder {
     return withCreatedAt(now).withUpdatedAt(now);
   }
 
-  /// Configurer une liste avec un ID généré automatiquement
+  /// Configurer une liste avec un ID généré automatiquement (UUID)
   CustomListBuilder withAutoId() {
-    return withId(DateTime.now().millisecondsSinceEpoch.toString());
+    return withId(const Uuid().v4());
   }
 
   /// Construire l'instance CustomList
@@ -148,7 +149,7 @@ class CustomListBuilder {
     }
 
     return CustomList(
-      id: _id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      id: _id ?? const Uuid().v4(),
       name: _name!,
       type: _type!,
       description: _description,

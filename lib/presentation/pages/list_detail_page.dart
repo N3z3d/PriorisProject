@@ -35,12 +35,18 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final currentList = ref.watch(listByIdProvider(widget.list.id)) ?? widget.list;
+    // ARCHITECTURE FIX: Utiliser directement le provider stable
+    // Les repositories sont pré-initialisés donc pas de risque de null
+    final currentList = ref.watch(listByIdProvider(widget.list.id));
+    
+    // ARCHITECTURE FIX: Utiliser la liste de l'état ou celle passée en paramètre
+    // Mais ne PAS déclencher de rechargement qui causait les pertes de données
+    final effectiveList = currentList ?? widget.list;
 
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
-      appBar: _buildAppBar(currentList),
-      body: _buildBody(currentList),
+      appBar: _buildAppBar(effectiveList),
+      body: _buildBody(effectiveList),
       floatingActionButton: _buildFloatingActionButton(),
     );
   }
@@ -121,15 +127,48 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
 
   /// Construit le bouton d'action flottant avec design premium
   Widget _buildFloatingActionButton() {
+    final currentList = ref.watch(listByIdProvider(widget.list.id)) ?? widget.list;
+    final contextualText = _getContextualButtonText(currentList);
+    
     return PremiumFAB(
       heroTag: "list_detail_fab",
-      text: "Ajouter des tâches",
+      text: "Ajouter des tâches", // Texte par défaut
+      contextualText: contextualText, // Texte adapté au contexte
       icon: Icons.add,
       onPressed: _showBulkAddDialog,
       backgroundColor: AppTheme.primaryColor,
       enableAnimations: true,
       enableHaptics: true,
     );
+  }
+
+  /// Génère le texte contextuel selon l'état de la liste
+  String _getContextualButtonText(CustomList currentList) {
+    final itemCount = currentList.items.length;
+    final filteredItems = _filterItems(currentList);
+    
+    // Liste vide
+    if (itemCount == 0) {
+      return "Créer vos premiers éléments";
+    }
+    
+    // Recherche active avec résultats
+    if (_searchQuery.isNotEmpty && filteredItems.isNotEmpty) {
+      return "Ajouter à cette recherche";
+    }
+    
+    // Recherche active sans résultats
+    if (_searchQuery.isNotEmpty && filteredItems.isEmpty) {
+      return "Créer nouvel élément";
+    }
+    
+    // Liste avec peu d'éléments (< 3)
+    if (itemCount < 3) {
+      return "Ajouter plus d'éléments";
+    }
+    
+    // Liste normale avec plusieurs éléments
+    return "Ajouter de nouveaux éléments";
   }
 
   /// Filtre les éléments selon la requête de recherche
@@ -243,39 +282,5 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
        .removeItemFromList(widget.list.id, item.id);
   }
 
-  /// Exécute une action sur un élément avec gestion d'erreur
-  Future<void> _performItemAction(Future<void> Function() action, String successMessage) async {
-    try {
-      await action();
-      _showSuccessMessage(successMessage);
-    } catch (e) {
-      _showErrorMessage('Erreur: $e');
-    }
-  }
 
-  /// Affiche un message de succès
-  void _showSuccessMessage(String message) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: Colors.green,
-          duration: const Duration(seconds: 2),
-        ),
-      );
-    }
-  }
-
-  /// Affiche un message d'erreur
-  void _showErrorMessage(String message) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 3),
-        ),
-      );
-    }
-  }
 }

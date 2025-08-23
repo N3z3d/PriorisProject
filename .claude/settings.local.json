@@ -38,7 +38,10 @@
       "Bash(touch:*)",
       "Task(*)",
       "Bash(powershell:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(git commit:*)",
+      "Bash(del test_persistence_architecture.dart)",
+      "Bash(taskkill:*)"
     ],
     "deny": [
       "Read(**/.env)",

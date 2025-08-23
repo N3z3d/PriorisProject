@@ -35,16 +35,34 @@
   <style>
     /* Fix text selection issues */
     * {
-      user-select: auto !important;
-      -webkit-user-select: auto !important;
-      -moz-user-select: auto !important;
-      -ms-user-select: auto !important;
+      user-select: text !important;
+      -webkit-user-select: text !important;
+      -moz-user-select: text !important;
+      -ms-user-select: text !important;
+    }
+    
+    /* Specific fix for Flutter web canvas elements */
+    flt-glass-pane * {
+      user-select: text !important;
+      -webkit-user-select: text !important;
+    }
+    
+    /* Flutter web text elements */
+    flt-paragraph, flt-span, p, span, div {
+      user-select: text !important;
+      -webkit-user-select: text !important;
     }
     
     /* Ensure text is visible in dev tools */
     body, html {
       font-family: system-ui, -apple-system, sans-serif;
       color: #000 !important;
+    }
+    
+    /* Force HTML rendering for better text selection */
+    flt-semantics {
+      user-select: text !important;
+      -webkit-user-select: text !important;
     }
   </style>
 </head>

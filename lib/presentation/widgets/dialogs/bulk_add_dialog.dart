@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
-import 'package:prioris/presentation/theme/glassmorphism.dart';
 
 /// Mode d'ajout en lot
 enum BulkAddMode {
@@ -102,103 +101,146 @@ class _BulkAddDialogState extends State<BulkAddDialog> with TickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: Colors.transparent,
-      child: Glassmorphism.glassCard(
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.9,
-          constraints: const BoxConstraints(maxWidth: 500),
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Header avec titre
+      backgroundColor: AppTheme.surfaceColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      elevation: 8,
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.9,
+        constraints: const BoxConstraints(maxWidth: 500),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+              // Header simplifié
               Row(
                 children: [
-                  Icon(
-                    Icons.add_circle_outline,
-                    color: AppTheme.primaryColor,
-                    size: 28,
-                  ),
-                  const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       widget.title,
                       style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w600,
                         color: AppTheme.textPrimary,
                       ),
                     ),
                   ),
                   IconButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.close),
+                    icon: const Icon(Icons.close, size: 20),
                     color: AppTheme.textSecondary,
+                    splashRadius: 20,
                   ),
                 ],
               ),
               
               const SizedBox(height: 20),
               
-              // Onglets pour choisir le mode
+              // Onglets redesignés plus élégants
               Container(
                 decoration: BoxDecoration(
-                  color: AppTheme.surfaceColor.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(8),
+                  color: AppTheme.surfaceColor.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                    width: 1,
+                  ),
                 ),
+                padding: const EdgeInsets.all(4),
                 child: TabBar(
                   controller: _tabController,
                   tabs: const [
-                    Tab(text: 'Simple'),
-                    Tab(text: 'Multiple'),
+                    Tab(
+                      height: 36,
+                      child: Text('Un élément', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+                    ),
+                    Tab(
+                      height: 36,
+                      child: Text('Plusieurs éléments', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+                    ),
                   ],
-                  labelColor: AppTheme.primaryColor,
+                  labelColor: Colors.white,
                   unselectedLabelColor: AppTheme.textSecondary,
                   indicator: BoxDecoration(
-                    color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                    color: AppTheme.primaryColor,
                     borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  dividerColor: Colors.transparent,
                 ),
               ),
               
               const SizedBox(height: 20),
               
-              // Champ de saisie
-              TextField(
-                controller: _controller,
-                focusNode: _focusNode,
-                maxLines: _currentMode == BulkAddMode.multiple ? 6 : 1,
-                style: const TextStyle(color: AppTheme.textPrimary),
-                decoration: InputDecoration(
-                  hintText: _getHintText(),
-                  hintStyle: TextStyle(color: AppTheme.textSecondary.withValues(alpha: 0.7)),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+              // Champ de saisie redesigné
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: _focusNode.hasFocus 
+                        ? AppTheme.primaryColor 
+                        : AppTheme.surfaceColor.withValues(alpha: 0.5),
+                    width: _focusNode.hasFocus ? 2 : 1,
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: AppTheme.primaryColor, width: 2),
-                  ),
-                  filled: true,
-                  fillColor: AppTheme.surfaceColor.withValues(alpha: 0.3),
+                  color: AppTheme.surfaceColor.withValues(alpha: 0.2),
                 ),
-                textInputAction: _currentMode == BulkAddMode.single 
-                    ? TextInputAction.done 
-                    : TextInputAction.newline,
-                onSubmitted: _currentMode == BulkAddMode.single 
-                    ? (_) => _handleSubmit() 
-                    : null,
+                child: TextField(
+                  controller: _controller,
+                  focusNode: _focusNode,
+                  maxLines: _currentMode == BulkAddMode.multiple ? 5 : 1,
+                  style: const TextStyle(
+                    color: AppTheme.textPrimary,
+                    fontSize: 15,
+                    height: 1.4,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: _getHintText(),
+                    hintStyle: TextStyle(
+                      color: AppTheme.textSecondary.withValues(alpha: 0.6),
+                      fontSize: 15,
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.all(16),
+                  ),
+                  textInputAction: _currentMode == BulkAddMode.single 
+                      ? TextInputAction.done 
+                      : TextInputAction.newline,
+                  onSubmitted: _currentMode == BulkAddMode.single 
+                      ? (_) => _handleSubmit() 
+                      : null,
+                ),
               ),
               
               if (_currentMode == BulkAddMode.multiple) ...[
-                const SizedBox(height: 8),
-                Text(
-                  'Séparez chaque élément par une nouvelle ligne',
-                  style: TextStyle(
-                    color: AppTheme.textSecondary.withValues(alpha: 0.7),
-                    fontSize: 12,
-                  ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      size: 14,
+                      color: AppTheme.primaryColor.withValues(alpha: 0.7),
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        'Une nouvelle ligne = un nouvel élément',
+                        style: TextStyle(
+                          color: AppTheme.textSecondary.withValues(alpha: 0.8),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
               
@@ -229,40 +271,54 @@ class _BulkAddDialogState extends State<BulkAddDialog> with TickerProviderStateM
               
               const SizedBox(height: 20),
               
-              // Boutons d'action
+              // Boutons d'action redesignés
               Row(
                 children: [
                   Expanded(
                     child: TextButton(
                       onPressed: () => Navigator.of(context).pop(),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
                       child: const Text(
                         'Annuler',
-                        style: TextStyle(color: AppTheme.textSecondary),
+                        style: TextStyle(
+                          color: AppTheme.textSecondary,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
+                    flex: 2,
                     child: ElevatedButton(
                       onPressed: _isValid ? _handleSubmit : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.primaryColor,
+                        backgroundColor: _isValid ? AppTheme.primaryColor : AppTheme.textSecondary.withValues(alpha: 0.3),
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(12),
                         ),
+                        elevation: _isValid ? 2 : 0,
+                        shadowColor: AppTheme.primaryColor.withValues(alpha: 0.3),
                       ),
                       child: const Text(
                         'Ajouter',
-                        style: TextStyle(fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
-            ],
-          ),
+          ],
         ),
       ),
     );
@@ -276,11 +332,9 @@ class _BulkAddDialogState extends State<BulkAddDialog> with TickerProviderStateM
     
     switch (_currentMode) {
       case BulkAddMode.single:
-        return 'Ex: Terminer rapport projet';
+        return 'Ajouter un élément...';
       case BulkAddMode.multiple:
-        return '''Ex: Terminer rapport projet
-Préparer présentation client
-Réviser documentation technique''';
+        return 'Ajouter plusieurs éléments (un par ligne)...';
     }
   }
 }
