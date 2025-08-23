@@ -172,29 +172,34 @@ class _ListItemCardState extends State<ListItemCard>
   }
 
   /// Construit le sous-titre de l'élément
+  /// 
+  /// FIX OVERFLOW: Utilise un IntrinsicHeight pour éviter le débordement RenderFlex
   Widget? _buildSubtitle() {
     if (widget.item.description == null && widget.item.category == null) return null;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (widget.item.description != null) ...[
-          const SizedBox(height: 4),
-          Text(
-            widget.item.description!,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
+    return IntrinsicHeight(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (widget.item.description != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              widget.item.description!,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
+          ],
+          if (widget.item.category != null) ...[
+            const SizedBox(height: 8),
+            _buildCategoryBadge(),
+          ],
         ],
-        if (widget.item.category != null) ...[
-          const SizedBox(height: 8),
-          _buildCategoryBadge(),
-        ],
-      ],
+      ),
     );
   }
 
