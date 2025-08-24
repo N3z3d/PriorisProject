@@ -2,6 +2,7 @@ import 'package:prioris/domain/models/core/entities/list_item.dart';
 import 'package:prioris/data/repositories/list_item_repository.dart';
 import 'package:prioris/infrastructure/services/supabase_service.dart';
 import 'package:prioris/infrastructure/services/auth_service.dart';
+import 'package:prioris/core/exceptions/app_exception.dart';
 
 /// Repository Supabase pour les éléments de liste
 /// DI-friendly: Dependencies injected via constructor
@@ -28,7 +29,10 @@ class SupabaseListItemRepository implements ListItemRepository {
   @override
   Future<List<ListItem>> getAll() async {
     try {
-      if (!_auth.isSignedIn) throw Exception('User not authenticated');
+      if (!_auth.isSignedIn) throw AppException.authentication(
+        message: 'User must be authenticated to access list items',
+        context: 'SupabaseListItemRepository',
+      );
 
       final response = await _supabase.client
           .from(_tableName)
@@ -39,14 +43,17 @@ class SupabaseListItemRepository implements ListItemRepository {
 
       return response.map<ListItem>((json) => _fromSupabaseJson(json)).toList();
     } catch (e) {
-      throw Exception('Failed to fetch list items: $e');
+      throw ExceptionHandler.handle(e, context: 'SupabaseListItemRepository.getAll');
     }
   }
 
   @override
   Future<ListItem?> getById(String id) async {
     try {
-      if (!_auth.isSignedIn) throw Exception('User not authenticated');
+      if (!_auth.isSignedIn) throw AppException.authentication(
+        message: 'User must be authenticated to access list items',
+        context: 'SupabaseListItemRepository',
+      );
 
       final response = await _supabase.client
           .from(_tableName)
@@ -65,7 +72,10 @@ class SupabaseListItemRepository implements ListItemRepository {
   @override
   Future<ListItem> add(ListItem item) async {
     try {
-      if (!_auth.isSignedIn) throw Exception('User not authenticated');
+      if (!_auth.isSignedIn) throw AppException.authentication(
+        message: 'User must be authenticated to access list items',
+        context: 'SupabaseListItemRepository',
+      );
 
       final itemData = _toSupabaseJson(item);
       itemData['user_id'] = _auth.currentUser!.id;
@@ -86,7 +96,10 @@ class SupabaseListItemRepository implements ListItemRepository {
   @override
   Future<ListItem> update(ListItem item) async {
     try {
-      if (!_auth.isSignedIn) throw Exception('User not authenticated');
+      if (!_auth.isSignedIn) throw AppException.authentication(
+        message: 'User must be authenticated to access list items',
+        context: 'SupabaseListItemRepository',
+      );
 
       final itemData = _toSupabaseJson(item);
       itemData['updated_at'] = DateTime.now().toIso8601String();
@@ -106,7 +119,10 @@ class SupabaseListItemRepository implements ListItemRepository {
   @override
   Future<void> delete(String id) async {
     try {
-      if (!_auth.isSignedIn) throw Exception('User not authenticated');
+      if (!_auth.isSignedIn) throw AppException.authentication(
+        message: 'User must be authenticated to access list items',
+        context: 'SupabaseListItemRepository',
+      );
 
       // Soft delete
       await _supabase.client
@@ -125,7 +141,10 @@ class SupabaseListItemRepository implements ListItemRepository {
   @override
   Future<List<ListItem>> getByListId(String listId) async {
     try {
-      if (!_auth.isSignedIn) throw Exception('User not authenticated');
+      if (!_auth.isSignedIn) throw AppException.authentication(
+        message: 'User must be authenticated to access list items',
+        context: 'SupabaseListItemRepository',
+      );
 
       final response = await _supabase.client
           .from(_tableName)
@@ -164,7 +183,10 @@ class SupabaseListItemRepository implements ListItemRepository {
   /// Obtient les statistiques des éléments d'une liste
   Future<Map<String, dynamic>> getStatsForList(String listId) async {
     try {
-      if (!_auth.isSignedIn) throw Exception('User not authenticated');
+      if (!_auth.isSignedIn) throw AppException.authentication(
+        message: 'User must be authenticated to access list items',
+        context: 'SupabaseListItemRepository',
+      );
 
       final response = await _supabase.client
           .from(_tableName)

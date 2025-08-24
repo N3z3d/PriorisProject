@@ -4,6 +4,7 @@ import 'package:prioris/presentation/pages/list_detail_page.dart';
 import 'package:prioris/presentation/pages/list_detail_loader_page.dart';
 import 'package:prioris/presentation/pages/agents_monitoring_page.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
+import 'package:prioris/infrastructure/services/logger_service.dart';
 
 /// Gestionnaire des routes de l'application
 class AppRoutes {
@@ -50,7 +51,7 @@ class AppRoutes {
 
       // CORRECTION UX: Si pas d'ID, utiliser ListDetailLoaderPage avec null pour fallback automatique
       if (list == null) {
-        print('🔧 CORRECTION UX: Pas d\'ID de liste fourni, fallback vers première liste');
+        LoggerService.instance.debug('Pas d\'ID de liste fourni, fallback vers première liste', context: 'AppRoutes');
         return MaterialPageRoute(
           builder: (context) => const ListDetailLoaderPage(listId: null),
           settings: settings,

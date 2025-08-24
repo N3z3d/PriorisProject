@@ -57,8 +57,8 @@ CREATE TABLE public.custom_lists (
   user_email TEXT, -- Email pour faciliter le debug
   title TEXT NOT NULL,
   description TEXT,
-  color INTEGER DEFAULT 0xFF2196F3,
-  icon INTEGER DEFAULT 0xe5ca,
+  color INTEGER DEFAULT 4284900083, -- 0xFF2196F3 (Material Blue)
+  icon INTEGER DEFAULT 58826, -- 0xe5ca (Material Icon)
   list_type TEXT DEFAULT 'todo',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -125,8 +125,8 @@ CREATE TABLE public.habits (
   category TEXT,
   target_value REAL,
   unit TEXT,
-  color INTEGER DEFAULT 0xFF2196F3,
-  icon INTEGER DEFAULT 0xe5ca,
+  color INTEGER DEFAULT 4284900083, -- 0xFF2196F3 (Material Blue)
+  icon INTEGER DEFAULT 58826, -- 0xe5ca (Material Icon)
   current_streak INTEGER DEFAULT 0,
   recurrence_type TEXT,
   interval_days INTEGER,

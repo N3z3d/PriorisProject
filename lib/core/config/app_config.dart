@@ -1,4 +1,5 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:prioris/infrastructure/services/logger_service.dart';
 
 /// Configuration centralisée de l'application
 /// Gère le chargement et l'accès aux variables d'environnement
@@ -17,9 +18,9 @@ class AppConfig {
       // Valide que les variables critiques sont présentes
       _validateConfiguration();
       
-      print('✅ Configuration chargée depuis: .env');
+      LoggerService.instance.info('Configuration chargée depuis: .env', context: 'AppConfig');
     } catch (e) {
-      print('❌ Erreur lors du chargement de la configuration: $e');
+      LoggerService.instance.error('Erreur lors du chargement de la configuration', context: 'AppConfig', error: e);
       throw ConfigurationException('Impossible de charger la configuration: $e');
     }
   }
@@ -85,13 +86,12 @@ class AppConfig {
   
   /// Affiche les informations de configuration (sans les clés sensibles)
   void printConfigurationInfo() {
-    print('=== Configuration App ===');
-    print('Environnement: $environment');
-    print('Mode debug: $isDebugMode');
-    print('URL Supabase: ${_maskSensitiveData(supabaseUrl)}');
-    print('Clé anonyme: ${_maskSensitiveData(supabaseAnonKey)}');
-    print('Redirect URL: ${_maskSensitiveData(supabaseAuthRedirectUrl)}');
-    print('========================');
+    LoggerService.instance.info('Configuration App', context: 'AppConfig');
+    LoggerService.instance.debug('Environnement: $environment', context: 'AppConfig');
+    LoggerService.instance.debug('Mode debug: $isDebugMode', context: 'AppConfig');
+    LoggerService.instance.debug('URL Supabase: ${_maskSensitiveData(supabaseUrl)}', context: 'AppConfig');
+    LoggerService.instance.debug('Clé anonyme: ${_maskSensitiveData(supabaseAnonKey)}', context: 'AppConfig');
+    LoggerService.instance.debug('Redirect URL: ${_maskSensitiveData(supabaseAuthRedirectUrl)}', context: 'AppConfig');
   }
   
   /// Masque les données sensibles pour les logs

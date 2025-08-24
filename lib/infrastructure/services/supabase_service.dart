@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/config/app_config.dart';
+import 'logger_service.dart';
 
 /// Service de configuration et gestion Supabase
 /// Utilise maintenant les variables d'environnement pour la sécurité
@@ -20,13 +21,13 @@ class SupabaseService {
         debug: config.isDebugMode,
       );
       
-      print('✅ Supabase initialisé avec succès');
+      LoggerService.instance.info('Supabase initialisé avec succès', context: 'SupabaseService');
       if (config.isDebugMode) {
-        print('🔧 Mode debug activé');
+        LoggerService.instance.debug('Mode debug activé', context: 'SupabaseService');
         config.printConfigurationInfo();
       }
     } catch (e) {
-      print('❌ Erreur lors de l\'initialisation de Supabase: $e');
+      LoggerService.instance.error('Erreur lors de l\'initialisation de Supabase', context: 'SupabaseService', error: e);
       rethrow;
     }
   }

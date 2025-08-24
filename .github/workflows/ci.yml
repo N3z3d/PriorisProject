@@ -1,0 +1,166 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ master, main, develop ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  test:
+    name: Test & Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.19.0'
+        channel: 'stable'
+        
+    - name: Setup environment file
+      run: |
+        cp .env.example .env
+        echo "SUPABASE_URL=https://mock.supabase.co" >> .env
+        echo "SUPABASE_ANON_KEY=mock-key-for-ci" >> .env
+        echo "SUPABASE_AUTH_REDIRECT_URL=https://mock.supabase.co/auth/v1/callback" >> .env
+        
+    - name: Install dependencies
+      run: flutter pub get
+      
+    - name: Generate code (Mockito, etc.)
+      run: flutter packages pub run build_runner build --delete-conflicting-outputs
+      continue-on-error: true # Some mocks might be missing
+      
+    - name: Analyze code
+      run: flutter analyze --fatal-infos
+      
+    - name: Check formatting
+      run: dart format --set-exit-if-changed .
+      
+    - name: Run tests with coverage
+      run: flutter test --coverage
+      
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage/lcov.info
+        
+    - name: Test build (Android)
+      run: flutter build apk --debug --no-shrink
+      
+    - name: Test build (Web)
+      run: flutter build web --debug
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Check for secrets
+      run: |
+        echo "Checking for exposed secrets..."
+        if grep -r "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9" . --exclude-dir=.git; then
+          echo "❌ JWT tokens found in code!"
+          exit 1
+        fi
+        if grep -r "https://.*\.supabase\.co" . --exclude-dir=.git --exclude=".env.example"; then
+          echo "❌ Supabase URLs found in code!"
+          exit 1
+        fi
+        echo "✅ No secrets detected"
+        
+    - name: Dependency vulnerability scan
+      run: |
+        flutter pub deps
+        # Add vulnerability scanning tool here if needed
+
+  quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.19.0'
+        channel: 'stable'
+        
+    - name: Setup environment file
+      run: cp .env.example .env
+      
+    - name: Install dependencies
+      run: flutter pub get
+      
+    - name: Check for print() statements
+      run: |
+        if grep -r "print(" lib/ --include="*.dart"; then
+          echo "❌ print() statements found! Use LoggerService instead."
+          exit 1
+        fi
+        echo "✅ No print() statements found"
+        
+    - name: Check for TODO comments
+      run: |
+        todos=$(grep -r "TODO\|FIXME\|XXX\|HACK" lib/ --include="*.dart" | wc -l)
+        echo "Found $todos TODO/FIXME comments"
+        # Could fail if too many TODOs
+        
+    - name: Check test coverage
+      run: |
+        flutter test --coverage
+        # Parse coverage and fail if below threshold
+        
+  deploy-staging:
+    name: Deploy to Staging
+    needs: [test, security, quality]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.19.0'
+        channel: 'stable'
+        
+    - name: Build web app
+      run: flutter build web --release
+      
+    # Add deployment steps here (Firebase Hosting, etc.)
+    
+  deploy-production:
+    name: Deploy to Production
+    needs: [test, security, quality]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.19.0'
+        channel: 'stable'
+        
+    - name: Build release APK
+      run: flutter build apk --release
+      
+    - name: Build release Web
+      run: flutter build web --release
+      
+    # Add production deployment steps here

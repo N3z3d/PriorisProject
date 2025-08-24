@@ -18,8 +18,8 @@ CREATE TABLE public.custom_lists (
   user_email TEXT, -- Email pour faciliter le debug
   title TEXT NOT NULL,  -- Supabase column name
   description TEXT,
-  color INTEGER DEFAULT 0xFF2196F3,
-  icon INTEGER DEFAULT 0xe5ca,
+  color INTEGER DEFAULT 4284900083, -- 0xFF2196F3 (Material Blue)
+  icon INTEGER DEFAULT 58826, -- 0xe5ca (Material Icon)
   list_type TEXT DEFAULT 'CUSTOM',  -- Supabase column name
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),  -- Snake case
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),  -- Snake case
