@@ -1,17 +1,31 @@
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
-import 'package:prioris/data/repositories/interfaces/repository_interfaces.dart';
 import 'package:prioris/infrastructure/services/supabase_service.dart';
 import 'package:prioris/infrastructure/services/auth_service.dart';
 
 import '../custom_list_repository.dart';
 
 /// Repository Supabase pour les listes personnalisées
+/// DI-friendly: Dependencies injected via constructor
 class SupabaseCustomListRepository implements CustomListRepository {
-  final SupabaseService _supabase = SupabaseService.instance;
-  final AuthService _auth = AuthService.instance;
+  final SupabaseService _supabase;
+  final AuthService _auth;
 
   static const String _tableName = 'custom_lists';
+
+  /// Constructor with dependency injection
+  const SupabaseCustomListRepository({
+    required SupabaseService supabaseService,
+    required AuthService authService,
+  }) : _supabase = supabaseService,
+       _auth = authService;
+
+  /// Factory constructor for legacy compatibility (deprecated)
+  @Deprecated('Use constructor with DI instead')
+  factory SupabaseCustomListRepository.withDefaults() => SupabaseCustomListRepository(
+    supabaseService: SupabaseService.instance,
+    authService: AuthService.instance,
+  );
 
   // Méthodes héritées de BasicCrudRepositoryInterface
   @override
@@ -148,12 +162,15 @@ class SupabaseCustomListRepository implements CustomListRepository {
     try {
       if (!_auth.isSignedIn) throw Exception('User not authenticated');
 
+      // Sanitize query to prevent potential injection
+      final sanitizedQuery = _sanitizeSearchQuery(query);
+
       final response = await _supabase.client
           .from(_tableName)
           .select()
           .eq('user_id', _auth.currentUser!.id)
           .eq('is_deleted', false)
-          .ilike('name', '%$query%')
+          .ilike('name', '%$sanitizedQuery%')
           .order('created_at', ascending: false);
 
       return response.map<CustomList>((json) => CustomList.fromJson(json)).toList();
@@ -167,12 +184,15 @@ class SupabaseCustomListRepository implements CustomListRepository {
     try {
       if (!_auth.isSignedIn) throw Exception('User not authenticated');
 
+      // Sanitize query to prevent potential injection
+      final sanitizedQuery = _sanitizeSearchQuery(query);
+
       final response = await _supabase.client
           .from(_tableName)
           .select()
           .eq('user_id', _auth.currentUser!.id)
           .eq('is_deleted', false)
-          .ilike('description', '%$query%')
+          .ilike('description', '%$sanitizedQuery%')
           .order('created_at', ascending: false);
 
       return response.map<CustomList>((json) => CustomList.fromJson(json)).toList();
@@ -192,6 +212,20 @@ class SupabaseCustomListRepository implements CustomListRepository {
 
   @override
   Future<void> clearAll() => clearAllLists();
+
+  /// Sanitizes search query to prevent potential SQL injection via ilike
+  String _sanitizeSearchQuery(String query) {
+    if (query.isEmpty) return query;
+    
+    // Escape SQL wildcards that could be exploited
+    return query
+        .replaceAll('\\', '\\\\')  // Escape backslashes first
+        .replaceAll('%', '\\%')    // Escape percent signs
+        .replaceAll('_', '\\_')    // Escape underscores
+        .replaceAll('[', '\\[')    // Escape brackets
+        .replaceAll(']', '\\]')    // Escape closing brackets
+        .trim();                   // Remove leading/trailing spaces
+  }
 
   @override 
   Future<void> clearAllLists() async {

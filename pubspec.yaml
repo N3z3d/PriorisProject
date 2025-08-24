@@ -63,5 +63,5 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
-    - .env 
-    - .env.development
+    # SECURITY: .env files removed from assets to prevent secret exposure in APK/IPA
+    # Environment variables should be loaded at runtime, not packaged

@@ -4,11 +4,26 @@ import 'package:prioris/infrastructure/services/supabase_service.dart';
 import 'package:prioris/infrastructure/services/auth_service.dart';
 
 /// Repository Supabase pour les éléments de liste
+/// DI-friendly: Dependencies injected via constructor
 class SupabaseListItemRepository implements ListItemRepository {
-  final SupabaseService _supabase = SupabaseService.instance;
-  final AuthService _auth = AuthService.instance;
+  final SupabaseService _supabase;
+  final AuthService _auth;
 
   static const String _tableName = 'list_items';
+
+  /// Constructor with dependency injection
+  const SupabaseListItemRepository({
+    required SupabaseService supabaseService,
+    required AuthService authService,
+  }) : _supabase = supabaseService,
+       _auth = authService;
+
+  /// Factory constructor for legacy compatibility (deprecated)
+  @Deprecated('Use constructor with DI instead')
+  factory SupabaseListItemRepository.withDefaults() => SupabaseListItemRepository(
+    supabaseService: SupabaseService.instance,
+    authService: AuthService.instance,
+  );
 
   @override
   Future<List<ListItem>> getAll() async {

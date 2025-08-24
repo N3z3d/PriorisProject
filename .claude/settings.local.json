@@ -41,7 +41,10 @@
       "Bash(curl:*)",
       "Bash(git commit:*)",
       "Bash(del test_persistence_architecture.dart)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "WebFetch(domain:pub.dev)",
+      "WebFetch(domain:supabase.com)",
+      "Bash(git rm:*)"
     ],
     "deny": [
       "Read(**/.env)",

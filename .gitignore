@@ -80,3 +80,8 @@ supabase_cleanup.sql
 
 # Coverage reports (should be generated, not committed)
 coverage/ 
+
+# SECURITY: Environment files with secrets
+.env
+.env.*
+!.env.example

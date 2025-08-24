@@ -24,10 +24,10 @@ class LoggerService {
   
   // Sensitive data patterns to sanitize
   static final List<RegExp> _sensitivePatterns = [
-    RegExp(r'key[:\s]*[a-zA-Z0-9_\-\.]+', caseSensitive: false),
-    RegExp(r'token[:\s]*[a-zA-Z0-9_\-\.]+', caseSensitive: false),
-    RegExp(r'password[:\s]*\S+', caseSensitive: false),
-    RegExp(r'secret[:\s]*\S+', caseSensitive: false),
+    RegExp(r'key:\s*[a-zA-Z0-9_\-\.]+', caseSensitive: false),
+    RegExp(r'token:\s*[a-zA-Z0-9_\-\.]+', caseSensitive: false),
+    RegExp(r'password:\s*\S+', caseSensitive: false),
+    RegExp(r'secret:\s*\S+', caseSensitive: false),
     RegExp(r'bearer\s+[a-zA-Z0-9_\-\.]+', caseSensitive: false),
   ];
   
@@ -39,7 +39,14 @@ class LoggerService {
     
     // Sanitize sensitive data
     for (final pattern in _sensitivePatterns) {
-      formatted = formatted.replaceAll(pattern, '***SANITIZED***');
+      formatted = formatted.replaceAllMapped(pattern, (match) {
+        String matched = match.group(0)!;
+        if (matched.contains(':')) {
+          String label = matched.split(':')[0];
+          return '$label: ***SANITIZED***';
+        }
+        return '***SANITIZED***';
+      });
     }
     
     // Add context

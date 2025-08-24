@@ -2,14 +2,26 @@ import 'package:prioris/infrastructure/services/supabase_service.dart';
 import 'package:prioris/infrastructure/services/auth_service.dart';
 
 /// Service pour gérer les données utilisateur
+/// DI-friendly: Dependencies injected via constructor
 class UserDataService {
-  static UserDataService? _instance;
-  static UserDataService get instance => _instance ??= UserDataService._();
-  
-  UserDataService._();
-  
-  final _supabase = SupabaseService.instance;
-  final _auth = AuthService.instance;
+  final SupabaseService _supabase;
+  final AuthService _auth;
+
+  /// Constructor with dependency injection
+  const UserDataService({
+    required SupabaseService supabaseService,
+    required AuthService authService,
+  }) : _supabase = supabaseService,
+       _auth = authService;
+
+  /// Factory constructor for legacy compatibility (deprecated)
+  @Deprecated('Use constructor with DI instead')
+  static UserDataService? _legacyInstance;
+  @Deprecated('Use constructor with DI instead')
+  static UserDataService get instance => _legacyInstance ??= UserDataService(
+    supabaseService: SupabaseService.instance,
+    authService: AuthService.instance,
+  );
 
   /// Nettoie toutes les données de l'utilisateur connecté
   Future<void> clearAllUserData() async {
