@@ -4,6 +4,7 @@ import 'package:prioris/domain/models/core/entities/list_item.dart';
 import 'package:prioris/data/repositories/list_item_repository.dart';
 import 'package:prioris/data/repositories/custom_list_repository.dart';
 import 'package:prioris/infrastructure/services/logger_service.dart';
+import 'package:prioris/core/utils/operation_queue.dart';
 
 /// Mode de persistance adaptatif selon l'état d'authentification
 enum PersistenceMode {
@@ -279,16 +280,20 @@ class AdaptivePersistenceService {
   }
   
   /// RLS PERMISSION FIX: Suppression cloud avec gestion d'erreur de permission
+  /// Now uses reliable operation queue instead of unhandled microtask
   void _deleteListFromCloudWithErrorHandling(String listId) {
     if (!_isAuthenticated) return;
     
-    Future.microtask(() async {
-      try {
+    OperationQueue.instance.enqueue(
+      name: 'deleteListFromCloud',
+      operation: () async {
         await _cloudRepository.deleteList(listId);
-        print('🔄 Suppression cloud réussie pour $listId');
-      } catch (e) {
-        _handleCloudPermissionError('deleteList', listId, e);
-      }
+        LoggerService.instance.info('Suppression cloud réussie pour $listId', context: 'AdaptivePersistenceService');
+      },
+      priority: OperationPriority.medium,
+      maxRetries: 2,
+    ).catchError((e) {
+      _handleCloudPermissionError('deleteList', listId, e);
     });
   }
 

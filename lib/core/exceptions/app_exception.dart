@@ -1,3 +1,5 @@
+import 'dart:async';
+
 /// Centralized exception handling system
 /// Replaces generic Exception() with typed, structured errors
 
