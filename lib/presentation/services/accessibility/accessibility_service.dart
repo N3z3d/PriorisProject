@@ -73,8 +73,10 @@ class AccessibilityService {
     }
   }
 
-  /// Messages d'accessibilité prédéfinis pour les opérations communes
-  static class Messages {
+}
+
+/// Messages d'accessibilité prédéfinis pour les opérations communes
+class AccessibilityMessages {
     // Messages de chargement
     static const String loadingLists = 'Chargement des listes';
     static const String loadingItems = 'Chargement des éléments';
@@ -101,7 +103,6 @@ class AccessibilityService {
     static const String onlineMode = 'Connexion rétablie';
     static const String syncInProgress = 'Synchronisation en cours';
     static const String conflictResolved = 'Conflit de données résolu automatiquement';
-  }
 }
 
 /// Extension pour faciliter les annonces d'accessibilité dans les controllers

@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:prioris/infrastructure/services/supabase_service.dart';
+import 'package:prioris/core/config/app_config.dart';
+import 'package:prioris/infrastructure/services/logger_service.dart';
 
 /// Service d'authentification avec Supabase
 class AuthService {
@@ -60,12 +62,13 @@ class AuthService {
     try {
       final response = await _supabase.auth.signInWithOAuth(
         OAuthProvider.google,
-        redirectTo: 'https://vgowxrktjzgwrfivtvse.supabase.co/auth/v1/callback',
+        redirectTo: AppConfig.instance.supabaseAuthRedirectUrl,
       );
       
       return response;
     } catch (e) {
-      // TODO: Remplacer par un logger approprié
+      // Log OAuth error for debugging while preserving user experience
+      LoggerService.instance.error('OAuth Google error', context: 'AuthService', error: e);
       return false;
     }
   }
@@ -84,7 +87,7 @@ class AuthService {
     try {
       await _supabase.auth.resetPasswordForEmail(
         email,
-        redirectTo: 'https://vgowxrktjzgwrfivtvse.supabase.co/auth/v1/callback',
+        redirectTo: AppConfig.instance.supabaseAuthRedirectUrl,
       );
     } catch (e) {
       rethrow;

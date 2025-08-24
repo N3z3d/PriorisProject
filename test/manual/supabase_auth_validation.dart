@@ -10,8 +10,8 @@ void main() async {
   try {
     // 1. Vérification de la configuration
     print('1. ✅ Configuration Supabase');
-    print('   - URL: https://vgowxrktjzgwrfivtvse.supabase.co');
-    print('   - Clé anonyme: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...');
+    print('   - URL: [MASKED - loaded from .env]');
+    print('   - Clé anonyme: [MASKED - loaded from .env]');
     print('   - Service configuré: SupabaseService');
     print('   - Service Auth: AuthService\n');
     
@@ -102,7 +102,7 @@ void main() async {
     // 8. URLs utiles
     print('8. 🔗 LIENS UTILES:');
     print('');
-    print('   - Dashboard Supabase: https://vgowxrktjzgwrfivtvse.supabase.co');
+    print('   - Dashboard Supabase: [MASKED - check .env configuration]');
     print('   - Auth settings: Dashboard > Authentication > Settings');
     print('   - Database: Dashboard > Table Editor');
     print('   - Logs: Dashboard > Logs');

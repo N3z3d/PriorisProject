@@ -24,10 +24,10 @@ Future<void> main() async {
       exit(1);
     }
     
-    // 3. Vérifier que c'est la vraie URL
-    if (config.supabaseUrl != 'https://vgowxrktjzgwrfivtvse.supabase.co') {
-      print('❌ ERREUR: URL incorrecte!');
-      print('   Attendue: https://vgowxrktjzgwrfivtvse.supabase.co');
+    // 3. Vérifier que c'est une URL Supabase valide
+    if (config.supabaseUrl.isEmpty || !config.supabaseUrl.contains('supabase.co')) {
+      print('❌ ERREUR: URL Supabase invalide!');
+      print('   L'URL doit être une URL Supabase valide (.supabase.co)');
       print('   Obtenue: ${config.supabaseUrl}');
       exit(1);
     }

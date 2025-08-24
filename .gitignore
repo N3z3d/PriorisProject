@@ -55,4 +55,28 @@ app.*.map.json
 # Environment variables
 .env
 .env.local
-.env.*.local 
+.env.*.local
+.env.production
+
+# Test artifacts and temporary files
+test_output.txt
+test_results*.txt
+test_all_fixed.txt
+analysis_temp.txt
+*.temp
+*.tmp
+test_results_audit.json
+test_persistence_architecture.dart
+
+# SQL fix scripts (should use proper migrations)
+supabase_*debug*.sql
+supabase_*fix*.sql
+supabase_*temp*.sql
+supabase_quick_fix.sql
+supabase_cleanup.sql
+
+# Generated mock files
+*.mocks.dart
+
+# Coverage reports (should be generated, not committed)
+coverage/ 

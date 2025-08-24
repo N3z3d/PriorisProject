@@ -3,6 +3,7 @@ import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
 import 'package:prioris/data/repositories/list_item_repository.dart';
 import 'package:prioris/data/repositories/custom_list_repository.dart';
+import 'package:prioris/infrastructure/services/logger_service.dart';
 
 /// Mode de persistance adaptatif selon l'état d'authentification
 enum PersistenceMode {
@@ -60,12 +61,12 @@ class AdaptivePersistenceService {
 
   /// Initialise le service avec l'état d'authentification
   Future<void> initialize({required bool isAuthenticated}) async {
-    print('🔧 AdaptivePersistenceService: Initialisation avec auth=$isAuthenticated');
+    LoggerService.instance.info('Initialisation avec auth=$isAuthenticated', context: 'AdaptivePersistenceService');
     
     _isAuthenticated = isAuthenticated;
     _currentMode = isAuthenticated ? PersistenceMode.cloudFirst : PersistenceMode.localFirst;
     
-    print('📊 Mode de persistance: $_currentMode');
+    LoggerService.instance.info('Mode de persistance: $_currentMode', context: 'AdaptivePersistenceService');
   }
 
   /// Met à jour l'état d'authentification et adapte la persistance
@@ -73,7 +74,7 @@ class AdaptivePersistenceService {
     required bool isAuthenticated,
     MigrationStrategy? migrationStrategy,
   }) async {
-    print('🔄 Changement d\'authentification: $_isAuthenticated → $isAuthenticated');
+    LoggerService.instance.info('Changement d\'authentification: $_isAuthenticated → $isAuthenticated', context: 'AdaptivePersistenceService');
     
     final wasAuthenticated = _isAuthenticated;
     _isAuthenticated = isAuthenticated;
@@ -90,48 +91,103 @@ class AdaptivePersistenceService {
       _currentMode = PersistenceMode.localFirst;
     }
     
-    print('📊 Nouveau mode de persistance: $_currentMode');
+    LoggerService.instance.info('Nouveau mode de persistance: $_currentMode', context: 'AdaptivePersistenceService');
   }
 
   /// Récupère toutes les listes selon le mode actuel
+  /// DEDUPLICATION FIX: Déduplique automatiquement les résultats
   Future<List<CustomList>> getAllLists() async {
     try {
+      List<CustomList> lists;
+      
       switch (_currentMode) {
         case PersistenceMode.localFirst:
-          return await _localRepository.getAllLists();
+          lists = await _localRepository.getAllLists();
+          break;
           
         case PersistenceMode.cloudFirst:
           // Essayer cloud d'abord, fallback vers local
           try {
-            final cloudLists = await _cloudRepository.getAllLists();
-            // Sync en arrière-plan vers local pour backup
-            _syncCloudToLocalAsync(cloudLists);
-            return cloudLists;
+            lists = await _cloudRepository.getAllLists();
+            // Sync en arrière-plan vers local pour backup avec gestion d'erreur
+            _syncCloudToLocalWithErrorHandling(lists);
           } catch (e) {
-            print('⚠️ Cloud indisponible, fallback vers local: $e');
-            return await _localRepository.getAllLists();
+            LoggerService.instance.error('Cloud indisponible, fallback vers local', context: 'AdaptivePersistenceService', error: e);
+            lists = await _localRepository.getAllLists();
           }
+          break;
           
         case PersistenceMode.hybrid:
-          return await _getHybridLists();
+          lists = await _getHybridLists();
+          break;
       }
+      
+      // DEDUPLICATION FIX: Déduplication automatique des résultats
+      return _deduplicateLists(lists);
     } catch (e) {
-      print('❌ Erreur lors de la récupération des listes: $e');
+      LoggerService.instance.error('Erreur lors de la récupération des listes', context: 'AdaptivePersistenceService', error: e);
       rethrow;
     }
   }
+  
+  /// DEDUPLICATION FIX: Déduplique une liste de CustomList par ID
+  List<CustomList> _deduplicateLists(List<CustomList> lists) {
+    final Map<String, CustomList> uniqueLists = {};
+    
+    for (final list in lists) {
+      final existingList = uniqueLists[list.id];
+      
+      if (existingList == null) {
+        // Première occurrence de cet ID
+        uniqueLists[list.id] = list;
+      } else {
+        // Conflit détecté, garder la version la plus récente
+        final resolved = _resolveListConflict(existingList, list);
+        uniqueLists[list.id] = resolved;
+        LoggerService.instance.debug('Déduplication: conflit résolu pour liste "${resolved.name}" (${list.id})', context: 'AdaptivePersistenceService');
+      }
+    }
+    
+    final deduplicatedLists = uniqueLists.values.toList();
+    
+    if (deduplicatedLists.length < lists.length) {
+      LoggerService.instance.info('Déduplication: ${lists.length} → ${deduplicatedLists.length} listes (${lists.length - deduplicatedLists.length} doublons supprimés)', context: 'AdaptivePersistenceService');
+    }
+    
+    return deduplicatedLists;
+  }
+  
+  /// ERROR BOUNDARY FIX: Sync cloud vers local avec gestion d'erreur robuste
+  void _syncCloudToLocalWithErrorHandling(List<CustomList> cloudLists) {
+    Future.microtask(() async {
+      try {
+        for (final list in cloudLists) {
+          try {
+            await _saveListWithDeduplication(list, _localRepository);
+          } catch (e) {
+            LoggerService.instance.error('Échec backup local pour liste "${list.name}" (${list.id})', context: 'AdaptivePersistenceService', error: e);
+            // Continuer avec les autres listes même si une échoue
+          }
+        }
+        LoggerService.instance.info('Backup local mis à jour (${cloudLists.length} listes traitées)', context: 'AdaptivePersistenceService');
+      } catch (e) {
+        print('⚠️ Échec général du backup local: ${_sanitizeErrorMessage(e.toString())}');
+      }
+    });
+  }
 
   /// Sauvegarde une liste selon le mode actuel
+  /// DEDUPLICATION FIX: Gère les conflits d'ID avec stratégie upsert
   Future<void> saveList(CustomList list) async {
     try {
       switch (_currentMode) {
         case PersistenceMode.localFirst:
-          await _localRepository.saveList(list);
+          await _saveListWithDeduplication(list, _localRepository);
           break;
           
         case PersistenceMode.cloudFirst:
-          // Sauvegarder en local d'abord (réponse immédiate)
-          await _localRepository.saveList(list);
+          // Sauvegarder en local d'abord avec déduplication
+          await _saveListWithDeduplication(list, _localRepository);
           // Sync vers cloud en arrière-plan
           _syncListToCloudAsync(list);
           break;
@@ -147,8 +203,55 @@ class AdaptivePersistenceService {
       rethrow;
     }
   }
+  
+  /// DEDUPLICATION FIX: Sauvegarde avec gestion des doublons
+  Future<void> _saveListWithDeduplication(CustomList list, CustomListRepository repository) async {
+    try {
+      // Tenter la sauvegarde normale
+      await repository.saveList(list);
+    } catch (e) {
+      if (e.toString().contains('Une liste avec cet ID existe déjà')) {
+        print('🔄 Conflit détecté pour liste ${list.id}, utilisation stratégie de fusion...');
+        
+        // Récupérer la liste existante
+        final existingList = await repository.getListById(list.id);
+        
+        if (existingList != null) {
+          // Utiliser la version la plus récente
+          final mergedList = _resolveListConflict(existingList, list);
+          
+          // Mettre à jour la liste existante
+          await repository.updateList(mergedList);
+          print('🔀 Conflit résolu: fusion réussie pour "${mergedList.name}"');
+        } else {
+          // Si la liste n'existe pas finalement, réessayer l'ajout
+          await repository.saveList(list);
+        }
+      } else {
+        // Re-lancer l'erreur si ce n'est pas un conflit d'ID
+        rethrow;
+      }
+    }
+  }
+  
+  /// DEDUPLICATION FIX: Résout les conflits entre listes
+  CustomList _resolveListConflict(CustomList existing, CustomList incoming) {
+    // Utiliser la liste avec la date de modification la plus récente
+    if (existing.updatedAt.isAfter(incoming.updatedAt)) {
+      print('📅 Conflit résolu: version existante plus récente conservée');
+      return existing;
+    } else if (incoming.updatedAt.isAfter(existing.updatedAt)) {
+      print('📅 Conflit résolu: version entrante plus récente adoptée');
+      return incoming;
+    } else {
+      // En cas d'égalité, préférer la version entrante (comportement par défaut)
+      print('📅 Conflit résolu: versions équivalentes, adoption version entrante');
+      return incoming;
+    }
+  }
 
   /// Supprime une liste selon le mode actuel
+  /// RLS PERMISSION FIX: Gère les erreurs de permission gracieusement
   Future<void> deleteList(String listId) async {
     try {
       switch (_currentMode) {
@@ -157,10 +260,10 @@ class AdaptivePersistenceService {
           break;
           
         case PersistenceMode.cloudFirst:
-          // Supprimer en local d'abord
+          // Supprimer en local d'abord (toujours possible)
           await _localRepository.deleteList(listId);
-          // Sync suppression vers cloud en arrière-plan
-          _deleteListFromCloudAsync(listId);
+          // Sync suppression vers cloud en arrière-plan avec gestion d'erreur
+          _deleteListFromCloudWithErrorHandling(listId);
           break;
           
         case PersistenceMode.hybrid:
@@ -173,6 +276,20 @@ class AdaptivePersistenceService {
       print('❌ Erreur lors de la suppression: $e');
       rethrow;
     }
+  }
+  
+  /// RLS PERMISSION FIX: Suppression cloud avec gestion d'erreur de permission
+  void _deleteListFromCloudWithErrorHandling(String listId) {
+    if (!_isAuthenticated) return;
+    
+    Future.microtask(() async {
+      try {
+        await _cloudRepository.deleteList(listId);
+        print('🔄 Suppression cloud réussie pour $listId');
+      } catch (e) {
+        _handleCloudPermissionError('deleteList', listId, e);
+      }
+    });
   }
 
   /// Récupère tous les items d'une liste selon le mode actuel
@@ -204,16 +321,17 @@ class AdaptivePersistenceService {
   }
 
   /// Sauvegarde un item selon le mode actuel
+  /// DEDUPLICATION FIX: Gère les conflits d'ID avec stratégie upsert
   Future<void> saveItem(ListItem item) async {
     try {
       switch (_currentMode) {
         case PersistenceMode.localFirst:
-          await _localItemRepository.add(item);
+          await _saveItemWithDeduplication(item, _localItemRepository);
           break;
           
         case PersistenceMode.cloudFirst:
-          // Sauvegarder en local d'abord (réponse immédiate)
-          await _localItemRepository.add(item);
+          // Sauvegarder en local d'abord avec déduplication
+          await _saveItemWithDeduplication(item, _localItemRepository);
           // Sync vers cloud en arrière-plan
           _syncItemToCloudAsync(item);
           break;
@@ -227,6 +345,52 @@ class AdaptivePersistenceService {
     } catch (e) {
       print('❌ Erreur lors de la sauvegarde d\'item: $e');
       rethrow;
+    }
+  }
+  
+  /// DEDUPLICATION FIX: Sauvegarde d'item avec gestion des doublons  
+  Future<void> _saveItemWithDeduplication(ListItem item, ListItemRepository repository) async {
+    try {
+      // Tenter l'ajout normal
+      await repository.add(item);
+    } catch (e) {
+      if (e.toString().contains('Un item avec cet id existe déjà')) {
+        print('🔄 Conflit d\'item détecté pour ${item.id}, utilisation stratégie upsert...');
+        
+        // Récupérer l'item existant
+        final existingItem = await repository.getById(item.id);
+        
+        if (existingItem != null) {
+          // Utiliser la version la plus récente
+          final mergedItem = _resolveItemConflict(existingItem, item);
+          
+          // Mettre à jour l'item existant
+          await repository.update(mergedItem);
+          print('🔀 Conflit d\'item résolu: fusion réussie pour "${mergedItem.title}"');
+        } else {
+          // Si l'item n'existe pas finalement, réessayer l'ajout
+          await repository.add(item);
+        }
+      } else {
+        // Re-lancer l'erreur si ce n'est pas un conflit d'ID
+        rethrow;
+      }
+    }
+  }
+  
+  /// DEDUPLICATION FIX: Résout les conflits entre items
+  ListItem _resolveItemConflict(ListItem existing, ListItem incoming) {
+    // Utiliser l'item avec la date de création la plus récente (les items n'ont pas toujours updatedAt)
+    if (existing.createdAt.isAfter(incoming.createdAt)) {
+      print('📅 Conflit d\'item résolu: version existante plus récente conservée');
+      return existing;
+    } else if (incoming.createdAt.isAfter(existing.createdAt)) {
+      print('📅 Conflit d\'item résolu: version entrante plus récente adoptée');
+      return incoming;
+    } else {
+      // En cas d'égalité, préférer la version entrante
+      print('📅 Conflit d\'item résolu: versions équivalentes, adoption version entrante');
+      return incoming;
     }
   }
 
@@ -258,6 +422,7 @@ class AdaptivePersistenceService {
   }
 
   /// Supprime un item selon le mode actuel
+  /// RLS PERMISSION FIX: Gère les erreurs de permission gracieusement
   Future<void> deleteItem(String itemId) async {
     try {
       switch (_currentMode) {
@@ -266,10 +431,10 @@ class AdaptivePersistenceService {
           break;
           
         case PersistenceMode.cloudFirst:
-          // Supprimer en local d'abord
+          // Supprimer en local d'abord (toujours possible)
           await _localItemRepository.delete(itemId);
-          // Sync suppression vers cloud en arrière-plan
-          _deleteItemFromCloudAsync(itemId);
+          // Sync suppression vers cloud en arrière-plan avec gestion d'erreur
+          _deleteItemFromCloudWithErrorHandling(itemId);
           break;
           
         case PersistenceMode.hybrid:
@@ -282,6 +447,63 @@ class AdaptivePersistenceService {
       print('❌ Erreur lors de la suppression d\'item: $e');
       rethrow;
     }
+  }
+  
+  /// RLS PERMISSION FIX: Suppression d'item cloud avec gestion d'erreur
+  void _deleteItemFromCloudWithErrorHandling(String itemId) {
+    if (!_isAuthenticated) return;
+    
+    Future.microtask(() async {
+      try {
+        await _cloudItemRepository.delete(itemId);
+        print('🔄 Suppression cloud item réussie pour $itemId');
+      } catch (e) {
+        _handleCloudPermissionError('deleteItem', itemId, e);
+      }
+    });
+  }
+  
+  /// RLS PERMISSION FIX: Gestion centralisée des erreurs de permission cloud
+  void _handleCloudPermissionError(String operation, String id, dynamic error) {
+    final errorMsg = error.toString();
+    
+    // Vérifier si c'est une erreur de permission
+    if (errorMsg.contains('403 Forbidden') || 
+        errorMsg.contains('permission denied') || 
+        errorMsg.contains('Row Level Security') ||
+        errorMsg.contains('JWT expired') ||
+        errorMsg.contains('Unauthorized')) {
+      
+      print('🔒 Erreur de permission cloud pour $operation($id): ${_sanitizeErrorMessage(errorMsg)}');
+      
+      // Log pour monitoring (sans exposer les détails techniques)
+      _logPermissionError(operation, id, errorMsg);
+      
+      // Note: Ne pas propager l'erreur - l'opération locale a déjà réussi
+      return;
+    }
+    
+    // Pour les autres erreurs cloud, log sans bloquer
+    print('⚠️ Erreur cloud pour $operation($id): ${_sanitizeErrorMessage(errorMsg)}');
+  }
+  
+  /// RLS PERMISSION FIX: Assainit les messages d'erreur pour l'utilisateur
+  String _sanitizeErrorMessage(String error) {
+    // Remplacer les messages techniques par des messages compréhensibles
+    if (error.contains('PostgrestException')) return 'Problème de synchronisation cloud';
+    if (error.contains('JWT expired')) return 'Session expirée';
+    if (error.contains('403 Forbidden')) return 'Permissions insuffisantes';
+    if (error.contains('Row Level Security')) return 'Restrictions d\'accès appliquées';
+    
+    // Pour les autres erreurs, garder un message générique
+    return 'Problème de synchronisation temporaire';
+  }
+  
+  /// RLS PERMISSION FIX: Log les erreurs de permission pour monitoring
+  void _logPermissionError(String operation, String id, String error) {
+    // Dans un vrai projet, ceci enverrait vers un service de monitoring
+    // comme Firebase Crashlytics, Sentry, etc.
+    print('📊 MONITORING: Permission error - Operation: $operation, ID: $id, Error: ${error.substring(0, error.length.clamp(0, 100))}...');
   }
 
   /// Gère la transition Invité → Connecté
@@ -415,31 +637,15 @@ class AdaptivePersistenceService {
   }
 
   /// Synchronisation asynchrone du cloud vers local
+  @Deprecated('Use _syncCloudToLocalWithErrorHandling instead')
   void _syncCloudToLocalAsync(List<CustomList> cloudLists) {
-    Future.microtask(() async {
-      try {
-        for (final list in cloudLists) {
-          await _localRepository.saveList(list);
-        }
-        print('🔄 Backup local mis à jour');
-      } catch (e) {
-        print('⚠️ Échec backup local: $e');
-      }
-    });
+    _syncCloudToLocalWithErrorHandling(cloudLists);
   }
 
   /// Suppression asynchrone du cloud
+  @Deprecated('Use _deleteListFromCloudWithErrorHandling instead')
   void _deleteListFromCloudAsync(String listId) {
-    if (!_isAuthenticated) return;
-    
-    Future.microtask(() async {
-      try {
-        await _cloudRepository.deleteList(listId);
-        print('🔄 Suppression cloud réussie pour $listId');
-      } catch (e) {
-        print('⚠️ Échec suppression cloud pour $listId: $e');
-      }
-    });
+    _deleteListFromCloudWithErrorHandling(listId);
   }
 
   /// Synchronisation asynchrone d'un item vers le cloud
@@ -472,17 +678,9 @@ class AdaptivePersistenceService {
   }
 
   /// Suppression asynchrone d'item du cloud
+  @Deprecated('Use _deleteItemFromCloudWithErrorHandling instead')
   void _deleteItemFromCloudAsync(String itemId) {
-    if (!_isAuthenticated) return;
-    
-    Future.microtask(() async {
-      try {
-        await _cloudItemRepository.delete(itemId);
-        print('🔄 Suppression cloud item réussie pour $itemId');
-      } catch (e) {
-        print('⚠️ Échec suppression cloud item pour $itemId: $e');
-      }
-    });
+    _deleteItemFromCloudWithErrorHandling(itemId);
   }
 
   // Méthodes hybrides (pour usage futur)

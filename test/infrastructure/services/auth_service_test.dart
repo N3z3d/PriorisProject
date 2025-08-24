@@ -4,6 +4,7 @@ import 'package:mockito/annotations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:prioris/infrastructure/services/auth_service.dart';
 import 'package:prioris/infrastructure/services/supabase_service.dart';
+import 'package:prioris/core/config/app_config.dart';
 
 // Generate mocks
 @GenerateMocks([SupabaseService, GoTrueClient, SupabaseClient])
@@ -192,7 +193,7 @@ void main() {
       test('resetPassword should send reset email', () async {
         // Arrange
         const email = 'test@example.com';
-        const redirectUrl = 'https://vgowxrktjzgwrfivtvse.supabase.co/auth/v1/callback';
+        final redirectUrl = AppConfig.instance.supabaseAuthRedirectUrl;
 
         when(mockAuth.resetPasswordForEmail(
           email,
@@ -395,7 +396,7 @@ void main() {
     group('OAuth', () {
       test('signInWithGoogle should return true on success', () async {
         // Arrange
-        const redirectUrl = 'https://vgowxrktjzgwrfivtvse.supabase.co/auth/v1/callback';
+        final redirectUrl = AppConfig.instance.supabaseAuthRedirectUrl;
         
         when(mockAuth.signInWithOAuth(
           OAuthProvider.google,
@@ -415,7 +416,7 @@ void main() {
 
       test('signInWithGoogle should return false on error', () async {
         // Arrange
-        const redirectUrl = 'https://vgowxrktjzgwrfivtvse.supabase.co/auth/v1/callback';
+        final redirectUrl = AppConfig.instance.supabaseAuthRedirectUrl;
         
         when(mockAuth.signInWithOAuth(
           OAuthProvider.google,

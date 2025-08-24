@@ -26,7 +26,7 @@ class AppConfig {
   
   /// Valide que toutes les variables d'environnement critiques sont présentes
   static void _validateConfiguration() {
-    final requiredVars = ['SUPABASE_URL', 'SUPABASE_ANON_KEY'];
+    final requiredVars = ['SUPABASE_URL', 'SUPABASE_ANON_KEY', 'SUPABASE_AUTH_REDIRECT_URL'];
     final missingVars = <String>[];
     
     for (final variable in requiredVars) {
@@ -62,6 +62,15 @@ class AppConfig {
     return key;
   }
   
+  /// URL de redirection pour l'authentification OAuth
+  String get supabaseAuthRedirectUrl {
+    final url = dotenv.env['SUPABASE_AUTH_REDIRECT_URL']?.trim() ?? '';
+    if (url.isEmpty) {
+      throw ConfigurationException('SUPABASE_AUTH_REDIRECT_URL non configurée');
+    }
+    return url;
+  }
+  
   /// Environnement actuel
   String get environment => dotenv.env['ENVIRONMENT'] ?? 'development';
   
@@ -81,6 +90,7 @@ class AppConfig {
     print('Mode debug: $isDebugMode');
     print('URL Supabase: ${_maskSensitiveData(supabaseUrl)}');
     print('Clé anonyme: ${_maskSensitiveData(supabaseAnonKey)}');
+    print('Redirect URL: ${_maskSensitiveData(supabaseAuthRedirectUrl)}');
     print('========================');
   }
   

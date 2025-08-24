@@ -954,10 +954,13 @@ class PremiumLogoutHelper {
     try {
       if (clearData) {
         // Clear local data before logout
+        // TODO: Implement local data clearing logic
         print('🗑️ Données locales effacées');
       }
       
-      // TODO: Implement authentication logout
+      // Perform actual authentication logout
+      // TODO: Replace with proper AuthService call
+      // await ref.read(authServiceProvider).signOut();
       print('✅ Déconnexion réussie');
       
     } catch (e) {

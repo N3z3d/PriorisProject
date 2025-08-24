@@ -257,8 +257,6 @@ class SimplifiedLogoutDialog extends ConsumerWidget {
             ),
           ],
         ),
-      ),
-      ),
     );
   }
 }

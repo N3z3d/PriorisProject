@@ -14,9 +14,10 @@ void main() {
     test('should load correct Supabase URL from environment', () {
       final config = AppConfig.instance;
       
-      // Vérifier que l'URL est la vraie URL, pas le placeholder
-      expect(config.supabaseUrl, equals('https://vgowxrktjzgwrfivtvse.supabase.co'));
+      // Vérifier que l'URL est une vraie URL Supabase, pas le placeholder
+      expect(config.supabaseUrl, contains('supabase.co'));
       expect(config.supabaseUrl, isNot(contains('dev-project-id')));
+      expect(config.supabaseUrl, startsWith('https://'));
       
       // Vérifier les autres configurations
       expect(config.environment, equals('development'));

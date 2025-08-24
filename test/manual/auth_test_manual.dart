@@ -16,16 +16,9 @@ void main() {
       print('🔧 Initialisation de Supabase pour les tests...');
       
       try {
-        // Vérifier si Supabase est déjà initialisé
-        if (Supabase.instance == null) {
-          await Supabase.initialize(
-            url: 'https://vgowxrktjzgwrfivtvse.supabase.co',
-            anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnb3d4cmt0anpnd3JmaXZ0dnNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE1MTYwNTEsImV4cCI6MjA0NzA5MjA1MX0.GgVTp_3Xl1HQpHBEYxnIeRYWcKJYp1cKqzMqGCWV4Dc',
-          );
-          print('✅ Supabase initialisé avec succès');
-        } else {
-          print('ℹ️ Supabase déjà initialisé');
-        }
+        // Use SupabaseService to initialize with environment variables
+        await SupabaseService.initialize();
+        print('✅ Supabase initialisé avec succès');
       } catch (e) {
         print('❌ Erreur lors de l\'initialisation de Supabase: $e');
         rethrow;

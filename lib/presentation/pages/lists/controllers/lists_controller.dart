@@ -8,6 +8,7 @@ import 'package:prioris/data/repositories/list_item_repository.dart';
 import 'package:prioris/data/providers/repository_providers.dart';
 import 'package:prioris/domain/services/core/lists_filter_service.dart';
 import 'package:prioris/presentation/services/performance/data_consistency_service.dart';
+import 'package:prioris/infrastructure/services/logger_service.dart';
 import 'package:prioris/presentation/services/performance/performance_monitor.dart';
 import 'package:prioris/domain/services/persistence/adaptive_persistence_service.dart';
 
@@ -125,7 +126,7 @@ class ListsController extends StateNotifier<ListsState> {
   
   /// ADAPTIVE FIX: Initialisation avec service adaptatif
   void _initializeAdaptive() {
-    print('🚀 Initialisation adaptive du ListsController');
+    LoggerService.instance.info('Initialisation adaptive du ListsController', context: 'ListsController');
     
     // Charger les données via le service adaptatif
     loadLists();
@@ -135,7 +136,7 @@ class ListsController extends StateNotifier<ListsState> {
   @Deprecated('Use _initializeAdaptive() instead')
   void _initializeSync() {
     // Repositories déjà prêts via HiveRepositoryRegistry, charger immédiatement
-    print('🚀 Initialisation synchrone du ListsController - chargement immédiat');
+    LoggerService.instance.info('Initialisation synchrone du ListsController - chargement immédiat', context: 'ListsController');
     
     // Charger les données immédiatement
     loadLists();
@@ -162,7 +163,13 @@ class ListsController extends StateNotifier<ListsState> {
 
   /// ADAPTIVE FIX: Charge toutes les listes via le service adaptatif
   Future<void> loadLists() async {
-    print('💾 Début chargement des listes via service adaptatif...');
+    // DISPOSAL FIX: Ne rien faire si le controller est disposé
+    if (!isSafelyMounted) {
+      LoggerService.instance.warning('Tentative de chargement après disposal - opération ignorée', context: 'ListsController');
+      return;
+    }
+    
+    LoggerService.instance.debug('Début chargement des listes via service adaptatif', context: 'ListsController');
     
     await _executeWithLoading(() async {
       try {
@@ -171,21 +178,32 @@ class ListsController extends StateNotifier<ListsState> {
         // ADAPTIVE: Utiliser le service adaptatif ou fallback vers repository legacy
         if (_adaptivePersistenceService != null) {
           lists = await _adaptivePersistenceService.getAllLists();
-          print('✓ ${lists.length} listes chargées via AdaptivePersistenceService (${_adaptivePersistenceService.currentMode})');
+          if (isSafelyMounted) {
+            LoggerService.instance.info('${lists.length} listes chargées via AdaptivePersistenceService (${_adaptivePersistenceService.currentMode})', context: 'ListsController');
+          }
         } else if (_listRepository != null) {
           // Fallback legacy
           lists = await _listRepository!.getAllLists();
-          print('✓ ${lists.length} listes chargées depuis repository legacy');
+          if (isSafelyMounted) {
+            LoggerService.instance.info('${lists.length} listes chargées depuis repository legacy', context: 'ListsController');
+          }
         } else {
           throw StateError('Aucun service de persistance configuré');
         }
         
-        await _handleListsLoaded(lists);
-        
-        print('✓ Chargement terminé - ${state.lists.length} listes dans l\'\u00e9tat');
+        // DISPOSAL FIX: Vérifier isSafelyMounted avant traitement
+        if (isSafelyMounted) {
+          await _handleListsLoaded(lists);
+          // SAFE STATE ACCESS: Accès sécurisé à l'état après vérification
+          try {
+            print('✓ Chargement terminé - ${state.lists.length} listes dans l\'\u00e9tat');
+          } catch (e) {
+            print('⚠️ Impossible d\'accéder à l\'état après chargement (controller disposé)');
+          }
+        }
       } catch (e) {
-        print('❌ Erreur lors du chargement des listes: $e');
-        if (mounted) {
+        LoggerService.instance.error('Erreur lors du chargement des listes', context: 'ListsController', error: e);
+        if (isSafelyMounted) {
           _setErrorState('Erreur lors du chargement des listes: $e');
         }
         rethrow;
@@ -647,45 +665,105 @@ class ListsController extends StateNotifier<ListsState> {
 
   /// Efface les erreurs
   void clearError() {
-    if (mounted) {
-      state = state.copyWith(error: null);
+    if (isSafelyMounted) {
+      try {
+        state = state.copyWith(error: null);
+      } catch (e) {
+        print('⚠️ Erreur lors de l\'effacement de l\'erreur: $e');
+      }
     }
   }
 
   /// Nettoie les ressources
   void cleanup() {
-    _filterService.clearCache();
+    // Le nettoyage peut se faire même après dispose dans certains cas
+    try {
+      _filterService.clearCache();
+    } catch (e) {
+      print('⚠️ Erreur lors du nettoyage des ressources: $e');
+    }
+  }
+  
+  // LIFECYCLE FIX: Flag pour éviter les doubles dispositions
+  bool _isDisposed = false;
+  
+  /// LIFECYCLE FIX: Override dispose pour gérer la disposition correctement
+  @override  
+  void dispose() {
+    // DISPOSAL FIX: Éviter les doubles dispositions
+    if (_isDisposed) {
+      print('⚠️ Tentative de double disposition évitée');
+      return;
+    }
+    
+    _isDisposed = true;
+    
+    // Nettoyer les ressources avant la disposition
+    try {
+      cleanup();
+    } catch (e) {
+      // Ignorer les erreurs de nettoyage lors de la disposition
+      print('⚠️ Erreur lors du nettoyage pendant dispose: $e');
+    }
+    
+    // Appeler la disposition parente en toute sécurité
+    try {
+      super.dispose();
+    } catch (e) {
+      print('⚠️ Erreur lors de la disposition parente: $e');
+    }
+  }
+  
+  /// LIFECYCLE FIX: Vérification sécurisée du statut mounted
+  bool get isSafelyMounted {
+    try {
+      return mounted && !_isDisposed;
+    } catch (e) {
+      // En cas d'erreur d'accès à mounted, considérer comme non-mounted
+      return false;
+    }
   }
 
   // --- Méthodes privées ---
 
 
   /// Exécute une fonction avec gestion du loading et des erreurs
+  /// LIFECYCLE FIX: Vérifier isSafelyMounted avant toute mise à jour d'état
   Future<void> _executeWithLoading(Future<void> Function() action) async {
+    if (!isSafelyMounted) return; // DISPOSAL FIX: Ne rien faire si disposé
+    
     _setLoadingState(true);
     
     try {
       await action();
-      _setLoadingState(false);
+      if (isSafelyMounted) _setLoadingState(false); // DISPOSAL FIX: Vérifier mounted
     } catch (e) {
-      _setErrorState(e.toString());
+      if (isSafelyMounted) _setErrorState(e.toString()); // DISPOSAL FIX: Vérifier mounted
     }
   }
 
   /// Définit l'état de chargement
   void _setLoadingState(bool isLoading) {
-    if (mounted) {
-      state = state.copyWith(isLoading: isLoading, error: null);
+    if (isSafelyMounted) {
+      try {
+        state = state.copyWith(isLoading: isLoading, error: null);
+      } catch (e) {
+        print('⚠️ Erreur lors de la mise à jour de l\'état de chargement: $e');
+      }
     }
   }
 
   /// Définit l'état d'erreur
   void _setErrorState(String errorMessage) {
-    if (mounted) {
-      state = state.copyWith(
-        isLoading: false,
-        error: 'Erreur: $errorMessage',
-      );
+    if (isSafelyMounted) {
+      try {
+        state = state.copyWith(
+          isLoading: false,
+          error: 'Erreur: $errorMessage',
+        );
+      } catch (e) {
+        print('⚠️ Erreur lors de la mise à jour de l\'état d\'erreur: $e');
+      }
     }
   }
 

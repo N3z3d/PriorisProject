@@ -60,6 +60,12 @@ class MockListsControllerTest extends _i1.Mock implements _i2.ListsController {
   }
 
   @override
+  bool get isSafelyMounted => (super.noSuchMethod(
+        Invocation.getter(#isSafelyMounted),
+        returnValue: false,
+      ) as bool);
+
+  @override
   set onError(_i4.ErrorListener? _onError) => super.noSuchMethod(
         Invocation.setter(
           #onError,
@@ -314,6 +320,15 @@ class MockListsControllerTest extends _i1.Mock implements _i2.ListsController {
       );
 
   @override
+  void dispose() => super.noSuchMethod(
+        Invocation.method(
+          #dispose,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
   bool updateShouldNotify(
     _i2.ListsState? old,
     _i2.ListsState? current,
@@ -342,15 +357,6 @@ class MockListsControllerTest extends _i1.Mock implements _i2.ListsController {
         ),
         returnValue: () {},
       ) as _i4.RemoveListener);
-
-  @override
-  void dispose() => super.noSuchMethod(
-        Invocation.method(
-          #dispose,
-          [],
-        ),
-        returnValueForMissingStub: null,
-      );
 }
 
 /// A class which mocks [CustomListRepository].

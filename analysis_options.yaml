@@ -11,8 +11,9 @@ include: package:flutter_lints/flutter.yaml
 
 analyzer:
   errors:
-    deprecated_member_use: ignore
-    deprecated_member_use_from_same_package: ignore
+    # Remove deprecated API warnings ignore to enforce modern API usage
+    # deprecated_member_use: ignore
+    # deprecated_member_use_from_same_package: ignore
 
 linter:
   # The lint rules applied to this project can be customized in the
@@ -26,5 +27,24 @@ linter:
   # `// ignore_for_file: name_of_lint` syntax on the line or in the file
   # producing the lint.
   rules:
+    # Enforce good coding practices
     constant_identifier_names: false
-    # avoid_print: false  # Uncomment to disable the `
+    avoid_print: true  # Now enforced since we have structured logging
+    prefer_const_constructors: true
+    prefer_const_declarations: true
+    prefer_final_fields: true
+    avoid_unnecessary_containers: true
+    avoid_web_libraries_in_flutter: true
+    use_key_in_widget_constructors: true
+    prefer_single_quotes: true
+    
+    # Code organization
+    sort_constructors_first: true
+    sort_pub_dependencies: true
+    
+    # Performance
+    avoid_function_literals_in_foreach_calls: true
+    prefer_collection_literals: true
+    
+    # Accessibility
+    use_colored_box: true
