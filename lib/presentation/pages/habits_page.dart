@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/data/repositories/habit_repository.dart';
+import 'package:prioris/data/providers/habits_state_provider.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
 import 'package:prioris/presentation/pages/habits/widgets/habit_form_widget.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
@@ -31,12 +32,170 @@ class _HabitsPageState extends ConsumerState<HabitsPage> with TickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    final habitsAsync = ref.watch(allHabitsProvider);
-    
+    // 🚀 NOUVELLE ARCHITECTURE RÉACTIVE: Utilise le StateNotifier
+    final habits = ref.watch(reactiveHabitsProvider);
+    final isLoading = ref.watch(habitsLoadingProvider);
+    final error = ref.watch(habitsErrorProvider);
+
+    // Auto-charge les habitudes si nécessaire
+    if (habits.isEmpty && !isLoading && error == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(habitsStateProvider.notifier).loadHabits();
+      });
+    }
+
     return Scaffold(
-      appBar: _buildAppBar(),
-      body: _buildBody(habitsAsync),
+      body: Column(
+        children: [
+          _buildContextualHeader(),
+          Expanded(child: _buildBodyReactive(habits, isLoading, error)),
+        ],
+      ),
       floatingActionButton: _buildFloatingActionButton(),
+    );
+  }
+
+  /// Construit le header premium pour la section Habitudes
+  Widget _buildContextualHeader() {
+    return Container(
+      decoration: _buildPremiumHeaderDecoration(),
+      child: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            // Header avec titre et icône premium
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+              child: Row(
+                children: [
+                  // Icône élégante avec dégradé
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.white.withValues(alpha: 0.2),
+                          Colors.white.withValues(alpha: 0.1),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        width: 0.5,
+                      ),
+                    ),
+                    child: const Icon(
+                      Icons.psychology_outlined,
+                      color: Colors.white,
+                      size: 22,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  // Titre avec style premium
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Habitudes & Routines',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                            letterSpacing: -0.2,
+                          ),
+                        ),
+                        Text(
+                          'Construisez votre meilleure version',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white.withValues(alpha: 0.8),
+                            letterSpacing: 0.1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Tabs avec design premium
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  width: 0.5,
+                ),
+              ),
+              child: TabBar(
+                controller: _tabController,
+                indicator: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.25),
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                indicatorPadding: const EdgeInsets.all(2),
+                labelColor: Colors.white,
+                unselectedLabelColor: Colors.white.withValues(alpha: 0.7),
+                labelStyle: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
+                unselectedLabelStyle: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 13,
+                ),
+                dividerColor: Colors.transparent,
+                tabs: const [
+                  Tab(text: 'En cours'),
+                  Tab(text: 'Terminées'),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Crée la décoration premium pour le header
+  BoxDecoration _buildPremiumHeaderDecoration() {
+    return BoxDecoration(
+      gradient: LinearGradient(
+        colors: [
+          AppTheme.primaryColor, // Bleu professionnel
+          AppTheme.accentColor,  // Violet élégant
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        stops: const [0.0, 1.0],
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: AppTheme.primaryColor.withValues(alpha: 0.3),
+          blurRadius: 20,
+          offset: const Offset(0, 8),
+          spreadRadius: -4,
+        ),
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.1),
+          blurRadius: 8,
+          offset: const Offset(0, 4),
+        ),
+      ],
     );
   }
 
@@ -48,7 +207,7 @@ class _HabitsPageState extends ConsumerState<HabitsPage> with TickerProviderStat
         decoration: BoxDecoration(
           // Fond professionnel avec couleur unie professionnelle
           color: AppTheme.professionalSurfaceColor,
-          border: Border(
+          border: const Border(
             bottom: BorderSide(
               color: AppTheme.dividerColor,
               width: 1,
@@ -78,24 +237,28 @@ class _HabitsPageState extends ConsumerState<HabitsPage> with TickerProviderStat
     );
   }
 
-  /// Construit le corps de la page
-  Widget _buildBody(AsyncValue<List<Habit>> habitsAsync) {
+  /// Construit le corps de la page avec architecture réactive
+  Widget _buildBodyReactive(List<Habit> habits, bool isLoading, String? error) {
     return TabBarView(
       controller: _tabController,
       children: [
-        _buildHabitsTab(habitsAsync),
+        _buildHabitsTabReactive(habits, isLoading, error),
         _buildAddTab(),
       ],
     );
   }
 
-  /// Construit l'onglet des habitudes
-  Widget _buildHabitsTab(AsyncValue<List<Habit>> habitsAsync) {
-    return habitsAsync.when(
-      data: (habits) => _buildHabitsList(habits),
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => _buildErrorState(error),
-    );
+  /// Construit l'onglet des habitudes avec architecture réactive
+  Widget _buildHabitsTabReactive(List<Habit> habits, bool isLoading, String? error) {
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    
+    if (error != null) {
+      return _buildErrorState(error);
+    }
+    
+    return _buildHabitsList(habits);
   }
 
   /// Construit l'onglet d'ajout
@@ -212,7 +375,7 @@ class _HabitsPageState extends ConsumerState<HabitsPage> with TickerProviderStat
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadiusTokens.modal),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadiusTokens.modal),
       child: Container(
         decoration: _buildCardDecoration(),
         child: ListTile(
@@ -276,6 +439,7 @@ class _HabitsPageState extends ConsumerState<HabitsPage> with TickerProviderStat
   /// Construit le menu d'actions pour l'habitude
   Widget _buildHabitMenu(Habit habit) {
     return PopupMenuButton<String>(
+      tooltip: 'Afficher le menu',
       onSelected: (value) => _handleHabitAction(value, habit),
       itemBuilder: (context) => [
         _buildMenuAction('record', Icons.check_circle, 'Enregistrer'),
@@ -301,36 +465,52 @@ class _HabitsPageState extends ConsumerState<HabitsPage> with TickerProviderStat
 
   /// Construit l'indicateur de progression
   Widget _buildHabitProgress(Habit habit) {
-    // Logique simplifiée pour l'exemple
-    final progress = 0.7; // À implémenter selon vos besoins
-    
+    // Utilisation des vraies données de l'habitude
+    final progress = habit.getSuccessRate(days: 7); // Taux de réussite sur 7 jours
+    final streak = habit.getCurrentStreak();
+    final completedToday = habit.isCompletedToday();
+
+    // Calculer les jours réussis cette semaine
+    final successfulDays = (progress * 7).round();
+
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              '${(progress * 100).toInt()}% cette semaine',
+              '${(progress * 100).round()}% cette semaine',
               style: TextStyle(
                 fontSize: 12,
                 color: Colors.grey[600],
               ),
             ),
             Text(
-              '7/10 jours',
+              '$successfulDays/7 jours',
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
-                color: AppTheme.accentColor,
+                color: successfulDays > 0 ? AppTheme.accentColor : Colors.grey[500],
               ),
             ),
           ],
         ),
+        if (streak > 0) ...[
+          const SizedBox(height: 2),
+          Text(
+            'Série: $streak jour${streak > 1 ? 's' : ''} 🔥',
+            style: TextStyle(
+              fontSize: 10,
+              color: AppTheme.successColor,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
         const SizedBox(height: 4),
         LinearProgressIndicator(
           value: progress,
           backgroundColor: Colors.grey[300],
-          valueColor: AlwaysStoppedAnimation<Color>(AppTheme.accentColor),
+          valueColor: AlwaysStoppedAnimation<Color>(progress > 0 ? AppTheme.accentColor : Colors.grey[400]!),
         ),
       ],
     );
@@ -339,25 +519,36 @@ class _HabitsPageState extends ConsumerState<HabitsPage> with TickerProviderStat
   /// Construit le bouton d'action flottant
   Widget _buildFloatingActionButton() {
     return FloatingActionButton(
-      heroTag: "habits_fab",
+      heroTag: 'habits_fab',
       onPressed: () => _tabController.animateTo(1),
       backgroundColor: AppTheme.accentColor,
       child: const Icon(Icons.add, color: Colors.white),
     );
   }
 
-  /// Ajoute une nouvelle habitude
+  /// Ajoute une nouvelle habitude avec architecture réactive
   Future<void> _addHabit(Habit habit) async {
-    await ref.read(habitRepositoryProvider).addHabit(habit);
-    ref.invalidate(allHabitsProvider);
-    
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Habitude "${habit.name}" créée avec succès !'),
-          backgroundColor: AppTheme.successColor,
-        ),
-      );
+    try {
+      // 🚀 UTILISE LA NOUVELLE ARCHITECTURE RÉACTIVE
+      await ref.addHabitReactive(habit);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Habitude "${habit.name}" créée avec succès !'),
+            backgroundColor: AppTheme.successColor,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur lors de la création: $e'),
+            backgroundColor: AppTheme.errorColor,
+          ),
+        );
+      }
     }
   }
 
@@ -413,12 +604,12 @@ class _HabitsPageState extends ConsumerState<HabitsPage> with TickerProviderStat
             onPressed: () async {
               final navigator = Navigator.of(context);
               final scaffoldMessenger = ScaffoldMessenger.of(context);
-              
+
               try {
-                await ref.read(habitRepositoryProvider).deleteHabit(habit.id);
-                ref.invalidate(allHabitsProvider);
+                // 🚀 UTILISE LA NOUVELLE ARCHITECTURE RÉACTIVE
+                await ref.deleteHabitReactive(habit.id);
                 navigator.pop();
-                
+
                 if (mounted) {
                   scaffoldMessenger.showSnackBar(
                     SnackBar(
@@ -464,4 +655,5 @@ class _HabitsPageState extends ConsumerState<HabitsPage> with TickerProviderStat
         return Icons.star;
     }
   }
-} 
+}
+
