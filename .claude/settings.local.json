@@ -8,7 +8,8 @@
   "permissions": {
     "allow": [
       "Bash(do echo \"=== $file ===\")",
-      "Bash(do basename \"$file\" .dart)"
+      "Bash(do basename \"$file\" .dart)",
+      "Read(//c/Users/**)"
     ],
     "deny": [],
     "ask": []
