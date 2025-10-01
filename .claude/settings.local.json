@@ -7,7 +7,7 @@
   },
   "permissions": {
     "allow": [
-      "Bash(if exist \"lib\\presentation\\pages\\lists\\controllers\\state\"\" rmdir /s /q \"libpresentationpageslistscontrollersstate \")"
+      "Bash(do echo \"=== $file ===\")"
     ],
     "deny": [],
     "ask": []
