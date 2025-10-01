@@ -7,7 +7,8 @@
   },
   "permissions": {
     "allow": [
-      "Bash(do echo \"=== $file ===\")"
+      "Bash(do echo \"=== $file ===\")",
+      "Bash(do basename \"$file\" .dart)"
     ],
     "deny": [],
     "ask": []
