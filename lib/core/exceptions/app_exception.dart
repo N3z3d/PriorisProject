@@ -224,7 +224,6 @@ class ExceptionHandler {
         message: 'Format invalide: ${error.message}',
         userMessage: 'Format de données invalide',
         context: context,
-        originalError: error,
         stackTrace: stackTrace,
       );
     }

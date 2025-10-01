@@ -1,10 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
+// import 'package:fl_chart/fl_chart.dart';  // Temporarily disabled
 import 'package:prioris/domain/models/core/entities/habit.dart';
 import 'package:prioris/domain/models/core/entities/task.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'habit_calculation_service.dart';
 import 'task_calculation_service.dart';
+
+// Temporary placeholder classes for fl_chart types
+class FlSpot {
+  final double x;
+  final double y;
+  const FlSpot(this.x, this.y);
+}
+
+class PieChartSectionData {
+  final double value;
+  final Color color;
+  final String title;
+  const PieChartSectionData({required this.value, required this.color, this.title = ''});
+}
+
+class BarChartGroupData {
+  final int x;
+  final List<dynamic> barRods;
+  const BarChartGroupData({required this.x, this.barRods = const []});
+}
 
 /// Service spécialisé dans les calculs de progression et génération de données pour graphiques
 /// 

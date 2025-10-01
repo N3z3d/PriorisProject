@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:prioris/infrastructure/services/logger_service.dart';
 
 /// Base interfaces for CQRS pattern implementation
 /// 
@@ -213,15 +214,15 @@ class LoggingCommandMiddleware extends CommandMiddleware {
     Future<void> Function() next,
   ) async {
     final stopwatch = Stopwatch()..start();
-    print('📨 Executing command: ${TCommand.toString()}');
-    
+    LoggerService.instance.info('📨 Executing command: ${TCommand.toString()}', context: 'CommandBus');
+
     try {
       await next();
       stopwatch.stop();
-      print('✅ Command completed in ${stopwatch.elapsedMilliseconds}ms');
+      LoggerService.instance.info('✅ Command completed in ${stopwatch.elapsedMilliseconds}ms', context: 'CommandBus');
     } catch (e) {
       stopwatch.stop();
-      print('❌ Command failed in ${stopwatch.elapsedMilliseconds}ms: $e');
+      LoggerService.instance.error('❌ Command failed in ${stopwatch.elapsedMilliseconds}ms: $e', context: 'CommandBus', error: e);
       rethrow;
     }
   }
@@ -235,16 +236,16 @@ class LoggingQueryMiddleware extends QueryMiddleware {
     Future<TResult> Function() next,
   ) async {
     final stopwatch = Stopwatch()..start();
-    print('🔍 Executing query: ${TQuery.toString()}');
-    
+    LoggerService.instance.info('🔍 Executing query: ${TQuery.toString()}', context: 'QueryBus');
+
     try {
       final result = await next();
       stopwatch.stop();
-      print('✅ Query completed in ${stopwatch.elapsedMilliseconds}ms');
+      LoggerService.instance.info('✅ Query completed in ${stopwatch.elapsedMilliseconds}ms', context: 'QueryBus');
       return result;
     } catch (e) {
       stopwatch.stop();
-      print('❌ Query failed in ${stopwatch.elapsedMilliseconds}ms: $e');
+      LoggerService.instance.error('❌ Query failed in ${stopwatch.elapsedMilliseconds}ms: $e', context: 'QueryBus', error: e);
       rethrow;
     }
   }

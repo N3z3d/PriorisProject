@@ -22,7 +22,7 @@ class SimplifiedLogoutDialog extends ConsumerWidget {
       explicitChildNodes: true,
       child: AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadiusTokens.dialog,
+          borderRadius: BorderRadiusTokens.modal,
         ),
         // WCAG 2.4.3 : Title accessible pour lecteurs d'écran
         title: Semantics(
@@ -111,12 +111,6 @@ class SimplifiedLogoutDialog extends ConsumerWidget {
             child: InkWell(
               // WCAG 2.1.1 : Support navigation clavier
               onTap: () => _showDataClearConfirmation(context, ref),
-              onFocus: (hasFocus) {
-                if (hasFocus) {
-                  // WCAG 1.4.13 : Annoncer le contenu au focus
-                  _announceDestructiveAction();
-                }
-              },
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Row(
@@ -156,7 +150,6 @@ class SimplifiedLogoutDialog extends ConsumerWidget {
             child: CommonButton(
               onPressed: () => Navigator.of(context).pop('logout_keep_data'),
               text: 'Se déconnecter',
-              isPrimary: true,
             ),
           ),
         ],
@@ -182,7 +175,7 @@ class SimplifiedLogoutDialog extends ConsumerWidget {
         explicitChildNodes: true,
         child: AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadiusTokens.dialog,
+            borderRadius: BorderRadiusTokens.modal,
           ),
           title: Semantics(
             header: true,
@@ -257,6 +250,7 @@ class SimplifiedLogoutDialog extends ConsumerWidget {
             ),
           ],
         ),
+      ),
     );
   }
 }

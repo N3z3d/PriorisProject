@@ -237,11 +237,4 @@ class ListItem extends HiveObject {
   }
 
   /// --- Legacy compatibility pour les anciens tests ---
-  /// Alias vers toJson
-  @Deprecated('Utiliser toJson()')
-  Map<String, dynamic> toMap() => toJson();
-
-  /// Alias vers fromJson
-  @Deprecated('Utiliser ListItem.fromJson()')
-  static ListItem fromMap(Map<String, dynamic> map) => ListItem.fromJson(map);
 }

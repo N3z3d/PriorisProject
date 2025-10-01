@@ -27,15 +27,40 @@ class AuthService {
     required String password,
     String? fullName,
   }) async {
+    LoggerService.instance.info('📝 Début tentative d\'inscription', context: 'AuthService.signUp');
+    LoggerService.instance.debug('Email: $email', context: 'AuthService.signUp');
+
     try {
+      // Vérifier la configuration actuelle
+      final config = AppConfig.instance;
+      LoggerService.instance.debug('URL Supabase: ${config.supabaseUrl}', context: 'AuthService.signUp');
+
+      // Vérifier si on est en mode offline
+      final isOfflineMode = AppConfig.shouldEnableOfflineOnlyMode(config.supabaseUrl);
+      LoggerService.instance.info('Mode offline détecté: $isOfflineMode', context: 'AuthService.signUp');
+
+      if (isOfflineMode) {
+        LoggerService.instance.warning('❌ Tentative d\'inscription bloquée - Mode offline activé', context: 'AuthService.signUp');
+        throw Exception('Registration unavailable in offline mode. Please configure real Supabase credentials in .env file to enable online features.');
+      }
+
+      LoggerService.instance.info('✅ Configuration valide - Tentative d\'inscription Supabase', context: 'AuthService.signUp');
+
       final response = await _supabase.auth.signUp(
         email: email,
         password: password,
         data: fullName != null ? {'full_name': fullName} : null,
       );
-      
+
+      if (response.user != null) {
+        LoggerService.instance.info('🎉 Inscription réussie pour l\'utilisateur: ${response.user!.id}', context: 'AuthService.signUp');
+      } else {
+        LoggerService.instance.warning('⚠️ Inscription sans utilisateur retourné', context: 'AuthService.signUp');
+      }
+
       return response;
     } catch (e) {
+      LoggerService.instance.error('❌ Erreur lors de l\'inscription: $e', context: 'AuthService.signUp', error: e);
       rethrow;
     }
   }
@@ -45,14 +70,52 @@ class AuthService {
     required String email,
     required String password,
   }) async {
+    LoggerService.instance.info('🔐 Début tentative de connexion', context: 'AuthService.signIn');
+    LoggerService.instance.debug('Email: $email', context: 'AuthService.signIn');
+
     try {
+      // Vérifier la configuration actuelle
+      final config = AppConfig.instance;
+      LoggerService.instance.debug('URL Supabase: ${config.supabaseUrl}', context: 'AuthService.signIn');
+      final key = config.supabaseAnonKey;
+      final maskedKey = key.length > 20 ? '${key.substring(0, 20)}...' : '${key.substring(0, key.length)}...';
+      LoggerService.instance.debug('Clé anonyme (tronquée): $maskedKey', context: 'AuthService.signIn');
+
+      // Vérifier si on est en mode offline
+      final isOfflineMode = AppConfig.shouldEnableOfflineOnlyMode(config.supabaseUrl);
+      LoggerService.instance.info('Mode offline détecté: $isOfflineMode', context: 'AuthService.signIn');
+
+      if (isOfflineMode) {
+        LoggerService.instance.warning('❌ Tentative de connexion bloquée - Mode offline activé', context: 'AuthService.signIn');
+        throw Exception('Authentication unavailable in offline mode. Please configure real Supabase credentials in .env file to enable online features.');
+      }
+
+      LoggerService.instance.info('✅ Configuration valide - Tentative de connexion Supabase', context: 'AuthService.signIn');
+
       final response = await _supabase.auth.signInWithPassword(
         email: email,
         password: password,
       );
-      
+
+      if (response.user != null) {
+        LoggerService.instance.info('🎉 Connexion réussie pour l\'utilisateur: ${response.user!.id}', context: 'AuthService.signIn');
+        LoggerService.instance.debug('Session valide: ${response.session != null}', context: 'AuthService.signIn');
+      } else {
+        LoggerService.instance.warning('⚠️ Connexion sans utilisateur retourné', context: 'AuthService.signIn');
+      }
+
       return response;
     } catch (e) {
+      LoggerService.instance.error('❌ Erreur lors de la connexion: $e', context: 'AuthService.signIn', error: e);
+      LoggerService.instance.debug('Type d\'erreur: ${e.runtimeType}', context: 'AuthService.signIn');
+
+      // Log supplémentaire pour les erreurs Supabase spécifiques
+      if (e.toString().contains('AuthRetryableFetchException')) {
+        LoggerService.instance.error('🔥 AuthRetryableFetchException détectée - Problème de réseau/configuration', context: 'AuthService.signIn');
+        final config = AppConfig.instance;
+        LoggerService.instance.error('URL utilisée: ${config.supabaseUrl}', context: 'AuthService.signIn');
+      }
+
       rethrow;
     }
   }
@@ -75,9 +138,20 @@ class AuthService {
   
   /// Déconnexion
   Future<void> signOut() async {
+    LoggerService.instance.info('🚪 Début tentative de déconnexion', context: 'AuthService.signOut');
+
     try {
+      final currentUserId = currentUser?.id;
+      if (currentUserId != null) {
+        LoggerService.instance.info('Déconnexion de l\'utilisateur: $currentUserId', context: 'AuthService.signOut');
+      } else {
+        LoggerService.instance.info('Aucun utilisateur connecté à déconnecter', context: 'AuthService.signOut');
+      }
+
       await _supabase.auth.signOut();
+      LoggerService.instance.info('✅ Déconnexion réussie', context: 'AuthService.signOut');
     } catch (e) {
+      LoggerService.instance.error('❌ Erreur lors de la déconnexion: $e', context: 'AuthService.signOut', error: e);
       rethrow;
     }
   }

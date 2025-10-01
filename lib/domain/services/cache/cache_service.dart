@@ -2,10 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:hive/hive.dart';
+import 'interfaces/cache_interface.dart';
 
 /// Service de cache local persistant avec Hive
 /// Implémente un cache intelligent avec LRU, TTL, compression et monitoring
-class CacheService {
+///
+/// SOLID: Implements CacheInterface following Dependency Inversion Principle
+class CacheService implements CacheInterface<dynamic> {
   static const String _cacheBoxName = 'prioris_cache';
   static const String _metadataBoxName = 'prioris_metadata';
   static const String _statsBoxName = 'prioris_stats';
@@ -33,9 +36,10 @@ class CacheService {
   }
   
   /// Sauvegarde une valeur dans le cache avec TTL optionnel
-  Future<void> set<T>(
-    String key, 
-    T value, {
+  @override
+  Future<void> set(
+    String key,
+    dynamic value, {
     Duration? ttl,
     bool compress = true,
     CachePriority priority = CachePriority.normal,
@@ -65,7 +69,8 @@ class CacheService {
   }
   
   /// Récupère une valeur du cache
-  Future<T?> get<T>(String key) async {
+  @override
+  Future<dynamic> get(String key) async {
     try {
       // Vérifier l'expiration
       if (_isExpired(key)) {
@@ -81,7 +86,7 @@ class CacheService {
       }
       
       // Décompression si nécessaire
-      final value = await _decompressData<T>(data);
+      final value = await _decompressData(data);
       
       // Mise à jour du temps d'accès (LRU)
       _accessTimes[key] = DateTime.now();
@@ -98,11 +103,13 @@ class CacheService {
   }
   
   /// Supprime une entrée du cache
+  @override
   Future<void> remove(String key) async {
     await _remove(key);
   }
   
   /// Vide tout le cache
+  @override
   Future<void> clear() async {
     await _cacheBox.clear();
     await _metadataBox.clear();
@@ -115,6 +122,7 @@ class CacheService {
   }
   
   /// Vérifie si une clé existe et n'est pas expirée
+  @override
   Future<bool> exists(String key) async {
     if (!_cacheBox.containsKey(key)) return false;
     if (_isExpired(key)) {
@@ -239,7 +247,7 @@ class CacheService {
     await _metadataBox.put('expirationTimes', expirationTimesData);
   }
   
-  Future<dynamic> _compressData<T>(T data) async {
+  Future<dynamic> _compressData(dynamic data) async {
     if (data is String && data.length > 1000) {
       // Compression simple pour les longues chaînes
       return Uint8List.fromList(utf8.encode(data));
@@ -247,12 +255,12 @@ class CacheService {
     return data;
   }
   
-  Future<T?> _decompressData<T>(dynamic data) async {
+  Future<dynamic> _decompressData(dynamic data) async {
     if (data is Uint8List) {
       // Décompression
-      return utf8.decode(data) as T;
+      return utf8.decode(data);
     }
-    return data as T;
+    return data;
   }
   
   Future<void> _updateStats(String operation, String key, dynamic data) async {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 import 'package:prioris/presentation/widgets/common/forms/common_button.dart';
@@ -38,7 +39,7 @@ class SimplifiedDataOnboarding extends ConsumerWidget {
             ),
           ],
         ),
-      child: Column(
+        child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           // Icône principale rassurante
@@ -137,7 +138,6 @@ class SimplifiedDataOnboarding extends ConsumerWidget {
                   onGetStarted?.call();
                 },
                 text: 'Créer ma première liste',
-                isPrimary: true,
               ),
             ),
           ),
@@ -160,6 +160,7 @@ class SimplifiedDataOnboarding extends ConsumerWidget {
             ),
           ),
         ],
+        ),
       ),
     );
   }
@@ -248,7 +249,7 @@ class SimplifiedDataOnboarding extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadiusTokens.dialog,
+          borderRadius: BorderRadiusTokens.modal,
         ),
         title: Row(
           children: [
@@ -288,15 +289,15 @@ class SimplifiedDataOnboarding extends ConsumerWidget {
           CommonButton(
             onPressed: () => Navigator.of(context).pop(),
             text: 'Compris',
-            isPrimary: true,
           ),
         ],
       ),
     );
   }
 
-  void _markOnboardingCompleted() {
-    // TODO: Store in shared preferences that onboarding is completed
+  void _markOnboardingCompleted() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('onboarding_completed', true);
   }
 }
 

@@ -1,396 +1,197 @@
 import 'package:flutter/material.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
+import 'package:prioris/presentation/widgets/loading/premium_skeleton_manager.dart';
 
 /// Système de loading skeletons premium avec effets shimmer avancés
+/// REFACTORED: Now uses SOLID architecture with specialized skeleton systems
+/// Maintains backward compatibility while leveraging new modular design
 class PremiumSkeletons {
-  /// Skeleton pour une carte de tâche
+  static final PremiumSkeletonManager _manager = PremiumSkeletonManager();
+  /// Skeleton pour une carte de tâche - REFACTORED using CardSkeletonSystem
   static Widget taskCardSkeleton({
     double? width,
     double height = 120,
     bool showPriority = true,
     bool showProgress = true,
   }) {
-    return _SkeletonContainer(
+    return _manager.createSkeletonVariant(
+      'card_skeleton_system',
+      'task',
       width: width,
       height: height,
-      borderRadius: BorderRadiusTokens.card,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              if (showPriority)
-                _SkeletonBox(
-                  width: 60,
-                  height: 24,
-                  borderRadius: BorderRadiusTokens.badge,
-                ),
-              const Spacer(),
-              _SkeletonBox(
-                width: 24,
-                height: 24,
-                borderRadius: BorderRadiusTokens.radiusCircular,
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          _SkeletonBox(
-            width: double.infinity,
-            height: 20,
-            borderRadius: BorderRadiusTokens.radiusXs,
-          ),
-          const SizedBox(height: 8),
-          _SkeletonBox(
-            width: 200,
-            height: 16,
-            borderRadius: BorderRadiusTokens.radiusXs,
-          ),
-          const Spacer(),
-          if (showProgress)
-            Row(
-              children: [
-                Expanded(
-                  child: _SkeletonBox(
-                    height: 4,
-                    borderRadius: BorderRadiusTokens.progressBar,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                _SkeletonBox(
-                  width: 40,
-                  height: 16,
-                  borderRadius: BorderRadiusTokens.radiusXs,
-                ),
-              ],
-            ),
-        ],
-      ),
+      options: {
+        'showPriority': showPriority,
+        'showProgress': showProgress,
+      },
     );
   }
 
-  /// Skeleton pour une carte d'habitude
+  /// Skeleton pour une carte d'habitude - REFACTORED using CardSkeletonSystem
   static Widget habitCardSkeleton({
     double? width,
     double height = 140,
     bool showStreak = true,
     bool showChart = true,
   }) {
-    return _SkeletonContainer(
+    return _manager.createSkeletonVariant(
+      'card_skeleton_system',
+      'habit',
       width: width,
       height: height,
-      borderRadius: BorderRadiusTokens.card,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              _SkeletonBox(
-                width: 40,
-                height: 40,
-                borderRadius: BorderRadiusTokens.radiusCircular,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _SkeletonBox(
-                      width: double.infinity,
-                      height: 18,
-                      borderRadius: BorderRadiusTokens.radiusXs,
-                    ),
-                    const SizedBox(height: 6),
-                    _SkeletonBox(
-                      width: 120,
-                      height: 14,
-                      borderRadius: BorderRadiusTokens.radiusXs,
-                    ),
-                  ],
-                ),
-              ),
-              if (showStreak)
-                _SkeletonBox(
-                  width: 50,
-                  height: 30,
-                  borderRadius: BorderRadiusTokens.radiusSm,
-                ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          if (showChart)
-            _SkeletonBox(
-              width: double.infinity,
-              height: 40,
-              borderRadius: BorderRadiusTokens.radiusXs,
-            ),
-        ],
-      ),
+      options: {
+        'showStreak': showStreak,
+        'showChart': showChart,
+      },
     );
   }
 
-  /// Skeleton pour une liste d'éléments
+  /// Skeleton pour une liste d'éléments - REFACTORED using ListSkeletonSystem
   static Widget listSkeleton({
     int itemCount = 5,
     double itemHeight = 80,
     double spacing = 12,
   }) {
-    return Column(
-      children: List.generate(itemCount, (index) {
-        return Column(
-          children: [
-            _SkeletonContainer(
-              height: itemHeight,
-              borderRadius: BorderRadiusTokens.card,
-              child: Row(
-                children: [
-                  _SkeletonBox(
-                    width: 50,
-                    height: 50,
-                    borderRadius: BorderRadiusTokens.radiusSm,
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _SkeletonBox(
-                          width: double.infinity,
-                          height: 18,
-                          borderRadius: BorderRadiusTokens.radiusXs,
-                        ),
-                        const SizedBox(height: 8),
-                        _SkeletonBox(
-                          width: 150,
-                          height: 14,
-                          borderRadius: BorderRadiusTokens.radiusXs,
-                        ),
-                      ],
-                    ),
-                  ),
-                  _SkeletonBox(
-                    width: 80,
-                    height: 32,
-                    borderRadius: BorderRadiusTokens.button,
-                  ),
-                ],
-              ),
-            ),
-            if (index < itemCount - 1) SizedBox(height: spacing),
-          ],
-        );
-      }),
+    return _manager.createSkeletonVariant(
+      'list_skeleton_system',
+      'standard',
+      options: {
+        'itemCount': itemCount,
+        'itemHeight': itemHeight,
+        'spacing': spacing,
+      },
     );
   }
 
-  /// Skeleton pour un profil utilisateur
+  /// Skeleton pour un profil utilisateur - REFACTORED using CardSkeletonSystem
   static Widget profileSkeleton({
     double avatarSize = 80,
     bool showStats = true,
   }) {
-    return _SkeletonContainer(
-      borderRadius: BorderRadiusTokens.card,
-      child: Column(
-        children: [
-          _SkeletonBox(
-            width: avatarSize,
-            height: avatarSize,
-            borderRadius: BorderRadiusTokens.radiusCircular,
-          ),
-          const SizedBox(height: 16),
-          _SkeletonBox(
-            width: 120,
-            height: 20,
-            borderRadius: BorderRadiusTokens.radiusXs,
-          ),
-          const SizedBox(height: 8),
-          _SkeletonBox(
-            width: 200,
-            height: 16,
-            borderRadius: BorderRadiusTokens.radiusXs,
-          ),
-          if (showStats) ...[
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(3, (index) {
-                return Column(
-                  children: [
-                    _SkeletonBox(
-                      width: 40,
-                      height: 24,
-                      borderRadius: BorderRadiusTokens.radiusXs,
-                    ),
-                    const SizedBox(height: 8),
-                    _SkeletonBox(
-                      width: 60,
-                      height: 16,
-                      borderRadius: BorderRadiusTokens.radiusXs,
-                    ),
-                  ],
-                );
-              }),
-            ),
-          ],
-        ],
-      ),
+    return _manager.createSkeletonVariant(
+      'card_skeleton_system',
+      'profile',
+      options: {
+        'avatarSize': avatarSize,
+        'showStats': showStats,
+      },
     );
   }
 
-  /// Skeleton pour un graphique
+  /// Skeleton pour un graphique - REFACTORED using GridSkeletonSystem
   static Widget chartSkeleton({
     double height = 200,
     bool showLegend = true,
   }) {
-    return _SkeletonContainer(
+    return _manager.createSkeletonVariant(
+      'grid_skeleton_system',
+      'stats',
       height: height,
-      borderRadius: BorderRadiusTokens.card,
-      child: Column(
-        children: [
-          if (showLegend) ...[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(3, (index) {
-                return Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _SkeletonBox(
-                      width: 12,
-                      height: 12,
-                      borderRadius: BorderRadiusTokens.radiusCircular,
-                    ),
-                    const SizedBox(width: 8),
-                    _SkeletonBox(
-                      width: 60,
-                      height: 16,
-                      borderRadius: BorderRadiusTokens.radiusXs,
-                    ),
-                  ],
-                );
-              }),
-            ),
-            const SizedBox(height: 24),
-          ],
-          Expanded(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: List.generate(7, (index) {
-                final barHeight = 40.0 + (index % 3) * 30.0;
-                return Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: _SkeletonBox(
-                      height: barHeight,
-                      borderRadius: BorderRadiusTokens.radiusXs,
-                    ),
-                  ),
-                );
-              }),
-            ),
-          ),
-        ],
-      ),
+      options: {
+        'showLegend': showLegend,
+        'itemCount': 1, // Single chart item
+      },
     );
   }
 
-  /// Skeleton pour un formulaire
+  /// Skeleton pour un formulaire - REFACTORED using FormSkeletonSystem
   static Widget formSkeleton({
     int fieldCount = 4,
     bool showSubmitButton = true,
   }) {
-    return _SkeletonContainer(
-      borderRadius: BorderRadiusTokens.modal,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _SkeletonBox(
-            width: 200,
-            height: 24,
-            borderRadius: BorderRadiusTokens.radiusXs,
-          ),
-          const SizedBox(height: 24),
-          ...List.generate(fieldCount, (index) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _SkeletonBox(
-                  width: 100 + (index % 3) * 30.0,
-                  height: 16,
-                  borderRadius: BorderRadiusTokens.radiusXs,
-                ),
-                const SizedBox(height: 8),
-                _SkeletonBox(
-                  width: double.infinity,
-                  height: 48,
-                  borderRadius: BorderRadiusTokens.input,
-                ),
-                const SizedBox(height: 16),
-              ],
-            );
-          }),
-          if (showSubmitButton) ...[
-            const SizedBox(height: 8),
-            _SkeletonBox(
-              width: double.infinity,
-              height: 48,
-              borderRadius: BorderRadiusTokens.button,
-            ),
-          ],
-        ],
-      ),
+    return _manager.createSkeletonVariant(
+      'form_skeleton_system',
+      'standard',
+      options: {
+        'fieldCount': fieldCount,
+        'showSubmitButton': showSubmitButton,
+      },
     );
   }
 
-  /// Skeleton pour une grille
+  /// Skeleton pour une grille - REFACTORED using GridSkeletonSystem
   static Widget gridSkeleton({
     int itemCount = 6,
     int crossAxisCount = 2,
     double childAspectRatio = 1.0,
     double spacing = 12,
   }) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: crossAxisCount,
-        childAspectRatio: childAspectRatio,
-        crossAxisSpacing: spacing,
-        mainAxisSpacing: spacing,
-      ),
-      itemCount: itemCount,
-      itemBuilder: (context, index) {
-        return _SkeletonContainer(
-          borderRadius: BorderRadiusTokens.card,
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _SkeletonBox(
-                width: 40,
-                height: 40,
-                borderRadius: BorderRadiusTokens.radiusCircular,
-              ),
-              const SizedBox(height: 12),
-              _SkeletonBox(
-                width: 80,
-                height: 16,
-                borderRadius: BorderRadiusTokens.radiusXs,
-              ),
-              const SizedBox(height: 6),
-              _SkeletonBox(
-                width: 60,
-                height: 14,
-                borderRadius: BorderRadiusTokens.radiusXs,
-              ),
-            ],
-          ),
-        );
+    return _manager.createSkeletonVariant(
+      'grid_skeleton_system',
+      'standard',
+      options: {
+        'itemCount': itemCount,
+        'crossAxisCount': crossAxisCount,
+        'childAspectRatio': childAspectRatio,
+        'spacing': spacing,
       },
     );
   }
+
+  /// ADDED: New skeleton methods using SOLID architecture
+
+  /// Creates adaptive skeleton that automatically detects content type
+  static Widget adaptiveSkeleton({
+    required Widget child,
+    required bool isLoading,
+    String? skeletonType,
+    Duration animationDuration = const Duration(milliseconds: 300),
+    Map<String, dynamic>? options,
+  }) {
+    return _manager.createAdaptiveSkeleton(
+      child: child,
+      isLoading: isLoading,
+      skeletonType: skeletonType,
+      animationDuration: animationDuration,
+      options: options,
+    );
+  }
+
+  /// Creates smart skeleton using type detection
+  static Widget smartSkeleton(
+    String hint, {
+    double? width,
+    double? height,
+    Map<String, dynamic>? options,
+  }) {
+    return _manager.createSmartSkeleton(
+      hint,
+      width: width,
+      height: height,
+      options: options,
+    );
+  }
+
+  /// Creates batch skeletons for lists
+  static List<Widget> batchSkeletons(
+    String skeletonType, {
+    required int count,
+    double? width,
+    double? height,
+    Map<String, dynamic>? options,
+  }) {
+    return _manager.createBatchSkeletons(
+      skeletonType,
+      count: count,
+      width: width,
+      height: height,
+      options: options,
+    );
+  }
+
+  /// Access to the underlying manager for advanced usage
+  static PremiumSkeletonManager get manager => _manager;
+
+  /// Gets system information for debugging
+  static Map<String, dynamic> getSystemInfo() => _manager.getSystemInfo();
+
+  /// Validates if a skeleton type is supported
+  static bool isSkeletonTypeSupported(String skeletonType) =>
+      _manager.isSkeletonTypeSupported(skeletonType);
 }
 
-/// Container de base pour les skeletons avec effet shimmer
+/// LEGACY: Container de base pour les skeletons avec effet shimmer
+/// DEPRECATED: Use SkeletonContainer from skeleton_components.dart instead
+/// Kept for backward compatibility only
 class _SkeletonContainer extends StatefulWidget {
   final Widget child;
   final double? width;
@@ -432,7 +233,7 @@ class _SkeletonContainerState extends State<_SkeletonContainer>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Container(
       width: widget.width,
       height: widget.height,
@@ -460,7 +261,9 @@ class _SkeletonContainerState extends State<_SkeletonContainer>
   }
 }
 
-/// Boîte skeleton de base
+/// LEGACY: Boîte skeleton de base
+/// DEPRECATED: Use SkeletonBox from skeleton_components.dart instead
+/// Kept for backward compatibility only
 class _SkeletonBox extends StatelessWidget {
   final double? width;
   final double? height;
@@ -475,7 +278,7 @@ class _SkeletonBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Container(
       width: width,
       height: height,
@@ -487,7 +290,7 @@ class _SkeletonBox extends StatelessWidget {
   }
 }
 
-// Removed gradient transform class - now using professional solid colors
+// LEGACY: Removed gradient transform class - now using professional solid colors
 
 /// Loading skeleton adaptatif qui s'adapte au contenu
 class AdaptiveSkeletonLoader extends StatefulWidget {

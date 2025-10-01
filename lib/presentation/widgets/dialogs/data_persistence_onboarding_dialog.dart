@@ -12,7 +12,7 @@ class DataPersistenceOnboardingDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return AlertDialog(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadiusTokens.dialog,
+        borderRadius: BorderRadiusTokens.modal,
       ),
       title: Row(
         children: [
@@ -124,7 +124,7 @@ class DataPersistenceOnboardingDialog extends ConsumerWidget {
             _markOnboardingCompleted();
           },
           text: 'Compris !',
-          isPrimary: true,
+          type: ButtonType.primary,
         ),
       ],
     );

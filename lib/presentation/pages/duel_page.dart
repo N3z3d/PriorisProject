@@ -83,7 +83,7 @@ class _DuelPageState extends ConsumerState<DuelPage>
     final hideElo = ref.watch(hideEloScoresProvider);
     
     return AppBar(
-      title: const Text('Prioriser'),
+      title: const Text('Comparaison'),
       flexibleSpace: _buildAppBarBackground(),
       actions: _buildAppBarActions(hideElo),
     );
@@ -315,59 +315,85 @@ class _DuelPageState extends ConsumerState<DuelPage>
 
   /// Charge un nouveau duel en utilisant le service unifié
   Future<void> _loadNewDuel() async {
-    // Éviter les rechargements multiples simultanés
     if (_isLoading) return;
-    
+
     setState(() => _isLoading = true);
-    
+
     try {
       print('🔍 DEBUG: Début de _loadNewDuel');
-      
-      // Utiliser le nouveau service unifié de priorisation
-      final unifiedService = ref.read(unifiedPrioritizationServiceProvider);
-      final allTasks = await unifiedService.getTasksForPrioritization();
-      print('🔍 DEBUG: Tasks classiques trouvées: ${allTasks.length}');
-      
-      // Vérifier s'il y a aussi des ListItems à inclure
-      final listsState = ref.read(listsControllerProvider);
-      print('🔍 DEBUG: Listes disponibles: ${listsState.lists.length}');
-      
-      if (listsState.lists.isNotEmpty) {
-        // Combiner les Task avec les ListItem convertis
-        final allListItems = listsState.lists.expand((list) => list.items).toList();
-        print('🔍 DEBUG: Items de liste trouvés: ${allListItems.length}');
-        
-        final listItemTasks = unifiedService.getListItemsAsTasks(allListItems);
-        print('🔍 DEBUG: Items convertis en tasks: ${listItemTasks.length}');
-        
-        // Fusionner toutes les tâches
-        allTasks.addAll(listItemTasks);
-      }
-      
-      final incompleteTasks = allTasks.where((task) => !task.isCompleted).toList();
-      print('🔍 DEBUG: Total tasks: ${allTasks.length}, Incomplètes: ${incompleteTasks.length}');
-      
-      // CORRECTION: Limiter le nombre de tâches pour éviter la surcharge
-      const maxTasksForPrioritization = 50;
-      List<Task> tasksForDuel = incompleteTasks;
-      
-      if (incompleteTasks.length > maxTasksForPrioritization) {
-        print('🔍 DEBUG: Limitation à $maxTasksForPrioritization tâches pour les performances');
-        tasksForDuel = incompleteTasks.take(maxTasksForPrioritization).toList();
-      }
-      
-      if (tasksForDuel.length >= 2) {
-        tasksForDuel.shuffle();
-        _currentDuel = tasksForDuel.take(2).toList();
-      } else {
-        _currentDuel = null;
-      }
+      final allTasks = await _loadAllAvailableTasks();
+      final tasksForDuel = _prepareTasksForDuel(allTasks);
+      _createDuelFromTasks(tasksForDuel);
     } catch (e) {
       _currentDuel = null;
+      print('🔍 DEBUG: Erreur lors du chargement du duel: $e');
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
       }
+    }
+  }
+
+  /// Charge toutes les tâches disponibles (Tasks + ListItems convertis)
+  Future<List<Task>> _loadAllAvailableTasks() async {
+    final unifiedService = ref.read(unifiedPrioritizationServiceProvider);
+    final allTasks = await unifiedService.getTasksForPrioritization();
+    print('🔍 DEBUG: Tasks classiques trouvées: ${allTasks.length}');
+
+    final combinedTasks = await _combineTasksAndListItems(allTasks, unifiedService);
+    print('🔍 DEBUG: Total tasks après combinaison: ${combinedTasks.length}');
+
+    return combinedTasks;
+  }
+
+  /// Combine les tâches avec les ListItems convertis
+  Future<List<Task>> _combineTasksAndListItems(
+    List<Task> allTasks,
+    dynamic unifiedService,
+  ) async {
+    final listsState = ref.read(listsControllerProvider);
+    print('🔍 DEBUG: Listes disponibles: ${listsState.lists.length}');
+
+    if (listsState.lists.isEmpty) {
+      return allTasks;
+    }
+
+    final allListItems = listsState.lists.expand((list) => list.items).toList();
+    print('🔍 DEBUG: Items de liste trouvés: ${allListItems.length}');
+
+    final listItemTasks = unifiedService.getListItemsAsTasks(allListItems);
+    print('🔍 DEBUG: Items convertis en tasks: ${listItemTasks.length}');
+
+    return [...allTasks, ...listItemTasks];
+  }
+
+  /// Prépare les tâches pour le duel (filtrage et limitation)
+  List<Task> _prepareTasksForDuel(List<Task> allTasks) {
+    final incompleteTasks = allTasks.where((task) => !task.isCompleted).toList();
+    print('🔍 DEBUG: Total tasks: ${allTasks.length}, Incomplètes: ${incompleteTasks.length}');
+
+    return _limitTasksForPerformance(incompleteTasks);
+  }
+
+  /// Limite le nombre de tâches pour éviter la surcharge
+  List<Task> _limitTasksForPerformance(List<Task> incompleteTasks) {
+    const maxTasksForPrioritization = 50;
+
+    if (incompleteTasks.length <= maxTasksForPrioritization) {
+      return incompleteTasks;
+    }
+
+    print('🔍 DEBUG: Limitation à $maxTasksForPrioritization tâches pour les performances');
+    return incompleteTasks.take(maxTasksForPrioritization).toList();
+  }
+
+  /// Crée le duel à partir des tâches préparées
+  void _createDuelFromTasks(List<Task> tasksForDuel) {
+    if (tasksForDuel.length >= 2) {
+      tasksForDuel.shuffle();
+      _currentDuel = tasksForDuel.take(2).toList();
+    } else {
+      _currentDuel = null;
     }
   }
 

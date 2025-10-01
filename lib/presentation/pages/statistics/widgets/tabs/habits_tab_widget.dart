@@ -32,8 +32,8 @@ class HabitsTabWidget extends StatelessWidget {
           
           // Graphique des streaks
           StreaksChartWidget(
-            habitNames: _getHabitNames(),
-            streakData: _getStreakData(),
+            data: _getStreakData(),
+            period: const Duration(days: 30),
           ),
           const SizedBox(height: 24),
           
@@ -56,12 +56,16 @@ class HabitsTabWidget extends StatelessWidget {
   }
 
   /// Génère les données de séries pour le graphique
-  List<double> _getStreakData() {
+  List<Map<String, dynamic>> _getStreakData() {
     if (habits.isEmpty) return [];
-    
+
     // Prendre les 4 premières habitudes ou toutes si moins de 4
     final displayHabits = habits.take(4).toList();
-    return displayHabits.map((habit) => habit.getCurrentStreak().toDouble()).toList();
+    return displayHabits.map((habit) => {
+      'name': habit.name,
+      'streak': habit.getCurrentStreak().toDouble(),
+      'category': habit.category ?? 'Général',
+    }).toList();
   }
 
   /// Génère le top des habitudes basé sur leur taux de réussite

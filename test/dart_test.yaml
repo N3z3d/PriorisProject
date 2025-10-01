@@ -1,0 +1,47 @@
+# Flutter Test Configuration for Performance Optimization
+
+# Test execution settings
+timeout: 30s
+concurrency: 4  # Run tests in parallel
+retry: 1       # Retry failed tests once
+
+# Test patterns for different execution speeds
+tags:
+  fast:
+    description: "Fast unit tests (< 100ms)"
+    timeout: 5s
+  medium:
+    description: "Medium widget tests (< 500ms)"
+    timeout: 10s
+  slow:
+    description: "Integration tests (< 2s)"
+    timeout: 20s
+  integration:
+    description: "End-to-end tests (< 10s)"
+    timeout: 30s
+
+# Platform-specific configurations
+platforms:
+  vm:
+    timeout: 30s
+  chrome:
+    timeout: 60s  # Web tests may need more time
+
+# Memory and resource limits
+resource_limits:
+  memory: 1GB
+
+# Test coverage settings
+coverage:
+  report_on: [lib/**]
+  exclude:
+    - lib/**/*.g.dart       # Generated files
+    - lib/**/*.freezed.dart # Freezed files
+    - lib/**/test_*.dart    # Test utilities
+    - lib/main.dart         # Main entry point
+
+# Performance monitoring
+performance:
+  enable_profiling: true
+  memory_leak_detection: true
+  gc_monitoring: true

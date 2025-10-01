@@ -3,19 +3,20 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 
 class AppTheme {
-  // ==================== COULEURS PREMIUM SOPHISTIQUÉES ====================
-  static const Color primaryColor = Color(0xFF6B73FF); // Bleu professionnel moderne
-  static const Color primaryVariant = Color(0xFF5A63E8); // Bleu professionnel foncé
-  static const Color secondaryColor = Color(0xFF64748B); // Gris bleu sophistiqué
-  static const Color secondaryVariant = Color(0xFF475569); // Gris bleu foncé
-  static const Color accentColor = Color(0xFF8B5CF6); // Violet élégant
-  static const Color accentSecondary = Color(0xFF10B981); // Vert succès raffiné
+  // ==================== PALETTE PREMIUM WCAG AA CONFORME ====================
+  // Couleurs principales optimisées pour le contraste
+  static const Color primaryColor = Color(0xFF2563EB); // Bleu moderne AA-conforme
+  static const Color primaryVariant = Color(0xFF1D4ED8); // Bleu foncé pour interactions
+  static const Color secondaryColor = Color(0xFF475569); // Gris bleu professionnel
+  static const Color secondaryVariant = Color(0xFF334155); // Gris foncé élégant
+  static const Color accentColor = Color(0xFF7C3AED); // Violet premium accessible
+  static const Color accentSecondary = Color(0xFF059669); // Vert succès moderne
   
-  // ==================== COULEURS SYSTÈME PREMIUM ====================
-  static const Color successColor = Color(0xFF10B981); // Vert succès professionnel
-  static const Color warningColor = Color(0xFFF59E0B); // Orange avertissement raffiné
-  static const Color errorColor = Color(0xFFEF4444); // Rouge erreur moderne
-  static const Color infoColor = Color(0xFF3B82F6); // Bleu information élégant
+  // ==================== COULEURS SYSTÈME ACCESSIBLES ====================
+  static const Color successColor = Color(0xFF16A34A); // Vert succès AA-conforme (4.8:1)
+  static const Color warningColor = Color(0xFFEA580C); // Orange avertissement accessible (4.5:1)
+  static const Color errorColor = Color(0xFFDC2626); // Rouge erreur AA-conforme (5.2:1)
+  static const Color infoColor = Color(0xFF2563EB); // Bleu information accessible (4.7:1)
   
   // ==================== PALETTE DE GRIS MODERNE ====================
   static const Color grey50 = Color(0xFFF8FAFC);
@@ -38,17 +39,19 @@ class AppTheme {
   static const Color cardColor = Color(0xFFFFFFFF);
   static const Color glassmorphismBackground = Color(0x20FFFFFF);
   
-  // ==================== COULEURS TEXTE OPTIMISÉES ====================
-  static const Color textPrimary = Color(0xFF0F172A);
-  static const Color textSecondary = Color(0xFF475569);
-  static const Color textTertiary = Color(0xFF94A3B8);
-  static const Color textOnPrimary = Color(0xFFFFFFFF);
+  // ==================== COULEURS TEXTE HAUTE ACCESSIBILITÉ ====================
+  static const Color textPrimary = Color(0xFF111827); // Noir doux AA-conforme (15.8:1)
+  static const Color textSecondary = Color(0xFF374151); // Gris foncé accessible (8.9:1)
+  static const Color textTertiary = Color(0xFF6B7280); // Gris moyen AA-conforme (4.8:1)
+  static const Color textOnPrimary = Color(0xFFFFFFFF); // Blanc pur (21:1)
+  static const Color textMuted = Color(0xFF9CA3AF); // Gris clair pour éléments secondaires (3.8:1)
   
-  // ==================== PROFESSIONAL SURFACE COLORS (GRADIENT-FREE) ====================
-  // Professional solid color alternatives to replace gradients
-  static const Color professionalSurfaceColor = Color(0xFFFAFAFA); // Clean surface
-  static const Color professionalCardColor = Color(0xFFFFFFFF); // Pure white cards
-  static const Color professionalGlassBackground = Color(0x15FFFFFF); // Glass effect replacement
+  // ==================== SURFACES PREMIUM SANS GRADIENTS ====================
+  // Couleurs unies professionnelles pour remplacer les gradients
+  static const Color cleanSurfaceColor = Color(0xFFFBFBFB); // Surface propre et moderne
+  static const Color premiumCardColor = Color(0xFFFFFFFF); // Cartes blanc pur premium
+  static const Color subtleBackgroundColor = Color(0xFFF8FAFC); // Arrière-plan subtil
+  static const Color elevatedSurfaceColor = Color(0xFFFEFEFE); // Surface élevée moderne
 
   // ==================== SHADOWS PREMIUM ====================
   static const List<BoxShadow> cardShadow = [

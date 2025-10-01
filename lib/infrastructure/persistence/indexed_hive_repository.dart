@@ -20,7 +20,6 @@ class IndexedHiveRepository<T> {
   
   // Cache pour optimisation
   final Map<String, T> _cache = {};
-  // final Set<String> _dirtyKeys = {}; // TODO: Implémenter dirty tracking
   
   // Configuration
   final Set<String> indexedFields;

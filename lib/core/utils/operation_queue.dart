@@ -59,7 +59,6 @@ class OperationQueue {
   
   bool _isProcessing = false;
   int _maxConcurrentOperations = 3;
-  Timer? _processingTimer;
   
   /// Add operation to queue and return Future for result
   Future<T> enqueue<T>({
@@ -159,12 +158,7 @@ class OperationQueue {
         
         LoggerService.instance.error('Operation failed after all retries: ${operation.name}',
           context: 'OperationQueue',
-          error: error,
-          data: {
-            'id': operation.id,
-            'totalAttempts': operation.attemptCount,
-            'totalDuration': operation.completedAt!.difference(operation.startedAt!).inMilliseconds,
-          });
+          error: error);
       }
     }
   }

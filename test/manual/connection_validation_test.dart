@@ -27,7 +27,7 @@ Future<void> main() async {
     // 3. Vérifier que c'est une URL Supabase valide
     if (config.supabaseUrl.isEmpty || !config.supabaseUrl.contains('supabase.co')) {
       print('❌ ERREUR: URL Supabase invalide!');
-      print('   L'URL doit être une URL Supabase valide (.supabase.co)');
+      print("   L'URL doit être une URL Supabase valide (.supabase.co)");
       print('   Obtenue: ${config.supabaseUrl}');
       exit(1);
     }

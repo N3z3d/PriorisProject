@@ -6,6 +6,7 @@ import 'package:prioris/data/repositories/hive_list_item_repository.dart';
 import 'package:prioris/data/repositories/supabase/supabase_custom_list_repository.dart';
 import 'package:prioris/data/repositories/supabase/supabase_list_item_repository.dart';
 import 'package:prioris/data/providers/auth_providers.dart';
+import 'package:prioris/data/providers/service_providers.dart';
 import 'package:prioris/domain/services/persistence/adaptive_persistence_service.dart';
 
 /// Providers Clean - Élimination des problèmes Riverpod
@@ -25,15 +26,8 @@ final hiveListItemRepositoryProvider = Provider<HiveListItemRepository>((ref) {
   return HiveListItemRepository();
 });
 
-/// Provider Supabase Custom List Repository - Simple et Direct
-final supabaseCustomListRepositoryProvider = Provider<SupabaseCustomListRepository>((ref) {
-  return SupabaseCustomListRepository();
-});
-
-/// Provider Supabase List Item Repository - Simple et Direct
-final supabaseListItemRepositoryProvider = Provider<SupabaseListItemRepository>((ref) {
-  return SupabaseListItemRepository();
-});
+// Providers moved to service_providers.dart to avoid duplication and ensure proper dependency injection
+// Use supabaseCustomListRepositoryProvider and supabaseListItemRepositoryProvider from service_providers.dart
 
 // ========== PROVIDERS ADAPTATIFS - SANS MODIFICATION CROISÉE ==========
 

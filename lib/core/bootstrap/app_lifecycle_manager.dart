@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:prioris/data/providers/repository_providers.dart';
 import 'package:prioris/infrastructure/services/logger_service.dart';
+import 'package:prioris/data/repositories/base/hive_repository_registry.dart';
+import 'package:prioris/data/repositories/hive_custom_list_repository.dart';
 
 /// Manages application lifecycle events and cleanup
 class AppLifecycleManager with WidgetsBindingObserver {
@@ -84,8 +85,13 @@ class AppLifecycleManager with WidgetsBindingObserver {
   Future<void> _compactHiveBoxes() async {
     try {
       if (HiveRepositoryRegistry.instance.isInitialized) {
-        await HiveRepositoryRegistry.instance.customListRepository.compact();
-        _logger.performance('hive_compaction', const Duration(milliseconds: 50), context: _context);
+        final repository = HiveRepositoryRegistry.instance.customListRepository;
+
+        // Only compact if it's a Hive repository
+        if (repository is HiveCustomListRepository) {
+          await repository.compact();
+          _logger.performance('hive_compaction', const Duration(milliseconds: 50), context: _context);
+        }
       }
     } catch (e) {
       _logger.error('Hive compaction failed', context: _context, error: e);

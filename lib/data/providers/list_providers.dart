@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
-import 'package:prioris/data/providers/repository_providers.dart';
+import 'package:prioris/data/providers/clean_repository_providers.dart';
 import 'package:prioris/domain/services/core/lists_filter_service.dart';
 
 /// Configuration des filtres et tri pour les listes
@@ -346,44 +346,9 @@ final listsConfigProvider = Provider<ListsConfig>((ref) {
 // ALIASES DE COMPATIBILITÉ (pour la migration progressive)
 // ============================================================================
 
-/// Alias pour compatibilité : toutes les listes
-@Deprecated('Utiliser processedListsProvider à la place')
-final allCustomListsProvider = Provider<List<CustomList>>((ref) {
-  final notifier = ref.read(consolidatedListsProvider.notifier);
-  // Auto-load si pas encore chargé
-  if (ref.read(consolidatedListsProvider).rawLists.isEmpty && 
-      !ref.read(consolidatedListsProvider).isLoading) {
-    notifier.loadLists();
-  }
-  return ref.watch(consolidatedListsProvider).rawLists;
-});
 
-/// Alias pour compatibilité : listes par type
-@Deprecated('Utiliser processedListsProvider avec configuration à la place')
-final customListsByTypeProvider = Provider.family<List<CustomList>, ListType>((ref, type) {
-  final lists = ref.watch(allCustomListsProvider);
-  return lists.where((list) => list.type == type).toList();
-});
 
-/// Alias pour compatibilité : statistiques globales
-@Deprecated('Utiliser listsStatisticsProvider à la place')
-final customListsStatsProvider = Provider<Map<String, dynamic>>((ref) {
-  final stats = ref.watch(listsStatisticsProvider);
-  return stats['global'] as Map<String, dynamic>? ?? {};
-});
 
-/// Alias pour compatibilité : recherche simple
-@Deprecated('Utiliser processedListsProvider avec configuration à la place')
-final customListsSearchProvider = Provider.family<List<CustomList>, String>((ref, keyword) {
-  final lists = ref.watch(allCustomListsProvider);
-  if (keyword.isEmpty) return lists;
-  
-  final lower = keyword.toLowerCase();
-  return lists.where((l) =>
-    l.name.toLowerCase().contains(lower) ||
-    (l.description?.toLowerCase().contains(lower) ?? false)
-  ).toList();
-});
 
 // ============================================================================
 // HELPERS POUR L'UTILISATION MODERNE

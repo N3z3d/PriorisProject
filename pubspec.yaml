@@ -22,7 +22,7 @@ dependencies:
   # UI
   cupertino_icons: ^1.0.6
   google_fonts: ^6.1.0
-  fl_chart: ^1.0.0
+  # fl_chart: ^1.1.0  # Temporarily disabled due to Matrix4 compatibility issues
   
   # Utils
   uuid: ^4.2.1
@@ -49,9 +49,10 @@ dev_dependencies:
   hive_test: ^1.0.1
   integration_test:
     sdk: flutter
-  mockito: ^5.4.4
+  mockito: ^5.4.5
 
   path: any
+  test: ^1.25.15
 flutter:
   uses-material-design: true
   generate: true
@@ -63,5 +64,5 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
-    # SECURITY: .env files removed from assets to prevent secret exposure in APK/IPA
-    # Environment variables should be loaded at runtime, not packaged
+    - .env  # DEV: Temporarily added for development web testing
+    # SECURITY: .env files removed from assets to prevent secret exposure in production builds

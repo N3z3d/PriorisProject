@@ -1,8 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../cache/interfaces/cache_interface.dart';
-import '../cache/core_cache_service.dart';
-import '../cache/cache_expiration_service.dart';
-import '../cache/cache_stats_service.dart';
+import '../cache/cache_service.dart';
 import '../core/interfaces/error_handler_interface.dart';
 import '../core/error_handling_service.dart';
 import '../core/error_classification_service.dart';
@@ -11,20 +9,9 @@ import '../core/interfaces/list_service_interface.dart';
 import '../core/custom_list_service.dart';
 import '../../../data/providers/repository_providers.dart';
 
-/// Providers pour les services de cache
-final coreCacheServiceProvider = Provider<CacheInterface>((ref) {
-  return CoreCacheService(maxSize: 1000);
-});
-
-final cacheStatsServiceProvider = Provider((ref) {
-  return CacheStatsService(ref.read(coreCacheServiceProvider));
-});
-
-final cacheExpirationServiceProvider = Provider<CacheExpirationService>((ref) {
-  return CacheExpirationService(
-    ref.read(coreCacheServiceProvider),
-    defaultTTL: const Duration(hours: 24),
-  );
+/// Provider pour le service de cache principal
+final cacheServiceProvider = Provider<CacheInterface>((ref) {
+  return CacheService();
 });
 
 /// Providers pour la gestion d'erreurs
@@ -43,24 +30,31 @@ final errorHandlerProvider = Provider<ErrorHandlerInterface>((ref) {
   );
 });
 
-/// Providers pour les services de listes
-final listCrudServiceProvider = Provider<ListCrudInterface>((ref) {
-  return CustomListCrudService(ref.read(customListRepositoryProvider));
+/// Providers pour les services de listes (async pour FutureProvider compatibility)
+final listCrudServiceProvider = FutureProvider<ListCrudInterface>((ref) async {
+  final repository = await ref.watch(customListRepositoryProvider.future);
+  return CustomListCrudService(repository);
 });
 
-final listSearchServiceProvider = Provider<ListSearchInterface>((ref) {
-  return CustomListSearchService(ref.read(customListRepositoryProvider));
+final listSearchServiceProvider = FutureProvider<ListSearchInterface>((ref) async {
+  final repository = await ref.watch(customListRepositoryProvider.future);
+  return CustomListSearchService(repository);
 });
 
-final listStatsServiceProvider = Provider<ListStatsInterface>((ref) {
-  return CustomListStatsService(ref.read(customListRepositoryProvider));
+final listStatsServiceProvider = FutureProvider<ListStatsInterface>((ref) async {
+  final repository = await ref.watch(customListRepositoryProvider.future);
+  return CustomListStatsService(repository);
 });
 
-final customListServiceProvider = Provider<CustomListService>((ref) {
+final customListServiceProvider = FutureProvider<CustomListService>((ref) async {
+  final crudService = await ref.watch(listCrudServiceProvider.future);
+  final searchService = await ref.watch(listSearchServiceProvider.future);
+  final statsService = await ref.watch(listStatsServiceProvider.future);
+
   return CustomListService(
-    ref.read(listCrudServiceProvider),
-    ref.read(listSearchServiceProvider),
-    ref.read(listStatsServiceProvider),
+    crudService,
+    searchService,
+    statsService,
   );
 });
 

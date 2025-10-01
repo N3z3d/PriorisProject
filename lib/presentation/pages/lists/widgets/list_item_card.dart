@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/widgets/common/layouts/swipeable_card.dart';
+import 'package:prioris/presentation/widgets/indicators/premium_status_indicator.dart';
+import 'package:prioris/presentation/animations/premium_micro_interactions.dart';
 
 /// Widget pour afficher une carte d'élément de liste
 /// 
@@ -99,38 +101,76 @@ class _ListItemCardState extends State<ListItemCard>
         _hideActions();
         widget.onEdit?.call();
       },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        decoration: BoxDecoration(
-          // Fond professionnel au lieu du gradient
-          color: widget.item.isCompleted
-              ? AppTheme.successColor.withValues(alpha: 0.05)
-              : AppTheme.surfaceColor,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
+      child: PremiumMicroInteractions.hoverable(
+        enableScaleEffect: true,
+        scaleFactorHover: 1.02,
+        duration: const Duration(milliseconds: 200),
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          decoration: BoxDecoration(
+            // Fond professionnel au lieu du gradient
+            color: widget.item.isCompleted
+                ? AppTheme.successColor.withValues(alpha: 0.05)
+                : AppTheme.surfaceColor,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: AppTheme.cardShadow,
+            border: Border.all(
+              color: widget.item.isCompleted
+                  ? AppTheme.successColor.withValues(alpha: 0.2)
+                  : AppTheme.grey200,
+              width: 1.5,
             ),
-          ],
-        ),
-        child: GestureDetector(
-          onLongPress: _toggleActions,
-          child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            leading: _buildCompletionButton(),
-            title: Text(
-              widget.item.title,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: widget.item.isCompleted ? Colors.grey[600] : AppTheme.textPrimary,
-                decoration: widget.item.isCompleted ? TextDecoration.lineThrough : null,
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () {
+                _hideActions();
+                widget.onEdit?.call();
+              },
+              onLongPress: _toggleActions,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                child: Row(
+                  children: [
+                    PremiumMicroInteractions.pressable(
+                      onPressed: () => widget.onToggleCompletion?.call(),
+                      enableHaptics: true,
+                      enableScaleEffect: true,
+                      scaleFactor: 0.95,
+                      child: _buildCompletionButton(),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.item.title,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: widget.item.isCompleted
+                                  ? AppTheme.textTertiary
+                                  : AppTheme.textPrimary,
+                              decoration: widget.item.isCompleted
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                            ),
+                          ),
+                          if (_buildSubtitle() != null) ...[
+                            const SizedBox(height: 4),
+                            _buildSubtitle()!,
+                          ],
+                        ],
+                      ),
+                    ),
+                    _buildTrailing(),
+                  ],
+                ),
               ),
             ),
-            subtitle: _buildSubtitle(),
-            trailing: _buildTrailing(),
           ),
         ),
       ),
@@ -141,33 +181,36 @@ class _ListItemCardState extends State<ListItemCard>
   Widget _buildCompletionButton() {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
+      width: 32,
+      height: 32,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         // Fond uni professionnel pour les checkboxes
         color: widget.item.isCompleted
             ? AppTheme.successColor
-            : AppTheme.primaryColor,
+            : Colors.transparent,
+        border: Border.all(
+          color: widget.item.isCompleted
+              ? AppTheme.successColor
+              : AppTheme.primaryColor,
+          width: 2,
+        ),
         boxShadow: [
           BoxShadow(
-            color: (widget.item.isCompleted ? AppTheme.successColor : AppTheme.primaryColor).withValues(alpha: 0.3),
+            color: (widget.item.isCompleted ? AppTheme.successColor : AppTheme.primaryColor)
+                .withValues(alpha: 0.3),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: CircleAvatar(
-        backgroundColor: Colors.transparent,
-        child: IconButton(
-          icon: Icon(
-            widget.item.isCompleted ? Icons.check : Icons.radio_button_unchecked,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            HapticFeedback.lightImpact();
-            widget.onToggleCompletion?.call();
-          },
-        ),
-      ),
+      child: widget.item.isCompleted
+          ? const Icon(
+              Icons.check,
+              color: Colors.white,
+              size: 18,
+            )
+          : null,
     );
   }
 
@@ -241,13 +284,21 @@ class _ListItemCardState extends State<ListItemCard>
   /// Construit la partie droite de la carte avec actions contextuelles
   Widget _buildTrailing() {
     return SizedBox(
-      width: 80, // Largeur fixe pour éviter le débordement
-      height: 48,
+      width: 100, // Augmenté pour accommoder le status indicator
+      height: 56,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          // Premium Status Indicator
+          PremiumStatusIndicator(
+            status: widget.item.isCompleted ? StatusType.completed : StatusType.inProgress,
+            showLabel: false,
+            size: 20,
+            enableAnimation: true,
+          ),
+          const SizedBox(height: 4),
           _buildEloScore(),
           // Actions révélées uniquement contextuellement
           AnimatedBuilder(
@@ -297,28 +348,60 @@ class _ListItemCardState extends State<ListItemCard>
       mainAxisSize: MainAxisSize.min,
       children: [
         if (widget.onEdit != null)
-          IconButton(
-            icon: const Icon(Icons.edit, size: 16),
+          PremiumMicroInteractions.pressable(
             onPressed: () {
-              HapticFeedback.lightImpact();
               _hideActions();
               widget.onEdit?.call();
             },
-            constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-            padding: const EdgeInsets.all(4),
-            tooltip: 'Éditer',
+            enableHaptics: true,
+            enableScaleEffect: true,
+            scaleFactor: 0.9,
+            child: Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: AppTheme.primaryColor.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              child: const Icon(
+                Icons.edit,
+                size: 16,
+                color: AppTheme.primaryColor,
+              ),
+            ),
           ),
+        if (widget.onEdit != null && widget.onDelete != null)
+          const SizedBox(width: 8),
         if (widget.onDelete != null)
-          IconButton(
-            icon: Icon(Icons.delete, size: 16, color: AppTheme.errorColor),
+          PremiumMicroInteractions.pressable(
             onPressed: () {
-              HapticFeedback.mediumImpact();
               _hideActions();
               widget.onDelete?.call();
             },
-            constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-            padding: const EdgeInsets.all(4),
-            tooltip: 'Supprimer',
+            enableHaptics: true,
+            enableScaleEffect: true,
+            scaleFactor: 0.9,
+            child: Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: AppTheme.errorColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: AppTheme.errorColor.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              child: const Icon(
+                Icons.delete,
+                size: 16,
+                color: AppTheme.errorColor,
+              ),
+            ),
           ),
       ],
     );

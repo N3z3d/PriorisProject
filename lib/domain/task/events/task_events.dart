@@ -232,3 +232,46 @@ class TaskOverdueEvent extends DomainEvent {
     return 'low';
   }
 }
+
+/// Événement déclenché lors de la suppression en masse de tâches
+class TasksBulkDeletedEvent extends DomainEvent {
+  final int deletedCount;
+  final String deleteType;
+
+  TasksBulkDeletedEvent({
+    required this.deletedCount,
+    required this.deleteType,
+  }) : super(
+         eventId: const Uuid().v4(),
+         occurredAt: DateTime.now(),
+       );
+
+  @override
+  String get eventName => 'TasksBulkDeleted';
+
+  @override
+  Map<String, dynamic> get payload => {
+    'deletedCount': deletedCount,
+    'deleteType': deleteType,
+  };
+}
+
+/// Événement déclenché lors de la réinitialisation des scores ELO
+class TasksEloResetEvent extends DomainEvent {
+  final int taskCount;
+
+  TasksEloResetEvent({
+    required this.taskCount,
+  }) : super(
+         eventId: const Uuid().v4(),
+         occurredAt: DateTime.now(),
+       );
+
+  @override
+  String get eventName => 'TasksEloReset';
+
+  @override
+  Map<String, dynamic> get payload => {
+    'taskCount': taskCount,
+  };
+}

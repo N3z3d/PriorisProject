@@ -99,11 +99,13 @@ class CommonButton extends StatelessWidget {
     final foregroundColor = _getTextColor();
     
     if (!accessibilityService.validateColorContrast(
-      foregroundColor, 
-      backgroundColor, 
+      foregroundColor,
+      backgroundColor,
       isLargeText: (fontSize ?? 14) >= 18
     )) {
-      debugPrint('Attention: Contraste insuffisant pour le bouton "$text"');
+      debugPrint('ERREUR CRITIQUE: Contraste insuffisant détecté pour "$text" - Ratio: ${_calculateContrastRatio(foregroundColor, backgroundColor).toStringAsFixed(2)}');
+      // Force l'utilisation de couleurs accessibles en cas de problème
+      return _buildAccessibleButton();
     }
     
     final buttonStyle = _getButtonStyle().copyWith(
@@ -257,8 +259,8 @@ class CommonButton extends StatelessWidget {
       case ButtonType.primary:
         return AppTheme.primaryColor;
       case ButtonType.secondary:
-        // Fond plus foncé pour améliorer le contraste
-        return AppTheme.primaryColor.withValues(alpha: 0.2);
+        // Fond accessible avec contraste suffisant
+        return AppTheme.cleanSurfaceColor;
       case ButtonType.danger:
         return Colors.red;
     }
@@ -275,8 +277,8 @@ class CommonButton extends StatelessWidget {
       case ButtonType.primary:
         return Colors.white;
       case ButtonType.secondary:
-        // Couleur plus foncée pour améliorer le contraste
-        return AppTheme.primaryColor.withValues(alpha: 0.9);
+        // Couleur de texte garantissant contraste AA
+        return AppTheme.primaryColor;
       case ButtonType.danger:
         return Colors.white;
     }
@@ -294,5 +296,68 @@ class CommonButton extends StatelessWidget {
       case CommonButtonVariant.danger:
         return ButtonType.danger;
     }
+  }
+
+  /// Calcule le ratio de contraste entre deux couleurs
+  double _calculateContrastRatio(Color foreground, Color background) {
+    final fLuminance = _getLuminance(foreground);
+    final bLuminance = _getLuminance(background);
+    final lightest = fLuminance > bLuminance ? fLuminance : bLuminance;
+    final darkest = fLuminance > bLuminance ? bLuminance : fLuminance;
+    return (lightest + 0.05) / (darkest + 0.05);
+  }
+
+  /// Calcule la luminance d'une couleur
+  double _getLuminance(Color color) {
+    final r = _getRelativeLuminance(color.red / 255.0);
+    final g = _getRelativeLuminance(color.green / 255.0);
+    final b = _getRelativeLuminance(color.blue / 255.0);
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  }
+
+  /// Calcule la luminance relative d'un composant de couleur
+  double _getRelativeLuminance(double component) {
+    return component <= 0.03928
+        ? component / 12.92
+        : ((component + 0.055) / 1.055) * ((component + 0.055) / 1.055);
+  }
+
+  /// Construit un bouton avec couleurs garanties accessibles
+  Widget _buildAccessibleButton() {
+    return Container(
+      constraints: BoxConstraints(
+        minWidth: AccessibilityService.minTouchTargetSize,
+        minHeight: AccessibilityService.minTouchTargetSize,
+      ),
+      child: ElevatedButton(
+        onPressed: isLoading ? null : onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppTheme.primaryColor, // Couleur AA-conforme
+          foregroundColor: Colors.white, // Contraste garanti 4.5:1+
+          padding: padding ?? const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: borderRadius ?? BorderRadiusTokens.button,
+          ),
+          elevation: type == ButtonType.primary ? 2 : 0,
+        ),
+        child: isLoading
+            ? SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+            : Text(
+                text,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: fontSize ?? 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+      ),
+    );
   }
 } 

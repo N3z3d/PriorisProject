@@ -7,50 +7,10 @@
   },
   "permissions": {
     "allow": [
-      "Bash(flutter pub:*)",
-      "Bash(flutter packages pub run build_runner build:*)",
-      "Bash(flutter run:*)",
-      "Bash(flutter:*)",
-      "Bash(find:*)",
-      "Bash(rg:*)",
-      "Bash(dart analyze:*)",
-      "Bash(for file in charts/elo_distribution_widget.dart analytics/completion_time_stats_widget.dart analytics/category_performance_widget.dart smart/top_habits_widget.dart charts/streaks_chart_widget.dart summary/main_metrics_widget.dart)",
-      "Bash(do echo \"=== $file ===\")",
-      "Bash(head:*)",
-      "Bash(done)",
-      "Bash(mkdir:*)",
-      "Bash(dart:*)",
-      "Bash(sed:*)",
-      "Bash(grep:*)",
-      "Bash(timeout 30s flutter build:*)",
-      "Bash(git init:*)",
-      "Bash(git add:*)",
-      "Bash(git config:*)",
-      "Bash(git remote add:*)",
-      "Bash(git push:*)",
-      "WebSearch",
-      "Bash(r)",
-      "Bash(timeout:*)",
-      "Bash(rm:*)",
-      "Bash(mv:*)",
-      "Bash(true)",
-      "Bash(cp:*)",
-      "Bash(touch:*)",
-      "Task(*)",
-      "Bash(powershell:*)",
-      "Bash(curl:*)",
-      "Bash(git commit:*)",
-      "Bash(del test_persistence_architecture.dart)",
-      "Bash(taskkill:*)",
-      "WebFetch(domain:pub.dev)",
-      "WebFetch(domain:supabase.com)",
-      "Bash(git rm:*)"
+      "Bash(if exist \"lib\\presentation\\pages\\lists\\controllers\\state\"\" rmdir /s /q \"libpresentationpageslistscontrollersstate \")"
     ],
-    "deny": [
-      "Read(**/.env)",
-      "Read(**/secrets/**)",
-      "Write(**/.env)"
-    ]
+    "deny": [],
+    "ask": []
   },
   "hooks": {
     "SessionStart": [

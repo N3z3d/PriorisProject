@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prioris/presentation/theme/app_theme.dart';
 
 /// Widget réutilisable pour sélectionner une période d'analyse
 /// Affiche une rangée de chips interactives.
@@ -22,27 +23,26 @@ class PeriodSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
-        ],
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceColor,
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(24),
+          bottomRight: Radius.circular(24),
+        ),
+        boxShadow: AppTheme.cardShadow,
       ),
       child: Row(
         children: [
-          const Text(
+          Text(
             'Période : ',
             style: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 16,
+              color: AppTheme.textPrimary,
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 12),
           Expanded(
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -51,16 +51,30 @@ class PeriodSelector extends StatelessWidget {
                   final isSelected = selectedPeriod == period['value'];
                   return Padding(
                     padding: const EdgeInsets.only(right: 8),
-                    child: ChoiceChip(
-                      label: Text(period['label']!),
-                      selected: isSelected,
-                      onSelected: (_) => onPeriodChanged(period['value']!),
-                      selectedColor: Theme.of(context).colorScheme.primary,
-                      labelStyle: TextStyle(
-                        color: isSelected ? Colors.white : Colors.grey[700],
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      child: ChoiceChip(
+                        label: Text(period['label']!),
+                        selected: isSelected,
+                        onSelected: (_) => onPeriodChanged(period['value']!),
+                        selectedColor: AppTheme.primaryColor,
+                        labelStyle: TextStyle(
+                          // Fix: Using proper contrast colors from theme
+                          color: isSelected ? Colors.white : AppTheme.textSecondary,
+                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                          fontSize: 14,
+                        ),
+                        backgroundColor: AppTheme.grey100,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          side: BorderSide(
+                            color: isSelected ? AppTheme.primaryColor : AppTheme.grey300,
+                            width: 1.5,
+                          ),
+                        ),
+                        elevation: isSelected ? 2 : 0,
+                        pressElevation: 4,
                       ),
-                      backgroundColor: Colors.grey[200],
                     ),
                   );
                 }).toList(),

@@ -8,7 +8,6 @@ import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/data/repositories/custom_list_repository.dart';
 import 'package:prioris/data/repositories/list_item_repository.dart';
 import 'package:prioris/domain/services/core/lists_filter_service.dart';
-import 'package:state_notifier/state_notifier.dart';
 
 // Generate mocks with custom names to avoid conflicts
 @GenerateMocks([], customMocks: [

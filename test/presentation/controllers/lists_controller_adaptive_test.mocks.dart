@@ -37,48 +37,6 @@ class MockAdaptivePersistenceService extends _i1.Mock
   }
 
   @override
-  _i2.PersistenceMode get currentMode => (super.noSuchMethod(
-        Invocation.getter(#currentMode),
-        returnValue: _i2.PersistenceMode.localFirst,
-      ) as _i2.PersistenceMode);
-
-  @override
-  bool get isAuthenticated => (super.noSuchMethod(
-        Invocation.getter(#isAuthenticated),
-        returnValue: false,
-      ) as bool);
-
-  @override
-  _i3.Future<void> initialize({required bool? isAuthenticated}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #initialize,
-          [],
-          {#isAuthenticated: isAuthenticated},
-        ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
-
-  @override
-  _i3.Future<void> updateAuthenticationState({
-    required bool? isAuthenticated,
-    _i2.MigrationStrategy? migrationStrategy,
-  }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #updateAuthenticationState,
-          [],
-          {
-            #isAuthenticated: isAuthenticated,
-            #migrationStrategy: migrationStrategy,
-          },
-        ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
-
-  @override
   _i3.Future<List<_i4.CustomList>> getAllLists() => (super.noSuchMethod(
         Invocation.method(
           #getAllLists,
@@ -146,15 +104,6 @@ class MockAdaptivePersistenceService extends _i1.Mock
         returnValue: _i3.Future<void>.value(),
         returnValueForMissingStub: _i3.Future<void>.value(),
       ) as _i3.Future<void>);
-
-  @override
-  void dispose() => super.noSuchMethod(
-        Invocation.method(
-          #dispose,
-          [],
-        ),
-        returnValueForMissingStub: null,
-      );
 }
 
 /// A class which mocks [ListsFilterService].

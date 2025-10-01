@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/semantics.dart';
+import 'package:flutter/widgets.dart';
 
 /// Service centralisé pour l'accessibilité et les annonces de lecteurs d'écran
 /// 
@@ -21,12 +22,13 @@ class AccessibilityService {
     Assertiveness assertiveness = Assertiveness.polite,
   }) async {
     try {
-      await SystemChannels.accessibility.invokeMethod<void>(
-        'announce',
-        <String, dynamic>{
-          'message': message,
-          'textDirection': 'ltr',
-        },
+      await SystemChannels.accessibility.send(
+        const StandardMethodCodec().encodeMethodCall(
+          const MethodCall('announce', <String, dynamic>{
+            'message': message,
+            'textDirection': 'ltr',
+          }),
+        ),
       );
     } catch (e) {
       // Fallback silencieux si les services d'accessibilité ne sont pas disponibles

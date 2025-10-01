@@ -7,6 +7,7 @@ import 'package:prioris/presentation/widgets/common/displays/premium_card.dart';
 import 'package:prioris/presentation/widgets/common/forms/common_button.dart';
 import 'package:prioris/presentation/widgets/common/layouts/common_section_header.dart';
 import 'package:prioris/presentation/widgets/common/forms/common_text_field.dart';
+import 'package:prioris/presentation/widgets/common/displays/status_indicator.dart';
 
 /// Widget autonome affichant la recherche et les filtres de la page Listes
 class ListFiltersWidget extends ConsumerWidget {
@@ -90,7 +91,8 @@ class ListFiltersWidget extends ConsumerWidget {
               SizedBox(
                 width: 140,
                 child: CommonButton(
-                  text: 'En cours',
+                  text: 'Actives',
+                  icon: Icons.play_circle_outline,
                   type: state.showInProgress ? ButtonType.primary : ButtonType.secondary,
                   onPressed: () => ref.read(listsControllerProvider.notifier).updateShowInProgress(!state.showInProgress),
                 ),
@@ -98,7 +100,8 @@ class ListFiltersWidget extends ConsumerWidget {
               SizedBox(
                 width: 140,
                 child: CommonButton(
-                  text: 'Terminées',
+                  text: 'Complétées',
+                  icon: Icons.check_circle_outline,
                   type: state.showCompleted ? ButtonType.primary : ButtonType.secondary,
                   onPressed: () => ref.read(listsControllerProvider.notifier).updateShowCompleted(!state.showCompleted),
                 ),

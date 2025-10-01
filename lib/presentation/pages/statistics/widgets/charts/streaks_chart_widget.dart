@@ -1,68 +1,53 @@
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'package:prioris/presentation/theme/app_theme.dart';
-import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 
-/// Widget affichant le graphique des séries d'habitudes (BarChart)
-///
-/// [habits] : Liste des habitudes pour calculer les séries
-/// [habitNames] : Noms des habitudes à afficher sur l'axe X
-/// [streakData] : Données des séries pour chaque habitude
+/// Placeholder pour StreaksChartWidget
+/// TODO: Implémenter le vrai widget de graphique des streaks
 class StreaksChartWidget extends StatelessWidget {
-  final List<String> habitNames;
-  final List<double> streakData;
+  final List<Map<String, dynamic>>? data;
+  final Duration? period;
 
   const StreaksChartWidget({
-    super.key,
-    required this.habitNames,
-    required this.streakData,
-  });
+    Key? key,
+    this.data,
+    this.period,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadiusTokens.card),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
+    return Container(
+      height: 200,
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Theme.of(context).dividerColor,
+          width: 1,
+        ),
+      ),
+      child: const Center(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              '🔥 Évolution des Séries',
+            Icon(
+              Icons.trending_up,
+              size: 48,
+              color: Colors.grey,
+            ),
+            SizedBox(height: 16),
+            Text(
+              'Graphique des Streaks',
               style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey,
               ),
             ),
-            const SizedBox(height: 20),
-            SizedBox(
-              height: 150,
-              child: BarChart(
-                BarChartData(
-                  gridData: const FlGridData(show: false),
-                  titlesData: FlTitlesData(
-                    leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) {
-                          if (value.toInt() < habitNames.length) {
-                            return Text(
-                              habitNames[value.toInt()],
-                              style: const TextStyle(fontSize: 10),
-                            );
-                          }
-                          return const Text('');
-                        },
-                      ),
-                    ),
-                  ),
-                  borderData: FlBorderData(show: false),
-                  barGroups: _buildBarGroups(),
-                ),
+            SizedBox(height: 8),
+            Text(
+              'En cours d\'implémentation',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey,
               ),
             ),
           ],
@@ -70,27 +55,4 @@ class StreaksChartWidget extends StatelessWidget {
       ),
     );
   }
-
-  /// Construit les groupes de barres pour le graphique
-  List<BarChartGroupData> _buildBarGroups() {
-    final colors = [
-      AppTheme.primaryColor,
-      AppTheme.secondaryColor,
-      AppTheme.accentColor,
-      AppTheme.successColor,
-    ];
-
-    return List.generate(
-      streakData.length,
-      (index) => BarChartGroupData(
-        x: index,
-        barRods: [
-          BarChartRodData(
-            toY: streakData[index],
-            color: colors[index % colors.length],
-          ),
-        ],
-      ),
-    );
-  }
-} 
+}

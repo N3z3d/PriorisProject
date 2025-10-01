@@ -6,9 +6,10 @@ import 'package:prioris/domain/services/ui/cross_browser_compatibility_service.d
 import 'package:prioris/domain/services/core/language_service.dart';
 import 'package:prioris/core/config/app_config.dart';
 import 'package:prioris/infrastructure/services/supabase_service.dart';
-import 'package:prioris/data/providers/repository_providers.dart';
 import 'package:prioris/presentation/services/debug/overflow_audit_service.dart';
 import 'package:prioris/infrastructure/services/logger_service.dart';
+import 'package:prioris/core/di/export.dart';
+import 'package:prioris/data/repositories/base/hive_repository_registry.dart';
 
 /// Handles all application initialization logic
 class AppInitializer {
@@ -18,18 +19,32 @@ class AppInitializer {
   static Future<void> initialize() async {
     final logger = LoggerService.instance;
     logger.info('Starting application initialization', context: _context);
-    
+
     try {
       await _initializeStorage();
       await _initializeConfiguration();
+      await _initializeDependencyInjection();
       await _initializeServices();
       await _initializeRepositories();
-      
+
       logger.info('Application initialization completed successfully', context: _context);
     } catch (e) {
       logger.error('Application initialization failed', context: _context, error: e);
       rethrow;
     }
+  }
+
+  /// Initialize Dependency Injection Container
+  static Future<void> _initializeDependencyInjection() async {
+    final logger = LoggerService.instance;
+    logger.debug('Initializing Dependency Injection container', context: _context);
+
+    // Initialize the DI container with all service registrations
+    await DILifecycleManager.initialize();
+
+    logger.info('DI container initialized successfully',
+               context: _context,
+               data: {'services_registered': 'core, domain, data, infrastructure'});
   }
 
   /// Initialize local storage (Hive)
@@ -79,10 +94,21 @@ class AppInitializer {
     final logger = LoggerService.instance;
     logger.debug('Initializing repositories', context: _context);
 
-    // Initialize Hive repositories BEFORE providers to avoid race conditions
-    await HiveRepositoryRegistry.initialize();
-    
-    logger.debug('Repositories initialized successfully', context: _context);
+    // Initialize Repository Manager through DI Container
+    // Repository Manager is automatically initialized when first accessed
+
+    // BACKWARD COMPATIBILITY: Keep legacy registry for existing code
+    // TODO: Remove this once all code migrated to new DI system
+    try {
+      await HiveRepositoryRegistry.initialize();
+      logger.debug('Legacy repository registry initialized (backward compatibility)', context: _context);
+    } catch (e) {
+      logger.warning('Legacy repository registry initialization failed - using DI system only', context: _context);
+    }
+
+    logger.info('Repository layer initialized successfully',
+               context: _context,
+               data: {'di_system': true, 'legacy_support': true});
   }
 
   /// Initialize platform-specific features

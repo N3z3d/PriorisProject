@@ -6,9 +6,13 @@ library premium_exports;
 
 import 'package:flutter/material.dart';
 import 'premium_ui_system.dart';
+import 'interfaces/premium_ui_interfaces.dart';
 
-// ============ SYSTÈME UI UNIFIÉ ============
-export 'premium_ui_system.dart';
+// ============ SYSTÈME UI UNIFIÉ - REFACTORED SOLID ARCHITECTURE ============
+export 'premium_ui_system.dart'; // Backward compatible facade
+// export 'premium_ui_manager.dart'; // New SOLID architecture manager - TODO: Implement
+export 'interfaces/premium_ui_interfaces.dart'; // Core interfaces
+// export 'systems/export.dart'; // Specialized systems - TODO: Implement
 
 // ============ GLASSMORPHISME ============
 export 'glassmorphism.dart';

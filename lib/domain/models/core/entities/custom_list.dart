@@ -312,12 +312,5 @@ class CustomList extends HiveObject {
   }
 
   /// --- Legacy compatibility for old tests ---
-  /// Convertit la liste en Map (alias vers toJson)
-  @Deprecated('Utiliser toJson() à la place')
-  Map<String, dynamic> toMap() => toJson();
-
-  /// Crée une liste à partir d'une Map (alias vers fromJson)
-  @Deprecated('Utiliser CustomList.fromJson() à la place')
-  factory CustomList.fromMap(Map<String, dynamic> map) => CustomList.fromJson(map);
   /// --- Fin compat ---
 }

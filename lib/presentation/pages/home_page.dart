@@ -5,7 +5,7 @@ import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 import 'package:prioris/presentation/pages/duel_page.dart';
 import 'package:prioris/presentation/pages/habits_page.dart';
-import 'package:prioris/presentation/pages/statistics_page.dart';
+import 'package:prioris/presentation/pages/insights_page.dart';
 import 'package:prioris/presentation/pages/lists_page.dart';
 import 'package:prioris/presentation/pages/settings_page.dart';
 import 'package:prioris/domain/services/ui/accessibility_service.dart';
@@ -24,7 +24,7 @@ class HomePage extends ConsumerWidget {
       const ListsPage(), // Listes et tâches
       const DuelPage(),
       const HabitsPage(), // Habitudes séparées
-      const StatisticsPage(), // Statistiques/Insights
+      const InsightsPage(), // Page Insights avec Statistics et Habitudes
     ];
 
     final navigationItems = [
@@ -37,7 +37,7 @@ class HomePage extends ConsumerWidget {
       _NavigationItem(
         icon: Icons.psychology_outlined,
         activeIcon: Icons.psychology,
-        label: 'Prioriser',
+        label: 'Priorisé',
         color: AppTheme.accentColor,
       ),
       _NavigationItem(
@@ -272,106 +272,151 @@ class _PremiumNavItemState extends State<_PremiumNavItem>
 
   @override
   Widget build(BuildContext context) {
-    // final accessibilityService = AccessibilityService(); // TODO: Utiliser le service
-    
+    return _buildAccessibleContainer(
+      child: _buildFocusableActionDetector(
+        child: _buildInkWellButton(
+          child: _buildAnimatedContent(),
+        ),
+      ),
+    );
+  }
+
+  /// Construit le conteneur avec support d'accessibilité
+  Widget _buildAccessibleContainer({required Widget child}) {
     return Semantics(
       button: true,
       label: widget.item.label,
       selected: widget.isActive,
-      hint: widget.isActive 
-          ? 'Section actuelle' 
+      hint: widget.isActive
+          ? 'Section actuelle'
           : 'Appuyez pour naviguer vers ${widget.item.label}',
       child: Container(
         constraints: BoxConstraints(
           minWidth: AccessibilityService.minTouchTargetSize,
           minHeight: AccessibilityService.minTouchTargetSize,
         ),
-        child: FocusableActionDetector(
-          shortcuts: {
-            LogicalKeySet(LogicalKeyboardKey.enter): const ActivateIntent(),
-            LogicalKeySet(LogicalKeyboardKey.space): const ActivateIntent(),
+        child: child,
+      ),
+    );
+  }
+
+  /// Construit le détecteur d'actions focalisable avec raccourcis clavier
+  Widget _buildFocusableActionDetector({required Widget child}) {
+    return FocusableActionDetector(
+      shortcuts: {
+        LogicalKeySet(LogicalKeyboardKey.enter): const ActivateIntent(),
+        LogicalKeySet(LogicalKeyboardKey.space): const ActivateIntent(),
+      },
+      actions: {
+        ActivateIntent: CallbackAction<ActivateIntent>(
+          onInvoke: (ActivateIntent intent) {
+            widget.onTap();
+            return null;
           },
-          actions: {
-            ActivateIntent: CallbackAction<ActivateIntent>(
-              onInvoke: (ActivateIntent intent) {
-                widget.onTap();
-                return null;
-              },
-            ),
-          },
-          child: InkWell(
-            onTap: widget.onTap,
-            borderRadius: BorderRadiusTokens.radiusMd,
-            focusColor: widget.item.color.withValues(alpha: 0.2),
-            hoverColor: widget.item.color.withValues(alpha: 0.1),
-            splashColor: widget.item.color.withValues(alpha: 0.3),
-            child: AnimatedBuilder(
-          animation: _animationController,
-          builder: (context, child) {
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      // Background glow effect
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        width: 48,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: widget.isActive
-                              ? widget.item.color.withValues(alpha: 0.15)
-                              : Colors.transparent,
-                          borderRadius: BorderRadiusTokens.radiusLg,
-                        ),
-                      ),
-                      // Icon
-                      Transform.scale(
-                        scale: _scaleAnimation.value,
-                        child: Icon(
-                          widget.isActive ? widget.item.activeIcon : widget.item.icon,
-                          size: 24,
-                          color: widget.isActive
-                              ? widget.item.color
-                              : AppTheme.textTertiary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  // Label
-                  AnimatedDefaultTextStyle(
-                    duration: const Duration(milliseconds: 200),
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: widget.isActive ? FontWeight.w600 : FontWeight.w500,
-                      color: widget.isActive
-                          ? widget.item.color
-                          : AppTheme.textTertiary,
-                    ),
-                    child: Text(widget.item.label),
-                  ),
-                  // Active indicator
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    width: widget.isActive ? 24 : 0,
-                    height: 2,
-                    margin: const EdgeInsets.only(top: 4),
-                    decoration: BoxDecoration(
-                      color: widget.item.color,
-                      borderRadius: BorderRadiusTokens.radiusNone,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-            ),
-          ),
         ),
+      },
+      child: child,
+    );
+  }
+
+  /// Construit le bouton InkWell avec effets visuels
+  Widget _buildInkWellButton({required Widget child}) {
+    return InkWell(
+      onTap: widget.onTap,
+      borderRadius: BorderRadiusTokens.radiusMd,
+      focusColor: widget.item.color.withValues(alpha: 0.2),
+      hoverColor: widget.item.color.withValues(alpha: 0.1),
+      splashColor: widget.item.color.withValues(alpha: 0.3),
+      child: child,
+    );
+  }
+
+  /// Construit le contenu animé du bouton
+  Widget _buildAnimatedContent() {
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (context, child) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildIconSection(),
+              const SizedBox(height: 4),
+              _buildLabelSection(),
+              _buildActiveIndicator(),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  /// Construit la section icône avec effet de glow
+  Widget _buildIconSection() {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        _buildIconBackground(),
+        _buildAnimatedIcon(),
+      ],
+    );
+  }
+
+  /// Construit l'arrière-plan de l'icône avec effet glow
+  Widget _buildIconBackground() {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      width: 48,
+      height: 32,
+      decoration: BoxDecoration(
+        color: widget.isActive
+            ? widget.item.color.withValues(alpha: 0.15)
+            : Colors.transparent,
+        borderRadius: BorderRadiusTokens.radiusLg,
+      ),
+    );
+  }
+
+  /// Construit l'icône animée avec transformation d'échelle
+  Widget _buildAnimatedIcon() {
+    return Transform.scale(
+      scale: _scaleAnimation.value,
+      child: Icon(
+        widget.isActive ? widget.item.activeIcon : widget.item.icon,
+        size: 24,
+        color: widget.isActive
+            ? widget.item.color
+            : AppTheme.textTertiary,
+      ),
+    );
+  }
+
+  /// Construit la section label avec style animé
+  Widget _buildLabelSection() {
+    return AnimatedDefaultTextStyle(
+      duration: const Duration(milliseconds: 200),
+      style: TextStyle(
+        fontSize: 12,
+        fontWeight: widget.isActive ? FontWeight.w600 : FontWeight.w500,
+        color: widget.isActive
+            ? widget.item.color
+            : AppTheme.textTertiary,
+      ),
+      child: Text(widget.item.label),
+    );
+  }
+
+  /// Construit l'indicateur d'état actif
+  Widget _buildActiveIndicator() {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      width: widget.isActive ? 24 : 0,
+      height: 2,
+      margin: const EdgeInsets.only(top: 4),
+      decoration: BoxDecoration(
+        color: widget.item.color,
+        borderRadius: BorderRadiusTokens.radiusNone,
       ),
     );
   }

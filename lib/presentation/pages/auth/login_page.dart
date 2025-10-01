@@ -116,6 +116,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       label: 'Email',
                       hint: 'votre@email.com',
                       keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                      onSubmitted: (_) => _handleAuth(),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'Email requis';
@@ -134,6 +136,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       controller: _passwordController,
                       label: 'Mot de passe',
                       hint: '••••••••',
+                      textInputAction: TextInputAction.done,
+                      onSubmitted: (_) => _handleAuth(),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Mot de passe requis';
