@@ -32,7 +32,6 @@ class AuthenticationStateManager implements IAuthenticationStateManager {
       context: 'AuthenticationStateManager',
     );
 
-    final wasAuthenticated = _isAuthenticated;
     _isAuthenticated = isAuthenticated;
 
     // Update persistence mode based on authentication

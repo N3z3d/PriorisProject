@@ -251,25 +251,8 @@ class _PremiumFABState extends State<PremiumFAB>
                   ),
                   child: Stack(
                     children: [
-                      // Glow effect behind the button
-                      if (widget.enableAnimations)
-                        Positioned.fill(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadiusTokens.radiusXl,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: _backgroundColor.withValues(alpha: _glowAnimation.value * 0.3),
-                                  blurRadius: 20 * _glowAnimation.value,
-                                  spreadRadius: 2 * _glowAnimation.value,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      // Main button with premium Material design
+                      if (widget.enableAnimations) _buildGlowEffectLayer(),
                       _buildPremiumMaterialButton(),
-                      // Shimmer effect overlay
                       if (widget.enableAnimations && _shimmerAnimation.value > 0)
                         _buildShimmerOverlay(),
                     ],
@@ -283,96 +266,135 @@ class _PremiumFABState extends State<PremiumFAB>
     );
   }
 
-  Widget _buildPremiumMaterialButton() {
-    final baseColor = _backgroundColor;
-    final isInteractive = widget.onPressed != null;
-    
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: _isPressed
-              ? [
-                  baseColor.withValues(alpha: 0.85),
-                  baseColor.withValues(alpha: 0.95),
-                ]
-              : _isHovered && isInteractive
-                  ? [
-                      baseColor.withValues(alpha: 0.95),
-                      baseColor,
-                    ]
-                  : [
-                      baseColor.withValues(alpha: 0.9),
-                      baseColor.withValues(alpha: 0.95),
-                    ],
-        ),
-        borderRadius: BorderRadiusTokens.radiusXl,
-        border: Border.all(
-          color: _isHovered && isInteractive
-              ? Colors.white.withValues(alpha: 0.4)
-              : Colors.white.withValues(alpha: 0.2),
-          width: _isPressed ? 1.0 : 1.5,
-        ),
-        boxShadow: [
-          // Primary elevated shadow
-          BoxShadow(
-            color: baseColor.withValues(
-              alpha: _isPressed ? 0.1 : (_isHovered && isInteractive ? 0.25 : 0.18),
-            ),
-            blurRadius: _isPressed ? 8 : (_isHovered && isInteractive ? 20 : 15),
-            offset: _isPressed
-                ? const Offset(0, 4)
-                : (_isHovered && isInteractive
-                    ? const Offset(0, 12)
-                    : const Offset(0, 8)),
-            spreadRadius: _isPressed ? -1 : -2,
-          ),
-          // Secondary depth shadow
-          BoxShadow(
-            color: Colors.black.withValues(
-              alpha: _isPressed ? 0.08 : (_isHovered && isInteractive ? 0.12 : 0.06),
-            ),
-            blurRadius: _isPressed ? 4 : (_isHovered && isInteractive ? 10 : 8),
-            offset: _isPressed
-                ? const Offset(0, 1)
-                : (_isHovered && isInteractive
-                    ? const Offset(0, 4)
-                    : const Offset(0, 2)),
-            spreadRadius: 0,
-          ),
-          // Inner highlight (top edge)
-          if (_isHovered && isInteractive && !_isPressed)
+  /// Build animated glow effect layer behind the button
+  Widget _buildGlowEffectLayer() {
+    return Positioned.fill(
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadiusTokens.radiusXl,
+          boxShadow: [
             BoxShadow(
-              color: Colors.white.withValues(alpha: 0.15),
-              blurRadius: 1,
-              offset: const Offset(0, -1),
-              spreadRadius: -1,
+              color: _backgroundColor.withValues(alpha: _glowAnimation.value * 0.3),
+              blurRadius: 20 * _glowAnimation.value,
+              spreadRadius: 2 * _glowAnimation.value,
             ),
-        ],
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget _buildPremiumMaterialButton() {
+    return Container(
+      decoration: _buildOuterDecoration(),
       child: Material(
         color: Colors.transparent,
         child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadiusTokens.radiusXl,
-            // Subtle inner gradient for premium feel
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Colors.white.withValues(alpha: _isHovered && isInteractive ? 0.08 : 0.05),
-                Colors.transparent,
-                Colors.black.withValues(alpha: _isPressed ? 0.08 : 0.03),
-              ],
-              stops: const [0.0, 0.5, 1.0],
-            ),
-          ),
+          decoration: _buildInnerDecoration(),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             child: _buildButtonContent(),
           ),
         ),
+      ),
+    );
+  }
+
+  BoxDecoration _buildOuterDecoration() {
+    final baseColor = _backgroundColor;
+    final isInteractive = widget.onPressed != null;
+
+    return BoxDecoration(
+      gradient: _buildButtonGradient(baseColor, isInteractive),
+      borderRadius: BorderRadiusTokens.radiusXl,
+      border: _buildButtonBorder(isInteractive),
+      boxShadow: _buildButtonBoxShadows(baseColor, isInteractive),
+    );
+  }
+
+  LinearGradient _buildButtonGradient(Color baseColor, bool isInteractive) {
+    return LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: _isPressed
+          ? [
+              baseColor.withValues(alpha: 0.85),
+              baseColor.withValues(alpha: 0.95),
+            ]
+          : _isHovered && isInteractive
+              ? [
+                  baseColor.withValues(alpha: 0.95),
+                  baseColor,
+                ]
+              : [
+                  baseColor.withValues(alpha: 0.9),
+                  baseColor.withValues(alpha: 0.95),
+                ],
+    );
+  }
+
+  Border _buildButtonBorder(bool isInteractive) {
+    return Border.all(
+      color: _isHovered && isInteractive
+          ? Colors.white.withValues(alpha: 0.4)
+          : Colors.white.withValues(alpha: 0.2),
+      width: _isPressed ? 1.0 : 1.5,
+    );
+  }
+
+  List<BoxShadow> _buildButtonBoxShadows(Color baseColor, bool isInteractive) {
+    return [
+      // Primary elevated shadow
+      BoxShadow(
+        color: baseColor.withValues(
+          alpha: _isPressed ? 0.1 : (_isHovered && isInteractive ? 0.25 : 0.18),
+        ),
+        blurRadius: _isPressed ? 8 : (_isHovered && isInteractive ? 20 : 15),
+        offset: _isPressed
+            ? const Offset(0, 4)
+            : (_isHovered && isInteractive
+                ? const Offset(0, 12)
+                : const Offset(0, 8)),
+        spreadRadius: _isPressed ? -1 : -2,
+      ),
+      // Secondary depth shadow
+      BoxShadow(
+        color: Colors.black.withValues(
+          alpha: _isPressed ? 0.08 : (_isHovered && isInteractive ? 0.12 : 0.06),
+        ),
+        blurRadius: _isPressed ? 4 : (_isHovered && isInteractive ? 10 : 8),
+        offset: _isPressed
+            ? const Offset(0, 1)
+            : (_isHovered && isInteractive
+                ? const Offset(0, 4)
+                : const Offset(0, 2)),
+        spreadRadius: 0,
+      ),
+      // Inner highlight (top edge)
+      if (_isHovered && isInteractive && !_isPressed)
+        BoxShadow(
+          color: Colors.white.withValues(alpha: 0.15),
+          blurRadius: 1,
+          offset: const Offset(0, -1),
+          spreadRadius: -1,
+        ),
+    ];
+  }
+
+  BoxDecoration _buildInnerDecoration() {
+    final isInteractive = widget.onPressed != null;
+
+    return BoxDecoration(
+      borderRadius: BorderRadiusTokens.radiusXl,
+      gradient: LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          Colors.white.withValues(alpha: _isHovered && isInteractive ? 0.08 : 0.05),
+          Colors.transparent,
+          Colors.black.withValues(alpha: _isPressed ? 0.08 : 0.03),
+        ],
+        stops: const [0.0, 0.5, 1.0],
       ),
     );
   }

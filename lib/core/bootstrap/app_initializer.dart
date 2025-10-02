@@ -8,7 +8,7 @@ import 'package:prioris/core/config/app_config.dart';
 import 'package:prioris/infrastructure/services/supabase_service.dart';
 import 'package:prioris/presentation/services/debug/overflow_audit_service.dart';
 import 'package:prioris/infrastructure/services/logger_service.dart';
-import 'package:prioris/core/di/export.dart';
+// DI removed in cleanup - using providers directly
 import 'package:prioris/data/repositories/base/hive_repository_registry.dart';
 
 /// Handles all application initialization logic
@@ -37,14 +37,14 @@ class AppInitializer {
   /// Initialize Dependency Injection Container
   static Future<void> _initializeDependencyInjection() async {
     final logger = LoggerService.instance;
-    logger.debug('Initializing Dependency Injection container', context: _context);
+    logger.debug('Skipping DI container (using providers)', context: _context);
 
-    // Initialize the DI container with all service registrations
-    await DILifecycleManager.initialize();
+    // DI container removed - using Riverpod providers directly
+    // No initialization needed
 
-    logger.info('DI container initialized successfully',
+    logger.info('DI skipped - using provider-based architecture',
                context: _context,
-               data: {'services_registered': 'core, domain, data, infrastructure'});
+               data: {'initialization': 'completed'});
   }
 
   /// Initialize local storage (Hive)

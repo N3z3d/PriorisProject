@@ -6,12 +6,13 @@
 import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:mockito/src/dummies.dart' as _i9;
 import 'package:prioris/data/repositories/custom_list_repository.dart' as _i3;
 import 'package:prioris/data/repositories/list_item_repository.dart' as _i7;
 import 'package:prioris/domain/models/core/entities/custom_list.dart' as _i5;
 import 'package:prioris/domain/models/core/entities/list_item.dart' as _i2;
 import 'package:prioris/domain/models/core/enums/list_enums.dart' as _i6;
-import 'package:prioris/domain/services/core/lists_filter_service.dart' as _i9;
+import 'package:prioris/domain/services/core/lists_filter_service.dart' as _i10;
 import 'package:prioris/domain/services/persistence/adaptive_persistence_service.dart'
     as _i8;
 
@@ -313,6 +314,15 @@ class MockAdaptivePersistenceService extends _i1.Mock
   }
 
   @override
+  String get currentMode => (super.noSuchMethod(
+        Invocation.getter(#currentMode),
+        returnValue: _i9.dummyValue<String>(
+          this,
+          Invocation.getter(#currentMode),
+        ),
+      ) as String);
+
+  @override
   _i4.Future<List<_i5.CustomList>> getAllLists() => (super.noSuchMethod(
         Invocation.method(
           #getAllLists,
@@ -386,7 +396,7 @@ class MockAdaptivePersistenceService extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockListsFilterService extends _i1.Mock
-    implements _i9.ListsFilterService {
+    implements _i10.ListsFilterService {
   MockListsFilterService() {
     _i1.throwOnMissingStub(this);
   }
@@ -399,7 +409,7 @@ class MockListsFilterService extends _i1.Mock
     bool? showCompleted = true,
     bool? showInProgress = true,
     String? selectedDateFilter,
-    _i9.SortOption? sortOption = _i9.SortOption.NAME_ASC,
+    _i10.SortOption? sortOption = _i10.SortOption.NAME_ASC,
   }) =>
       (super.noSuchMethod(
         Invocation.method(

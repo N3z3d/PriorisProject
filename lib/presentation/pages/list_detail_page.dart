@@ -6,6 +6,7 @@ import 'package:prioris/presentation/widgets/dialogs/bulk_add_dialog.dart';
 import 'package:prioris/presentation/widgets/buttons/premium_fab.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/pages/lists/controllers/lists_controller.dart';
+import 'package:prioris/data/providers/lists_controller_provider.dart';
 import 'package:prioris/presentation/pages/lists/widgets/list_detail_header.dart';
 import 'package:prioris/presentation/pages/lists/widgets/list_search_bar.dart';
 import 'package:prioris/presentation/pages/lists/widgets/list_empty_state.dart';
@@ -37,7 +38,8 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
   Widget build(BuildContext context) {
     // ARCHITECTURE FIX: Utiliser directement le provider stable
     // Les repositories sont pré-initialisés donc pas de risque de null
-    final currentList = ref.watch(listByIdProvider(widget.list.id));
+    final listsState = ref.watch(listsControllerProvider);
+    final currentList = listsState.findListById(widget.list.id);
     
     // ARCHITECTURE FIX: Utiliser la liste de l'état ou celle passée en paramètre
     // Mais ne PAS déclencher de rechargement qui causait les pertes de données

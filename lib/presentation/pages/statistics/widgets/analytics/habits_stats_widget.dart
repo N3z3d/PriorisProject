@@ -29,54 +29,73 @@ class HabitsStatsWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              '🎯 Statistiques des Habitudes',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            _buildStatsHeader(),
             const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: StatItem(
-                    value: '$activeHabits',
-                    label: 'Habitudes actives',
-                    icon: Icons.check_circle_outline,
-                  ),
-                ),
-                Expanded(
-                  child: StatItem(
-                    value: '$averageRate%',
-                    label: 'Taux moyen',
-                    icon: Icons.trending_up,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: StatItem(
-                    value: '$longestStreak j',
-                    label: 'Série la plus longue',
-                    icon: Icons.local_fire_department,
-                  ),
-                ),
-                Expanded(
-                  child: StatItem(
-                    value: averagePerDay.toStringAsFixed(1),
-                    label: 'Moyenne/jour',
-                    icon: Icons.analytics,
-                  ),
-                ),
-              ],
-            ),
+            _buildStatsGrid(activeHabits, averageRate, longestStreak, averagePerDay),
           ],
         ),
       ),
+    );
+  }
+
+  /// Build statistics header with title
+  Widget _buildStatsHeader() {
+    return const Text(
+      '🎯 Statistiques des Habitudes',
+      style: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  /// Build statistics grid with all metrics
+  Widget _buildStatsGrid(
+    int activeHabits,
+    int averageRate,
+    int longestStreak,
+    double averagePerDay,
+  ) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: StatItem(
+                value: '$activeHabits',
+                label: 'Habitudes actives',
+                icon: Icons.check_circle_outline,
+              ),
+            ),
+            Expanded(
+              child: StatItem(
+                value: '$averageRate%',
+                label: 'Taux moyen',
+                icon: Icons.trending_up,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: StatItem(
+                value: '$longestStreak j',
+                label: 'Série la plus longue',
+                icon: Icons.local_fire_department,
+              ),
+            ),
+            Expanded(
+              child: StatItem(
+                value: averagePerDay.toStringAsFixed(1),
+                label: 'Moyenne/jour',
+                icon: Icons.analytics,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 

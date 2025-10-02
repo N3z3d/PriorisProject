@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/data/providers/habits_state_provider.dart';
+import 'package:prioris/data/repositories/habit_repository.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 
@@ -28,7 +29,8 @@ class HabitsController extends StateNotifier<HabitsControllerState> {
 
   Future<void> addHabit(Habit habit) async {
     try {
-      await _ref.addHabitReactive(habit);
+      final habitRepo = _ref.read(habitRepositoryProvider);
+      await habitRepo.saveHabit(habit);
       state = state.copyWith(
         lastAction: HabitAction.added,
         lastActionMessage: 'Habitude "${habit.name}" créée avec succès !',
@@ -45,7 +47,8 @@ class HabitsController extends StateNotifier<HabitsControllerState> {
 
   Future<void> deleteHabit(String habitId, String habitName) async {
     try {
-      await _ref.deleteHabitReactive(habitId);
+      final habitRepo = _ref.read(habitRepositoryProvider);
+      await habitRepo.deleteHabit(habitId);
       state = state.copyWith(
         lastAction: HabitAction.deleted,
         lastActionMessage: 'Habitude "$habitName" supprimée',

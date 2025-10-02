@@ -111,24 +111,12 @@ class DataMigrationService implements IDataMigrationService {
     );
 
     // Use the list with the most recent modification date
-    if (local.updatedAt != null && cloud.updatedAt != null) {
-      if (local.updatedAt!.isAfter(cloud.updatedAt!)) {
-        LoggerService.instance.debug('Local version is more recent', context: 'DataMigrationService');
-        return local;
-      } else {
-        LoggerService.instance.debug('Cloud version is more recent', context: 'DataMigrationService');
-        return cloud;
-      }
-    } else if (local.updatedAt != null) {
-      LoggerService.instance.debug('Only local has timestamp, preferring local', context: 'DataMigrationService');
+    if (local.updatedAt.isAfter(cloud.updatedAt)) {
+      LoggerService.instance.debug('Local version is more recent', context: 'DataMigrationService');
       return local;
-    } else if (cloud.updatedAt != null) {
-      LoggerService.instance.debug('Only cloud has timestamp, preferring cloud', context: 'DataMigrationService');
-      return cloud;
     } else {
-      // No timestamps, prefer local for safety
-      LoggerService.instance.debug('No timestamps available, preferring local', context: 'DataMigrationService');
-      return local;
+      LoggerService.instance.debug('Cloud version is more recent or equal', context: 'DataMigrationService');
+      return cloud;
     }
   }
 

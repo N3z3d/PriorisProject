@@ -15,8 +15,8 @@ class HabitsListView implements IHabitsListView {
   const HabitsListView({
     required IHabitCardBuilder cardBuilder,
     required IHabitsPageTheme themeProvider,
-  }) : _cardBuilder = cardBuilder,
-       _themeProvider = themeProvider;
+  })  : _cardBuilder = cardBuilder,
+        _themeProvider = themeProvider;
 
   @override
   Widget buildHabitsList(List<Habit> habits) {
@@ -47,104 +47,114 @@ class HabitsListView implements IHabitsListView {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Empty state illustration
-            Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.grey.withOpacity(0.1),
-                    Colors.grey.withOpacity(0.05),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(60),
-              ),
-              child: Icon(
-                Icons.track_changes_outlined,
-                size: 48,
-                color: Colors.grey[400],
-              ),
-            ),
-
+            _buildEmptyStateIcon(),
             const SizedBox(height: 24),
-
-            // Empty state text
-            Text(
-              'Aucune habitude créée',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[700],
-              ),
-            ),
-
-            const SizedBox(height: 8),
-
-            Text(
-              'Commencez par créer votre première habitude\ndans l\'onglet "Ajouter"',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[500],
-                height: 1.5,
-              ),
-            ),
-
+            _buildEmptyStateText(),
             const SizedBox(height: 32),
-
-            // Call to action button
-            Container(
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [
-                    Color(0xFF6366f1), // Indigo-500
-                    Color(0xFF8b5cf6), // Violet-500
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF6366f1).withOpacity(0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(12),
-                  onTap: () {
-                    // This should be handled by the parent widget
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.add_circle_rounded,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          'Créer ma première habitude',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            _buildEmptyStateButton(),
           ],
+        ),
+      ),
+    );
+  }
+
+  /// Builds the empty state icon with gradient background
+  Widget _buildEmptyStateIcon() {
+    return Container(
+      width: 120,
+      height: 120,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.grey.withOpacity(0.1),
+            Colors.grey.withOpacity(0.05),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(60),
+      ),
+      child: Icon(
+        Icons.track_changes_outlined,
+        size: 48,
+        color: Colors.grey[400],
+      ),
+    );
+  }
+
+  /// Builds the empty state text (title and description)
+  Widget _buildEmptyStateText() {
+    return Column(
+      children: [
+        Text(
+          'Aucune habitude créée',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[700],
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Commencez par créer votre première habitude\ndans l\'onglet "Ajouter"',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey[500],
+            height: 1.5,
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Builds the call to action button for empty state
+  Widget _buildEmptyStateButton() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFF6366f1), // Indigo-500
+            Color(0xFF8b5cf6), // Violet-500
+          ],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF6366f1).withOpacity(0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () {
+            // This should be handled by the parent widget
+          },
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.add_circle_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
+                SizedBox(width: 8),
+                Text(
+                  'Créer ma première habitude',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -158,100 +168,109 @@ class HabitsListView implements IHabitsListView {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Error illustration
-            Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.red.withOpacity(0.1),
-                    Colors.red.withOpacity(0.05),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(60),
-              ),
-              child: Icon(
-                Icons.error_outline_rounded,
-                size: 48,
-                color: Colors.red[400],
-              ),
-            ),
-
+            _buildErrorStateIcon(),
             const SizedBox(height: 24),
-
-            // Error title
-            Text(
-              'Erreur de chargement',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: Colors.red[700],
-              ),
-            ),
-
-            const SizedBox(height: 8),
-
-            // Error details
-            Text(
-              _formatErrorMessage(error),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-                height: 1.5,
-              ),
-            ),
-
+            _buildErrorStateText(error),
             const SizedBox(height: 32),
+            _buildErrorStateButton(),
+          ],
+        ),
+      ),
+    );
+  }
 
-            // Retry button
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.red[500],
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.red.withOpacity(0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(12),
-                  onTap: () {
-                    // This should be handled by the parent widget
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.refresh_rounded,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          'Réessayer',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
+  /// Builds the error state icon with gradient background
+  Widget _buildErrorStateIcon() {
+    return Container(
+      width: 120,
+      height: 120,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.red.withOpacity(0.1),
+            Colors.red.withOpacity(0.05),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(60),
+      ),
+      child: Icon(
+        Icons.error_outline_rounded,
+        size: 48,
+        color: Colors.red[400],
+      ),
+    );
+  }
+
+  /// Builds the error state text (title and error message)
+  Widget _buildErrorStateText(Object error) {
+    return Column(
+      children: [
+        Text(
+          'Erreur de chargement',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: Colors.red[700],
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          _formatErrorMessage(error),
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey[600],
+            height: 1.5,
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Builds the retry button for error state
+  Widget _buildErrorStateButton() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.red[500],
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.red.withOpacity(0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () {
+            // This should be handled by the parent widget
+          },
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.refresh_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
+                SizedBox(width: 8),
+                Text(
+                  'Réessayer',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

@@ -148,59 +148,64 @@ class HabitCardBuilder implements IHabitCardBuilder {
   @override
   Widget buildHabitProgress(Habit habit) {
     final progress = _calculateProgress(habit);
-    final progressPercentage = (progress * 100).round();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Progression',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[700],
-              ),
-            ),
-            Text(
-              '$progressPercentage%',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: _themeProvider.getHabitTypeColor(habit.type?.name ?? 'default'),
-              ),
-            ),
-          ],
-        ),
-
+        _buildProgressHeader(habit, progress),
         const SizedBox(height: 8),
-
-        // Progress bar
-        Container(
-          height: 6,
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(3),
-          ),
-          child: FractionallySizedBox(
-            widthFactor: progress,
-            alignment: Alignment.centerLeft,
-            child: Container(
-              decoration: BoxDecoration(
-                color: _themeProvider.getHabitTypeColor(habit.type?.name ?? 'default'),
-                borderRadius: BorderRadius.circular(3),
-              ),
-            ),
-          ),
-        ),
-
+        _buildProgressBarWidget(habit, progress),
         const SizedBox(height: 8),
-
-        // Progress details
         _buildProgressDetails(habit),
       ],
+    );
+  }
+
+  /// Build progress header with label and percentage
+  Widget _buildProgressHeader(Habit habit, double progress) {
+    final progressPercentage = (progress * 100).round();
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          'Progression',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[700],
+          ),
+        ),
+        Text(
+          '$progressPercentage%',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: _themeProvider.getHabitTypeColor(habit.type?.name ?? 'default'),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Build animated progress bar
+  Widget _buildProgressBarWidget(Habit habit, double progress) {
+    return Container(
+      height: 6,
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(3),
+      ),
+      child: FractionallySizedBox(
+        widthFactor: progress,
+        alignment: Alignment.centerLeft,
+        child: Container(
+          decoration: BoxDecoration(
+            color: _themeProvider.getHabitTypeColor(habit.type?.name ?? 'default'),
+            borderRadius: BorderRadius.circular(3),
+          ),
+        ),
+      ),
     );
   }
 

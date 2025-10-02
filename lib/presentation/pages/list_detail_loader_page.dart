@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/presentation/pages/list_detail_page.dart';
 import 'package:prioris/presentation/pages/lists/controllers/lists_controller.dart';
+import 'package:prioris/data/providers/lists_controller_provider.dart';
 
 /// ARCHITECTURE FIX: Provider stable pour récupérer une liste 
 /// Les repositories sont pré-initialisés donc les données sont disponibles immédiatement
 final listDetailLoaderProvider = Provider.family<AsyncValue<CustomList?>, String>((ref, listId) {
   // Utilise le provider existant qui maintient un cache stable
-  final currentList = ref.watch(listByIdProvider(listId));
+  final listsState = ref.watch(listsControllerProvider);
+  final currentList = listsState.findListById(listId);
   
   // ARCHITECTURE FIX: Retourne directement les données disponibles
   // Plus besoin de rechargement car repositories sont pré-initialisés

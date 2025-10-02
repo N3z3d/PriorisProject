@@ -347,63 +347,70 @@ class _ListItemCardState extends State<ListItemCard>
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (widget.onEdit != null)
-          PremiumMicroInteractions.pressable(
-            onPressed: () {
-              _hideActions();
-              widget.onEdit?.call();
-            },
-            enableHaptics: true,
-            enableScaleEffect: true,
-            scaleFactor: 0.9,
-            child: Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: AppTheme.primaryColor.withValues(alpha: 0.3),
-                  width: 1,
-                ),
-              ),
-              child: const Icon(
-                Icons.edit,
-                size: 16,
-                color: AppTheme.primaryColor,
-              ),
-            ),
-          ),
-        if (widget.onEdit != null && widget.onDelete != null)
-          const SizedBox(width: 8),
-        if (widget.onDelete != null)
-          PremiumMicroInteractions.pressable(
-            onPressed: () {
-              _hideActions();
-              widget.onDelete?.call();
-            },
-            enableHaptics: true,
-            enableScaleEffect: true,
-            scaleFactor: 0.9,
-            child: Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: AppTheme.errorColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: AppTheme.errorColor.withValues(alpha: 0.3),
-                  width: 1,
-                ),
-              ),
-              child: const Icon(
-                Icons.delete,
-                size: 16,
-                color: AppTheme.errorColor,
-              ),
-            ),
-          ),
+        if (widget.onEdit != null) _buildEditButtonContainer(),
+        if (widget.onEdit != null && widget.onDelete != null) const SizedBox(width: 8),
+        if (widget.onDelete != null) _buildDeleteButtonContainer(),
       ],
+    );
+  }
+
+  /// Build edit button with premium interactions
+  Widget _buildEditButtonContainer() {
+    return PremiumMicroInteractions.pressable(
+      onPressed: () {
+        _hideActions();
+        widget.onEdit?.call();
+      },
+      enableHaptics: true,
+      enableScaleEffect: true,
+      scaleFactor: 0.9,
+      child: Container(
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          color: AppTheme.primaryColor.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: AppTheme.primaryColor.withValues(alpha: 0.3),
+            width: 1,
+          ),
+        ),
+        child: const Icon(
+          Icons.edit,
+          size: 16,
+          color: AppTheme.primaryColor,
+        ),
+      ),
+    );
+  }
+
+  /// Build delete button with premium interactions
+  Widget _buildDeleteButtonContainer() {
+    return PremiumMicroInteractions.pressable(
+      onPressed: () {
+        _hideActions();
+        widget.onDelete?.call();
+      },
+      enableHaptics: true,
+      enableScaleEffect: true,
+      scaleFactor: 0.9,
+      child: Container(
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          color: AppTheme.errorColor.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: AppTheme.errorColor.withValues(alpha: 0.3),
+            width: 1,
+          ),
+        ),
+        child: const Icon(
+          Icons.delete,
+          size: 16,
+          color: AppTheme.errorColor,
+        ),
+      ),
     );
   }
 

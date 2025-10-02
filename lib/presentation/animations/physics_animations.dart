@@ -2,14 +2,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-// Import the new refactored physics system
-import 'physics/physics_animations_manager.dart';
-
 /// Système d'animations avancées avec physique réaliste
 ///
-/// DEPRECATED: This class has been refactored following SOLID principles.
-/// Use PhysicsAnimationsManager directly for new implementations.
-/// This class remains for backward compatibility.
+/// Simplified implementation for compatibility
 class PhysicsAnimations {
   /// Animation de spring avec paramètres personnalisables
   static Widget springAnimation({
@@ -20,14 +15,18 @@ class PhysicsAnimations {
     double stiffness = 100.0,
     VoidCallback? onComplete,
   }) {
-    // Delegate to the new refactored system
-    return PhysicsAnimationsManager.springAnimation(
-      child: child,
-      trigger: trigger,
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0.0, end: trigger ? 1.0 : 0.0),
       duration: duration,
-      dampingRatio: dampingRatio,
-      stiffness: stiffness,
-      onComplete: onComplete,
+      curve: Curves.elasticOut,
+      onEnd: onComplete,
+      builder: (context, value, child) {
+        return Transform.scale(
+          scale: 1.0 + (value * 0.1),
+          child: child,
+        );
+      },
+      child: child,
     );
   }
 
@@ -40,14 +39,18 @@ class PhysicsAnimations {
     int bounceCount = 3,
     VoidCallback? onComplete,
   }) {
-    // Delegate to the new refactored system
-    return PhysicsAnimationsManager.elasticBounce(
-      child: child,
-      trigger: trigger,
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0.0, end: trigger ? 1.0 : 0.0),
       duration: duration,
-      bounceHeight: bounceHeight,
-      bounceCount: bounceCount,
-      onComplete: onComplete,
+      curve: Curves.bounceOut,
+      onEnd: onComplete,
+      builder: (context, value, child) {
+        return Transform.scale(
+          scale: 1.0 + (value * (bounceHeight - 1.0)),
+          child: child,
+        );
+      },
+      child: child,
     );
   }
 
@@ -59,13 +62,17 @@ class PhysicsAnimations {
     Duration duration = const Duration(milliseconds: 600),
     Curve springCurve = Curves.elasticOut,
   }) {
-    // Delegate to the new refactored system
-    return PhysicsAnimationsManager.springScale(
-      child: child,
+    return GestureDetector(
       onTap: onTap,
-      scaleFactor: scaleFactor,
-      duration: duration,
-      springCurve: springCurve,
+      child: TweenAnimationBuilder<double>(
+        tween: Tween<double>(begin: 1.0, end: 1.0),
+        duration: duration,
+        curve: springCurve,
+        builder: (context, value, child) {
+          return Transform.scale(scale: value, child: child);
+        },
+        child: child,
+      ),
     );
   }
 
@@ -78,14 +85,15 @@ class PhysicsAnimations {
     double friction = 0.05,
     VoidCallback? onComplete,
   }) {
-    // Delegate to the new refactored system
-    return PhysicsAnimationsManager.inertialRotation(
-      child: child,
-      trigger: trigger,
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0.0, end: trigger ? 2 * pi : 0.0),
       duration: duration,
-      initialVelocity: initialVelocity,
-      friction: friction,
-      onComplete: onComplete,
+      curve: Curves.decelerate,
+      onEnd: onComplete,
+      builder: (context, value, child) {
+        return Transform.rotate(angle: value, child: child);
+      },
+      child: child,
     );
   }
 
@@ -97,13 +105,14 @@ class PhysicsAnimations {
     int cycles = 5,
     bool autoStart = true,
   }) {
-    // Delegate to the new refactored system
-    return PhysicsAnimationsManager.pendulum(
-      child: child,
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: -angle, end: angle),
       duration: duration,
-      angle: angle,
-      cycles: cycles,
-      autoStart: autoStart,
+      curve: Curves.easeInOut,
+      builder: (context, value, child) {
+        return Transform.rotate(angle: value, child: child);
+      },
+      child: child,
     );
   }
 
@@ -117,15 +126,15 @@ class PhysicsAnimations {
     int bounceCount = 3,
     VoidCallback? onComplete,
   }) {
-    // Delegate to the new refactored system
-    return PhysicsAnimationsManager.gravityBounce(
-      child: child,
-      trigger: trigger,
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0.0, end: trigger ? height : 0.0),
       duration: duration,
-      height: height,
-      bounceDamping: bounceDamping,
-      bounceCount: bounceCount,
-      onComplete: onComplete,
+      curve: Curves.bounceOut,
+      onEnd: onComplete,
+      builder: (context, value, child) {
+        return Transform.translate(offset: Offset(0, value), child: child);
+      },
+      child: child,
     );
   }
 
@@ -138,14 +147,14 @@ class PhysicsAnimations {
     double damping = 0.02,
     bool autoStart = true,
   }) {
-    // Delegate to the new refactored system
-    return PhysicsAnimationsManager.physicsWave(
-      child: child,
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0.0, end: 2 * pi),
       duration: duration,
-      amplitude: amplitude,
-      frequency: frequency,
-      damping: damping,
-      autoStart: autoStart,
+      builder: (context, value, child) {
+        final offset = Offset(0, amplitude * sin(value * frequency));
+        return Transform.translate(offset: offset, child: child);
+      },
+      child: child,
     );
   }
 
@@ -157,28 +166,15 @@ class PhysicsAnimations {
     double randomnessFactor = 0.3,
     bool autoStart = true,
   }) {
-    // Delegate to the new refactored system
-    return PhysicsAnimationsManager.floatingParticle(
-      child: child,
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0.0, end: 2 * pi),
       duration: duration,
-      maxOffset: maxOffset,
-      randomnessFactor: randomnessFactor,
-      autoStart: autoStart,
+      builder: (context, value, child) {
+        final x = maxOffset * cos(value);
+        final y = maxOffset * sin(value);
+        return Transform.translate(offset: Offset(x, y), child: child);
+      },
+      child: child,
     );
   }
 }
-
-// === PHYSICS ANIMATIONS FACADE (SOLID-COMPLIANT) ===
-//
-// SOLID COMPLIANCE:
-// - SRP: Single responsibility as a facade to PhysicsAnimationsManager
-// - OCP: Open for extension through the modular physics system
-// - LSP: Compatible with original PhysicsAnimations interface
-// - ISP: Focused interface for physics animations only
-// - DIP: Depends on PhysicsAnimationsManager abstraction
-//
-// This facade provides backward compatibility while delegating to the new
-// refactored physics system that follows SOLID principles.
-// CONSTRAINT: <200 lines (currently ~170 lines)
-//
-// For new development, use PhysicsAnimationsManager directly.

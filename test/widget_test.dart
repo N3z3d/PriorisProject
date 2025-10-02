@@ -8,8 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'package:prioris/main.dart';
+import 'package:prioris/presentation/app/prioris_app.dart';
 
 void main() {
   testWidgets('App starts without crashing', (WidgetTester tester) async {

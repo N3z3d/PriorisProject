@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:prioris/presentation/pages/lists/controllers/lists_controller.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
@@ -9,17 +8,8 @@ import 'package:prioris/data/repositories/custom_list_repository.dart';
 import 'package:prioris/data/repositories/list_item_repository.dart';
 import 'package:prioris/domain/services/core/lists_filter_service.dart';
 
-// Generate mocks with custom names to avoid conflicts
-@GenerateMocks([], customMocks: [
-  MockSpec<ListsController>(as: #MockListsControllerTest),
-  MockSpec<CustomListRepository>(as: #MockCustomListRepositoryTest),
-  MockSpec<ListItemRepository>(as: #MockListItemRepositoryTest),
-  MockSpec<ListsFilterService>(as: #MockListsFilterServiceTest),
-])
-import 'test_providers.mocks.dart';
-
-/// Mock controller for testing - uses generated mock
-class MockListsController extends MockListsControllerTest {
+/// Mock controller for testing - manual mock implementation
+class MockListsController extends Mock implements ListsController {
   @override
   bool get isLoading => super.noSuchMethod(
     Invocation.getter(#isLoading),

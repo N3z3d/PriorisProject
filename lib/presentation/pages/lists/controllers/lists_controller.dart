@@ -51,7 +51,7 @@ class RefactoredListsController extends StateNotifier<ListsState> {
 
     try {
       state = state.withLoading();
-      await _initializationManager.initializeAuto();
+      await _initializationManager.initializeAsync();
       _isInitialized = true;
       await loadLists();
     } catch (e) {
@@ -306,7 +306,7 @@ class RefactoredListsController extends StateNotifier<ListsState> {
     try {
       await operation();
       if (_isSafeToOperate) {
-        state = state.withLoading(false);
+        state = state.copyWith(isLoading: false);
       }
     } catch (e) {
       _logger.error(

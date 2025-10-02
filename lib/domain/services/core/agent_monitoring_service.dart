@@ -65,74 +65,116 @@ class AgentMonitoringService extends StateNotifier<Map<String, AgentInfo>> {
 
   void _initializeAgents() {
     final now = DateTime.now();
-    
+    final taskAgent = _createTaskAgent(now);
+    final habitAgent = _createHabitAgent(now);
+    final listAgent = _createListAgent(now);
+    final statsAgent = _createStatsAgent(now);
+    final duelAgent = _createDuelAgent(now);
+    final cacheAgent = _createCacheAgent(now);
+    final validationAgent = _createValidationAgent(now);
+
     state = {
-      'task-agent': AgentInfo(
-        id: 'task-agent',
-        name: 'Task Manager',
-        type: AgentType.task,
-        status: AgentStatus.idle,
-        lastActivity: now,
-        completedTasks: 0,
-        performance: 0.95,
-      ),
-      'habit-agent': AgentInfo(
-        id: 'habit-agent',
-        name: 'Habit Tracker',
-        type: AgentType.habit,
-        status: AgentStatus.idle,
-        lastActivity: now,
-        completedTasks: 0,
-        performance: 0.98,
-      ),
-      'list-agent': AgentInfo(
-        id: 'list-agent',
-        name: 'List Organizer',
-        type: AgentType.list,
-        status: AgentStatus.working,
-        lastActivity: now,
-        currentTask: 'Synchronizing lists',
-        completedTasks: 15,
-        performance: 0.92,
-      ),
-      'stats-agent': AgentInfo(
-        id: 'stats-agent',
-        name: 'Statistics Analyzer',
-        type: AgentType.statistics,
-        status: AgentStatus.idle,
-        lastActivity: now,
-        completedTasks: 8,
-        performance: 0.99,
-      ),
-      'duel-agent': AgentInfo(
-        id: 'duel-agent',
-        name: 'Duel Processor',
-        type: AgentType.duel,
-        status: AgentStatus.error,
-        lastActivity: now,
-        currentTask: 'RenderFlex layout error',
-        completedTasks: 3,
-        performance: 0.75,
-      ),
-      'cache-agent': AgentInfo(
-        id: 'cache-agent',
-        name: 'Cache Manager',
-        type: AgentType.cache,
-        status: AgentStatus.completed,
-        lastActivity: now,
-        completedTasks: 42,
-        performance: 1.0,
-      ),
-      'validation-agent': AgentInfo(
-        id: 'validation-agent',
-        name: 'Data Validator',
-        type: AgentType.validation,
-        status: AgentStatus.idle,
-        lastActivity: now,
-        completedTasks: 27,
-        performance: 0.96,
-      ),
+      taskAgent.id: taskAgent,
+      habitAgent.id: habitAgent,
+      listAgent.id: listAgent,
+      statsAgent.id: statsAgent,
+      duelAgent.id: duelAgent,
+      cacheAgent.id: cacheAgent,
+      validationAgent.id: validationAgent,
     };
+  }
+
+  /// Create task agent with initial configuration
+  AgentInfo _createTaskAgent(DateTime now) {
+    return AgentInfo(
+      id: 'task-agent',
+      name: 'Task Manager',
+      type: AgentType.task,
+      status: AgentStatus.idle,
+      lastActivity: now,
+      completedTasks: 0,
+      performance: 0.95,
+    );
+  }
+
+  /// Create habit agent with initial configuration
+  AgentInfo _createHabitAgent(DateTime now) {
+    return AgentInfo(
+      id: 'habit-agent',
+      name: 'Habit Tracker',
+      type: AgentType.habit,
+      status: AgentStatus.idle,
+      lastActivity: now,
+      completedTasks: 0,
+      performance: 0.98,
+    );
+  }
+
+  /// Create list agent with initial configuration
+  AgentInfo _createListAgent(DateTime now) {
+    return AgentInfo(
+      id: 'list-agent',
+      name: 'List Organizer',
+      type: AgentType.list,
+      status: AgentStatus.working,
+      lastActivity: now,
+      currentTask: 'Synchronizing lists',
+      completedTasks: 15,
+      performance: 0.92,
+    );
+  }
+
+  /// Create statistics agent with initial configuration
+  AgentInfo _createStatsAgent(DateTime now) {
+    return AgentInfo(
+      id: 'stats-agent',
+      name: 'Statistics Analyzer',
+      type: AgentType.statistics,
+      status: AgentStatus.idle,
+      lastActivity: now,
+      completedTasks: 8,
+      performance: 0.99,
+    );
+  }
+
+  /// Create duel agent with initial configuration
+  AgentInfo _createDuelAgent(DateTime now) {
+    return AgentInfo(
+      id: 'duel-agent',
+      name: 'Duel Processor',
+      type: AgentType.duel,
+      status: AgentStatus.error,
+      lastActivity: now,
+      currentTask: 'RenderFlex layout error',
+      completedTasks: 3,
+      performance: 0.75,
+    );
+  }
+
+  /// Create cache agent with initial configuration
+  AgentInfo _createCacheAgent(DateTime now) {
+    return AgentInfo(
+      id: 'cache-agent',
+      name: 'Cache Manager',
+      type: AgentType.cache,
+      status: AgentStatus.completed,
+      lastActivity: now,
+      completedTasks: 42,
+      performance: 1.0,
+    );
+  }
+
+  /// Create validation agent with initial configuration
+  AgentInfo _createValidationAgent(DateTime now) {
+    return AgentInfo(
+      id: 'validation-agent',
+      name: 'Data Validator',
+      type: AgentType.validation,
+      status: AgentStatus.idle,
+      lastActivity: now,
+      completedTasks: 27,
+      performance: 0.96,
+    );
   }
 
   void updateAgentStatus(String agentId, AgentStatus status, [String? task]) {

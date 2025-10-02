@@ -9,7 +9,15 @@
     "allow": [
       "Bash(do echo \"=== $file ===\")",
       "Bash(do basename \"$file\" .dart)",
-      "Read(//c/Users/**)"
+      "Read(//c/Users/**)",
+      "Bash(tee:*)",
+      "Bash(del /f testapplicationservicespersistencebackground_sync_service_test.dart)",
+      "Bash(del /f testapplicationservicespersistencepersistence_operations_service_test.dart)",
+      "Bash(del /f testapplicationservicespersistencepersistence_operations_service_test.mocks.dart)",
+      "Bash(del /f testapplicationservicespersistencepersistence_strategy_manager_test.dart)",
+      "Bash(findstr:*)",
+      "Bash(do [ -f \"$file\" ])",
+      "Bash(exit 0)"
     ],
     "deny": [],
     "ask": []

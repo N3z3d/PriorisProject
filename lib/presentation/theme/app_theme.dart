@@ -304,6 +304,24 @@ class AppTheme {
 
   static TextTheme _buildTextTheme(Color textColor) {
     return GoogleFonts.interTextTheme().copyWith(
+      displayLarge: _buildDisplayTextStyles(textColor).displayLarge,
+      displayMedium: _buildDisplayTextStyles(textColor).displayMedium,
+      displaySmall: _buildDisplayTextStyles(textColor).displaySmall,
+      headlineLarge: _buildHeadlineTextStyles(textColor).headlineLarge,
+      headlineMedium: _buildHeadlineTextStyles(textColor).headlineMedium,
+      headlineSmall: _buildHeadlineTextStyles(textColor).headlineSmall,
+      titleLarge: _buildTitleTextStyles(textColor).titleLarge,
+      titleMedium: _buildTitleTextStyles(textColor).titleMedium,
+      titleSmall: _buildTitleTextStyles(textColor).titleSmall,
+      bodyLarge: _buildBodyTextStyles(textColor).bodyLarge,
+      bodyMedium: _buildBodyTextStyles(textColor).bodyMedium,
+      bodySmall: _buildBodyTextStyles(textColor).bodySmall,
+    );
+  }
+
+  /// Build display text styles (largest text)
+  static TextTheme _buildDisplayTextStyles(Color textColor) {
+    return TextTheme(
       displayLarge: GoogleFonts.inter(
         fontSize: 32,
         fontWeight: FontWeight.w700,
@@ -319,6 +337,12 @@ class AppTheme {
         fontWeight: FontWeight.w600,
         color: textColor,
       ),
+    );
+  }
+
+  /// Build headline text styles
+  static TextTheme _buildHeadlineTextStyles(Color textColor) {
+    return TextTheme(
       headlineLarge: GoogleFonts.inter(
         fontSize: 22,
         fontWeight: FontWeight.w600,
@@ -334,6 +358,12 @@ class AppTheme {
         fontWeight: FontWeight.w500,
         color: textColor,
       ),
+    );
+  }
+
+  /// Build title text styles
+  static TextTheme _buildTitleTextStyles(Color textColor) {
+    return TextTheme(
       titleLarge: GoogleFonts.inter(
         fontSize: 16,
         fontWeight: FontWeight.w500,
@@ -349,6 +379,12 @@ class AppTheme {
         fontWeight: FontWeight.w500,
         color: textColor,
       ),
+    );
+  }
+
+  /// Build body text styles
+  static TextTheme _buildBodyTextStyles(Color textColor) {
+    return TextTheme(
       bodyLarge: GoogleFonts.inter(
         fontSize: 16,
         fontWeight: FontWeight.w400,

@@ -117,7 +117,7 @@ class _PremiumCardState extends State<PremiumCard>
                   decoration: BoxDecoration(
                     borderRadius: widget.borderRadius ?? BorderRadiusTokens.cardPremium,
                     color: widget.isGlassmorphism!
-                        ? AppTheme.professionalGlassBackground
+                        ? AppTheme.cardColor.withValues(alpha: 0.8)
                         : widget.backgroundColor ?? AppTheme.cardColor,
                     border: Border.all(
                       color: _isHovered 

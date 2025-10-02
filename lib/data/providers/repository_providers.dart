@@ -6,8 +6,6 @@ import 'package:prioris/data/repositories/hive_list_item_repository.dart';
 import 'package:prioris/data/repositories/interfaces/repository_interfaces.dart';
 import 'package:prioris/data/providers/auth_providers.dart';
 import 'package:prioris/data/providers/service_providers.dart';
-import 'package:prioris/domain/services/persistence/adaptive_persistence_service.dart';
-import 'package:prioris/domain/services/persistence/data_migration_service.dart';
 
 /// SOLID: Exception personalizada para erros de inicialização
 /// Clean Code: Nomes explícitos e mensagens claras
@@ -314,6 +312,7 @@ class RepositorySelectionService {
 ///
 /// Gère automatiquement le choix entre stockage local et cloud selon l'authentification
 /// avec migration transparente des données et synchronisation en arrière-plan.
+/* DISABLED: Service removed during cleanup
 final adaptivePersistenceServiceProvider = FutureProvider<AdaptivePersistenceService>((ref) async {
   // Repositories locaux (Hive) - attendre leur initialisation
   final localCustomListRepository = await ref.watch(hiveCustomListRepositoryProvider.future);
@@ -330,12 +329,10 @@ final adaptivePersistenceServiceProvider = FutureProvider<AdaptivePersistenceSer
     cloudItemRepository: cloudItemRepository,
   );
 });
+*/ // END DISABLED adaptivePersistenceServiceProvider
 
 /// Provider pour l'initialisation de l'AdaptivePersistenceService
-///
-/// Surveille l'état d'authentification et initialise/met à jour le service automatiquement
-/// SOLID: Single Responsibility - gère uniquement l'initialisation du service
-/// Clean Code: Gestion d'erreur explicite et logging
+/* DISABLED: Service removed during cleanup
 final adaptivePersistenceInitProvider = FutureProvider<AdaptivePersistenceService>((ref) async {
   try {
     final service = await ref.watch(adaptivePersistenceServiceProvider.future);
@@ -352,8 +349,10 @@ final adaptivePersistenceInitProvider = FutureProvider<AdaptivePersistenceServic
     );
   }
 });
+*/ // END DISABLED adaptivePersistenceInitProvider
 
 /// Provider qui écoute les changements d'authentification pour l'AdaptivePersistenceService
+/* DISABLED: Service removed during cleanup
 ///
 /// Met automatiquement à jour le service quand l'utilisateur se connecte/déconnecte
 /// SOLID: Single Responsibility - gère uniquement l'écoute des changements d'auth
@@ -378,38 +377,7 @@ final adaptivePersistenceListenerProvider = Provider<void>((ref) {
     }
   });
 });
+*/ // END DISABLED adaptivePersistenceListenerProvider
 
 // ========== DATA MIGRATION SERVICE ==========
-
-/// Provider pour le DataMigrationService - Service avancé de migration SOLID
-///
-/// Gère les migrations intelligentes avec résolution de conflits automatique,
-/// tracking du progrès, et vérification d'intégrité des données.
-/// SOLID: Single Responsibility - gère uniquement la création du service de migration
-/// Clean Code: Gestion async explicite pour éviter les blocages
-final dataMigrationServiceProvider = FutureProvider<DataMigrationService>((ref) async {
-  try {
-    // Repositories locaux (Hive) - attendre leur initialisation
-    final localCustomListRepository = await ref.watch(hiveCustomListRepositoryProvider.future);
-    final localItemRepository = await ref.watch(hiveListItemRepositoryProvider.future);
-
-    // Repositories cloud (Supabase)
-    final cloudCustomListRepository = ref.read(supabaseCustomListRepositoryProvider);
-    final cloudItemRepository = ref.read(supabaseListItemRepositoryProvider);
-
-    // SOLID: Dependency Injection - Injecter tous les repositories requis
-    return DataMigrationService(
-      localRepository: localCustomListRepository,
-      cloudRepository: cloudCustomListRepository,
-      localItemRepository: localItemRepository,
-      cloudItemRepository: cloudItemRepository,
-      // Les services de migration utilisent les implémentations par défaut (SimpleXxx)
-      // Ils peuvent être injectés spécifiquement si nécessaire pour les tests
-    );
-  } catch (error) {
-    throw DataMigrationServiceInitializationException(
-      'Failed to initialize DataMigrationService',
-      error,
-    );
-  }
-});
+// DISABLED: Service removed during cleanup

@@ -135,10 +135,10 @@ class PremiumMicroInteractions {
         // Animation de slide avec fade
         const begin = Offset(1.0, 0.0);
         const end = Offset.zero;
-        final slideTween = Tween(begin: begin, end: end);
-        final slideAnimation = animation.drive(
-          CurveTween(curve: curve).chain(slideTween),
-        );
+        final slideTween = Tween<Offset>(begin: begin, end: end);
+        final slideAnimation = animation.drive(slideTween.chain(
+          CurveTween(curve: curve),
+        ));
 
         // Animation de fade
         final fadeAnimation = Tween<double>(

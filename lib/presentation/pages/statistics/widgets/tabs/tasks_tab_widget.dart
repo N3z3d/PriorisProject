@@ -55,7 +55,7 @@ class TasksTabWidget extends StatelessWidget {
     };
 
     for (final task in tasks) {
-      final elo = task.elo?.value ?? 1200;
+      final elo = 1200; // task.elo removed during cleanup
       if (elo < 1200) {
         eloRanges['1000-1199'] = (eloRanges['1000-1199'] ?? 0) + 1;
       } else if (elo < 1400) {

@@ -133,17 +133,15 @@ class DeduplicationService implements IDeduplicationService {
   /// Resolve conflicts between two lists
   CustomList _resolveListConflict(CustomList existing, CustomList incoming) {
     // Use the list with the most recent update timestamp
-    if (existing.updatedAt != null && incoming.updatedAt != null) {
-      if (existing.updatedAt!.isAfter(incoming.updatedAt!)) {
-        LoggerService.instance.debug('Keeping existing list version (more recent)', context: 'DeduplicationService');
-        return existing;
-      } else if (incoming.updatedAt!.isAfter(existing.updatedAt!)) {
-        LoggerService.instance.debug('Adopting incoming list version (more recent)', context: 'DeduplicationService');
-        return incoming;
-      }
+    if (existing.updatedAt.isAfter(incoming.updatedAt)) {
+      LoggerService.instance.debug('Keeping existing list version (more recent)', context: 'DeduplicationService');
+      return existing;
+    } else if (incoming.updatedAt.isAfter(existing.updatedAt)) {
+      LoggerService.instance.debug('Adopting incoming list version (more recent)', context: 'DeduplicationService');
+      return incoming;
     }
 
-    // If timestamps are equal or missing, prefer incoming (default behavior)
+    // If timestamps are equal, prefer incoming (default behavior)
     LoggerService.instance.debug('Default resolution: adopting incoming list version', context: 'DeduplicationService');
     return incoming;
   }

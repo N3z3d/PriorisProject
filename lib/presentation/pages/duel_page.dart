@@ -8,6 +8,7 @@ import 'package:prioris/presentation/widgets/dialogs/list_selection_dialog.dart'
 import 'package:prioris/presentation/widgets/dialogs/task_edit_dialog.dart';
 import 'package:prioris/domain/core/value_objects/list_prioritization_settings.dart';
 import 'package:prioris/presentation/pages/lists/controllers/lists_controller.dart';
+import 'package:prioris/data/providers/lists_controller_provider.dart';
 import 'duel/widgets/export.dart';
 
 // Provider pour masquer/afficher les scores ELO
