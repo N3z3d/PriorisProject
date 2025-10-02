@@ -17,7 +17,8 @@
       "Bash(del /f testapplicationservicespersistencepersistence_strategy_manager_test.dart)",
       "Bash(findstr:*)",
       "Bash(do [ -f \"$file\" ])",
-      "Bash(exit 0)"
+      "Bash(exit 0)",
+      "Bash([ -d lib/presentation/pages/duel/services ])"
     ],
     "deny": [],
     "ask": []
