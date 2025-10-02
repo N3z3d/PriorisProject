@@ -1,25 +1,34 @@
-import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:vibration/vibration.dart';
+import 'haptic/haptic_strategy.dart';
+import 'haptic/haptic_patterns.dart';
+import 'haptic/domain_haptic_service.dart';
+import 'haptic/haptic_types.dart';
+
+// Export public types
+export 'haptic/haptic_types.dart';
+export 'haptic/haptic_wrapper_widget.dart';
 
 /// Service de haptic feedback premium avec vibrations contextuelles avancées
+/// Refactorisé pour respecter SOLID:
+/// - SRP: Délègue les responsabilités à des services spécialisés
+/// - OCP: Extensible via stratégies et patterns
+/// - DIP: Dépend d'abstractions (HapticStrategy)
 class PremiumHapticService {
-  static PremiumHapticService? _instance;
-  static PremiumHapticService get instance => _instance ??= PremiumHapticService._();
-  
   PremiumHapticService._();
 
-  bool _isEnabled = true;
-  bool _hasVibrator = false;
+  static PremiumHapticService? _instance;
+  static PremiumHapticService get instance => _instance ??= PremiumHapticService._();
 
-  /// Initialise le service et vérifie les capacités de l'appareil
+  bool _isEnabled = true;
+  HapticStrategy? _strategy;
+  DomainHapticService? _domainService;
+
+  /// Initialise le service et configure la stratégie appropriée
   Future<void> initialize() async {
-    try {
-      _hasVibrator = await Vibration.hasVibrator() ?? false;
-    } catch (e) {
-      _hasVibrator = false;
-    }
+    _strategy = await HapticStrategyFactory.create();
+    _domainService = DomainHapticService(
+      strategy: _strategy!,
+      isEnabled: () => _isEnabled,
+    );
   }
 
   /// Active ou désactive les retours haptiques
@@ -30,239 +39,116 @@ class PremiumHapticService {
   /// Vérifie si les haptics sont activés
   bool get isEnabled => _isEnabled;
 
-  /// Vérifie si l'appareil a un vibreur
-  bool get hasVibrator => _hasVibrator;
+  /// Vérifie si l'appareil a un vibreur (Android only)
+  bool get hasVibrator => _strategy is AndroidHapticStrategy
+      ? (_strategy as AndroidHapticStrategy).hasVibrator
+      : true;
 
   // ============ INTERACTIONS DE BASE ============
 
   /// Feedback léger pour les interactions subtiles (hover, focus)
   Future<void> lightImpact() async {
-    if (!_isEnabled) return;
-    
-    if (Platform.isIOS) {
-      HapticFeedback.lightImpact();
-    } else if (_hasVibrator) {
-      await Vibration.vibrate(duration: 10);
-    }
+    if (!_isEnabled || _strategy == null) return;
+    await _strategy!.lightImpact();
   }
 
   /// Feedback moyen pour les interactions standards (tap, select)
   Future<void> mediumImpact() async {
-    if (!_isEnabled) return;
-    
-    if (Platform.isIOS) {
-      HapticFeedback.mediumImpact();
-    } else if (_hasVibrator) {
-      await Vibration.vibrate(duration: 25);
-    }
+    if (!_isEnabled || _strategy == null) return;
+    await _strategy!.mediumImpact();
   }
 
   /// Feedback fort pour les interactions importantes (confirmation, success)
   Future<void> heavyImpact() async {
-    if (!_isEnabled) return;
-    
-    if (Platform.isIOS) {
-      HapticFeedback.heavyImpact();
-    } else if (_hasVibrator) {
-      await Vibration.vibrate(duration: 50);
-    }
+    if (!_isEnabled || _strategy == null) return;
+    await _strategy!.heavyImpact();
   }
 
   // ============ FEEDBACKS CONTEXTUELS ============
 
   /// Feedback de succès (tâche complétée, objectif atteint)
   Future<void> success() async {
-    if (!_isEnabled) return;
-    
-    if (Platform.isIOS) {
-      HapticFeedback.heavyImpact();
-      await Future.delayed(const Duration(milliseconds: 100));
-      HapticFeedback.lightImpact();
-    } else if (_hasVibrator) {
-      await Vibration.vibrate(
-        pattern: [0, 50, 50, 30],
-        amplitude: 255,
-      );
-    }
+    if (!_isEnabled || _strategy == null) return;
+    await _strategy!.vibrate(
+      pattern: HapticPatterns.success,
+      amplitude: HapticPatterns.successAmplitude,
+    );
   }
 
   /// Feedback d'erreur (validation échouée, action impossible)
   Future<void> error() async {
-    if (!_isEnabled) return;
-    
-    if (Platform.isIOS) {
-      HapticFeedback.heavyImpact();
-      await Future.delayed(const Duration(milliseconds: 100));
-      HapticFeedback.heavyImpact();
-    } else if (_hasVibrator) {
-      await Vibration.vibrate(
-        pattern: [0, 100, 100, 100],
-        amplitude: 255,
-      );
-    }
+    if (!_isEnabled || _strategy == null) return;
+    await _strategy!.vibrate(
+      pattern: HapticPatterns.error,
+      amplitude: HapticPatterns.errorAmplitude,
+    );
   }
 
   /// Feedback d'avertissement (attention requise)
   Future<void> warning() async {
-    if (!_isEnabled) return;
-    
-    if (Platform.isIOS) {
-      HapticFeedback.mediumImpact();
-      await Future.delayed(const Duration(milliseconds: 150));
-      HapticFeedback.lightImpact();
-    } else if (_hasVibrator) {
-      await Vibration.vibrate(
-        pattern: [0, 75, 75, 25],
-        amplitude: 200,
-      );
-    }
+    if (!_isEnabled || _strategy == null) return;
+    await _strategy!.vibrate(
+      pattern: HapticPatterns.warning,
+      amplitude: HapticPatterns.warningAmplitude,
+    );
   }
 
   /// Feedback de notification (message reçu, rappel)
   Future<void> notification() async {
-    if (!_isEnabled) return;
-    
-    if (Platform.isIOS) {
-      HapticFeedback.lightImpact();
-      await Future.delayed(const Duration(milliseconds: 50));
-      HapticFeedback.lightImpact();
-    } else if (_hasVibrator) {
-      await Vibration.vibrate(
-        pattern: [0, 20, 50, 20],
-        amplitude: 150,
-      );
-    }
+    if (!_isEnabled || _strategy == null) return;
+    await _strategy!.vibrate(
+      pattern: HapticPatterns.notification,
+      amplitude: HapticPatterns.notificationAmplitude,
+    );
   }
 
   // ============ FEEDBACKS SPÉCIALISÉS POUR PRIORIS ============
+  // Délégation au service métier
 
   /// Feedback pour l'ajout d'une tâche
   Future<void> taskAdded() async {
-    if (!_isEnabled) return;
-    
-    if (Platform.isIOS) {
-      HapticFeedback.lightImpact();
-    } else if (_hasVibrator) {
-      await Vibration.vibrate(duration: 15);
-    }
+    if (_domainService == null) return;
+    await _domainService!.taskAdded();
   }
 
   /// Feedback pour la completion d'une tâche
   Future<void> taskCompleted() async {
-    if (!_isEnabled) return;
-    
-    if (Platform.isIOS) {
-      HapticFeedback.mediumImpact();
-      await Future.delayed(const Duration(milliseconds: 100));
-      HapticFeedback.lightImpact();
-      await Future.delayed(const Duration(milliseconds: 100));
-      HapticFeedback.lightImpact();
-    } else if (_hasVibrator) {
-      await Vibration.vibrate(
-        pattern: [0, 30, 50, 20, 50, 15],
-        amplitude: 200,
-      );
-    }
+    if (_domainService == null) return;
+    await _domainService!.taskCompleted();
   }
 
   /// Feedback pour l'accomplissement d'une habitude
   Future<void> habitCompleted() async {
-    if (!_isEnabled) return;
-    
-    if (Platform.isIOS) {
-      HapticFeedback.heavyImpact();
-      await Future.delayed(const Duration(milliseconds: 150));
-      HapticFeedback.mediumImpact();
-    } else if (_hasVibrator) {
-      await Vibration.vibrate(
-        pattern: [0, 60, 100, 40],
-        amplitude: 255,
-      );
-    }
+    if (_domainService == null) return;
+    await _domainService!.habitCompleted();
   }
 
-  /// Feedback pour un streak d'habitude (multiple de 7, 30, etc.)
+  /// Feedback pour un streak d'habitude
   Future<void> streakMilestone(int streakCount) async {
-    if (!_isEnabled) return;
-    
-    // Plus le streak est important, plus le feedback est prononcé
-    final intensity = (streakCount / 7).clamp(1, 5).round();
-    
-    if (Platform.isIOS) {
-      for (int i = 0; i < intensity; i++) {
-        HapticFeedback.heavyImpact();
-        if (i < intensity - 1) {
-          await Future.delayed(const Duration(milliseconds: 100));
-        }
-      }
-    } else if (_hasVibrator) {
-      final pattern = <int>[0];
-      
-      for (int i = 0; i < intensity; i++) {
-        pattern.addAll([80, 80]);
-      }
-      
-      await Vibration.vibrate(pattern: pattern, amplitude: 255);
-    }
+    if (_domainService == null) return;
+    await _domainService!.streakMilestone(streakCount);
   }
 
-  /// Feedback pour le changement de priorité d'une tâche
+  /// Feedback pour le changement de priorité
   Future<void> priorityChanged(int oldPriority, int newPriority) async {
-    if (!_isEnabled) return;
-    
-    if (newPriority > oldPriority) {
-      // Priorité augmentée - feedback ascendant
-      if (Platform.isIOS) {
-        HapticFeedback.lightImpact();
-        await Future.delayed(const Duration(milliseconds: 50));
-        HapticFeedback.mediumImpact();
-      } else if (_hasVibrator) {
-        await Vibration.vibrate(
-          pattern: [0, 20, 30, 40],
-          amplitude: 150,
-        );
-      }
-    } else {
-      // Priorité diminuée - feedback descendant
-      if (Platform.isIOS) {
-        HapticFeedback.mediumImpact();
-        await Future.delayed(const Duration(milliseconds: 50));
-        HapticFeedback.lightImpact();
-      } else if (_hasVibrator) {
-        await Vibration.vibrate(
-          pattern: [0, 40, 30, 20],
-          amplitude: 200,
-        );
-      }
-    }
+    if (_domainService == null) return;
+    await _domainService!.priorityChanged(oldPriority, newPriority);
   }
 
-  /// Feedback pour le drag & drop
+  /// Feedback pour le drag start
   Future<void> dragStart() async {
-    if (!_isEnabled) return;
-    
-    if (Platform.isIOS) {
-      HapticFeedback.lightImpact();
-    } else if (_hasVibrator) {
-      await Vibration.vibrate(duration: 10);
-    }
+    if (_domainService == null) return;
+    await _domainService!.dragStart();
   }
 
   /// Feedback pour le drop réussi
   Future<void> dropSuccess() async {
-    if (!_isEnabled) return;
-    
-    if (Platform.isIOS) {
-      HapticFeedback.mediumImpact();
-    } else if (_hasVibrator) {
-      await Vibration.vibrate(duration: 30);
-    }
+    if (_domainService == null) return;
+    await _domainService!.dropSuccess();
   }
 
   /// Feedback pour le swipe action
   Future<void> swipeAction(SwipeActionType actionType) async {
-    if (!_isEnabled) return;
-    
     switch (actionType) {
       case SwipeActionType.delete:
         await error();
@@ -281,106 +167,46 @@ class PremiumHapticService {
 
   /// Feedback pour la navigation entre pages
   Future<void> pageTransition() async {
-    if (!_isEnabled) return;
-    
-    if (Platform.isIOS) {
-      HapticFeedback.lightImpact();
-    } else if (_hasVibrator) {
-      await Vibration.vibrate(duration: 8);
-    }
+    if (_domainService == null) return;
+    await _domainService!.pageTransition();
   }
 
   /// Feedback pour l'ouverture de modal/dialog
   Future<void> modalOpened() async {
-    if (!_isEnabled) return;
-    
-    if (Platform.isIOS) {
-      HapticFeedback.lightImpact();
-    } else if (_hasVibrator) {
-      await Vibration.vibrate(duration: 15);
-    }
+    if (_domainService == null) return;
+    await _domainService!.modalOpened();
   }
 
   /// Feedback pour la fermeture de modal/dialog
   Future<void> modalClosed() async {
-    if (!_isEnabled) return;
-    
-    if (Platform.isIOS) {
-      HapticFeedback.lightImpact();
-    } else if (_hasVibrator) {
-      await Vibration.vibrate(duration: 10);
-    }
+    if (_domainService == null) return;
+    await _domainService!.modalClosed();
   }
 
   // ============ FEEDBACKS AVANCÉS ============
 
   /// Feedback de progression (loading, upload)
   Future<void> progress(double progress) async {
-    if (!_isEnabled) return;
-    
-    // Feedback seulement à certains seuils (25%, 50%, 75%, 100%)
-    final threshold = (progress * 4).round() / 4;
-    if (threshold == progress && threshold > 0) {
-      final intensity = (threshold * 50).round();
-      
-      if (Platform.isIOS) {
-        if (threshold == 1.0) {
-          await success();
-        } else {
-          HapticFeedback.lightImpact();
-        }
-      } else if (_hasVibrator) {
-        await Vibration.vibrate(duration: intensity);
-      }
-    }
+    if (_domainService == null) return;
+    await _domainService!.progress(progress);
   }
 
   /// Feedback pour le timer/pomodoro
   Future<void> timerTick() async {
-    if (!_isEnabled) return;
-    
-    if (Platform.isIOS) {
-      HapticFeedback.lightImpact();
-    } else if (_hasVibrator) {
-      await Vibration.vibrate(duration: 5);
-    }
+    if (_domainService == null) return;
+    await _domainService!.timerTick();
   }
 
   /// Feedback pour la fin du timer
   Future<void> timerFinished() async {
-    if (!_isEnabled) return;
-    
-    if (Platform.isIOS) {
-      for (int i = 0; i < 3; i++) {
-        HapticFeedback.heavyImpact();
-        await Future.delayed(const Duration(milliseconds: 200));
-      }
-    } else if (_hasVibrator) {
-      await Vibration.vibrate(
-        pattern: [0, 100, 200, 100, 200, 100],
-        amplitude: 255,
-      );
-    }
+    if (_domainService == null) return;
+    await _domainService!.timerFinished();
   }
 
   /// Feedback pour l'atteinte d'un objectif
   Future<void> goalAchieved() async {
-    if (!_isEnabled) return;
-    
-    if (Platform.isIOS) {
-      HapticFeedback.heavyImpact();
-      await Future.delayed(const Duration(milliseconds: 100));
-      HapticFeedback.mediumImpact();
-      await Future.delayed(const Duration(milliseconds: 100));
-      HapticFeedback.lightImpact();
-      await Future.delayed(const Duration(milliseconds: 100));
-      HapticFeedback.lightImpact();
-    } else if (_hasVibrator) {
-      await Vibration.vibrate(
-        pattern: [0, 80, 100, 60, 100, 40, 100, 20],
-        amplitude: 255,
-      );
-    }
+    if (_domainService == null) return;
+    await _domainService!.goalAchieved();
   }
 
   // ============ FEEDBACKS ADAPTATIFS ============
@@ -392,48 +218,60 @@ class PremiumHapticService {
     Map<String, dynamic>? parameters,
   }) async {
     if (!_isEnabled) return;
-    
+
     switch (context) {
       case HapticContext.buttonPress:
-        switch (intensity) {
-          case HapticIntensity.light:
-            await lightImpact();
-            break;
-          case HapticIntensity.medium:
-            await mediumImpact();
-            break;
-          case HapticIntensity.heavy:
-            await heavyImpact();
-            break;
-        }
+        await _handleButtonPress(intensity);
         break;
-        
       case HapticContext.listScroll:
-        if (parameters?['scrollEnd'] == true) {
-          await lightImpact();
-        }
+        await _handleListScroll(parameters);
         break;
-        
       case HapticContext.tabSwitch:
         await pageTransition();
         break;
-        
       case HapticContext.formValidation:
-        if (parameters?['isValid'] == true) {
-          await success();
-        } else {
-          await error();
-        }
+        await _handleFormValidation(parameters);
         break;
-        
       case HapticContext.gameAction:
-        final score = parameters?['score'] as int? ?? 0;
-        if (score > 100) {
-          await goalAchieved();
-        } else {
-          await taskCompleted();
-        }
+        await _handleGameAction(parameters);
         break;
+    }
+  }
+
+  Future<void> _handleButtonPress(HapticIntensity intensity) async {
+    switch (intensity) {
+      case HapticIntensity.light:
+        await lightImpact();
+        break;
+      case HapticIntensity.medium:
+        await mediumImpact();
+        break;
+      case HapticIntensity.heavy:
+        await heavyImpact();
+        break;
+    }
+  }
+
+  Future<void> _handleListScroll(Map<String, dynamic>? parameters) async {
+    if (parameters?['scrollEnd'] == true) {
+      await lightImpact();
+    }
+  }
+
+  Future<void> _handleFormValidation(Map<String, dynamic>? parameters) async {
+    if (parameters?['isValid'] == true) {
+      await success();
+    } else {
+      await error();
+    }
+  }
+
+  Future<void> _handleGameAction(Map<String, dynamic>? parameters) async {
+    final score = parameters?['score'] as int? ?? 0;
+    if (score > 100) {
+      await goalAchieved();
+    } else {
+      await taskCompleted();
     }
   }
 
@@ -444,126 +282,17 @@ class PremiumHapticService {
     required List<int> pattern,
     int amplitude = 255,
   }) async {
-    if (!_isEnabled || !_hasVibrator) return;
-    
-    await Vibration.vibrate(
-      pattern: pattern,
-      amplitude: amplitude,
-    );
+    if (!_isEnabled || _strategy == null) return;
+    await _strategy!.vibrate(pattern: pattern, amplitude: amplitude);
   }
 
   /// Génère un pattern basé sur une mélodie
   Future<void> melodicPattern(List<int> notes) async {
-    if (!_isEnabled) return;
-    
-    final pattern = <int>[0];
-    
-    for (final note in notes) {
-      final duration = (note / 127 * 100).round(); // 0-127 -> 0-100ms
-      pattern.addAll([duration, 50]); // vibration + pause
-    }
-    
-    if (Platform.isAndroid && _hasVibrator) {
-      // Use average amplitude based on notes
-      final avgAmplitude = notes.isNotEmpty 
-          ? (notes.reduce((a, b) => a + b) / notes.length / 127 * 255).round()
-          : 128;
-      await Vibration.vibrate(pattern: pattern, amplitude: avgAmplitude);
-    } else if (Platform.isIOS) {
-      // Simulation pour iOS avec des impacts variables
-      for (final note in notes) {
-        if (note < 50) {
-          HapticFeedback.lightImpact();
-        } else if (note < 100) {
-          HapticFeedback.mediumImpact();
-        } else {
-          HapticFeedback.heavyImpact();
-        }
-        await Future.delayed(const Duration(milliseconds: 100));
-      }
-    }
-  }
-}
+    if (!_isEnabled || _strategy == null) return;
 
-/// Types d'actions de swipe
-enum SwipeActionType {
-  delete,
-  complete,
-  edit,
-  archive,
-}
+    final pattern = HapticPatterns.melodic(notes);
+    final amplitude = HapticPatterns.melodicAmplitude(notes);
 
-/// Contextes haptiques
-enum HapticContext {
-  buttonPress,
-  listScroll,
-  tabSwitch,
-  formValidation,
-  gameAction,
-}
-
-/// Intensité du feedback haptique
-enum HapticIntensity {
-  light,
-  medium,
-  heavy,
-}
-
-/// Widget wrapper qui ajoute automatiquement des feedbacks haptiques
-class HapticWrapper extends StatelessWidget {
-  final Widget child;
-  final VoidCallback? onTap;
-  final VoidCallback? onLongPress;
-  final HapticIntensity tapIntensity;
-  final HapticIntensity longPressIntensity;
-  final bool enableHaptics;
-
-  const HapticWrapper({
-    super.key,
-    required this.child,
-    this.onTap,
-    this.onLongPress,
-    this.tapIntensity = HapticIntensity.medium,
-    this.longPressIntensity = HapticIntensity.heavy,
-    this.enableHaptics = true,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap != null ? () async {
-        if (enableHaptics) {
-          switch (tapIntensity) {
-            case HapticIntensity.light:
-              await PremiumHapticService.instance.lightImpact();
-              break;
-            case HapticIntensity.medium:
-              await PremiumHapticService.instance.mediumImpact();
-              break;
-            case HapticIntensity.heavy:
-              await PremiumHapticService.instance.heavyImpact();
-              break;
-          }
-        }
-        onTap!();
-      } : null,
-      onLongPress: onLongPress != null ? () async {
-        if (enableHaptics) {
-          switch (longPressIntensity) {
-            case HapticIntensity.light:
-              await PremiumHapticService.instance.lightImpact();
-              break;
-            case HapticIntensity.medium:
-              await PremiumHapticService.instance.mediumImpact();
-              break;
-            case HapticIntensity.heavy:
-              await PremiumHapticService.instance.heavyImpact();
-              break;
-          }
-        }
-        onLongPress!();
-      } : null,
-      child: child,
-    );
+    await _strategy!.vibrate(pattern: pattern, amplitude: amplitude);
   }
 }

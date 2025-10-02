@@ -3,6 +3,9 @@ import '../../core/aggregates/aggregate_root.dart';
 import '../../core/value_objects/export.dart';
 import '../../core/exceptions/domain_exceptions.dart';
 import '../events/habit_events.dart';
+import '../services/habit_completion_service.dart';
+import '../services/habit_streak_calculator.dart';
+import '../services/habit_progress_calculator.dart';
 
 /// Types d'habitude
 enum HabitType { binary, quantitative }
@@ -24,10 +27,15 @@ enum RecurrenceType {
 }
 
 /// Agrégat Habit - Racine d'agrégat pour les habitudes
-/// 
-/// Cet agrégat encapsule toute la logique métier liée aux habitudes,
-/// y compris le suivi des séries, les objectifs quantitatifs et les récurrences.
+///
+/// Cet agrégat encapsule la logique métier des habitudes selon les principes DDD.
+/// Les calculs complexes sont délégués à des services métier dédiés.
 class HabitAggregate extends AggregateRoot {
+  // Services métier (injection de dépendances via DIP)
+  static const _completionService = HabitCompletionService();
+  static const _streakCalculator = HabitStreakCalculator();
+  static const _progressCalculator = HabitProgressCalculator();
+
   @override
   final String id;
 
@@ -105,17 +113,7 @@ class HabitAggregate extends AggregateRoot {
     int? yearlyDay,
     int? hourlyInterval,
   }) {
-    if (name.trim().isEmpty) {
-      throw InvalidHabitNameException('Le nom de l\'habitude ne peut pas être vide');
-    }
-
-    if (type == HabitType.quantitative && targetValue == null) {
-      throw InvalidTargetValueException('Une habitude quantitative doit avoir une valeur cible');
-    }
-
-    if (type == HabitType.quantitative && targetValue != null && targetValue <= 0) {
-      throw InvalidTargetValueException('La valeur cible doit être positive');
-    }
+    _validateCreationParameters(name, type, targetValue);
 
     final habitId = id ?? const Uuid().v4();
     final createdAt = DateTime.now();
@@ -140,7 +138,6 @@ class HabitAggregate extends AggregateRoot {
       hourlyInterval: hourlyInterval,
     );
 
-    // Publier l'événement de création
     habit.addEvent(HabitCreatedEvent(
       habitId: habitId,
       name: name.trim(),
@@ -218,7 +215,9 @@ class HabitAggregate extends AggregateRoot {
   void updateName(String newName) {
     executeOperation(() {
       if (newName.trim().isEmpty) {
-        throw InvalidHabitNameException('Le nom de l\'habitude ne peut pas être vide');
+        throw InvalidHabitNameException(
+          'Le nom de l\'habitude ne peut pas être vide'
+        );
       }
 
       final oldName = _name;
@@ -236,7 +235,9 @@ class HabitAggregate extends AggregateRoot {
   void updateTargetValue(double? newTargetValue) {
     executeOperation(() {
       if (_type == HabitType.quantitative && newTargetValue == null) {
-        throw InvalidTargetValueException('Une habitude quantitative doit avoir une valeur cible');
+        throw InvalidTargetValueException(
+          'Une habitude quantitative doit avoir une valeur cible'
+        );
       }
 
       if (newTargetValue != null && newTargetValue <= 0) {
@@ -257,66 +258,68 @@ class HabitAggregate extends AggregateRoot {
   /// Enregistre une completion pour une habitude binaire
   void markCompleted(bool completed, {DateTime? date}) {
     executeOperation(() {
-      if (_type != HabitType.binary) {
-        throw InvalidHabitRecordException('Utilisez recordValue() pour les habitudes quantitatives');
-      }
-
       date ??= DateTime.now();
       final dateKey = _getDateKey(date!);
-      final previousValue = _completions[dateKey];
-      
+
       _completions[dateKey] = completed;
-      
+
       final currentStreak = getCurrentStreak();
-      final targetReached = completed;
 
-      // Vérifier les milestones de streak
-      if (completed && currentStreak > 0) {
-        _checkStreakMilestone(currentStreak, date!);
-      }
-
-      // Vérifier si le streak a été brisé
-      if (!completed && previousValue == true) {
-        final lastCompleted = _findLastCompletedDate(date!);
-        if (lastCompleted != null) {
-          final previousStreak = _calculateStreakBefore(lastCompleted);
-          addEvent(HabitStreakBrokenEvent(
-            habitId: id,
-            name: _name,
-            previousStreak: previousStreak,
-            lastCompletedDate: lastCompleted,
-            missedDate: date!,
-          ));
-        }
-      }
-
-      addEvent(HabitCompletedEvent(
+      // Déléguer la logique au service de completion
+      _completionService.markCompleted(
         habitId: id,
-        name: _name,
-        completedDate: date!,
-        value: completed,
-        type: _type.name,
+        habitName: _name,
+        type: _type,
+        completed: completed,
+        date: date!,
+        completions: _completions,
         currentStreak: currentStreak,
-        targetReached: targetReached,
-      ));
+        onCheckMilestone: (streak, achievedAt) {
+          final event = _streakCalculator.checkStreakMilestone(
+            habitId: id,
+            habitName: _name,
+            streak: streak,
+            achievedAt: achievedAt,
+          );
+          if (event != null) addEvent(event);
+        },
+        onFindLastCompleted: (beforeDate) {
+          final lastCompleted = _streakCalculator.findLastCompletedDate(
+            before: beforeDate,
+            type: _type,
+            completions: _completions,
+            targetValue: _targetValue,
+          );
+
+          if (lastCompleted != null) {
+            final previousStreak = _streakCalculator.calculateStreakBefore(
+              date: lastCompleted,
+              type: _type,
+              completions: _completions,
+              targetValue: _targetValue,
+            );
+
+            final event = _streakCalculator.createStreakBrokenEvent(
+              habitId: id,
+              habitName: _name,
+              previousStreak: previousStreak,
+              lastCompletedDate: lastCompleted,
+              missedDate: beforeDate,
+            );
+            addEvent(event);
+          }
+        },
+      ).forEach(addEvent);
     });
   }
 
   /// Enregistre une valeur pour une habitude quantitative
   void recordValue(double value, {DateTime? date}) {
     executeOperation(() {
-      if (_type != HabitType.quantitative) {
-        throw InvalidHabitRecordException('Utilisez markCompleted() pour les habitudes binaires');
-      }
-
-      if (value < 0) {
-        throw InvalidHabitRecordException('La valeur ne peut pas être négative');
-      }
-
       date ??= DateTime.now();
       final dateKey = _getDateKey(date!);
       _completions[dateKey] = value;
-      
+
       final currentStreak = getCurrentStreak();
       final targetReached = _targetValue != null && value >= _targetValue!;
 
@@ -331,115 +334,66 @@ class HabitAggregate extends AggregateRoot {
         ));
       }
 
-      addEvent(HabitCompletedEvent(
+      // Déléguer la logique au service de completion
+      _completionService.recordValue(
         habitId: id,
-        name: _name,
-        completedDate: date!,
+        habitName: _name,
+        type: _type,
         value: value,
-        type: _type.name,
+        date: date!,
+        targetValue: _targetValue,
         currentStreak: currentStreak,
-        targetReached: targetReached,
-      ));
+      ).forEach(addEvent);
     });
   }
 
   /// Vérifie si l'habitude est complétée aujourd'hui
   bool isCompletedToday() {
-    final today = _getDateKey(DateTime.now());
-    final value = _completions[today];
-    
-    if (_type == HabitType.binary) {
-      return value == true;
-    } else {
-      return value != null && 
-             _targetValue != null && 
-             (value as double) >= _targetValue!;
-    }
+    return _completionService.isCompletedOnDate(
+      date: DateTime.now(),
+      type: _type,
+      completions: _completions,
+      targetValue: _targetValue,
+    );
   }
 
   /// Obtient la valeur d'aujourd'hui
   dynamic getTodayValue() {
-    final today = _getDateKey(DateTime.now());
-    return _completions[today];
+    return _completionService.getValueForDate(
+      date: DateTime.now(),
+      completions: _completions,
+    );
   }
 
   /// Calcule le taux de réussite sur une période
   double getSuccessRate({int days = 7}) {
-    final now = DateTime.now();
-    var successfulDays = 0;
-    
-    for (int i = 0; i < days; i++) {
-      final date = now.subtract(Duration(days: i));
-      final dateKey = _getDateKey(date);
-      final value = _completions[dateKey];
-      
-      if (_type == HabitType.binary && value == true) {
-        successfulDays++;
-      } else if (_type == HabitType.quantitative && 
-                 value != null && 
-                 _targetValue != null && 
-                 (value as double) >= _targetValue!) {
-        successfulDays++;
-      }
-    }
-    
-    return successfulDays / days;
+    return _progressCalculator.calculateSuccessRate(
+      fromDate: DateTime.now(),
+      type: _type,
+      completions: _completions,
+      targetValue: _targetValue,
+      days: days,
+    );
   }
 
   /// Calcule la série actuelle (streak)
   int getCurrentStreak() {
-    final now = DateTime.now();
-    var streak = 0;
-    
-    for (int i = 0; i < 365; i++) { // Max 1 an
-      final date = now.subtract(Duration(days: i));
-      final dateKey = _getDateKey(date);
-      final value = _completions[dateKey];
-      
-      bool isSuccess = false;
-      if (_type == HabitType.binary && value == true) {
-        isSuccess = true;
-      } else if (_type == HabitType.quantitative && 
-                 value != null && 
-                 _targetValue != null && 
-                 (value as double) >= _targetValue!) {
-        isSuccess = true;
-      }
-      
-      if (isSuccess) {
-        streak++;
-      } else {
-        break;
-      }
-    }
-    
-    return streak;
+    return _streakCalculator.calculateCurrentStreak(
+      fromDate: DateTime.now(),
+      type: _type,
+      completions: _completions,
+      targetValue: _targetValue,
+    );
   }
 
   /// Calcule les statistiques de progression
   Progress calculateProgress({int days = 30}) {
-    final now = DateTime.now();
-    int successful = 0;
-    
-    for (int i = 0; i < days; i++) {
-      final date = now.subtract(Duration(days: i));
-      final dateKey = _getDateKey(date);
-      final value = _completions[dateKey];
-      
-      if (_type == HabitType.binary && value == true) {
-        successful++;
-      } else if (_type == HabitType.quantitative && 
-                 value != null && 
-                 _targetValue != null && 
-                 (value as double) >= _targetValue!) {
-        successful++;
-      }
-    }
-    
-    return Progress.fromCounts(
-      completed: successful,
-      total: days,
-      lastUpdated: DateTime.now(),
+    return _progressCalculator.calculateProgress(
+      fromDate: DateTime.now(),
+      type: _type,
+      completions: _completions,
+      targetValue: _targetValue,
+      days: days,
     );
   }
 
@@ -447,78 +401,18 @@ class HabitAggregate extends AggregateRoot {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 
-  void _checkStreakMilestone(int streak, DateTime achievedAt) {
-    // Vérifier les milestones importants
-    final milestones = [3, 7, 30, 100, 365];
-    if (milestones.contains(streak)) {
-      addEvent(HabitStreakMilestoneEvent.create(
-        habitId: id,
-        name: _name,
-        streakLength: streak,
-        achievedAt: achievedAt,
-      ));
-    }
-  }
-
-  DateTime? _findLastCompletedDate(DateTime before) {
-    for (int i = 1; i <= 365; i++) {
-      final date = before.subtract(Duration(days: i));
-      final dateKey = _getDateKey(date);
-      final value = _completions[dateKey];
-      
-      bool wasCompleted = false;
-      if (_type == HabitType.binary && value == true) {
-        wasCompleted = true;
-      } else if (_type == HabitType.quantitative && 
-                 value != null && 
-                 _targetValue != null && 
-                 (value as double) >= _targetValue!) {
-        wasCompleted = true;
-      }
-      
-      if (wasCompleted) {
-        return date;
-      }
-    }
-    return null;
-  }
-
-  int _calculateStreakBefore(DateTime date) {
-    var streak = 0;
-    
-    for (int i = 0; i < 365; i++) {
-      final checkDate = date.subtract(Duration(days: i));
-      final dateKey = _getDateKey(checkDate);
-      final value = _completions[dateKey];
-      
-      bool isSuccess = false;
-      if (_type == HabitType.binary && value == true) {
-        isSuccess = true;
-      } else if (_type == HabitType.quantitative && 
-                 value != null && 
-                 _targetValue != null && 
-                 (value as double) >= _targetValue!) {
-        isSuccess = true;
-      }
-      
-      if (isSuccess) {
-        streak++;
-      } else {
-        break;
-      }
-    }
-    
-    return streak;
-  }
-
   @override
   void validateInvariants() {
     if (_name.trim().isEmpty) {
-      throw DomainInvariantException('Le nom de l\'habitude ne peut pas être vide');
+      throw DomainInvariantException(
+        'Le nom de l\'habitude ne peut pas être vide'
+      );
     }
 
     if (_type == HabitType.quantitative && _targetValue == null) {
-      throw DomainInvariantException('Une habitude quantitative doit avoir une valeur cible');
+      throw DomainInvariantException(
+        'Une habitude quantitative doit avoir une valeur cible'
+      );
     }
 
     if (_targetValue != null && _targetValue! <= 0) {
@@ -529,5 +423,28 @@ class HabitAggregate extends AggregateRoot {
   @override
   String toString() {
     return 'HabitAggregate(id: $id, name: $_name, type: ${_type.name}, streak: ${getCurrentStreak()})';
+  }
+
+  // Validation statique des paramètres de création
+  static void _validateCreationParameters(
+    String name,
+    HabitType type,
+    double? targetValue,
+  ) {
+    if (name.trim().isEmpty) {
+      throw InvalidHabitNameException(
+        'Le nom de l\'habitude ne peut pas être vide'
+      );
+    }
+
+    if (type == HabitType.quantitative && targetValue == null) {
+      throw InvalidTargetValueException(
+        'Une habitude quantitative doit avoir une valeur cible'
+      );
+    }
+
+    if (type == HabitType.quantitative && targetValue != null && targetValue <= 0) {
+      throw InvalidTargetValueException('La valeur cible doit être positive');
+    }
   }
 }
