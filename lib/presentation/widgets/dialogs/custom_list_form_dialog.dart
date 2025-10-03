@@ -4,7 +4,9 @@ import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
+import 'package:prioris/presentation/validators/form_validators.dart';
 import 'package:prioris/presentation/widgets/common/forms/common_button.dart';
+import 'package:prioris/presentation/widgets/dialogs/components/list_type_helpers.dart';
 
 /// Dialog pour créer ou éditer une liste personnalisée
 class CustomListFormDialog extends StatefulWidget {
@@ -102,18 +104,11 @@ class _CustomListFormDialogState extends State<CustomListFormDialog> {
                       prefixIcon: Icon(Icons.list),
                     ),
                     textCapitalization: TextCapitalization.sentences,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Le nom de la liste est obligatoire';
-                      }
-                      if (value.trim().length < 2) {
-                        return 'Le nom doit contenir au moins 2 caractères';
-                      }
-                      if (value.trim().length > 100) {
-                        return 'Le nom ne peut pas dépasser 100 caractères';
-                      }
-                      return null;
-                    },
+                    validator: (value) => FormValidators.requiredText(
+                      value,
+                      fieldName: 'nom de la liste',
+                      maxLength: 100,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   
@@ -131,9 +126,9 @@ class _CustomListFormDialogState extends State<CustomListFormDialog> {
                         child: Row(
                           children: [
                             Icon(
-                              _getTypeIcon(type),
+                              ListTypeHelpers.getIcon(type),
                               size: 18,
-                              color: _getTypeColor(type),
+                              color: ListTypeHelpers.getColor(type),
                             ),
                             const SizedBox(width: 8),
                             Text(type.displayName),
@@ -162,12 +157,10 @@ class _CustomListFormDialogState extends State<CustomListFormDialog> {
                     ),
                     maxLines: 3,
                     textCapitalization: TextCapitalization.sentences,
-                    validator: (value) {
-                      if (value != null && value.trim().length > 500) {
-                        return 'La description ne peut pas dépasser 500 caractères';
-                      }
-                      return null;
-                    },
+                    validator: (value) => FormValidators.optionalText(
+                      value,
+                      maxLength: 500,
+                    ),
                   ),
                 ],
               ),
@@ -255,44 +248,5 @@ class _CustomListFormDialogState extends State<CustomListFormDialog> {
     }
   }
 
-  /// Retourne l'icône pour un type de liste
-  IconData _getTypeIcon(ListType type) {
-    switch (type) {
-      case ListType.SHOPPING:
-        return Icons.shopping_cart;
-      case ListType.TRAVEL:
-        return Icons.flight;
-      case ListType.MOVIES:
-        return Icons.movie;
-      case ListType.BOOKS:
-        return Icons.book;
-      case ListType.RESTAURANTS:
-        return Icons.restaurant;
-      case ListType.PROJECTS:
-        return Icons.work;
-      case ListType.CUSTOM:
-        return Icons.list;
-    }
-  }
-
-  /// Retourne la couleur pour un type de liste
-  Color _getTypeColor(ListType type) {
-    switch (type) {
-      case ListType.SHOPPING:
-        return Colors.blue;
-      case ListType.TRAVEL:
-        return Colors.green;
-      case ListType.MOVIES:
-        return Colors.purple;
-      case ListType.BOOKS:
-        return Colors.amber;
-      case ListType.RESTAURANTS:
-        return Colors.pink;
-      case ListType.PROJECTS:
-        return Colors.orange;
-      case ListType.CUSTOM:
-        return AppTheme.primaryColor;
-    }
-  }
 } 
 
