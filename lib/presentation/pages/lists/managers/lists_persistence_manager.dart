@@ -5,21 +5,23 @@ import 'package:prioris/data/repositories/list_item_repository.dart';
 import 'package:prioris/domain/services/persistence/adaptive_persistence_service.dart';
 import 'package:prioris/infrastructure/services/logger_service.dart';
 import '../interfaces/lists_managers_interfaces.dart';
+import 'performance_monitoring_mixin.dart';
 
 /// **Command Pattern** pour les opérations de persistance
 ///
 /// **Single Responsibility Principle (SRP)** : Gère uniquement la persistance des données
 /// **Open/Closed Principle (OCP)** : Extensible pour de nouveaux backends sans modification
 /// **Dependency Inversion Principle (DIP)** : Dépend d'abstractions, pas d'implémentations
-class ListsPersistenceManager implements IListsPersistenceManager {
+class ListsPersistenceManager
+    with PerformanceMonitoringMixin
+    implements IListsPersistenceManager {
   // === Dependencies (Strategy Pattern) ===
   final AdaptivePersistenceService? _adaptivePersistenceService;
   final CustomListRepository? _customListRepository;
   final ListItemRepository? _itemRepository;
 
-  // === Performance monitoring ===
-  final Map<String, DateTime> _operationStartTimes = {};
-  final Map<String, int> _operationCounts = {};
+  @override
+  String get monitoringContext => 'ListsPersistenceManager';
 
   /// **Dependency Injection** - Constructor principal
   ListsPersistenceManager({
@@ -58,7 +60,7 @@ class ListsPersistenceManager implements IListsPersistenceManager {
 
   @override
   Future<List<CustomList>> loadAllLists() async {
-    return await _executeOperation('loadAllLists', () async {
+    return await executeMonitoredOperation('loadAllLists', () async {
       List<CustomList> lists;
 
       if (_adaptivePersistenceService != null) {
@@ -90,7 +92,7 @@ class ListsPersistenceManager implements IListsPersistenceManager {
 
   @override
   Future<void> saveList(CustomList list) async {
-    await _executeOperation('saveList', () async {
+    await executeMonitoredOperation('saveList', () async {
       if (_adaptivePersistenceService != null) {
         await _adaptivePersistenceService!.saveList(list);
       } else if (_customListRepository != null) {
@@ -108,7 +110,7 @@ class ListsPersistenceManager implements IListsPersistenceManager {
 
   @override
   Future<void> updateList(CustomList list) async {
-    await _executeOperation('updateList', () async {
+    await executeMonitoredOperation('updateList', () async {
       if (_adaptivePersistenceService != null) {
         // saveList fait update automatiquement dans le service adaptatif
         await _adaptivePersistenceService!.saveList(list);
@@ -127,7 +129,7 @@ class ListsPersistenceManager implements IListsPersistenceManager {
 
   @override
   Future<void> deleteList(String listId) async {
-    await _executeOperation('deleteList', () async {
+    await executeMonitoredOperation('deleteList', () async {
       if (_adaptivePersistenceService != null) {
         await _adaptivePersistenceService!.deleteList(listId);
       } else if (_customListRepository != null) {
@@ -145,7 +147,7 @@ class ListsPersistenceManager implements IListsPersistenceManager {
 
   @override
   Future<List<ListItem>> loadListItems(String listId) async {
-    return await _executeOperation('loadListItems', () async {
+    return await executeMonitoredOperation('loadListItems', () async {
       List<ListItem> items;
 
       if (_adaptivePersistenceService != null) {
@@ -169,7 +171,7 @@ class ListsPersistenceManager implements IListsPersistenceManager {
 
   @override
   Future<void> saveListItem(ListItem item) async {
-    await _executeOperation('saveListItem', () async {
+    await executeMonitoredOperation('saveListItem', () async {
       if (_adaptivePersistenceService != null) {
         await _adaptivePersistenceService!.saveItem(item);
       } else if (_itemRepository != null) {
@@ -187,7 +189,7 @@ class ListsPersistenceManager implements IListsPersistenceManager {
 
   @override
   Future<void> updateListItem(ListItem item) async {
-    await _executeOperation('updateListItem', () async {
+    await executeMonitoredOperation('updateListItem', () async {
       if (_adaptivePersistenceService != null) {
         await _adaptivePersistenceService!.updateItem(item);
       } else if (_itemRepository != null) {
@@ -205,7 +207,7 @@ class ListsPersistenceManager implements IListsPersistenceManager {
 
   @override
   Future<void> deleteListItem(String itemId) async {
-    await _executeOperation('deleteListItem', () async {
+    await executeMonitoredOperation('deleteListItem', () async {
       if (_adaptivePersistenceService != null) {
         await _adaptivePersistenceService!.deleteItem(itemId);
       } else if (_itemRepository != null) {
@@ -223,7 +225,7 @@ class ListsPersistenceManager implements IListsPersistenceManager {
 
   @override
   Future<void> saveMultipleItems(List<ListItem> items) async {
-    await _executeOperation('saveMultipleItems', () async {
+    await executeMonitoredOperation('saveMultipleItems', () async {
       final savedItems = <ListItem>[];
 
       try {
@@ -253,7 +255,7 @@ class ListsPersistenceManager implements IListsPersistenceManager {
 
   @override
   Future<List<CustomList>> forceReloadFromPersistence() async {
-    return await _executeOperation('forceReloadFromPersistence', () async {
+    return await executeMonitoredOperation('forceReloadFromPersistence', () async {
       LoggerService.instance.info(
         'Début du rechargement forcé depuis la persistance',
         context: 'ListsPersistenceManager',
@@ -287,7 +289,7 @@ class ListsPersistenceManager implements IListsPersistenceManager {
 
   @override
   Future<void> clearAllData() async {
-    await _executeOperation('clearAllData', () async {
+    await executeMonitoredOperation('clearAllData', () async {
       LoggerService.instance.warning(
         'Début de l\'effacement de toutes les données',
         context: 'ListsPersistenceManager',
@@ -305,7 +307,7 @@ class ListsPersistenceManager implements IListsPersistenceManager {
 
   @override
   Future<void> verifyListPersistence(String listId) async {
-    await _executeOperation('verifyListPersistence', () async {
+    await executeMonitoredOperation('verifyListPersistence', () async {
       CustomList? persistedList;
 
       // Toujours vérifier dans le repository LOCAL pour la persistance immédiate
@@ -330,7 +332,7 @@ class ListsPersistenceManager implements IListsPersistenceManager {
 
   @override
   Future<void> verifyItemPersistence(String itemId) async {
-    await _executeOperation('verifyItemPersistence', () async {
+    await executeMonitoredOperation('verifyItemPersistence', () async {
       ListItem? persistedItem;
 
       // Toujours vérifier dans le repository LOCAL pour la persistance immédiate
@@ -355,7 +357,7 @@ class ListsPersistenceManager implements IListsPersistenceManager {
 
   @override
   Future<void> rollbackItems(List<ListItem> items) async {
-    await _executeOperation('rollbackItems', () async {
+    await executeMonitoredOperation('rollbackItems', () async {
       for (final item in items) {
         try {
           await deleteListItem(item.id);
@@ -374,65 +376,13 @@ class ListsPersistenceManager implements IListsPersistenceManager {
     });
   }
 
-  /// Obtient les statistiques de performance
-  Map<String, dynamic> getPerformanceStats() {
-    return {
-      'operationCounts': Map.from(_operationCounts),
-      'currentOperations': _operationStartTimes.keys.toList(),
-      'totalOperations': _operationCounts.values.fold(0, (sum, count) => sum + count),
-      'averageOperationsPerMinute': _calculateAverageOperationsPerMinute(),
-    };
-  }
+  /// Obtient les statistiques de performance (délègue au mixin)
+  Map<String, dynamic> getPerformanceStats() => super.getPerformanceStats();
 
-  /// Réinitialise les statistiques
-  void resetStats() {
-    _operationCounts.clear();
-    _operationStartTimes.clear();
-
-    LoggerService.instance.debug(
-      'Statistiques de performance réinitialisées',
-      context: 'ListsPersistenceManager',
-    );
-  }
+  /// Réinitialise les statistiques (délègue au mixin)
+  void resetStats() => resetPerformanceCounters();
 
   // === Private Methods ===
-
-  /// **Template Method Pattern** - Exécute une opération avec monitoring
-  Future<T> _executeOperation<T>(String operationName, Future<T> Function() operation) async {
-    _startOperationMonitoring(operationName);
-
-    try {
-      final result = await operation();
-      _endOperationMonitoring(operationName, success: true);
-      return result;
-    } catch (e) {
-      _endOperationMonitoring(operationName, success: false);
-      LoggerService.instance.error(
-        'Erreur lors de l\'opération $operationName',
-        context: 'ListsPersistenceManager',
-        error: e,
-      );
-      rethrow;
-    }
-  }
-
-  /// Démarre le monitoring d'une opération
-  void _startOperationMonitoring(String operationName) {
-    _operationStartTimes[operationName] = DateTime.now();
-    _operationCounts[operationName] = (_operationCounts[operationName] ?? 0) + 1;
-  }
-
-  /// Termine le monitoring d'une opération
-  void _endOperationMonitoring(String operationName, {required bool success}) {
-    final startTime = _operationStartTimes.remove(operationName);
-    if (startTime != null) {
-      final duration = DateTime.now().difference(startTime);
-      LoggerService.instance.debug(
-        'Opération $operationName ${success ? "réussie" : "échouée"} en ${duration.inMilliseconds}ms',
-        context: 'ListsPersistenceManager',
-      );
-    }
-  }
 
   /// Charge toutes les données pour l'effacement
   Future<(List<CustomList>, List<ListItem>)> _loadAllDataForClearing() async {
@@ -503,14 +453,5 @@ class ListsPersistenceManager implements IListsPersistenceManager {
     for (final item in allItems) {
       await _itemRepository!.delete(item.id);
     }
-  }
-
-  /// Calcule la moyenne d'opérations par minute
-  double _calculateAverageOperationsPerMinute() {
-    if (_operationCounts.isEmpty) return 0.0;
-
-    final totalOps = _operationCounts.values.fold(0, (sum, count) => sum + count);
-    // Estimation basée sur les opérations dans la dernière minute
-    return totalOps / 1.0; // Simplification pour l'exemple
   }
 }
