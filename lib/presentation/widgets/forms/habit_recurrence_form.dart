@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
+import 'package:prioris/presentation/widgets/forms/components/recurrence_type_dropdown.dart';
+import 'package:prioris/presentation/widgets/forms/components/daily_interval_input.dart';
+import 'package:prioris/presentation/widgets/forms/components/weekdays_selector.dart';
+import 'package:prioris/presentation/widgets/forms/components/times_target_input.dart';
 
 /// Widget pour la récurrence d'une habitude (fréquence et options)
+///
+/// **SRP** : Compose les composants de récurrence, délègue le rendu aux sous-composants
 class HabitRecurrenceForm extends StatelessWidget {
-  final RecurrenceType? selectedRecurrenceType;
-  final ValueChanged<RecurrenceType?> onRecurrenceTypeChanged;
-  final int intervalDays;
-  final ValueChanged<int> onIntervalDaysChanged;
-  final List<int> selectedWeekdays;
-  final ValueChanged<List<int>> onWeekdaysChanged;
-  final int timesTarget;
-  final ValueChanged<int> onTimesTargetChanged;
-
   const HabitRecurrenceForm({
     super.key,
     required this.selectedRecurrenceType,
@@ -24,6 +21,15 @@ class HabitRecurrenceForm extends StatelessWidget {
     required this.onTimesTargetChanged,
   });
 
+  final RecurrenceType? selectedRecurrenceType;
+  final ValueChanged<RecurrenceType?> onRecurrenceTypeChanged;
+  final int intervalDays;
+  final ValueChanged<int> onIntervalDaysChanged;
+  final List<int> selectedWeekdays;
+  final ValueChanged<List<int>> onWeekdaysChanged;
+  final int timesTarget;
+  final ValueChanged<int> onTimesTargetChanged;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -35,134 +41,31 @@ class HabitRecurrenceForm extends StatelessWidget {
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
-        DropdownButtonFormField<RecurrenceType?>(
+        RecurrenceTypeDropdown(
           value: selectedRecurrenceType,
-          decoration: const InputDecoration(
-            labelText: 'Fréquence',
-            border: OutlineInputBorder(),
-          ),
-          items: const [
-            DropdownMenuItem(
-              value: null,
-              child: Text('Quotidien (par défaut)'),
-            ),
-            DropdownMenuItem(
-              value: RecurrenceType.dailyInterval,
-              child: Text('Tous les X jours'),
-            ),
-            DropdownMenuItem(
-              value: RecurrenceType.weeklyDays,
-              child: Text('Certains jours de la semaine'),
-            ),
-            DropdownMenuItem(
-              value: RecurrenceType.timesPerWeek,
-              child: Text('X fois par semaine'),
-            ),
-            DropdownMenuItem(
-              value: RecurrenceType.timesPerDay,
-              child: Text('X fois par jour'),
-            ),
-            DropdownMenuItem(
-              value: RecurrenceType.monthly,
-              child: Text('📅 Mensuelle (1er du mois)'),
-            ),
-            DropdownMenuItem(
-              value: RecurrenceType.monthlyDay,
-              child: Text('📅 Jour spécifique du mois'),
-            ),
-            DropdownMenuItem(
-              value: RecurrenceType.quarterly,
-              child: Text('📅 Trimestrielle'),
-            ),
-            DropdownMenuItem(
-              value: RecurrenceType.yearly,
-              child: Text('📅 Annuelle'),
-            ),
-            DropdownMenuItem(
-              value: RecurrenceType.hourlyInterval,
-              child: Text('⏰ Toutes les X heures'),
-            ),
-            DropdownMenuItem(
-              value: RecurrenceType.timesPerHour,
-              child: Text('⏰ X fois par heure'),
-            ),
-            DropdownMenuItem(
-              value: RecurrenceType.weekends,
-              child: Text('🌅 Seulement le weekend'),
-            ),
-            DropdownMenuItem(
-              value: RecurrenceType.weekdays,
-              child: Text('💼 Seulement en semaine'),
-            ),
-          ],
           onChanged: onRecurrenceTypeChanged,
         ),
         if (selectedRecurrenceType == RecurrenceType.dailyInterval) ...[
           const SizedBox(height: 12),
-          Row(
-            children: [
-              const Text('Tous les '),
-              SizedBox(
-                width: 60,
-                child: TextFormField(
-                  initialValue: intervalDays.toString(),
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                  ),
-                  keyboardType: TextInputType.number,
-                  onChanged: (value) => onIntervalDaysChanged(int.tryParse(value) ?? 1),
-                ),
-              ),
-              const Text(' jour(s)'),
-            ],
+          DailyIntervalInput(
+            intervalDays: intervalDays,
+            onChanged: onIntervalDaysChanged,
           ),
         ],
         if (selectedRecurrenceType == RecurrenceType.weeklyDays) ...[
           const SizedBox(height: 12),
-          const Text('Jours de la semaine :'),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            children: [
-              for (int i = 0; i < 7; i++)
-                FilterChip(
-                  label: Text(['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'][i]),
-                  selected: selectedWeekdays.contains(i),
-                  onSelected: (selected) {
-                    final newList = List<int>.from(selectedWeekdays);
-                    if (selected) {
-                      newList.add(i);
-                    } else {
-                      newList.remove(i);
-                    }
-                    onWeekdaysChanged(newList);
-                  },
-                ),
-            ],
+          WeekdaysSelector(
+            selectedWeekdays: selectedWeekdays,
+            onChanged: onWeekdaysChanged,
           ),
         ],
-        if (selectedRecurrenceType == RecurrenceType.timesPerWeek || 
+        if (selectedRecurrenceType == RecurrenceType.timesPerWeek ||
             selectedRecurrenceType == RecurrenceType.timesPerDay) ...[
           const SizedBox(height: 12),
-          Row(
-            children: [
-              SizedBox(
-                width: 60,
-                child: TextFormField(
-                  initialValue: timesTarget.toString(),
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                  ),
-                  keyboardType: TextInputType.number,
-                  onChanged: (value) => onTimesTargetChanged(int.tryParse(value) ?? 1),
-                ),
-              ),
-              Text(selectedRecurrenceType == RecurrenceType.timesPerWeek 
-                  ? ' fois par semaine' 
-                  : ' fois par jour'),
-            ],
+          TimesTargetInput(
+            timesTarget: timesTarget,
+            onChanged: onTimesTargetChanged,
+            recurrenceType: selectedRecurrenceType!,
           ),
         ],
       ],
