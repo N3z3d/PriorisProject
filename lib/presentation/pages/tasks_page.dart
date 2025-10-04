@@ -135,107 +135,122 @@ class _TasksPageState extends ConsumerState<TasksPage> {
       button: true,
       label: 'Tâche: ${task.title}',
       value: task.isCompleted ? 'Terminée' : 'En cours',
-      hint: task.isCompleted 
-          ? 'Tâche terminée. Appuyez pour plus d\'actions' 
+      hint: task.isCompleted
+          ? 'Tâche terminée. Appuyez pour plus d\'actions'
           : 'Tâche en cours. Appuyez pour plus d\'actions',
       child: Card(
         margin: const EdgeInsets.only(bottom: 12),
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadiusTokens.modal),
         child: Container(
-        decoration: BoxDecoration(
-          // Style professionnel avec fond uni
-          color: task.isCompleted 
-              ? AppTheme.successColor.withValues(alpha: 0.05)
-              : AppTheme.surfaceColor,
-          borderRadius: BorderRadiusTokens.modal,
-          border: Border.all(
-            color: task.isCompleted 
-                ? AppTheme.successColor.withValues(alpha: 0.3)
-                : AppTheme.dividerColor.withValues(alpha: 0.5),
-            width: 0.5,
-          ),
-        ),
-        child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          leading: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              // Fond uni professionnel
-              color: task.isCompleted 
-                  ? AppTheme.successColor
-                  : AppTheme.primaryColor,
-            ),
-            child: CircleAvatar(
-              backgroundColor: Colors.transparent,
-              child: Icon(
-                task.isCompleted ? Icons.check : Icons.task_alt,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          title: Text(
-            task.title,
-            style: TextStyle(
-              decoration: task.isCompleted 
-                  ? TextDecoration.lineThrough 
-                  : null,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (task.description != null && task.description!.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Text(
-                    task.description!,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  _buildCategoryChip(task.category),
-                  const SizedBox(width: 8),
-                  _buildEloChip(task.eloScore),
-                ],
-              ),
-            ],
-          ),
-          trailing: Semantics(
-            button: true,
-            label: 'Actions pour la tâche ${task.title}',
-            hint: 'Menu des actions disponibles',
-            child: PopupMenuButton<String>(
-              onSelected: (value) => _handleTaskAction(value, task),
-              tooltip: 'Actions de la tâche',
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  value: task.isCompleted ? 'uncomplete' : 'complete',
-                  child: Semantics(
-                    button: true,
-                    label: task.isCompleted ? 'Marquer comme non terminée' : 'Marquer comme terminée',
-                    child: Text(task.isCompleted ? 'Marquer non fait' : 'Marquer fait'),
-                  ),
-                ),
-                PopupMenuItem(
-                  value: 'delete',
-                  child: Semantics(
-                    button: true,
-                    label: 'Supprimer la tâche',
-                    child: const Text('Supprimer'),
-                  ),
-                ),
-              ],
-            ),
+          decoration: _buildTaskCardDecoration(task),
+          child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            leading: _buildTaskLeadingIcon(task),
+            title: _buildTaskTitle(task),
+            subtitle: _buildTaskSubtitle(task),
+            trailing: _buildTaskActionsMenu(task),
           ),
         ),
       ),
-    ));
+    );
+  }
+
+  BoxDecoration _buildTaskCardDecoration(Task task) {
+    return BoxDecoration(
+      color: task.isCompleted
+          ? AppTheme.successColor.withValues(alpha: 0.05)
+          : AppTheme.surfaceColor,
+      borderRadius: BorderRadiusTokens.modal,
+      border: Border.all(
+        color: task.isCompleted
+            ? AppTheme.successColor.withValues(alpha: 0.3)
+            : AppTheme.dividerColor.withValues(alpha: 0.5),
+        width: 0.5,
+      ),
+    );
+  }
+
+  Widget _buildTaskLeadingIcon(Task task) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: task.isCompleted ? AppTheme.successColor : AppTheme.primaryColor,
+      ),
+      child: CircleAvatar(
+        backgroundColor: Colors.transparent,
+        child: Icon(
+          task.isCompleted ? Icons.check : Icons.task_alt,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTaskTitle(Task task) {
+    return Text(
+      task.title,
+      style: TextStyle(
+        decoration: task.isCompleted ? TextDecoration.lineThrough : null,
+        fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+
+  Widget _buildTaskSubtitle(Task task) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (task.description != null && task.description!.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(
+              task.description!,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            _buildCategoryChip(task.category),
+            const SizedBox(width: 8),
+            _buildEloChip(task.eloScore),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTaskActionsMenu(Task task) {
+    return Semantics(
+      button: true,
+      label: 'Actions pour la tâche ${task.title}',
+      hint: 'Menu des actions disponibles',
+      child: PopupMenuButton<String>(
+        onSelected: (value) => _handleTaskAction(value, task),
+        tooltip: 'Actions de la tâche',
+        itemBuilder: (context) => [
+          PopupMenuItem(
+            value: task.isCompleted ? 'uncomplete' : 'complete',
+            child: Semantics(
+              button: true,
+              label: task.isCompleted ? 'Marquer comme non terminée' : 'Marquer comme terminée',
+              child: Text(task.isCompleted ? 'Marquer non fait' : 'Marquer fait'),
+            ),
+          ),
+          PopupMenuItem(
+            value: 'delete',
+            child: Semantics(
+              button: true,
+              label: 'Supprimer la tâche',
+              child: const Text('Supprimer'),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildCategoryChip(String? category) {
@@ -287,9 +302,8 @@ class _TasksPageState extends ConsumerState<TasksPage> {
 
   void _showAddTaskDialog() {
     final accessibilityService = AccessibilityService();
-    
     accessibilityService.announceToScreenReader('Ouverture du formulaire de création de tâche');
-    
+
     showDialog(
       context: context,
       barrierDismissible: true,
@@ -298,57 +312,69 @@ class _TasksPageState extends ConsumerState<TasksPage> {
           header: true,
           child: const Text('Nouvelle tâche'),
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CommonTextField(
-              controller: _titleController,
-              label: 'Titre',
-            ),
-            const SizedBox(height: 16),
-            CommonTextField(
-              controller: _descriptionController,
-              label: 'Description (optionnel)',
-              maxLines: 3,
-            ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: _selectedCategory,
-              decoration: const InputDecoration(
-                labelText: 'Catégorie',
-                border: OutlineInputBorder(),
-              ),
-              items: _categories.map((category) {
-                return DropdownMenuItem(
-                  value: category,
-                  child: Text(category),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedCategory = value!;
-                });
-              },
-            ),
-          ],
-        ),
-        actions: [
-          Semantics(
-            button: true,
-            label: 'Annuler la création de tâche',
-            child: TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Annuler'),
-            ),
-          ),
-          CommonButton(
-            text: 'Ajouter',
-            tooltip: 'Créer la nouvelle tâche',
-            onPressed: _addTask,
-          ),
-        ],
+        content: _buildDialogContent(),
+        actions: _buildDialogActions(),
       ),
     );
+  }
+
+  Widget _buildDialogContent() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CommonTextField(
+          controller: _titleController,
+          label: 'Titre',
+        ),
+        const SizedBox(height: 16),
+        CommonTextField(
+          controller: _descriptionController,
+          label: 'Description (optionnel)',
+          maxLines: 3,
+        ),
+        const SizedBox(height: 16),
+        _buildCategoryDropdown(),
+      ],
+    );
+  }
+
+  Widget _buildCategoryDropdown() {
+    return DropdownButtonFormField<String>(
+      value: _selectedCategory,
+      decoration: const InputDecoration(
+        labelText: 'Catégorie',
+        border: OutlineInputBorder(),
+      ),
+      items: _categories.map((category) {
+        return DropdownMenuItem(
+          value: category,
+          child: Text(category),
+        );
+      }).toList(),
+      onChanged: (value) {
+        setState(() {
+          _selectedCategory = value!;
+        });
+      },
+    );
+  }
+
+  List<Widget> _buildDialogActions() {
+    return [
+      Semantics(
+        button: true,
+        label: 'Annuler la création de tâche',
+        child: TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Annuler'),
+        ),
+      ),
+      CommonButton(
+        text: 'Ajouter',
+        tooltip: 'Créer la nouvelle tâche',
+        onPressed: _addTask,
+      ),
+    ];
   }
 
   void _addTask() async {
