@@ -1,3 +1,3 @@
 export 'duel_task_card.dart';
-export 'duel_header_widget.dart';
-export 'vs_separator_widget.dart'; 
+// Note: duel_header_widget.dart supprimé (code mort - widget remplacé)
+// Note: vs_separator_widget.dart supprimé (code mort - widget remplacé) 

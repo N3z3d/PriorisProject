@@ -24,7 +24,7 @@ export '../animations/micro_interactions.dart';
 
 // ============ LOADING & SKELETONS ============
 export '../widgets/loading/premium_skeletons.dart';
-export '../widgets/loading/advanced_loading_widget.dart';
+// Note: advanced_loading_widget.dart supprimé (code mort - widget non utilisé)
 
 // ============ SERVICES ============
 export '../services/premium_haptic_service.dart';

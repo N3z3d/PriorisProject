@@ -28,7 +28,7 @@ export 'core/interfaces/repository.dart';
 export 'core/exceptions/domain_exceptions.dart';
 
 // Bounded Contexts
-export 'core/bounded_context.dart';
+// Note: bounded_context.dart supprimé (code mort - fonctionnalité non utilisée)
 
 // === TASK BOUNDED CONTEXT ===
 // Aggregates
@@ -51,7 +51,7 @@ export 'task/specifications/task_specifications.dart';
 export 'habit/aggregates/habit_aggregate.dart';
 
 // Services
-export 'habit/services/habit_analytics_service.dart' hide TrendDirection;
+// Note: habit_analytics_service.dart supprimé (code mort - fonctionnalité analytics non utilisée)
 
 // Repositories
 export 'habit/repositories/habit_repository.dart';
@@ -60,7 +60,7 @@ export 'habit/repositories/habit_repository.dart';
 export 'habit/events/habit_events.dart';
 
 // Specifications
-export 'habit/specifications/habit_specifications.dart';
+// Note: habit_specifications.dart supprimé (code mort - spécifications non utilisées)
 
 // === LIST BOUNDED CONTEXT ===
 // Aggregates
@@ -70,7 +70,7 @@ export 'list/aggregates/custom_list_aggregate.dart';
 export 'list/value_objects/list_item.dart';
 
 // Services
-export 'list/services/list_optimization_service.dart';
+// Note: list_optimization_service.dart supprimé (code mort - fonctionnalité optimization non utilisée)
 
 // Repositories
 export 'list/repositories/custom_list_repository.dart';
@@ -79,4 +79,4 @@ export 'list/repositories/custom_list_repository.dart';
 export 'list/events/list_events.dart';
 
 // Specifications
-export 'list/specifications/list_specifications.dart';
+// Note: list_specifications.dart supprimé (code mort - spécifications non utilisées)

@@ -1,0 +1,2196 @@
+{
+  "stats": {
+    "total_files": 718,
+    "files_over_500": 22,
+    "methods_over_50": 296,
+    "total_lines": 150178
+  },
+  "violations": {
+    "files_over_500": [
+      {
+        "file": "lib\\l10n\\app_localizations.dart",
+        "lines": 1246,
+        "excess": 746
+      },
+      {
+        "file": "lib\\l10n\\app_localizations_de.dart",
+        "lines": 563,
+        "excess": 63
+      },
+      {
+        "file": "lib\\l10n\\app_localizations_en.dart",
+        "lines": 563,
+        "excess": 63
+      },
+      {
+        "file": "lib\\l10n\\app_localizations_es.dart",
+        "lines": 563,
+        "excess": 63
+      },
+      {
+        "file": "lib\\l10n\\app_localizations_fr.dart",
+        "lines": 563,
+        "excess": 63
+      },
+      {
+        "file": "test\\performance\\performance_optimization_test.dart",
+        "lines": 530,
+        "excess": 30
+      },
+      {
+        "file": "test\\regression\\rls_delete_regression_test.mocks.dart",
+        "lines": 1853,
+        "excess": 1353
+      },
+      {
+        "file": "test\\application\\services\\deduplication_service_test.dart",
+        "lines": 556,
+        "excess": 56
+      },
+      {
+        "file": "test\\core\\mixins\\state_management_mixin_test.dart",
+        "lines": 585,
+        "excess": 85
+      },
+      {
+        "file": "test\\data\\repositories\\supabase\\supabase_custom_list_repository_delete_test.mocks.dart",
+        "lines": 1853,
+        "excess": 1353
+      },
+      {
+        "file": "test\\domain\\models\\custom_list_test.dart",
+        "lines": 580,
+        "excess": 80
+      },
+      {
+        "file": "test\\domain\\core\\value_objects\\progress_test.dart",
+        "lines": 541,
+        "excess": 41
+      },
+      {
+        "file": "test\\domain\\services\\persistence\\unified_persistence_service_test.dart",
+        "lines": 709,
+        "excess": 209
+      },
+      {
+        "file": "test\\infrastructure\\services\\auth_service_test.mocks.dart",
+        "lines": 1195,
+        "excess": 695
+      },
+      {
+        "file": "test\\presentation\\pages\\duel_page_prioritization_test.mocks.dart",
+        "lines": 543,
+        "excess": 43
+      },
+      {
+        "file": "test\\presentation\\pages\\list_detail_page_add_button_test.dart",
+        "lines": 504,
+        "excess": 4
+      },
+      {
+        "file": "test\\presentation\\pages\\lists\\controllers\\lists_controller_slim_test.mocks.dart",
+        "lines": 657,
+        "excess": 157
+      },
+      {
+        "file": "test\\presentation\\pages\\lists\\services\\lists_filter_service_test.dart",
+        "lines": 600,
+        "excess": 100
+      },
+      {
+        "file": "test\\presentation\\pages\\lists\\services\\lists_performance_service_test.dart",
+        "lines": 653,
+        "excess": 153
+      },
+      {
+        "file": "test\\presentation\\pages\\lists\\controllers\\consolidated\\unified_lists_controller_validation_test.dart",
+        "lines": 579,
+        "excess": 79
+      },
+      {
+        "file": "test\\presentation\\widgets\\dialogs\\bulk_add_components_test.dart",
+        "lines": 523,
+        "excess": 23
+      },
+      {
+        "file": "test\\presentation\\widgets\\loading\\skeleton_systems_test.dart",
+        "lines": 685,
+        "excess": 185
+      }
+    ],
+    "methods_over_50": [
+      {
+        "file": "lib\\application\\list_management\\commands\\create_list_command.dart",
+        "method": "validate",
+        "lines": 62,
+        "start_line": 110,
+        "end_line": 171
+      },
+      {
+        "file": "lib\\data\\repositories\\impl\\task_repository_impl.dart",
+        "method": "sortBy",
+        "lines": 68,
+        "start_line": 105,
+        "end_line": 172
+      },
+      {
+        "file": "lib\\data\\repositories\\impl\\task_repository_impl.dart",
+        "method": "getValidationErrors",
+        "lines": 51,
+        "start_line": 231,
+        "end_line": 281
+      },
+      {
+        "file": "lib\\domain\\habit\\aggregates\\habit_aggregate.dart",
+        "method": "markCompleted",
+        "lines": 56,
+        "start_line": 259,
+        "end_line": 314
+      },
+      {
+        "file": "lib\\domain\\habit\\services\\analytics\\habit_pattern_analyzer.dart",
+        "method": "executeOperation",
+        "lines": 63,
+        "start_line": 17,
+        "end_line": 79
+      },
+      {
+        "file": "lib\\domain\\habit\\services\\analytics\\habit_success_predictor.dart",
+        "method": "executeOperation",
+        "lines": 57,
+        "start_line": 29,
+        "end_line": 85
+      },
+      {
+        "file": "lib\\domain\\list\\services\\optimization\\analyzers\\completion_pattern_analyzer.dart",
+        "method": "analyzeCompletionPatterns",
+        "lines": 69,
+        "start_line": 20,
+        "end_line": 88
+      },
+      {
+        "file": "lib\\domain\\list\\services\\optimization\\analyzers\\difficulty_analyzer.dart",
+        "method": "calculateOptimalDifficulty",
+        "lines": 65,
+        "start_line": 18,
+        "end_line": 82
+      },
+      {
+        "file": "lib\\domain\\services\\calculation\\habit_calculation_service.dart",
+        "method": "generateHabitInsights",
+        "lines": 93,
+        "start_line": 80,
+        "end_line": 172
+      },
+      {
+        "file": "lib\\domain\\services\\calculation\\progress_calculation_service.dart",
+        "method": "_calculateDayProgress",
+        "lines": 53,
+        "start_line": 197,
+        "end_line": 249
+      },
+      {
+        "file": "lib\\domain\\services\\calculation\\task_calculation_service.dart",
+        "method": "calculateCompletionTimeStats",
+        "lines": 61,
+        "start_line": 67,
+        "end_line": 127
+      },
+      {
+        "file": "lib\\domain\\services\\calculation\\task_calculation_service.dart",
+        "method": "generateTaskInsights",
+        "lines": 95,
+        "start_line": 206,
+        "end_line": 300
+      },
+      {
+        "file": "lib\\domain\\services\\insights\\insights_generation_service.dart",
+        "method": "generateProductivityInsights",
+        "lines": 93,
+        "start_line": 91,
+        "end_line": 183
+      },
+      {
+        "file": "lib\\domain\\services\\insights\\insights_generation_service.dart",
+        "method": "generateTaskInsights",
+        "lines": 95,
+        "start_line": 189,
+        "end_line": 283
+      },
+      {
+        "file": "lib\\domain\\services\\insights\\insights_generation_service.dart",
+        "method": "generateStreakInsights",
+        "lines": 75,
+        "start_line": 289,
+        "end_line": 363
+      },
+      {
+        "file": "lib\\domain\\services\\navigation\\navigation_error_handler.dart",
+        "method": "handleNetworkError",
+        "lines": 57,
+        "start_line": 15,
+        "end_line": 71
+      },
+      {
+        "file": "lib\\domain\\services\\navigation\\navigation_error_handler.dart",
+        "method": "handleDataInconsistencyError",
+        "lines": 57,
+        "start_line": 74,
+        "end_line": 130
+      },
+      {
+        "file": "lib\\domain\\services\\navigation\\navigation_error_handler.dart",
+        "method": "handlePermissionError",
+        "lines": 57,
+        "start_line": 133,
+        "end_line": 189
+      },
+      {
+        "file": "lib\\domain\\services\\navigation\\navigation_error_handler.dart",
+        "method": "handleGenericError",
+        "lines": 56,
+        "start_line": 192,
+        "end_line": 247
+      },
+      {
+        "file": "lib\\domain\\task\\services\\task_elo_service.dart",
+        "method": "executeOperation",
+        "lines": 58,
+        "start_line": 189,
+        "end_line": 246
+      },
+      {
+        "file": "lib\\presentation\\pages\\home_page.dart",
+        "method": "build",
+        "lines": 124,
+        "start_line": 20,
+        "end_line": 143
+      },
+      {
+        "file": "lib\\presentation\\pages\\settings_page.dart",
+        "method": "build",
+        "lines": 126,
+        "start_line": 12,
+        "end_line": 137
+      },
+      {
+        "file": "lib\\presentation\\pages\\statistics_page.dart",
+        "method": "build",
+        "lines": 109,
+        "start_line": 41,
+        "end_line": 149
+      },
+      {
+        "file": "lib\\presentation\\widgets\\habit_footer.dart",
+        "method": "_getRecurrenceText",
+        "lines": 55,
+        "start_line": 16,
+        "end_line": 70
+      },
+      {
+        "file": "lib\\presentation\\widgets\\habit_footer.dart",
+        "method": "build",
+        "lines": 57,
+        "start_line": 73,
+        "end_line": 129
+      },
+      {
+        "file": "lib\\presentation\\animations\\widgets\\pressable_widget.dart",
+        "method": "build",
+        "lines": 52,
+        "start_line": 63,
+        "end_line": 114
+      },
+      {
+        "file": "lib\\presentation\\pages\\habits\\components\\habit_card_builder.dart",
+        "method": "_buildActionButtons",
+        "lines": 74,
+        "start_line": 213,
+        "end_line": 286
+      },
+      {
+        "file": "lib\\presentation\\pages\\lists\\managers\\lists_filter_manager.dart",
+        "method": "applyFilters",
+        "lines": 72,
+        "start_line": 24,
+        "end_line": 95
+      },
+      {
+        "file": "lib\\presentation\\pages\\lists\\services\\lists_performance_monitor.dart",
+        "method": "validateDataConsistency",
+        "lines": 51,
+        "start_line": 94,
+        "end_line": 144
+      },
+      {
+        "file": "lib\\presentation\\pages\\lists\\services\\lists_repository_service.dart",
+        "method": "clearAllData",
+        "lines": 57,
+        "start_line": 307,
+        "end_line": 363
+      },
+      {
+        "file": "lib\\presentation\\pages\\lists\\widgets\\list_card.dart",
+        "method": "build",
+        "lines": 142,
+        "start_line": 28,
+        "end_line": 169
+      },
+      {
+        "file": "lib\\presentation\\pages\\lists\\widgets\\list_detail_header.dart",
+        "method": "_buildListStats",
+        "lines": 69,
+        "start_line": 38,
+        "end_line": 106
+      },
+      {
+        "file": "lib\\presentation\\pages\\lists\\widgets\\list_type_selector.dart",
+        "method": "_buildTypeCard",
+        "lines": 76,
+        "start_line": 64,
+        "end_line": 139
+      },
+      {
+        "file": "lib\\presentation\\pages\\statistics\\widgets\\analytics\\category_performance_widget.dart",
+        "method": "build",
+        "lines": 63,
+        "start_line": 18,
+        "end_line": 80
+      },
+      {
+        "file": "lib\\presentation\\pages\\statistics\\widgets\\analytics\\tasks_stats_widget.dart",
+        "method": "build",
+        "lines": 64,
+        "start_line": 18,
+        "end_line": 81
+      },
+      {
+        "file": "lib\\presentation\\pages\\statistics\\widgets\\smart\\period_selector.dart",
+        "method": "build",
+        "lines": 64,
+        "start_line": 24,
+        "end_line": 87
+      },
+      {
+        "file": "lib\\presentation\\pages\\statistics\\widgets\\smart\\smart_insights_widget.dart",
+        "method": "build",
+        "lines": 59,
+        "start_line": 16,
+        "end_line": 74
+      },
+      {
+        "file": "lib\\presentation\\pages\\statistics\\widgets\\summary\\main_metrics_widget.dart",
+        "method": "build",
+        "lines": 87,
+        "start_line": 19,
+        "end_line": 105
+      },
+      {
+        "file": "lib\\presentation\\theme\\systems\\premium_component_system.dart",
+        "method": "build",
+        "lines": 56,
+        "start_line": 169,
+        "end_line": 224
+      },
+      {
+        "file": "lib\\presentation\\theme\\systems\\premium_component_system.dart",
+        "method": "build",
+        "lines": 51,
+        "start_line": 349,
+        "end_line": 399
+      },
+      {
+        "file": "lib\\presentation\\theme\\systems\\premium_component_system.dart",
+        "method": "build",
+        "lines": 51,
+        "start_line": 425,
+        "end_line": 475
+      },
+      {
+        "file": "lib\\presentation\\widgets\\buttons\\premium_fab.dart",
+        "method": "_initializeAnimations",
+        "lines": 51,
+        "start_line": 58,
+        "end_line": 108
+      },
+      {
+        "file": "lib\\presentation\\widgets\\buttons\\premium_fab.dart",
+        "method": "_buildButtonContent",
+        "lines": 52,
+        "start_line": 402,
+        "end_line": 453
+      },
+      {
+        "file": "lib\\presentation\\widgets\\cards\\premium_habit_card.dart",
+        "method": "_showDeleteConfirmation",
+        "lines": 55,
+        "start_line": 430,
+        "end_line": 484
+      },
+      {
+        "file": "lib\\presentation\\widgets\\charts\\premium_progress_chart.dart",
+        "method": "build",
+        "lines": 52,
+        "start_line": 77,
+        "end_line": 128
+      },
+      {
+        "file": "lib\\presentation\\widgets\\charts\\premium_progress_chart.dart",
+        "method": "paint",
+        "lines": 60,
+        "start_line": 176,
+        "end_line": 235
+      },
+      {
+        "file": "lib\\presentation\\widgets\\dialogs\\add_habit_dialog.dart",
+        "method": "build",
+        "lines": 53,
+        "start_line": 78,
+        "end_line": 130
+      },
+      {
+        "file": "lib\\presentation\\widgets\\dialogs\\bulk_add_dialog.dart",
+        "method": "build",
+        "lines": 69,
+        "start_line": 108,
+        "end_line": 176
+      },
+      {
+        "file": "lib\\presentation\\widgets\\dialogs\\clear_data_dialog.dart",
+        "method": "_buildFormContent",
+        "lines": 119,
+        "start_line": 112,
+        "end_line": 230
+      },
+      {
+        "file": "lib\\presentation\\widgets\\dialogs\\custom_list_form_dialog.dart",
+        "method": "build",
+        "lines": 136,
+        "start_line": 57,
+        "end_line": 192
+      },
+      {
+        "file": "lib\\presentation\\widgets\\dialogs\\custom_list_form_dialog.dart",
+        "method": "_handleSubmit",
+        "lines": 55,
+        "start_line": 195,
+        "end_line": 249
+      },
+      {
+        "file": "lib\\presentation\\widgets\\dialogs\\data_persistence_onboarding_dialog.dart",
+        "method": "build",
+        "lines": 120,
+        "start_line": 12,
+        "end_line": 131
+      },
+      {
+        "file": "lib\\presentation\\widgets\\dialogs\\enhanced_logout_dialog.dart",
+        "method": "build",
+        "lines": 83,
+        "start_line": 13,
+        "end_line": 95
+      },
+      {
+        "file": "lib\\presentation\\widgets\\dialogs\\forgot_password_dialog.dart",
+        "method": "_buildFormContent",
+        "lines": 56,
+        "start_line": 75,
+        "end_line": 130
+      },
+      {
+        "file": "lib\\presentation\\widgets\\dialogs\\habit_record_dialog.dart",
+        "method": "build",
+        "lines": 89,
+        "start_line": 53,
+        "end_line": 141
+      },
+      {
+        "file": "lib\\presentation\\widgets\\dialogs\\list_form_dialog.dart",
+        "method": "build",
+        "lines": 92,
+        "start_line": 37,
+        "end_line": 128
+      },
+      {
+        "file": "lib\\presentation\\widgets\\dialogs\\list_item_form_dialog.dart",
+        "method": "build",
+        "lines": 85,
+        "start_line": 39,
+        "end_line": 123
+      },
+      {
+        "file": "lib\\presentation\\widgets\\dialogs\\list_selection_dialog.dart",
+        "method": "_buildListSelection",
+        "lines": 54,
+        "start_line": 110,
+        "end_line": 163
+      },
+      {
+        "file": "lib\\presentation\\widgets\\dialogs\\quick_add_dialog.dart",
+        "method": "build",
+        "lines": 86,
+        "start_line": 59,
+        "end_line": 144
+      },
+      {
+        "file": "lib\\presentation\\widgets\\dialogs\\simplified_logout_dialog.dart",
+        "method": "build",
+        "lines": 142,
+        "start_line": 17,
+        "end_line": 158
+      },
+      {
+        "file": "lib\\presentation\\widgets\\dialogs\\simplified_logout_dialog.dart",
+        "method": "_showDataClearConfirmation",
+        "lines": 90,
+        "start_line": 166,
+        "end_line": 255
+      },
+      {
+        "file": "lib\\presentation\\widgets\\forms\\habit_basic_info_form.dart",
+        "method": "build",
+        "lines": 60,
+        "start_line": 36,
+        "end_line": 95
+      },
+      {
+        "file": "lib\\presentation\\widgets\\indicators\\premium_status_indicator.dart",
+        "method": "_getStatusConfig",
+        "lines": 53,
+        "start_line": 227,
+        "end_line": 279
+      },
+      {
+        "file": "lib\\presentation\\widgets\\indicators\\premium_sync_notification.dart",
+        "method": "build",
+        "lines": 81,
+        "start_line": 142,
+        "end_line": 222
+      },
+      {
+        "file": "lib\\presentation\\widgets\\indicators\\premium_sync_status_indicator.dart",
+        "method": "_buildGlassContent",
+        "lines": 63,
+        "start_line": 295,
+        "end_line": 357
+      },
+      {
+        "file": "lib\\presentation\\widgets\\indicators\\premium_sync_status_indicator.dart",
+        "method": "_buildPremiumIcon",
+        "lines": 91,
+        "start_line": 359,
+        "end_line": 449
+      },
+      {
+        "file": "lib\\presentation\\widgets\\loading\\advanced_loading_widget.dart",
+        "method": "build",
+        "lines": 51,
+        "start_line": 73,
+        "end_line": 123
+      },
+      {
+        "file": "lib\\presentation\\widgets\\loading\\advanced_loading_widget.dart",
+        "method": "build",
+        "lines": 55,
+        "start_line": 250,
+        "end_line": 304
+      },
+      {
+        "file": "lib\\presentation\\widgets\\loading\\page_skeleton_loader.dart",
+        "method": "_buildPageSkeleton",
+        "lines": 125,
+        "start_line": 31,
+        "end_line": 155
+      },
+      {
+        "file": "lib\\presentation\\widgets\\metrics\\premium_metrics_dashboard.dart",
+        "method": "_getMetricCards",
+        "lines": 52,
+        "start_line": 123,
+        "end_line": 174
+      },
+      {
+        "file": "lib\\presentation\\widgets\\onboarding\\simplified_data_onboarding.dart",
+        "method": "build",
+        "lines": 54,
+        "start_line": 76,
+        "end_line": 129
+      },
+      {
+        "file": "lib\\presentation\\widgets\\progress\\habit_progress_bar.dart",
+        "method": "build",
+        "lines": 54,
+        "start_line": 56,
+        "end_line": 109
+      },
+      {
+        "file": "lib\\presentation\\widgets\\common\\accessibility\\accessible_loading_state.dart",
+        "method": "build",
+        "lines": 103,
+        "start_line": 26,
+        "end_line": 128
+      },
+      {
+        "file": "lib\\presentation\\widgets\\common\\displays\\accessibility_checker_widget.dart",
+        "method": "build",
+        "lines": 54,
+        "start_line": 185,
+        "end_line": 238
+      },
+      {
+        "file": "lib\\presentation\\widgets\\common\\displays\\common_metric_display.dart",
+        "method": "build",
+        "lines": 60,
+        "start_line": 82,
+        "end_line": 141
+      },
+      {
+        "file": "lib\\presentation\\widgets\\common\\displays\\common_progress_bar.dart",
+        "method": "build",
+        "lines": 69,
+        "start_line": 45,
+        "end_line": 113
+      },
+      {
+        "file": "lib\\presentation\\widgets\\common\\displays\\daily_overview_widget.dart",
+        "method": "build",
+        "lines": 80,
+        "start_line": 10,
+        "end_line": 89
+      },
+      {
+        "file": "lib\\presentation\\widgets\\common\\displays\\premium_card.dart",
+        "method": "build",
+        "lines": 62,
+        "start_line": 99,
+        "end_line": 160
+      },
+      {
+        "file": "lib\\presentation\\widgets\\common\\displays\\premium_card.dart",
+        "method": "build",
+        "lines": 106,
+        "start_line": 233,
+        "end_line": 338
+      },
+      {
+        "file": "lib\\presentation\\widgets\\common\\forms\\common_button.dart",
+        "method": "build",
+        "lines": 139,
+        "start_line": 94,
+        "end_line": 232
+      },
+      {
+        "file": "lib\\presentation\\widgets\\common\\forms\\common_dialog.dart",
+        "method": "build",
+        "lines": 60,
+        "start_line": 43,
+        "end_line": 102
+      },
+      {
+        "file": "lib\\presentation\\widgets\\common\\forms\\common_text_field.dart",
+        "method": "build",
+        "lines": 138,
+        "start_line": 102,
+        "end_line": 239
+      },
+      {
+        "file": "lib\\presentation\\widgets\\common\\layouts\\common_empty_state.dart",
+        "method": "build",
+        "lines": 55,
+        "start_line": 76,
+        "end_line": 130
+      },
+      {
+        "file": "lib\\presentation\\widgets\\common\\layouts\\common_list_tile.dart",
+        "method": "build",
+        "lines": 59,
+        "start_line": 53,
+        "end_line": 111
+      },
+      {
+        "file": "lib\\presentation\\widgets\\common\\layouts\\common_section_header.dart",
+        "method": "build",
+        "lines": 57,
+        "start_line": 56,
+        "end_line": 112
+      },
+      {
+        "file": "lib\\presentation\\widgets\\common\\layouts\\swipeable_card.dart",
+        "method": "build",
+        "lines": 76,
+        "start_line": 188,
+        "end_line": 263
+      },
+      {
+        "file": "lib\\presentation\\widgets\\common\\lists\\virtualized_list.dart",
+        "method": "build",
+        "lines": 51,
+        "start_line": 88,
+        "end_line": 138
+      },
+      {
+        "file": "lib\\presentation\\widgets\\forms\\components\\recurrence_type_dropdown.dart",
+        "method": "build",
+        "lines": 64,
+        "start_line": 18,
+        "end_line": 81
+      },
+      {
+        "file": "lib\\presentation\\widgets\\onboarding\\components\\onboarding_benefit_card.dart",
+        "method": "build",
+        "lines": 59,
+        "start_line": 24,
+        "end_line": 82
+      },
+      {
+        "file": "lib\\presentation\\widgets\\onboarding\\components\\onboarding_header.dart",
+        "method": "build",
+        "lines": 55,
+        "start_line": 12,
+        "end_line": 66
+      },
+      {
+        "file": "test\\extended_features_test.dart",
+        "method": "main",
+        "lines": 448,
+        "start_line": 5,
+        "end_line": 452
+      },
+      {
+        "file": "test\\architecture\\architecture_validation_test.dart",
+        "method": "main",
+        "lines": 294,
+        "start_line": 28,
+        "end_line": 321
+      },
+      {
+        "file": "test\\architecture\\controller_lifecycle_test.dart",
+        "method": "main",
+        "lines": 245,
+        "start_line": 29,
+        "end_line": 273
+      },
+      {
+        "file": "test\\architecture\\duplicate_id_conflicts_test.dart",
+        "method": "main",
+        "lines": 352,
+        "start_line": 21,
+        "end_line": 372
+      },
+      {
+        "file": "test\\architecture\\fixed_architecture_validation_test.dart",
+        "method": "main",
+        "lines": 309,
+        "start_line": 23,
+        "end_line": 331
+      },
+      {
+        "file": "test\\architecture\\rls_permission_test.dart",
+        "method": "main",
+        "lines": 329,
+        "start_line": 21,
+        "end_line": 349
+      },
+      {
+        "file": "test\\diagnostics\\data_loss_diagnostic_test.dart",
+        "method": "main",
+        "lines": 374,
+        "start_line": 20,
+        "end_line": 393
+      },
+      {
+        "file": "test\\fixes\\data_loss_fix_validation_test.dart",
+        "method": "main",
+        "lines": 233,
+        "start_line": 15,
+        "end_line": 247
+      },
+      {
+        "file": "test\\fixes\\persistence_bug_final_test.dart",
+        "method": "main",
+        "lines": 129,
+        "start_line": 7,
+        "end_line": 135
+      },
+      {
+        "file": "test\\functional\\task_edit_workflow_test.dart",
+        "method": "main",
+        "lines": 234,
+        "start_line": 9,
+        "end_line": 242
+      },
+      {
+        "file": "test\\integration\\adaptive_persistence_integration_test.dart",
+        "method": "main",
+        "lines": 403,
+        "start_line": 17,
+        "end_line": 419
+      },
+      {
+        "file": "test\\integration\\auth_flow_integration_test.dart",
+        "method": "main",
+        "lines": 182,
+        "start_line": 12,
+        "end_line": 193
+      },
+      {
+        "file": "test\\integration\\custom_lists_integration_test.dart",
+        "method": "main",
+        "lines": 83,
+        "start_line": 16,
+        "end_line": 98
+      },
+      {
+        "file": "test\\integration\\custom_list_delete_rls_integration_test.dart",
+        "method": "main",
+        "lines": 274,
+        "start_line": 20,
+        "end_line": 293
+      },
+      {
+        "file": "test\\integration\\custom_list_delete_validation_test.dart",
+        "method": "main",
+        "lines": 172,
+        "start_line": 14,
+        "end_line": 185
+      },
+      {
+        "file": "test\\integration\\data_persistence_test.dart",
+        "method": "main",
+        "lines": 263,
+        "start_line": 14,
+        "end_line": 276
+      },
+      {
+        "file": "test\\integration\\duel_list_item_integration_test.dart",
+        "method": "main",
+        "lines": 254,
+        "start_line": 25,
+        "end_line": 278
+      },
+      {
+        "file": "test\\integration\\duel_page_list_integration_test.dart",
+        "method": "main",
+        "lines": 202,
+        "start_line": 16,
+        "end_line": 217
+      },
+      {
+        "file": "test\\integration\\lists_system_integration_test.dart",
+        "method": "main",
+        "lines": 160,
+        "start_line": 16,
+        "end_line": 175
+      },
+      {
+        "file": "test\\integration\\list_item_persistence_simple_test.dart",
+        "method": "main",
+        "lines": 79,
+        "start_line": 7,
+        "end_line": 85
+      },
+      {
+        "file": "test\\integration\\list_item_persistence_test.dart",
+        "method": "main",
+        "lines": 97,
+        "start_line": 8,
+        "end_line": 104
+      },
+      {
+        "file": "test\\integration\\repository_switching_test.dart",
+        "method": "main",
+        "lines": 208,
+        "start_line": 21,
+        "end_line": 228
+      },
+      {
+        "file": "test\\integration\\solid_refactoring_integration_test.dart",
+        "method": "main",
+        "lines": 394,
+        "start_line": 19,
+        "end_line": 412
+      },
+      {
+        "file": "test\\integration\\supabase_integration_validation_test.dart",
+        "method": "main",
+        "lines": 124,
+        "start_line": 15,
+        "end_line": 138
+      },
+      {
+        "file": "test\\integration\\supabase_repository_integration_test.dart",
+        "method": "main",
+        "lines": 206,
+        "start_line": 16,
+        "end_line": 221
+      },
+      {
+        "file": "test\\integration\\sync_functionality_test.dart",
+        "method": "main",
+        "lines": 65,
+        "start_line": 10,
+        "end_line": 74
+      },
+      {
+        "file": "test\\integration\\ui_hive_integration_test.dart",
+        "method": "main",
+        "lines": 278,
+        "start_line": 29,
+        "end_line": 306
+      },
+      {
+        "file": "test\\manual\\auth_test_manual.dart",
+        "method": "main",
+        "lines": 166,
+        "start_line": 12,
+        "end_line": 177
+      },
+      {
+        "file": "test\\manual\\connection_validation_test.dart",
+        "method": "main",
+        "lines": 63,
+        "start_line": 8,
+        "end_line": 70
+      },
+      {
+        "file": "test\\manual\\supabase_auth_validation.dart",
+        "method": "main",
+        "lines": 112,
+        "start_line": 7,
+        "end_line": 118
+      },
+      {
+        "file": "test\\manual\\ui_auth_integration_test.dart",
+        "method": "main",
+        "lines": 113,
+        "start_line": 8,
+        "end_line": 120
+      },
+      {
+        "file": "test\\performance\\performance_optimization_test.dart",
+        "method": "main",
+        "lines": 477,
+        "start_line": 17,
+        "end_line": 493
+      },
+      {
+        "file": "test\\presentation\\list_detail_reactive_test.dart",
+        "method": "main",
+        "lines": 139,
+        "start_line": 14,
+        "end_line": 152
+      },
+      {
+        "file": "test\\regression\\rls_delete_regression_test.dart",
+        "method": "main",
+        "lines": 278,
+        "start_line": 29,
+        "end_line": 306
+      },
+      {
+        "file": "test\\solid_compliance\\clean_code_constraints_test.dart",
+        "method": "main",
+        "lines": 171,
+        "start_line": 13,
+        "end_line": 183
+      },
+      {
+        "file": "test\\application\\services\\authentication_state_manager_test.dart",
+        "method": "main",
+        "lines": 211,
+        "start_line": 10,
+        "end_line": 220
+      },
+      {
+        "file": "test\\application\\services\\data_migration_service_test.dart",
+        "method": "main",
+        "lines": 439,
+        "start_line": 18,
+        "end_line": 456
+      },
+      {
+        "file": "test\\application\\services\\deduplication_service_test.dart",
+        "method": "main",
+        "lines": 545,
+        "start_line": 11,
+        "end_line": 555
+      },
+      {
+        "file": "test\\application\\services\\lists_persistence_service_test.dart",
+        "method": "main",
+        "lines": 383,
+        "start_line": 23,
+        "end_line": 405
+      },
+      {
+        "file": "test\\application\\services\\lists_transaction_manager_test.dart",
+        "method": "main",
+        "lines": 321,
+        "start_line": 17,
+        "end_line": 337
+      },
+      {
+        "file": "test\\core\\di\\dependency_injection_container_test.dart",
+        "method": "main",
+        "lines": 403,
+        "start_line": 68,
+        "end_line": 470
+      },
+      {
+        "file": "test\\core\\exceptions\\app_exception_test.dart",
+        "method": "main",
+        "lines": 164,
+        "start_line": 5,
+        "end_line": 168
+      },
+      {
+        "file": "test\\core\\mixins\\state_management_mixin_test.dart",
+        "method": "main",
+        "lines": 550,
+        "start_line": 36,
+        "end_line": 585
+      },
+      {
+        "file": "test\\core\\mixins\\validation_mixin_test.dart",
+        "method": "main",
+        "lines": 486,
+        "start_line": 7,
+        "end_line": 492
+      },
+      {
+        "file": "test\\core\\utils\\operation_queue_test.dart",
+        "method": "main",
+        "lines": 132,
+        "start_line": 4,
+        "end_line": 135
+      },
+      {
+        "file": "test\\core\\patterns\\creational\\abstract_factory_test.dart",
+        "method": "main",
+        "lines": 114,
+        "start_line": 5,
+        "end_line": 118
+      },
+      {
+        "file": "test\\core\\patterns\\creational\\builder_test.dart",
+        "method": "main",
+        "lines": 163,
+        "start_line": 5,
+        "end_line": 167
+      },
+      {
+        "file": "test\\core\\patterns\\creational\\factory_method_test.dart",
+        "method": "main",
+        "lines": 95,
+        "start_line": 5,
+        "end_line": 99
+      },
+      {
+        "file": "test\\core\\patterns\\creational\\prototype_test.dart",
+        "method": "main",
+        "lines": 204,
+        "start_line": 5,
+        "end_line": 208
+      },
+      {
+        "file": "test\\core\\patterns\\structural\\adapter_test.dart",
+        "method": "main",
+        "lines": 159,
+        "start_line": 6,
+        "end_line": 164
+      },
+      {
+        "file": "test\\core\\patterns\\structural\\composite_test.dart",
+        "method": "main",
+        "lines": 234,
+        "start_line": 4,
+        "end_line": 237
+      },
+      {
+        "file": "test\\data\\providers\\auth_providers_test.dart",
+        "method": "main",
+        "lines": 433,
+        "start_line": 13,
+        "end_line": 445
+      },
+      {
+        "file": "test\\data\\providers\\list_providers_test.dart",
+        "method": "main",
+        "lines": 107,
+        "start_line": 10,
+        "end_line": 116
+      },
+      {
+        "file": "test\\data\\repositories\\list_item_repository_test.dart",
+        "method": "main",
+        "lines": 66,
+        "start_line": 5,
+        "end_line": 70
+      },
+      {
+        "file": "test\\data\\repositories\\supabase_custom_list_repository_test.dart",
+        "method": "main",
+        "lines": 95,
+        "start_line": 5,
+        "end_line": 99
+      },
+      {
+        "file": "test\\data\\repositories\\supabase_list_item_repository_test.dart",
+        "method": "main",
+        "lines": 74,
+        "start_line": 4,
+        "end_line": 77
+      },
+      {
+        "file": "test\\data\\repositories\\supabase\\supabase_custom_list_repository_delete_test.dart",
+        "method": "main",
+        "lines": 272,
+        "start_line": 27,
+        "end_line": 298
+      },
+      {
+        "file": "test\\domain\\models\\custom_list_builder_test.dart",
+        "method": "main",
+        "lines": 101,
+        "start_line": 6,
+        "end_line": 106
+      },
+      {
+        "file": "test\\domain\\models\\custom_list_comprehensive_test.dart",
+        "method": "main",
+        "lines": 406,
+        "start_line": 6,
+        "end_line": 411
+      },
+      {
+        "file": "test\\domain\\models\\custom_list_repository_test.dart",
+        "method": "main",
+        "lines": 99,
+        "start_line": 6,
+        "end_line": 104
+      },
+      {
+        "file": "test\\domain\\models\\custom_list_test.dart",
+        "method": "main",
+        "lines": 574,
+        "start_line": 6,
+        "end_line": 579
+      },
+      {
+        "file": "test\\domain\\models\\habit_builder_test.dart",
+        "method": "main",
+        "lines": 293,
+        "start_line": 5,
+        "end_line": 297
+      },
+      {
+        "file": "test\\domain\\models\\list_item_comprehensive_test.dart",
+        "method": "main",
+        "lines": 272,
+        "start_line": 4,
+        "end_line": 275
+      },
+      {
+        "file": "test\\domain\\models\\list_item_test.dart",
+        "method": "main",
+        "lines": 318,
+        "start_line": 4,
+        "end_line": 321
+      },
+      {
+        "file": "test\\domain\\core\\interfaces\\logger_interface_test.dart",
+        "method": "main",
+        "lines": 132,
+        "start_line": 8,
+        "end_line": 139
+      },
+      {
+        "file": "test\\domain\\core\\specifications\\specification_test.dart",
+        "method": "main",
+        "lines": 241,
+        "start_line": 4,
+        "end_line": 244
+      },
+      {
+        "file": "test\\domain\\core\\value_objects\\date_range_test.dart",
+        "method": "main",
+        "lines": 225,
+        "start_line": 4,
+        "end_line": 228
+      },
+      {
+        "file": "test\\domain\\core\\value_objects\\elo_score_test.dart",
+        "method": "main",
+        "lines": 351,
+        "start_line": 4,
+        "end_line": 354
+      },
+      {
+        "file": "test\\domain\\core\\value_objects\\elo_variation_settings_test.dart",
+        "method": "main",
+        "lines": 105,
+        "start_line": 6,
+        "end_line": 110
+      },
+      {
+        "file": "test\\domain\\core\\value_objects\\list_prioritization_settings_test.dart",
+        "method": "main",
+        "lines": 106,
+        "start_line": 6,
+        "end_line": 111
+      },
+      {
+        "file": "test\\domain\\core\\value_objects\\priority_test.dart",
+        "method": "main",
+        "lines": 403,
+        "start_line": 4,
+        "end_line": 406
+      },
+      {
+        "file": "test\\domain\\core\\value_objects\\progress_test.dart",
+        "method": "main",
+        "lines": 538,
+        "start_line": 4,
+        "end_line": 541
+      },
+      {
+        "file": "test\\domain\\habit\\services\\habit_aggregate_refactoring_test.dart",
+        "method": "main",
+        "lines": 337,
+        "start_line": 13,
+        "end_line": 349
+      },
+      {
+        "file": "test\\domain\\services\\cache\\advanced_cache_system_test.dart",
+        "method": "main",
+        "lines": 404,
+        "start_line": 22,
+        "end_line": 425
+      },
+      {
+        "file": "test\\domain\\services\\cache\\cache_monitoring_service_test.dart",
+        "method": "main",
+        "lines": 282,
+        "start_line": 7,
+        "end_line": 288
+      },
+      {
+        "file": "test\\domain\\services\\cache\\cache_service_test.dart",
+        "method": "main",
+        "lines": 318,
+        "start_line": 6,
+        "end_line": 323
+      },
+      {
+        "file": "test\\domain\\services\\calculation\\habit_calculation_service_test.dart",
+        "method": "main",
+        "lines": 221,
+        "start_line": 5,
+        "end_line": 225
+      },
+      {
+        "file": "test\\domain\\services\\calculation\\points_calculation_service_test.dart",
+        "method": "main",
+        "lines": 324,
+        "start_line": 6,
+        "end_line": 329
+      },
+      {
+        "file": "test\\domain\\services\\calculation\\progress_calculation_service_test.dart",
+        "method": "main",
+        "lines": 257,
+        "start_line": 7,
+        "end_line": 263
+      },
+      {
+        "file": "test\\domain\\services\\calculation\\task_calculation_service_test.dart",
+        "method": "main",
+        "lines": 271,
+        "start_line": 5,
+        "end_line": 275
+      },
+      {
+        "file": "test\\domain\\services\\core\\language_service_test.dart",
+        "method": "main",
+        "lines": 227,
+        "start_line": 6,
+        "end_line": 232
+      },
+      {
+        "file": "test\\domain\\services\\insights\\insights_generation_service_test.dart",
+        "method": "main",
+        "lines": 290,
+        "start_line": 6,
+        "end_line": 295
+      },
+      {
+        "file": "test\\domain\\services\\navigation\\list_resolution_service_test.dart",
+        "method": "main",
+        "lines": 212,
+        "start_line": 11,
+        "end_line": 222
+      },
+      {
+        "file": "test\\domain\\services\\navigation\\url_state_service_test.dart",
+        "method": "main",
+        "lines": 176,
+        "start_line": 13,
+        "end_line": 188
+      },
+      {
+        "file": "test\\domain\\services\\persistence\\adaptive_persistence_service_test.dart",
+        "method": "main",
+        "lines": 337,
+        "start_line": 14,
+        "end_line": 350
+      },
+      {
+        "file": "test\\domain\\services\\persistence\\refactored_adaptive_persistence_service_test.dart",
+        "method": "main",
+        "lines": 204,
+        "start_line": 16,
+        "end_line": 219
+      },
+      {
+        "file": "test\\domain\\services\\persistence\\refactored_persistence_services_test.dart",
+        "method": "main",
+        "lines": 248,
+        "start_line": 27,
+        "end_line": 274
+      },
+      {
+        "file": "test\\domain\\services\\persistence\\simple_persistence_test.dart",
+        "method": "main",
+        "lines": 179,
+        "start_line": 64,
+        "end_line": 242
+      },
+      {
+        "file": "test\\domain\\services\\persistence\\unified_persistence_service_simple_test.dart",
+        "method": "main",
+        "lines": 241,
+        "start_line": 20,
+        "end_line": 260
+      },
+      {
+        "file": "test\\domain\\services\\persistence\\unified_persistence_service_test.dart",
+        "method": "main",
+        "lines": 650,
+        "start_line": 60,
+        "end_line": 709
+      },
+      {
+        "file": "test\\domain\\services\\resilience\\circuit_breaker_service_test.dart",
+        "method": "main",
+        "lines": 344,
+        "start_line": 18,
+        "end_line": 361
+      },
+      {
+        "file": "test\\domain\\services\\ui\\accessibility_service_test.dart",
+        "method": "main",
+        "lines": 54,
+        "start_line": 7,
+        "end_line": 60
+      },
+      {
+        "file": "test\\domain\\services\\ui\\cross_browser_compatibility_service_test.dart",
+        "method": "main",
+        "lines": 62,
+        "start_line": 4,
+        "end_line": 65
+      },
+      {
+        "file": "test\\domain\\services\\ui\\responsive_service_test.dart",
+        "method": "main",
+        "lines": 160,
+        "start_line": 5,
+        "end_line": 164
+      },
+      {
+        "file": "test\\domain\\services\\cache\\core\\cache_entry_test.dart",
+        "method": "main",
+        "lines": 309,
+        "start_line": 4,
+        "end_line": 312
+      },
+      {
+        "file": "test\\domain\\services\\cache\\manager\\advanced_cache_manager_test.dart",
+        "method": "main",
+        "lines": 448,
+        "start_line": 5,
+        "end_line": 452
+      },
+      {
+        "file": "test\\domain\\services\\cache\\policies\\cache_policy_engine_test.dart",
+        "method": "main",
+        "lines": 385,
+        "start_line": 6,
+        "end_line": 390
+      },
+      {
+        "file": "test\\domain\\services\\cache\\statistics\\cache_statistics_service_test.dart",
+        "method": "main",
+        "lines": 319,
+        "start_line": 4,
+        "end_line": 322
+      },
+      {
+        "file": "test\\domain\\services\\persistence\\services\\persistence_error_handler_test.dart",
+        "method": "main",
+        "lines": 292,
+        "start_line": 4,
+        "end_line": 295
+      },
+      {
+        "file": "test\\domain\\services\\persistence\\strategies\\local_first_persistence_strategy_test.dart",
+        "method": "main",
+        "lines": 302,
+        "start_line": 15,
+        "end_line": 316
+      },
+      {
+        "file": "test\\domain\\task\\services\\list_item_task_converter_test.dart",
+        "method": "main",
+        "lines": 219,
+        "start_line": 6,
+        "end_line": 224
+      },
+      {
+        "file": "test\\domain\\task\\services\\task_elo_service_random_test.dart",
+        "method": "main",
+        "lines": 105,
+        "start_line": 8,
+        "end_line": 112
+      },
+      {
+        "file": "test\\domain\\task\\services\\task_elo_service_variation_test.dart",
+        "method": "main",
+        "lines": 59,
+        "start_line": 9,
+        "end_line": 67
+      },
+      {
+        "file": "test\\domain\\task\\services\\unified_prioritization_service_test.dart",
+        "method": "main",
+        "lines": 164,
+        "start_line": 14,
+        "end_line": 177
+      },
+      {
+        "file": "test\\domain\\task\\specifications\\task_specifications_test.dart",
+        "method": "main",
+        "lines": 362,
+        "start_line": 6,
+        "end_line": 367
+      },
+      {
+        "file": "test\\infrastructure\\services\\auth_service_test.dart",
+        "method": "main",
+        "lines": 474,
+        "start_line": 13,
+        "end_line": 486
+      },
+      {
+        "file": "test\\infrastructure\\services\\logger_adapter_test.dart",
+        "method": "main",
+        "lines": 233,
+        "start_line": 11,
+        "end_line": 243
+      },
+      {
+        "file": "test\\infrastructure\\services\\logger_service_test.dart",
+        "method": "main",
+        "lines": 85,
+        "start_line": 11,
+        "end_line": 95
+      },
+      {
+        "file": "test\\presentation\\animations\\particle_effects_coordinator_test.dart",
+        "method": "main",
+        "lines": 481,
+        "start_line": 6,
+        "end_line": 486
+      },
+      {
+        "file": "test\\presentation\\animations\\particle_effects_refactoring_test.dart",
+        "method": "main",
+        "lines": 219,
+        "start_line": 8,
+        "end_line": 226
+      },
+      {
+        "file": "test\\presentation\\controllers\\lists_controller_adaptive_test.dart",
+        "method": "main",
+        "lines": 432,
+        "start_line": 14,
+        "end_line": 445
+      },
+      {
+        "file": "test\\presentation\\optimization\\flyweight_ui_system_test.dart",
+        "method": "main",
+        "lines": 386,
+        "start_line": 9,
+        "end_line": 394
+      },
+      {
+        "file": "test\\presentation\\pages\\duel_page_initialization_test.dart",
+        "method": "main",
+        "lines": 188,
+        "start_line": 13,
+        "end_line": 200
+      },
+      {
+        "file": "test\\presentation\\pages\\duel_page_prioritization_test.dart",
+        "method": "main",
+        "lines": 296,
+        "start_line": 27,
+        "end_line": 322
+      },
+      {
+        "file": "test\\presentation\\pages\\duel_page_random_test.dart",
+        "method": "main",
+        "lines": 58,
+        "start_line": 8,
+        "end_line": 65
+      },
+      {
+        "file": "test\\presentation\\pages\\duel_page_task_edit_integration_test.dart",
+        "method": "main",
+        "lines": 185,
+        "start_line": 11,
+        "end_line": 195
+      },
+      {
+        "file": "test\\presentation\\pages\\duel_task_card_edit_test.dart",
+        "method": "main",
+        "lines": 186,
+        "start_line": 7,
+        "end_line": 192
+      },
+      {
+        "file": "test\\presentation\\pages\\home_page_test.dart",
+        "method": "main",
+        "lines": 170,
+        "start_line": 11,
+        "end_line": 180
+      },
+      {
+        "file": "test\\presentation\\pages\\list_creation_persistence_bug_test.dart",
+        "method": "main",
+        "lines": 268,
+        "start_line": 25,
+        "end_line": 292
+      },
+      {
+        "file": "test\\presentation\\pages\\list_creation_persistence_fix_test.dart",
+        "method": "main",
+        "lines": 334,
+        "start_line": 19,
+        "end_line": 352
+      },
+      {
+        "file": "test\\presentation\\pages\\list_creation_simple_fix_test.dart",
+        "method": "main",
+        "lines": 286,
+        "start_line": 12,
+        "end_line": 297
+      },
+      {
+        "file": "test\\presentation\\pages\\list_detail_loader_page_smart_test.dart",
+        "method": "main",
+        "lines": 253,
+        "start_line": 13,
+        "end_line": 265
+      },
+      {
+        "file": "test\\presentation\\pages\\list_detail_page_add_button_test.dart",
+        "method": "main",
+        "lines": 489,
+        "start_line": 16,
+        "end_line": 504
+      },
+      {
+        "file": "test\\presentation\\pages\\list_detail_page_persistence_test.dart",
+        "method": "main",
+        "lines": 312,
+        "start_line": 25,
+        "end_line": 336
+      },
+      {
+        "file": "test\\presentation\\pages\\list_detail_page_refresh_context_test.dart",
+        "method": "main",
+        "lines": 318,
+        "start_line": 16,
+        "end_line": 333
+      },
+      {
+        "file": "test\\presentation\\pages\\list_detail_page_simple_persistence_test.dart",
+        "method": "main",
+        "lines": 310,
+        "start_line": 20,
+        "end_line": 329
+      },
+      {
+        "file": "test\\presentation\\pages\\list_detail_page_test.dart",
+        "method": "main",
+        "lines": 214,
+        "start_line": 8,
+        "end_line": 221
+      },
+      {
+        "file": "test\\presentation\\routes\\app_routes_test.dart",
+        "method": "main",
+        "lines": 109,
+        "start_line": 6,
+        "end_line": 114
+      },
+      {
+        "file": "test\\presentation\\theme\\premium_ui_coordinator_test.dart",
+        "method": "main",
+        "lines": 350,
+        "start_line": 7,
+        "end_line": 356
+      },
+      {
+        "file": "test\\presentation\\widgets\\action_button_test.dart",
+        "method": "main",
+        "lines": 131,
+        "start_line": 5,
+        "end_line": 135
+      },
+      {
+        "file": "test\\presentation\\widgets\\habit_footer_test.dart",
+        "method": "main",
+        "lines": 72,
+        "start_line": 6,
+        "end_line": 77
+      },
+      {
+        "file": "test\\presentation\\widgets\\improved_fab_test.dart",
+        "method": "main",
+        "lines": 99,
+        "start_line": 5,
+        "end_line": 103
+      },
+      {
+        "file": "test\\presentation\\widgets\\language_selector_test.dart",
+        "method": "main",
+        "lines": 204,
+        "start_line": 7,
+        "end_line": 210
+      },
+      {
+        "file": "test\\presentation\\animations\\physics\\physics_systems_test.dart",
+        "method": "main",
+        "lines": 467,
+        "start_line": 11,
+        "end_line": 477
+      },
+      {
+        "file": "test\\presentation\\pages\\habits\\refactored_habits_page_test.dart",
+        "method": "main",
+        "lines": 166,
+        "start_line": 14,
+        "end_line": 179
+      },
+      {
+        "file": "test\\presentation\\pages\\lists\\controllers\\lists_controller_slim_test.dart",
+        "method": "main",
+        "lines": 324,
+        "start_line": 26,
+        "end_line": 349
+      },
+      {
+        "file": "test\\presentation\\pages\\lists\\managers\\lists_filter_manager_test.dart",
+        "method": "main",
+        "lines": 394,
+        "start_line": 8,
+        "end_line": 401
+      },
+      {
+        "file": "test\\presentation\\pages\\lists\\models\\lists_state_test.dart",
+        "method": "main",
+        "lines": 304,
+        "start_line": 7,
+        "end_line": 310
+      },
+      {
+        "file": "test\\presentation\\pages\\lists\\services\\lists_business_logic_test.dart",
+        "method": "main",
+        "lines": 290,
+        "start_line": 18,
+        "end_line": 307
+      },
+      {
+        "file": "test\\presentation\\pages\\lists\\services\\lists_business_logic_test_fixed.dart",
+        "method": "main",
+        "lines": 290,
+        "start_line": 18,
+        "end_line": 307
+      },
+      {
+        "file": "test\\presentation\\pages\\lists\\services\\lists_event_handler_test.dart",
+        "method": "main",
+        "lines": 401,
+        "start_line": 15,
+        "end_line": 415
+      },
+      {
+        "file": "test\\presentation\\pages\\lists\\services\\lists_filter_service_test.dart",
+        "method": "main",
+        "lines": 293,
+        "start_line": 12,
+        "end_line": 304
+      },
+      {
+        "file": "test\\presentation\\pages\\lists\\services\\lists_filter_service_test.dart",
+        "method": "_createTestLists",
+        "lines": 58,
+        "start_line": 491,
+        "end_line": 548
+      },
+      {
+        "file": "test\\presentation\\pages\\lists\\services\\lists_performance_service_test.dart",
+        "method": "main",
+        "lines": 365,
+        "start_line": 9,
+        "end_line": 373
+      },
+      {
+        "file": "test\\presentation\\pages\\lists\\widgets\\list_card_test.dart",
+        "method": "main",
+        "lines": 188,
+        "start_line": 8,
+        "end_line": 195
+      },
+      {
+        "file": "test\\presentation\\pages\\lists\\widgets\\list_item_card_test.dart",
+        "method": "main",
+        "lines": 236,
+        "start_line": 6,
+        "end_line": 241
+      },
+      {
+        "file": "test\\presentation\\pages\\lists\\widgets\\list_progress_widget_test.dart",
+        "method": "main",
+        "lines": 275,
+        "start_line": 8,
+        "end_line": 282
+      },
+      {
+        "file": "test\\presentation\\pages\\lists\\widgets\\list_type_selector_test.dart",
+        "method": "main",
+        "lines": 167,
+        "start_line": 6,
+        "end_line": 172
+      },
+      {
+        "file": "test\\presentation\\pages\\lists\\controllers\\consolidated\\unified_lists_controller_validation_test.dart",
+        "method": "group",
+        "lines": 277,
+        "start_line": 235,
+        "end_line": 511
+      },
+      {
+        "file": "test\\presentation\\pages\\lists\\controllers\\consolidated\\unified_lists_controller_validation_test.dart",
+        "method": "group",
+        "lines": 66,
+        "start_line": 513,
+        "end_line": 578
+      },
+      {
+        "file": "test\\presentation\\pages\\lists\\controllers\\operations\\lists_crud_service_test.dart",
+        "method": "main",
+        "lines": 403,
+        "start_line": 19,
+        "end_line": 421
+      },
+      {
+        "file": "test\\presentation\\pages\\lists\\controllers\\operations\\lists_event_handler_test.dart",
+        "method": "main",
+        "lines": 485,
+        "start_line": 9,
+        "end_line": 493
+      },
+      {
+        "file": "test\\presentation\\pages\\lists\\controllers\\operations\\lists_validation_service_test.dart",
+        "method": "main",
+        "lines": 445,
+        "start_line": 8,
+        "end_line": 452
+      },
+      {
+        "file": "test\\presentation\\pages\\lists\\controllers\\state\\lists_state_manager_test.dart",
+        "method": "main",
+        "lines": 411,
+        "start_line": 15,
+        "end_line": 425
+      },
+      {
+        "file": "test\\presentation\\pages\\statistics\\services\\statistics_calculation_service_test.dart",
+        "method": "main",
+        "lines": 231,
+        "start_line": 6,
+        "end_line": 236
+      },
+      {
+        "file": "test\\presentation\\pages\\statistics\\widgets\\charts\\elo_distribution_widget_test.dart",
+        "method": "main",
+        "lines": 139,
+        "start_line": 7,
+        "end_line": 145
+      },
+      {
+        "file": "test\\presentation\\pages\\statistics\\widgets\\charts\\streaks_chart_widget_test.dart",
+        "method": "main",
+        "lines": 132,
+        "start_line": 6,
+        "end_line": 137
+      },
+      {
+        "file": "test\\presentation\\pages\\statistics\\widgets\\metrics\\completion_time_stats_widget_test.dart",
+        "method": "main",
+        "lines": 175,
+        "start_line": 6,
+        "end_line": 180
+      },
+      {
+        "file": "test\\presentation\\pages\\statistics\\widgets\\metrics\\main_metrics_widget_test.dart",
+        "method": "main",
+        "lines": 62,
+        "start_line": 6,
+        "end_line": 67
+      },
+      {
+        "file": "test\\presentation\\pages\\statistics\\widgets\\metrics\\stat_item_test.dart",
+        "method": "main",
+        "lines": 146,
+        "start_line": 6,
+        "end_line": 151
+      },
+      {
+        "file": "test\\presentation\\pages\\statistics\\widgets\\tabs\\habits_tab_widget_test.dart",
+        "method": "main",
+        "lines": 175,
+        "start_line": 6,
+        "end_line": 180
+      },
+      {
+        "file": "test\\presentation\\pages\\statistics\\widgets\\tabs\\tasks_tab_widget_test.dart",
+        "method": "main",
+        "lines": 108,
+        "start_line": 6,
+        "end_line": 113
+      },
+      {
+        "file": "test\\presentation\\pages\\statistics\\widgets\\tabs\\top_habits_widget_test.dart",
+        "method": "main",
+        "lines": 71,
+        "start_line": 5,
+        "end_line": 75
+      },
+      {
+        "file": "test\\presentation\\theme\\glass\\glass_components_test.dart",
+        "method": "main",
+        "lines": 231,
+        "start_line": 5,
+        "end_line": 235
+      },
+      {
+        "file": "test\\presentation\\theme\\glass\\glass_effects_test.dart",
+        "method": "main",
+        "lines": 153,
+        "start_line": 5,
+        "end_line": 157
+      },
+      {
+        "file": "test\\presentation\\theme\\systems\\premium_animation_system_refactored_test.dart",
+        "method": "main",
+        "lines": 247,
+        "start_line": 7,
+        "end_line": 253
+      },
+      {
+        "file": "test\\presentation\\widgets\\badges\\habit_type_badge_test.dart",
+        "method": "main",
+        "lines": 75,
+        "start_line": 6,
+        "end_line": 80
+      },
+      {
+        "file": "test\\presentation\\widgets\\common\\common_badge_test.dart",
+        "method": "main",
+        "lines": 129,
+        "start_line": 5,
+        "end_line": 133
+      },
+      {
+        "file": "test\\presentation\\widgets\\common\\common_button_test.dart",
+        "method": "main",
+        "lines": 327,
+        "start_line": 5,
+        "end_line": 331
+      },
+      {
+        "file": "test\\presentation\\widgets\\common\\common_card_test.dart",
+        "method": "main",
+        "lines": 269,
+        "start_line": 5,
+        "end_line": 273
+      },
+      {
+        "file": "test\\presentation\\widgets\\common\\common_dialog_test.dart",
+        "method": "main",
+        "lines": 113,
+        "start_line": 5,
+        "end_line": 117
+      },
+      {
+        "file": "test\\presentation\\widgets\\common\\common_empty_state_test.dart",
+        "method": "main",
+        "lines": 280,
+        "start_line": 5,
+        "end_line": 284
+      },
+      {
+        "file": "test\\presentation\\widgets\\common\\common_list_tile_test.dart",
+        "method": "main",
+        "lines": 154,
+        "start_line": 5,
+        "end_line": 158
+      },
+      {
+        "file": "test\\presentation\\widgets\\common\\common_loading_state_test.dart",
+        "method": "main",
+        "lines": 139,
+        "start_line": 5,
+        "end_line": 143
+      },
+      {
+        "file": "test\\presentation\\widgets\\common\\common_metric_display_test.dart",
+        "method": "main",
+        "lines": 310,
+        "start_line": 5,
+        "end_line": 314
+      },
+      {
+        "file": "test\\presentation\\widgets\\common\\common_progress_bar_test.dart",
+        "method": "main",
+        "lines": 191,
+        "start_line": 5,
+        "end_line": 195
+      },
+      {
+        "file": "test\\presentation\\widgets\\common\\common_section_header_test.dart",
+        "method": "main",
+        "lines": 213,
+        "start_line": 5,
+        "end_line": 217
+      },
+      {
+        "file": "test\\presentation\\widgets\\common\\common_text_field_test.dart",
+        "method": "main",
+        "lines": 171,
+        "start_line": 5,
+        "end_line": 175
+      },
+      {
+        "file": "test\\presentation\\widgets\\dialogs\\bulk_add_components_test.dart",
+        "method": "main",
+        "lines": 497,
+        "start_line": 17,
+        "end_line": 513
+      },
+      {
+        "file": "test\\presentation\\widgets\\dialogs\\list_form_dialog_test.dart",
+        "method": "main",
+        "lines": 98,
+        "start_line": 7,
+        "end_line": 104
+      },
+      {
+        "file": "test\\presentation\\widgets\\dialogs\\list_item_form_dialog_test.dart",
+        "method": "main",
+        "lines": 286,
+        "start_line": 6,
+        "end_line": 291
+      },
+      {
+        "file": "test\\presentation\\widgets\\dialogs\\list_selection_dialog_test.dart",
+        "method": "main",
+        "lines": 127,
+        "start_line": 9,
+        "end_line": 135
+      },
+      {
+        "file": "test\\presentation\\widgets\\dialogs\\premium_logout_dialog_refactor_test.dart",
+        "method": "main",
+        "lines": 213,
+        "start_line": 8,
+        "end_line": 220
+      },
+      {
+        "file": "test\\presentation\\widgets\\dialogs\\premium_logout_dialog_test.dart",
+        "method": "main",
+        "lines": 98,
+        "start_line": 6,
+        "end_line": 103
+      },
+      {
+        "file": "test\\presentation\\widgets\\dialogs\\task_edit_dialog_integration_test.dart",
+        "method": "main",
+        "lines": 246,
+        "start_line": 8,
+        "end_line": 253
+      },
+      {
+        "file": "test\\presentation\\widgets\\dialogs\\task_edit_dialog_test.dart",
+        "method": "main",
+        "lines": 223,
+        "start_line": 6,
+        "end_line": 228
+      },
+      {
+        "file": "test\\presentation\\widgets\\forms\\habit_recurrence_form_test.dart",
+        "method": "main",
+        "lines": 92,
+        "start_line": 6,
+        "end_line": 97
+      },
+      {
+        "file": "test\\presentation\\widgets\\indicators\\premium_sync_status_indicator_test.dart",
+        "method": "main",
+        "lines": 131,
+        "start_line": 8,
+        "end_line": 138
+      },
+      {
+        "file": "test\\presentation\\widgets\\indicators\\premium_sync_status_indicator_test.dart",
+        "method": "build",
+        "lines": 58,
+        "start_line": 151,
+        "end_line": 208
+      },
+      {
+        "file": "test\\presentation\\widgets\\loading\\simple_skeleton_test.dart",
+        "method": "main",
+        "lines": 109,
+        "start_line": 9,
+        "end_line": 117
+      },
+      {
+        "file": "test\\presentation\\widgets\\loading\\skeleton_systems_test.dart",
+        "method": "main",
+        "lines": 664,
+        "start_line": 14,
+        "end_line": 677
+      },
+      {
+        "file": "test\\presentation\\widgets\\progress\\habit_progress_bar_test.dart",
+        "method": "main",
+        "lines": 181,
+        "start_line": 7,
+        "end_line": 187
+      },
+      {
+        "file": "test\\presentation\\widgets\\common\\accessibility\\accessible_loading_state_test.dart",
+        "method": "main",
+        "lines": 180,
+        "start_line": 5,
+        "end_line": 184
+      },
+      {
+        "file": "test\\presentation\\widgets\\dialogs\\components\\premium_logout_dialog_ui_test.dart",
+        "method": "main",
+        "lines": 290,
+        "start_line": 5,
+        "end_line": 294
+      },
+      {
+        "file": "test\\presentation\\widgets\\dialogs\\handlers\\premium_logout_interactions_test.dart",
+        "method": "main",
+        "lines": 345,
+        "start_line": 5,
+        "end_line": 349
+      },
+      {
+        "file": "test\\presentation\\widgets\\dialogs\\services\\premium_logout_animations_test.dart",
+        "method": "main",
+        "lines": 292,
+        "start_line": 22,
+        "end_line": 313
+      },
+      {
+        "file": "test\\presentation\\widgets\\loading\\components\\skeleton_component_library_test.dart",
+        "method": "main",
+        "lines": 342,
+        "start_line": 5,
+        "end_line": 346
+      },
+      {
+        "file": "test\\presentation\\widgets\\loading\\factories\\skeleton_strategy_factory_test.dart",
+        "method": "main",
+        "lines": 210,
+        "start_line": 15,
+        "end_line": 224
+      },
+      {
+        "file": "test\\presentation\\widgets\\loading\\strategies\\dashboard_skeleton_strategy_test.dart",
+        "method": "main",
+        "lines": 295,
+        "start_line": 6,
+        "end_line": 300
+      },
+      {
+        "file": "test\\presentation\\widgets\\loading\\strategies\\skeleton_strategy_interface_test.dart",
+        "method": "main",
+        "lines": 214,
+        "start_line": 6,
+        "end_line": 219
+      },
+      {
+        "file": "test\\presentation\\widgets\\loading\\systems\\complex_layout_skeleton_system_refactored_test.dart",
+        "method": "main",
+        "lines": 321,
+        "start_line": 7,
+        "end_line": 327
+      },
+      {
+        "file": "test\\presentation\\widgets\\loading\\systems\\form\\form_skeleton_config_test.dart",
+        "method": "main",
+        "lines": 122,
+        "start_line": 6,
+        "end_line": 127
+      },
+      {
+        "file": "test\\presentation\\widgets\\loading\\systems\\form\\factories\\all_form_skeleton_factories_test.dart",
+        "method": "main",
+        "lines": 225,
+        "start_line": 9,
+        "end_line": 233
+      },
+      {
+        "file": "test\\presentation\\widgets\\loading\\systems\\form\\factories\\compact_form_skeleton_factory_test.dart",
+        "method": "main",
+        "lines": 107,
+        "start_line": 6,
+        "end_line": 112
+      },
+      {
+        "file": "test\\presentation\\widgets\\loading\\systems\\form\\factories\\standard_form_skeleton_factory_test.dart",
+        "method": "main",
+        "lines": 113,
+        "start_line": 6,
+        "end_line": 118
+      },
+      {
+        "file": "test\\presentation\\widgets\\loading\\systems\\form\\factories\\wizard_form_skeleton_factory_test.dart",
+        "method": "main",
+        "lines": 146,
+        "start_line": 6,
+        "end_line": 151
+      }
+    ]
+  }
+}
