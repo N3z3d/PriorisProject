@@ -89,59 +89,61 @@ class _PremiumHabitCardState extends State<PremiumHabitCard> {
   Widget _buildHeader(bool isCompleted, bool enableEffects) {
     return Row(
       children: [
-        // Icône d'habitude avec animation
-        Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: widget.habit.habitColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadiusTokens.radiusSm,
-          ),
-          child: Icon(
-            widget.habit.habitIcon,
-            color: widget.habit.habitColor,
-            size: 24,
-          ),
-        ),
-        
+        _buildHabitIcon(),
         const SizedBox(width: 12),
-        
-        // Titre et type
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.habit.name,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 4),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: widget.habit.habitColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadiusTokens.badge,
-                ),
-                child: Text(
-                  widget.habit.type.name,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: widget.habit.habitColor,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        
-        // Streak avec animation spéciale pour les milestones
+        _buildHabitTitleAndType(),
         if (_currentStreak > 0)
           _buildStreakBadge(_currentStreak, enableEffects),
       ],
+    );
+  }
+
+  Widget _buildHabitIcon() {
+    return Container(
+      width: 48,
+      height: 48,
+      decoration: BoxDecoration(
+        color: widget.habit.habitColor.withValues(alpha: 0.1),
+        borderRadius: BorderRadiusTokens.radiusSm,
+      ),
+      child: Icon(
+        widget.habit.habitIcon,
+        color: widget.habit.habitColor,
+        size: 24,
+      ),
+    );
+  }
+
+  Widget _buildHabitTitleAndType() {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            widget.habit.name,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 4),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: widget.habit.habitColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadiusTokens.badge,
+            ),
+            child: Text(
+              widget.habit.type.name,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: widget.habit.habitColor,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -227,34 +229,35 @@ class _PremiumHabitCardState extends State<PremiumHabitCard> {
           ],
         ),
         const SizedBox(height: 8),
-        
-        // Barre de progression premium
-        Container(
-          height: 8,
+        _buildProgressBar(progress),
+      ],
+    );
+  }
+
+  Widget _buildProgressBar(double progress) {
+    return Container(
+      height: 8,
+      decoration: BoxDecoration(
+        color: widget.habit.habitColor.withValues(alpha: 0.1),
+        borderRadius: BorderRadiusTokens.progressBar,
+      ),
+      child: FractionallySizedBox(
+        alignment: Alignment.centerLeft,
+        widthFactor: progress,
+        child: Container(
           decoration: BoxDecoration(
-            color: widget.habit.habitColor.withValues(alpha: 0.1),
+            color: widget.habit.habitColor,
             borderRadius: BorderRadiusTokens.progressBar,
-          ),
-          child: FractionallySizedBox(
-            alignment: Alignment.centerLeft,
-            widthFactor: progress,
-            child: Container(
-              decoration: BoxDecoration(
-                // Fond uni pour un style plus professionnel
-                color: widget.habit.habitColor,
-                borderRadius: BorderRadiusTokens.progressBar,
-                boxShadow: progress > 0.5 ? [
-                  BoxShadow(
-                    color: widget.habit.habitColor.withValues(alpha: 0.3),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ] : null,
+            boxShadow: progress > 0.5 ? [
+              BoxShadow(
+                color: widget.habit.habitColor.withValues(alpha: 0.3),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
               ),
-            ),
+            ] : null,
           ),
         ),
-      ],
+      ),
     );
   }
 
