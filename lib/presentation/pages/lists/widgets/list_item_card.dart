@@ -7,15 +7,10 @@ import 'package:prioris/presentation/widgets/indicators/premium_status_indicator
 import 'package:prioris/presentation/animations/premium_micro_interactions.dart';
 
 /// Widget pour afficher une carte d'élément de liste
-/// 
+///
 /// Affiche les informations d'un élément avec des actions de gestion
 /// et un design moderne.
 class ListItemCard extends StatefulWidget {
-  final ListItem item;
-  final VoidCallback? onToggleCompletion;
-  final VoidCallback? onEdit;
-  final VoidCallback? onDelete;
-
   const ListItemCard({
     super.key,
     required this.item,
@@ -23,6 +18,11 @@ class ListItemCard extends StatefulWidget {
     this.onEdit,
     this.onDelete,
   });
+
+  final ListItem item;
+  final VoidCallback? onToggleCompletion;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
   @override
   State<ListItemCard> createState() => _ListItemCardState();
@@ -83,97 +83,115 @@ class _ListItemCardState extends State<ListItemCard>
   @override
   Widget build(BuildContext context) {
     return SwipeableCard(
-      onSwipeLeft: () {
-        _onSwipeAction();
-        widget.onDelete?.call();
-      },
-      onSwipeRight: () {
-        _onSwipeAction();
-        widget.onToggleCompletion?.call();
-      },
+      onSwipeLeft: _handleSwipeLeft,
+      onSwipeRight: _handleSwipeRight,
       leftActionColor: AppTheme.errorColor,
       rightActionColor: widget.item.isCompleted ? AppTheme.warningColor : AppTheme.successColor,
       leftActionIcon: Icons.delete,
       rightActionIcon: widget.item.isCompleted ? Icons.undo : Icons.check,
       leftActionLabel: 'Supprimer',
       rightActionLabel: widget.item.isCompleted ? 'Rouvrir' : 'Compléter',
-      onTap: () {
-        _hideActions();
-        widget.onEdit?.call();
-      },
-      child: PremiumMicroInteractions.hoverable(
-        enableScaleEffect: true,
-        scaleFactorHover: 1.02,
-        duration: const Duration(milliseconds: 200),
-        child: Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          decoration: BoxDecoration(
-            // Fond professionnel au lieu du gradient
-            color: widget.item.isCompleted
-                ? AppTheme.successColor.withValues(alpha: 0.05)
-                : AppTheme.surfaceColor,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: AppTheme.cardShadow,
-            border: Border.all(
-              color: widget.item.isCompleted
-                  ? AppTheme.successColor.withValues(alpha: 0.2)
-                  : AppTheme.grey200,
-              width: 1.5,
-            ),
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(16),
-              onTap: () {
-                _hideActions();
-                widget.onEdit?.call();
-              },
-              onLongPress: _toggleActions,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                child: Row(
-                  children: [
-                    PremiumMicroInteractions.pressable(
-                      onPressed: () => widget.onToggleCompletion?.call(),
-                      enableHaptics: true,
-                      enableScaleEffect: true,
-                      scaleFactor: 0.95,
-                      child: _buildCompletionButton(),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.item.title,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: widget.item.isCompleted
-                                  ? AppTheme.textTertiary
-                                  : AppTheme.textPrimary,
-                              decoration: widget.item.isCompleted
-                                  ? TextDecoration.lineThrough
-                                  : null,
-                            ),
-                          ),
-                          if (_buildSubtitle() != null) ...[
-                            const SizedBox(height: 4),
-                            _buildSubtitle()!,
-                          ],
-                        ],
-                      ),
-                    ),
-                    _buildTrailing(),
-                  ],
-                ),
-              ),
-            ),
-          ),
+      onTap: _handleCardTap,
+      child: _buildCardContent(),
+    );
+  }
+
+  void _handleSwipeLeft() {
+    _onSwipeAction();
+    widget.onDelete?.call();
+  }
+
+  void _handleSwipeRight() {
+    _onSwipeAction();
+    widget.onToggleCompletion?.call();
+  }
+
+  void _handleCardTap() {
+    _hideActions();
+    widget.onEdit?.call();
+  }
+
+  Widget _buildCardContent() {
+    return PremiumMicroInteractions.hoverable(
+      enableScaleEffect: true,
+      scaleFactorHover: 1.02,
+      duration: const Duration(milliseconds: 200),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: _buildCardDecoration(),
+        child: _buildCardInterior(),
+      ),
+    );
+  }
+
+  BoxDecoration _buildCardDecoration() {
+    return BoxDecoration(
+      color: widget.item.isCompleted
+          ? AppTheme.successColor.withValues(alpha: 0.05)
+          : AppTheme.surfaceColor,
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: AppTheme.cardShadow,
+      border: Border.all(
+        color: widget.item.isCompleted
+            ? AppTheme.successColor.withValues(alpha: 0.2)
+            : AppTheme.grey200,
+        width: 1.5,
+      ),
+    );
+  }
+
+  Widget _buildCardInterior() {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: _handleCardTap,
+        onLongPress: _toggleActions,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: _buildCardRow(),
         ),
       ),
+    );
+  }
+
+  Widget _buildCardRow() {
+    return Row(
+      children: [
+        PremiumMicroInteractions.pressable(
+          onPressed: () => widget.onToggleCompletion?.call(),
+          enableHaptics: true,
+          enableScaleEffect: true,
+          scaleFactor: 0.95,
+          child: _buildCompletionButton(),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.item.title,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: widget.item.isCompleted
+                      ? AppTheme.textTertiary
+                      : AppTheme.textPrimary,
+                  decoration: widget.item.isCompleted
+                      ? TextDecoration.lineThrough
+                      : null,
+                ),
+              ),
+              if (_buildSubtitle() != null) ...[
+                const SizedBox(height: 4),
+                _buildSubtitle()!,
+              ],
+            ],
+          ),
+        ),
+        _buildTrailing(),
+      ],
     );
   }
 
