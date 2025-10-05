@@ -101,140 +101,188 @@ class CommonTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasError = errorText != null;
-    
+    final decoration = _buildInputDecoration(hasError);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (label != null)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Semantics(
-              label: required ? '$label, champ obligatoire' : label,
-              child: Text(
-                required ? '$label *' : label!,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.textPrimary,
-                ),
-              ),
-            ),
-          ),
-        Semantics(
-          textField: true,
-          label: label,
-          hint: hint,
-          value: controller?.text,
-          enabled: !readOnly,
-          child: Container(
-            constraints: BoxConstraints(
-              minHeight: AccessibilityService.minTouchTargetSize,
-            ),
-            child: TextFormField(
-              controller: controller,
-              focusNode: focusNode,
-              decoration: InputDecoration(
-                hintText: hint,
-                errorText: hasError ? errorText : null,
-                border: OutlineInputBorder(
-                  borderRadius: borderRadius ?? BorderRadiusTokens.input,
-                  borderSide: BorderSide(
-                    color: hasError 
-                        ? (errorBorderColor ?? AppTheme.errorColor)
-                        : (borderColor ?? Colors.grey.shade300),
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: borderRadius ?? BorderRadiusTokens.input,
-                  borderSide: BorderSide(
-                    color: hasError 
-                        ? (errorBorderColor ?? AppTheme.errorColor)
-                        : (borderColor ?? Colors.grey.shade300),
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: borderRadius ?? BorderRadiusTokens.input,
-                  borderSide: BorderSide(
-                    color: hasError 
-                        ? (errorBorderColor ?? AppTheme.errorColor)
-                        : (focusedBorderColor ?? AppTheme.primaryColor),
-                    width: 3, // Focus plus visible
-                  ),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderRadius: borderRadius ?? BorderRadiusTokens.input,
-                  borderSide: BorderSide(
-                    color: errorBorderColor ?? AppTheme.errorColor,
-                    width: 2,
-                  ),
-                ),
-                focusedErrorBorder: OutlineInputBorder(
-                  borderRadius: borderRadius ?? BorderRadiusTokens.input,
-                  borderSide: BorderSide(
-                    color: errorBorderColor ?? AppTheme.errorColor,
-                    width: 3,
-                  ),
-                ),
-                contentPadding: contentPadding ?? const EdgeInsets.all(16),
-                prefixIcon: prefix,
-                suffixIcon: suffix,
-                semanticCounterText: maxLength != null ? 'Maximum $maxLength caractères' : null,
-              ),
-              validator: validator,
-              keyboardType: keyboardType,
-              obscureText: obscureText,
-              maxLines: maxLines,
-              maxLength: maxLength,
-              readOnly: readOnly,
-              onChanged: onChanged,
-              onFieldSubmitted: onSubmitted,
-              textInputAction: textInputAction ?? TextInputAction.next,
-              autofocus: false,
-              enableInteractiveSelection: true,
-              autocorrect: keyboardType != TextInputType.emailAddress,
-              enableSuggestions: keyboardType == TextInputType.text,
-              // Amélioration de l'accessibilité
-              textCapitalization: keyboardType == TextInputType.emailAddress 
-                  ? TextCapitalization.none 
-                  : TextCapitalization.sentences,
-            ),
-          ),
-        ),
-        
-        // Message d'erreur accessible
+          _TextFieldLabel(label: label!, required: required),
+        _buildTextFormField(decoration),
         if (hasError)
-          Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Semantics(
-              liveRegion: true,
-              child: Text(
-                errorText!,
-                style: const TextStyle(
-                  color: AppTheme.errorColor,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ),
-        
-        // Compteur de caractères accessible
+          _TextFieldErrorMessage(errorText: errorText!),
         if (maxLength != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Semantics(
-              liveRegion: true,
-              child: Text(
-                '${controller?.text.length ?? 0}/$maxLength caractères',
-                style: const TextStyle(
-                  color: AppTheme.textTertiary,
-                  fontSize: 12,
-                ),
-                textAlign: TextAlign.end,
-              ),
-            ),
+          _TextFieldCharacterCounter(
+            currentLength: controller?.text.length ?? 0,
+            maxLength: maxLength!,
           ),
       ],
     );
   }
-} 
+
+  /// Construit le TextFormField avec sa configuration
+  Widget _buildTextFormField(InputDecoration decoration) {
+    return Semantics(
+      textField: true,
+      label: label,
+      hint: hint,
+      value: controller?.text,
+      enabled: !readOnly,
+      child: Container(
+        constraints: const BoxConstraints(
+          minHeight: AccessibilityService.minTouchTargetSize,
+        ),
+        child: TextFormField(
+          controller: controller,
+          focusNode: focusNode,
+          decoration: decoration,
+          validator: validator,
+          keyboardType: keyboardType,
+          obscureText: obscureText,
+          maxLines: maxLines,
+          maxLength: maxLength,
+          readOnly: readOnly,
+          onChanged: onChanged,
+          onFieldSubmitted: onSubmitted,
+          textInputAction: textInputAction ?? TextInputAction.next,
+          autofocus: false,
+          enableInteractiveSelection: true,
+          autocorrect: keyboardType != TextInputType.emailAddress,
+          enableSuggestions: keyboardType == TextInputType.text,
+          textCapitalization: _getTextCapitalization(),
+        ),
+      ),
+    );
+  }
+
+  /// Construit la décoration du champ de texte
+  InputDecoration _buildInputDecoration(bool hasError) {
+    return InputDecoration(
+      hintText: hint,
+      errorText: hasError ? errorText : null,
+      border: _buildBorder(hasError, isEnabled: true, isFocused: false),
+      enabledBorder: _buildBorder(hasError, isEnabled: true, isFocused: false),
+      focusedBorder: _buildBorder(hasError, isEnabled: true, isFocused: true),
+      errorBorder: _buildBorder(hasError, isEnabled: false, isFocused: false),
+      focusedErrorBorder: _buildBorder(hasError, isEnabled: false, isFocused: true),
+      contentPadding: contentPadding ?? const EdgeInsets.all(16),
+      prefixIcon: prefix,
+      suffixIcon: suffix,
+      semanticCounterText: maxLength != null ? 'Maximum $maxLength caractères' : null,
+    );
+  }
+
+  /// Construit une bordure selon l'état du champ
+  OutlineInputBorder _buildBorder(bool hasError, {required bool isEnabled, required bool isFocused}) {
+    return OutlineInputBorder(
+      borderRadius: borderRadius ?? BorderRadiusTokens.input,
+      borderSide: BorderSide(
+        color: _getBorderColor(hasError, isEnabled, isFocused),
+        width: isFocused ? 3 : (hasError && !isEnabled ? 2 : 1),
+      ),
+    );
+  }
+
+  /// Détermine la couleur de bordure selon l'état
+  Color _getBorderColor(bool hasError, bool isEnabled, bool isFocused) {
+    if (hasError) {
+      return errorBorderColor ?? AppTheme.errorColor;
+    }
+    if (isFocused && isEnabled) {
+      return focusedBorderColor ?? AppTheme.primaryColor;
+    }
+    return borderColor ?? Colors.grey.shade300;
+  }
+
+  /// Détermine la capitalisation du texte
+  TextCapitalization _getTextCapitalization() {
+    return keyboardType == TextInputType.emailAddress
+        ? TextCapitalization.none
+        : TextCapitalization.sentences;
+  }
+}
+
+/// Widget privé pour afficher le label du champ
+class _TextFieldLabel extends StatelessWidget {
+  final String label;
+  final bool required;
+
+  const _TextFieldLabel({
+    required this.label,
+    required this.required,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Semantics(
+        label: required ? '$label, champ obligatoire' : label,
+        child: Text(
+          required ? '$label *' : label,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: AppTheme.textPrimary,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Widget privé pour afficher le message d'erreur
+class _TextFieldErrorMessage extends StatelessWidget {
+  final String errorText;
+
+  const _TextFieldErrorMessage({
+    required this.errorText,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Semantics(
+        liveRegion: true,
+        child: Text(
+          errorText,
+          style: const TextStyle(
+            color: AppTheme.errorColor,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Widget privé pour afficher le compteur de caractères
+class _TextFieldCharacterCounter extends StatelessWidget {
+  final int currentLength;
+  final int maxLength;
+
+  const _TextFieldCharacterCounter({
+    required this.currentLength,
+    required this.maxLength,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Semantics(
+        liveRegion: true,
+        child: Text(
+          '$currentLength/$maxLength caractères',
+          style: const TextStyle(
+            color: AppTheme.textTertiary,
+            fontSize: 12,
+          ),
+          textAlign: TextAlign.end,
+        ),
+      ),
+    );
+  }
+}

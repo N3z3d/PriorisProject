@@ -92,103 +92,93 @@ class CommonButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accessibilityService = AccessibilityService();
-    
-    // Vérifier les contrastes de couleurs
     final backgroundColor = _getBackgroundColor();
     final foregroundColor = _getTextColor();
-    
-    if (!accessibilityService.validateColorContrast(
-      foregroundColor,
-      backgroundColor,
-      isLargeText: (fontSize ?? 14) >= 18
-    )) {
-      debugPrint('ERREUR CRITIQUE: Contraste insuffisant détecté pour "$text" - Ratio: ${_calculateContrastRatio(foregroundColor, backgroundColor).toStringAsFixed(2)}');
-      // Force l'utilisation de couleurs accessibles en cas de problème
+
+    if (!_validateColorContrast(foregroundColor, backgroundColor)) {
       return _buildAccessibleButton();
     }
-    
-    final buttonStyle = _getButtonStyle().copyWith(
-      side: WidgetStateProperty.resolveWith<BorderSide?>(
-        (states) {
-          // Affiche un contour accentué lorsqu'on a le focus clavier
-          if (states.contains(WidgetState.focused)) {
-            return const BorderSide(color: AppTheme.accentSecondary, width: 3);
-          }
-          return null;
-        },
+
+    final buttonStyle = _buildButtonStyle(foregroundColor);
+
+    return _buildButtonWrapper(
+      backgroundColor: backgroundColor,
+      buttonStyle: buttonStyle,
+      buttonContent: _ButtonContent(
+        isLoading: isLoading,
+        loadingText: loadingText,
+        text: text,
+        icon: icon,
+        textColor: foregroundColor,
       ),
-      overlayColor: WidgetStateProperty.resolveWith<Color?>((states) {
-        if (states.contains(WidgetState.pressed)) {
-          return foregroundColor.withValues(alpha: 0.2);
-        }
-        if (states.contains(WidgetState.hovered)) {
-          return foregroundColor.withValues(alpha: 0.1);
-        }
-        return null;
-      }),
-      // Assurer une taille minimale de touche
-      minimumSize: WidgetStateProperty.all(Size(
+    );
+  }
+
+  /// Valide le contraste des couleurs
+  bool _validateColorContrast(Color foreground, Color background) {
+    final accessibilityService = AccessibilityService();
+
+    if (!accessibilityService.validateColorContrast(
+      foreground,
+      background,
+      isLargeText: (fontSize ?? 14) >= 18
+    )) {
+      debugPrint('ERREUR CRITIQUE: Contraste insuffisant détecté pour "$text" - Ratio: ${_calculateContrastRatio(foreground, background).toStringAsFixed(2)}');
+      return false;
+    }
+    return true;
+  }
+
+  /// Construit le style du bouton avec les états interactifs
+  ButtonStyle _buildButtonStyle(Color foregroundColor) {
+    return _getButtonStyle().copyWith(
+      side: _buildSideProperty(),
+      overlayColor: _buildOverlayColor(foregroundColor),
+      minimumSize: WidgetStateProperty.all(const Size(
         AccessibilityService.minTouchTargetSize,
         AccessibilityService.minTouchTargetSize,
       )),
     );
-    final textColor = foregroundColor;
+  }
 
-    Widget buttonContent;
-    if (isLoading) {
-      buttonContent = Wrap(
-        alignment: WrapAlignment.center,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: 8,
-        children: [
-          SizedBox(
-            width: 16,
-            height: 16,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation<Color>(textColor),
-            ),
-          ),
-          SizedBox(
-            width: 120,
-            child: Text(
-              loadingText ?? 'Chargement...',
-              style: TextStyle(color: textColor),
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ],
-      );
-    } else {
-      buttonContent = Wrap(
-        alignment: WrapAlignment.center,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: 8,
-        children: [
-          if (icon != null)
-            Icon(icon, size: 18, color: textColor),
-          SizedBox(
-            width: 120,
-            child: Text(
-              text,
-              style: TextStyle(color: textColor),
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ],
-      );
-    }
+  /// Construit la propriété de bordure avec focus
+  WidgetStateProperty<BorderSide?> _buildSideProperty() {
+    return WidgetStateProperty.resolveWith<BorderSide?>(
+      (states) {
+        if (states.contains(WidgetState.focused)) {
+          return const BorderSide(color: AppTheme.accentSecondary, width: 3);
+        }
+        return null;
+      },
+    );
+  }
 
+  /// Construit la couleur d'overlay pour les états hover/pressed
+  WidgetStateProperty<Color?> _buildOverlayColor(Color foregroundColor) {
+    return WidgetStateProperty.resolveWith<Color?>((states) {
+      if (states.contains(WidgetState.pressed)) {
+        return foregroundColor.withValues(alpha: 0.2);
+      }
+      if (states.contains(WidgetState.hovered)) {
+        return foregroundColor.withValues(alpha: 0.1);
+      }
+      return null;
+    });
+  }
+
+  /// Construit le wrapper du bouton avec sémantique et focus
+  Widget _buildButtonWrapper({
+    required Color backgroundColor,
+    required ButtonStyle buttonStyle,
+    required Widget buttonContent,
+  }) {
     return Semantics(
       button: true,
       enabled: onPressed != null && !isLoading,
       label: tooltip ?? text,
       hint: isLoading ? (loadingText ?? 'Chargement...') : null,
       child: Container(
-        constraints: BoxConstraints(
+        constraints: const BoxConstraints(
           minWidth: AccessibilityService.minTouchTargetSize,
           minHeight: AccessibilityService.minTouchTargetSize,
         ),
@@ -202,30 +192,35 @@ class CommonButton extends StatelessWidget {
             ),
           ],
         ),
-        child: FocusableActionDetector(
-          enabled: onPressed != null && !isLoading,
-          shortcuts: {
-            LogicalKeySet(LogicalKeyboardKey.enter): const ActivateIntent(),
-            LogicalKeySet(LogicalKeyboardKey.space): const ActivateIntent(),
+        child: _buildFocusableButton(buttonStyle, buttonContent),
+      ),
+    );
+  }
+
+  /// Construit le bouton avec gestion du focus clavier
+  Widget _buildFocusableButton(ButtonStyle buttonStyle, Widget buttonContent) {
+    return FocusableActionDetector(
+      enabled: onPressed != null && !isLoading,
+      shortcuts: {
+        LogicalKeySet(LogicalKeyboardKey.enter): const ActivateIntent(),
+        LogicalKeySet(LogicalKeyboardKey.space): const ActivateIntent(),
+      },
+      actions: {
+        ActivateIntent: CallbackAction<ActivateIntent>(
+          onInvoke: (intent) {
+            if (onPressed != null && !isLoading) {
+              onPressed!();
+            }
+            return null;
           },
-          actions: {
-            ActivateIntent: CallbackAction<ActivateIntent>(
-              onInvoke: (ActivateIntent intent) {
-                if (onPressed != null && !isLoading) {
-                  onPressed!();
-                }
-                return null;
-              },
-            ),
-          },
-          child: ElevatedButton(
-            onPressed: isLoading ? null : onPressed,
-            style: buttonStyle,
-            child: Tooltip(
-              message: tooltip ?? text,
-              child: buttonContent,
-            ),
-          ),
+        ),
+      },
+      child: ElevatedButton(
+        onPressed: isLoading ? null : onPressed,
+        style: buttonStyle,
+        child: Tooltip(
+          message: tooltip ?? text,
+          child: buttonContent,
         ),
       ),
     );
@@ -309,9 +304,9 @@ class CommonButton extends StatelessWidget {
 
   /// Calcule la luminance d'une couleur
   double _getLuminance(Color color) {
-    final r = _getRelativeLuminance(color.red / 255.0);
-    final g = _getRelativeLuminance(color.green / 255.0);
-    final b = _getRelativeLuminance(color.blue / 255.0);
+    final r = _getRelativeLuminance((color.r * 255.0).round() / 255.0);
+    final g = _getRelativeLuminance((color.g * 255.0).round() / 255.0);
+    final b = _getRelativeLuminance((color.b * 255.0).round() / 255.0);
     return 0.2126 * r + 0.7152 * g + 0.0722 * b;
   }
 
@@ -360,4 +355,79 @@ class CommonButton extends StatelessWidget {
       ),
     );
   }
-} 
+}
+
+/// Widget privé pour le contenu du bouton (état chargement ou normal)
+class _ButtonContent extends StatelessWidget {
+  final bool isLoading;
+  final String? loadingText;
+  final String text;
+  final IconData? icon;
+  final Color textColor;
+
+  const _ButtonContent({
+    required this.isLoading,
+    required this.loadingText,
+    required this.text,
+    required this.icon,
+    required this.textColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return _buildLoadingContent();
+    }
+    return _buildNormalContent();
+  }
+
+  /// Contenu affiché pendant le chargement
+  Widget _buildLoadingContent() {
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 8,
+      children: [
+        SizedBox(
+          width: 16,
+          height: 16,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            valueColor: AlwaysStoppedAnimation<Color>(textColor),
+          ),
+        ),
+        SizedBox(
+          width: 120,
+          child: Text(
+            loadingText ?? 'Chargement...',
+            style: TextStyle(color: textColor),
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Contenu normal du bouton
+  Widget _buildNormalContent() {
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 8,
+      children: [
+        if (icon != null)
+          Icon(icon, size: 18, color: textColor),
+        SizedBox(
+          width: 120,
+          child: Text(
+            text,
+            style: TextStyle(color: textColor),
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ],
+    );
+  }
+}
