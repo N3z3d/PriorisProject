@@ -2,6 +2,7 @@ import '../../core/services/domain_service.dart';
 import '../../core/value_objects/export.dart';
 import '../../core/value_objects/elo_variation_settings.dart';
 import '../aggregates/task_aggregate.dart';
+import '../value_objects/export.dart';
 
 /// Service du domaine pour la gestion des scores ELO des tâches
 /// 
@@ -396,90 +397,4 @@ class TaskEloService extends LoggableDomainService {
 
     return distribution;
   }
-}
-
-/// Résultat d'un duel entre deux tâches
-class DuelResult {
-  final TaskAggregate winner;
-  final TaskAggregate loser;
-  final double winnerEloChange;
-  final double loserEloChange;
-  final double winProbability;
-
-  const DuelResult({
-    required this.winner,
-    required this.loser,
-    required this.winnerEloChange,
-    required this.loserEloChange,
-    required this.winProbability,
-  });
-
-  @override
-  String toString() {
-    return 'DuelResult(winner: ${winner.title}, loser: ${loser.title}, changes: +${winnerEloChange.toStringAsFixed(1)}/-${loserEloChange.abs().toStringAsFixed(1)})';
-  }
-}
-
-/// Ajustement ELO basé sur la performance
-class EloAdjustment {
-  final double adjustment;
-  final String reason;
-  final double performanceRatio;
-  final double originalElo;
-  final double newElo;
-
-  const EloAdjustment({
-    required this.adjustment,
-    required this.reason,
-    required this.performanceRatio,
-    required this.originalElo,
-    required this.newElo,
-  });
-
-  @override
-  String toString() {
-    return 'EloAdjustment(${adjustment > 0 ? '+' : ''}${adjustment.toStringAsFixed(1)}: $reason)';
-  }
-}
-
-/// Statistiques ELO pour un ensemble de tâches
-class EloStatistics {
-  final int count;
-  final double average;
-  final double median;
-  final double minimum;
-  final double maximum;
-  final double standardDeviation;
-  final Map<EloCategory, int> distribution;
-
-  const EloStatistics({
-    required this.count,
-    required this.average,
-    required this.median,
-    required this.minimum,
-    required this.maximum,
-    required this.standardDeviation,
-    required this.distribution,
-  });
-
-  factory EloStatistics.empty() {
-    return const EloStatistics(
-      count: 0,
-      average: 0,
-      median: 0,
-      minimum: 0,
-      maximum: 0,
-      standardDeviation: 0,
-      distribution: {},
-    );
-  }
-
-  @override
-  String toString() {
-    return 'EloStatistics(count: $count, average: ${average.toStringAsFixed(1)}, range: ${minimum.toStringAsFixed(0)}-${maximum.toStringAsFixed(0)})';
-  }
-}
-
-extension on double {
-  double get squareRoot => this < 0 ? 0 : this;
 }

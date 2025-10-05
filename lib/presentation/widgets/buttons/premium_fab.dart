@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
+import 'package:prioris/presentation/widgets/buttons/premium_fab_exports.dart';
 
 /// Premium Floating Action Button with Material Design elegance and sophisticated animations
+///
+/// SRP: Manages UI rendering and user interactions
+/// Uses composition (mixin + extracted widgets) to delegate animation and visual effects
 class PremiumFAB extends StatefulWidget {
   final String text;
   final IconData icon;
@@ -37,124 +41,25 @@ class PremiumFAB extends StatefulWidget {
 }
 
 class _PremiumFABState extends State<PremiumFAB>
-    with TickerProviderStateMixin {
-  late AnimationController _scaleController;
-  late AnimationController _shimmerController;
-  late AnimationController _glowController;
-  late Animation<double> _scaleAnimation;
-  late Animation<double> _shimmerAnimation;
-  late Animation<double> _glowAnimation;
-  late Animation<Offset> _shimmerOffset;
-  
+    with TickerProviderStateMixin, FABAnimationMixin<PremiumFAB> {
   bool _isPressed = false;
   bool _isHovered = false;
 
   @override
+  bool get enableAnimations => widget.enableAnimations;
+
+  @override
+  bool get isButtonPressed => _isPressed;
+
+  @override
   void initState() {
     super.initState();
-    _initializeAnimations();
-  }
-
-  void _initializeAnimations() {
-    // Scale animation for press/hover effects
-    _scaleController = AnimationController(
-      duration: const Duration(milliseconds: 150),
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(
-      begin: 1.0,
-      end: 0.95,
-    ).animate(CurvedAnimation(
-      parent: _scaleController,
-      curve: Curves.easeInOut,
-    ));
-
-    // Shimmer effect animation
-    _shimmerController = AnimationController(
-      duration: const Duration(milliseconds: 2000),
-      vsync: this,
-    );
-    _shimmerAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _shimmerController,
-      curve: Curves.easeInOut,
-    ));
-    _shimmerOffset = Tween<Offset>(
-      begin: const Offset(-1.5, 0),
-      end: const Offset(1.5, 0),
-    ).animate(CurvedAnimation(
-      parent: _shimmerController,
-      curve: Curves.easeInOut,
-    ));
-
-    // Glow animation
-    _glowController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
-      vsync: this,
-    );
-    _glowAnimation = Tween<double>(
-      begin: 0.3,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _glowController,
-      curve: Curves.easeInOut,
-    ));
-
-    if (widget.enableAnimations) {
-      _startIdleAnimations();
-    }
-  }
-
-  void _startIdleAnimations() {
-    // CORRECTION: Vérifier que le controller n'est pas disposé
-    if (!mounted) return;
-    
-    // Subtle glow animation loop
-    if (!_glowController.isAnimating) {
-      _glowController.repeat(reverse: true);
-    }
-    
-    // Occasional shimmer effect
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted && !_isPressed) {
-        try {
-          _shimmerController.forward().then((_) {
-            if (mounted) {
-              _shimmerController.reset();
-              Future.delayed(const Duration(seconds: 8), () {
-                if (mounted) _startIdleAnimations();
-              });
-            }
-          });
-        } catch (e) {
-          // Controller déjà disposé, ignorer
-        }
-      }
-    });
+    initializeAnimations();
   }
 
   @override
   void dispose() {
-    // CORRECTION: Arrêter les animations avant de disposer
-    try {
-      if (_glowController.isAnimating) {
-        _glowController.stop();
-      }
-      if (_shimmerController.isAnimating) {
-        _shimmerController.stop();
-      }
-      if (_scaleController.isAnimating) {
-        _scaleController.stop();
-      }
-    } catch (e) {
-      // Ignorer les erreurs si déjà disposé
-    }
-    
-    _scaleController.dispose();
-    _shimmerController.dispose();
-    _glowController.dispose();
+    disposeAnimations();
     super.dispose();
   }
 
@@ -177,51 +82,23 @@ class _PremiumFABState extends State<PremiumFAB>
   }
 
   void _handleTapDown(TapDownDetails details) {
-    setState(() {
-      _isPressed = true;
-    });
-    if (widget.enableAnimations) {
-      _scaleController.forward();
-    }
-    if (widget.enableHaptics) {
-      HapticFeedback.lightImpact();
-    }
+    setState(() => _isPressed = true);
+    if (widget.enableAnimations) scaleController.forward();
+    if (widget.enableHaptics) HapticFeedback.lightImpact();
   }
 
   void _handleTapUp(TapUpDetails details) {
-    setState(() {
-      _isPressed = false;
-    });
-    if (widget.enableAnimations) {
-      _scaleController.reverse();
-    }
+    setState(() => _isPressed = false);
+    if (widget.enableAnimations) scaleController.reverse();
     if (widget.onPressed != null) {
       widget.onPressed!();
-      if (widget.enableHaptics) {
-        HapticFeedback.selectionClick();
-      }
+      if (widget.enableHaptics) HapticFeedback.selectionClick();
     }
   }
 
   void _handleTapCancel() {
-    setState(() {
-      _isPressed = false;
-    });
-    if (widget.enableAnimations) {
-      _scaleController.reverse();
-    }
-  }
-
-  void _handleHoverEnter(PointerEnterEvent event) {
-    setState(() {
-      _isHovered = true;
-    });
-  }
-
-  void _handleHoverExit(PointerExitEvent event) {
-    setState(() {
-      _isHovered = false;
-    });
+    setState(() => _isPressed = false);
+    if (widget.enableAnimations) scaleController.reverse();
   }
 
   @override
@@ -229,32 +106,32 @@ class _PremiumFABState extends State<PremiumFAB>
     return Hero(
       tag: widget.heroTag ?? 'premium_fab',
       child: AnimatedBuilder(
-        animation: Listenable.merge([
-          _scaleAnimation,
-          _glowAnimation,
-          _shimmerAnimation,
-        ]),
+        animation: Listenable.merge([scaleAnimation, glowAnimation, shimmerAnimation]),
         builder: (context, child) {
           return Transform.scale(
-            scale: widget.enableAnimations ? _scaleAnimation.value : 1.0,
+            scale: widget.enableAnimations ? scaleAnimation.value : 1.0,
             child: MouseRegion(
-              onEnter: _handleHoverEnter,
-              onExit: _handleHoverExit,
+              onEnter: (event) => setState(() => _isHovered = true),
+              onExit: (event) => setState(() => _isHovered = false),
               child: GestureDetector(
                 onTapDown: widget.isLoading ? null : _handleTapDown,
                 onTapUp: widget.isLoading ? null : _handleTapUp,
                 onTapCancel: _handleTapCancel,
                 child: Container(
-                  constraints: const BoxConstraints(
-                    minHeight: 56,
-                    minWidth: 120,
-                  ),
+                  constraints: const BoxConstraints(minHeight: 56, minWidth: 120),
                   child: Stack(
                     children: [
-                      if (widget.enableAnimations) _buildGlowEffectLayer(),
+                      if (widget.enableAnimations)
+                        FABGlowEffect(
+                          glowAnimation: glowAnimation,
+                          glowColor: _backgroundColor,
+                        ),
                       _buildPremiumMaterialButton(),
-                      if (widget.enableAnimations && _shimmerAnimation.value > 0)
-                        _buildShimmerOverlay(),
+                      if (widget.enableAnimations)
+                        FABShimmerEffect(
+                          shimmerAnimation: shimmerAnimation,
+                          shimmerOffset: shimmerOffset,
+                        ),
                     ],
                   ),
                 ),
@@ -262,24 +139,6 @@ class _PremiumFABState extends State<PremiumFAB>
             ),
           );
         },
-      ),
-    );
-  }
-
-  /// Build animated glow effect layer behind the button
-  Widget _buildGlowEffectLayer() {
-    return Positioned.fill(
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadiusTokens.radiusXl,
-          boxShadow: [
-            BoxShadow(
-              color: _backgroundColor.withValues(alpha: _glowAnimation.value * 0.3),
-              blurRadius: 20 * _glowAnimation.value,
-              spreadRadius: 2 * _glowAnimation.value,
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -403,85 +262,58 @@ class _PremiumFABState extends State<PremiumFAB>
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Icon or loading indicator with elegant animation
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          child: widget.isLoading
-              ? SizedBox(
-                  width: 20,
-                  height: 20,
-                  key: const ValueKey('loading'),
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation<Color>(_foregroundColor),
-                  ),
-                )
-              : TweenAnimationBuilder<double>(
-                  key: const ValueKey('icon'),
-                  duration: const Duration(milliseconds: 200),
-                  tween: Tween<double>(begin: 0.8, end: _isPressed ? 0.9 : 1.0),
-                  builder: (context, scale, child) {
-                    return Transform.scale(
-                      scale: scale,
-                      child: Icon(
-                        widget.icon,
-                        size: 20,
-                        color: _foregroundColor.withValues(
-                          alpha: _isHovered ? 1.0 : 0.9,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-        ),
+        _buildIconOrLoading(),
         const SizedBox(width: 12),
-        // Text with subtle animation
-        AnimatedDefaultTextStyle(
-          duration: const Duration(milliseconds: 200),
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
-            color: _foregroundColor.withValues(
-              alpha: _isHovered ? 1.0 : 0.9,
-            ),
-            letterSpacing: 0.5,
-          ),
-          child: Text(_displayText),
-        ),
+        _buildAnimatedText(),
       ],
     );
   }
 
-  Widget _buildShimmerOverlay() {
-    return Positioned.fill(
-      child: ClipRRect(
-        borderRadius: BorderRadiusTokens.radiusXl,
-        child: AnimatedBuilder(
-          animation: _shimmerOffset,
-          builder: (context, child) {
-            return Transform.translate(
-              offset: Offset(
-                _shimmerOffset.value.dx * 100,
-                _shimmerOffset.value.dy,
+  Widget _buildIconOrLoading() {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      child: widget.isLoading
+          ? SizedBox(
+              width: 20,
+              height: 20,
+              key: const ValueKey('loading'),
+              child: CircularProgressIndicator(
+                strokeWidth: 2.5,
+                valueColor: AlwaysStoppedAnimation<Color>(_foregroundColor),
               ),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [
-                      Colors.transparent,
-                      Colors.white.withValues(alpha: 0.3 * _shimmerAnimation.value),
-                      Colors.transparent,
-                    ],
-                    stops: const [0.0, 0.5, 1.0],
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
+            )
+          : _buildAnimatedIcon(),
+    );
+  }
+
+  Widget _buildAnimatedIcon() {
+    return TweenAnimationBuilder<double>(
+      key: const ValueKey('icon'),
+      duration: const Duration(milliseconds: 200),
+      tween: Tween<double>(begin: 0.8, end: _isPressed ? 0.9 : 1.0),
+      builder: (context, scale, child) {
+        return Transform.scale(
+          scale: scale,
+          child: Icon(
+            widget.icon,
+            size: 20,
+            color: _foregroundColor.withValues(alpha: _isHovered ? 1.0 : 0.9),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildAnimatedText() {
+    return AnimatedDefaultTextStyle(
+      duration: const Duration(milliseconds: 200),
+      style: TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: 14,
+        color: _foregroundColor.withValues(alpha: _isHovered ? 1.0 : 0.9),
+        letterSpacing: 0.5,
       ),
+      child: Text(_displayText),
     );
   }
 }

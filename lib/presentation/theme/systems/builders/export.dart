@@ -1,4 +1,4 @@
-// Export all animation builders for easy importing
-export 'premium_physics_animations.dart';
-export 'premium_transition_animations.dart';
-export 'premium_advanced_animations.dart';
+/// Barrel export for premium modal system builders
+/// Following SRP: each builder handles a specific modal type
+export 'premium_dialog_builder.dart';
+export 'premium_bottom_sheet_builder.dart';
