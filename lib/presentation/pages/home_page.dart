@@ -19,15 +19,33 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentPage = ref.watch(currentPageProvider);
-    
-    final pages = [
-      const ListsPage(), // Listes et tâches
-      const DuelPage(),
-      const HabitsPage(), // Habitudes séparées
-      const InsightsPage(), // Page Insights avec Statistics et Habitudes
-    ];
+    final pages = _buildPages();
+    final navigationItems = _getNavigationItems();
 
-    final navigationItems = [
+    return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
+      appBar: _buildAppBar(context, ref, navigationItems, currentPage),
+      body: _buildBody(pages, currentPage),
+      bottomNavigationBar: _buildPremiumBottomNav(
+        context,
+        ref,
+        currentPage,
+        navigationItems,
+      ),
+    );
+  }
+
+  List<Widget> _buildPages() {
+    return [
+      const ListsPage(),
+      const DuelPage(),
+      const HabitsPage(),
+      const InsightsPage(),
+    ];
+  }
+
+  List<_NavigationItem> _getNavigationItems() {
+    return [
       _NavigationItem(
         icon: Icons.checklist_outlined,
         activeIcon: Icons.checklist,
@@ -53,91 +71,104 @@ class HomePage extends ConsumerWidget {
         color: AppTheme.secondaryColor,
       ),
     ];
+  }
 
-    return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: AppTheme.cardColor,
-        elevation: 0,
-        title: Semantics(
-          header: true,
-          child: Text(
-            navigationItems[currentPage].label,
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 20,
-            ),
-          ),
-        ),
-        actions: [
-          // Bouton de déconnexion
-          Semantics(
-            label: 'Se déconnecter',
-            button: true,
-            hint: 'Déconnecte l\'utilisateur actuel',
-            child: Container(
-              constraints: const BoxConstraints(
-                minWidth: 48,
-                minHeight: 48,
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.logout_outlined),
-                tooltip: 'Déconnexion',
-                iconSize: 24,
-                onPressed: () {
-                  // Déconnexion simple sans dialogue
-                  print('🔒 Déconnexion simple'); 
-                  ref.read(authControllerProvider).signOut();
-                },
-              ),
-            ),
-          ),
-          
-          // Bouton paramètres
-          Semantics(
-            label: 'Ouvrir les paramètres',
-            button: true,
-            hint: 'Ouvre la page des paramètres de l\'application',
-            child: Container(
-              constraints: const BoxConstraints(
-                minWidth: 48,
-                minHeight: 48,
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.settings_outlined),
-                tooltip: 'Paramètres',
-                iconSize: 24,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SettingsPage(),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
-      body: SafeArea(
-        child: Semantics(
-          container: true,
-          label: 'Contenu principal',
-          child: IndexedStack(
-            index: currentPage,
-            children: pages.map((page) => Semantics(
-              container: true,
-              child: page,
-            )).toList(),
-          ),
+  PreferredSizeWidget _buildAppBar(
+    BuildContext context,
+    WidgetRef ref,
+    List<_NavigationItem> navigationItems,
+    int currentPage,
+  ) {
+    return AppBar(
+      backgroundColor: AppTheme.cardColor,
+      elevation: 0,
+      title: _buildAppBarTitle(navigationItems[currentPage].label),
+      actions: _buildAppBarActions(context, ref),
+    );
+  }
+
+  Widget _buildAppBarTitle(String label) {
+    return Semantics(
+      header: true,
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 20,
         ),
       ),
-      bottomNavigationBar: _buildPremiumBottomNav(
-        context,
-        ref,
-        currentPage,
-        navigationItems,
+    );
+  }
+
+  List<Widget> _buildAppBarActions(BuildContext context, WidgetRef ref) {
+    return [
+      _buildLogoutButton(ref),
+      _buildSettingsButton(context),
+    ];
+  }
+
+  Widget _buildLogoutButton(WidgetRef ref) {
+    return Semantics(
+      label: 'Se déconnecter',
+      button: true,
+      hint: 'Déconnecte l\'utilisateur actuel',
+      child: Container(
+        constraints: const BoxConstraints(
+          minWidth: 48,
+          minHeight: 48,
+        ),
+        child: IconButton(
+          icon: const Icon(Icons.logout_outlined),
+          tooltip: 'Déconnexion',
+          iconSize: 24,
+          onPressed: () {
+            print('🔒 Déconnexion simple');
+            ref.read(authControllerProvider).signOut();
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSettingsButton(BuildContext context) {
+    return Semantics(
+      label: 'Ouvrir les paramètres',
+      button: true,
+      hint: 'Ouvre la page des paramètres de l\'application',
+      child: Container(
+        constraints: const BoxConstraints(
+          minWidth: 48,
+          minHeight: 48,
+        ),
+        child: IconButton(
+          icon: const Icon(Icons.settings_outlined),
+          tooltip: 'Paramètres',
+          iconSize: 24,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const SettingsPage(),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBody(List<Widget> pages, int currentPage) {
+    return SafeArea(
+      child: Semantics(
+        container: true,
+        label: 'Contenu principal',
+        child: IndexedStack(
+          index: currentPage,
+          children: pages.map((page) => Semantics(
+            container: true,
+            child: page,
+          )).toList(),
+        ),
       ),
     );
   }
@@ -153,47 +184,68 @@ class HomePage extends ConsumerWidget {
       label: 'Navigation principale',
       hint: 'Utilisez les flèches pour naviguer entre les sections',
       child: Container(
-        decoration: BoxDecoration(
-          color: AppTheme.cardColor,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 20,
-              offset: const Offset(0, -8),
-              spreadRadius: -4,
-            ),
-          ],
-        ),
+        decoration: _buildBottomNavDecoration(),
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: items.asMap().entries.map((entry) {
-                final index = entry.key;
-                final item = entry.value;
-                final isActive = currentPage == index;
-
-                return _PremiumNavItem(
-                  item: item,
-                  isActive: isActive,
-                  onTap: () {
-                    final accessibilityService = AccessibilityService();
-                    
-                    // Annoncer le changement de page
-                    accessibilityService.announceToScreenReader(
-                      'Navigation vers ${item.label}'
-                    );
-                    
-                    ref.read(currentPageProvider.notifier).state = index;
-                  },
-                );
-              }).toList(),
-            ),
+            child: _buildNavigationItemsRow(ref, currentPage, items),
           ),
         ),
       ),
     );
+  }
+
+  BoxDecoration _buildBottomNavDecoration() {
+    return BoxDecoration(
+      color: AppTheme.cardColor,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.1),
+          blurRadius: 20,
+          offset: const Offset(0, -8),
+          spreadRadius: -4,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNavigationItemsRow(
+    WidgetRef ref,
+    int currentPage,
+    List<_NavigationItem> items,
+  ) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: items.asMap().entries.map((entry) {
+        return _buildNavigationItem(
+          ref,
+          currentPage,
+          entry.key,
+          entry.value,
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildNavigationItem(
+    WidgetRef ref,
+    int currentPage,
+    int index,
+    _NavigationItem item,
+  ) {
+    final isActive = currentPage == index;
+
+    return _PremiumNavItem(
+      item: item,
+      isActive: isActive,
+      onTap: () => _handleNavigationTap(ref, index, item),
+    );
+  }
+
+  void _handleNavigationTap(WidgetRef ref, int index, _NavigationItem item) {
+    final accessibilityService = AccessibilityService();
+    accessibilityService.announceToScreenReader('Navigation vers ${item.label}');
+    ref.read(currentPageProvider.notifier).state = index;
   }
 }
 

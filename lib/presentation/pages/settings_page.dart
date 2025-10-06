@@ -12,127 +12,144 @@ class SettingsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: AppTheme.cardColor,
-        elevation: 0,
-        title: const Text(
-          'Paramètres',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 20,
-          ),
-        ),
-      ),
+      appBar: _buildAppBar(),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _buildSection(
-            title: 'Avancé',
-            children: [
-              _buildSettingTile(
-                icon: Icons.monitor_heart_outlined,
-                title: 'Monitoring des Agents',
-                subtitle: 'Surveillance et gestion des agents IA',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const AgentsMonitoringPage(),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
+          _buildAdvancedSection(context),
           const SizedBox(height: 16),
-          _buildSection(
-            title: 'Données et synchronisation',
-            children: [
-              _buildSettingTile(
-                icon: Icons.sync_outlined,
-                title: 'État de synchronisation',
-                subtitle: 'Voir où sont stockées vos données',
-                onTap: () {
-                  // TODO: Implémenter la page de statut de synchronisation
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Page en cours de développement')),
-                  );
-                },
-              ),
-              _buildSettingTile(
-                icon: Icons.backup_outlined,
-                title: 'Sauvegarde et export',
-                subtitle: 'Exporter et importer vos données',
-                onTap: () {
-                  // TODO: Implémenter la page de sauvegarde
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Page en cours de développement')),
-                  );
-                },
-              ),
-              _buildSettingTile(
-                icon: Icons.storage_outlined,
-                title: 'Gestion du stockage',
-                subtitle: 'Contrôler où vos données sont sauvegardées',
-                onTap: () {
-                  // TODO: Implémenter la page de paramètres de stockage
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Page en cours de développement')),
-                  );
-                },
-              ),
-              _buildSettingTile(
-                icon: Icons.delete_sweep_outlined,
-                title: 'Nettoyer les données',
-                subtitle: 'Supprimer toutes vos données personnelles',
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => const ClearDataDialog(),
-                  );
-                },
-                isDestructive: true,
-              ),
-            ],
-          ),
+          _buildDataSection(context),
           const SizedBox(height: 16),
-          _buildSection(
-            title: 'Général',
-            children: [
-              _buildSettingTile(
-                icon: Icons.notifications_outlined,
-                title: 'Notifications',
-                subtitle: 'Gérer les notifications',
-                onTap: () {},
-              ),
-              _buildSettingTile(
-                icon: Icons.palette_outlined,
-                title: 'Thème',
-                subtitle: 'Personnaliser l\'apparence',
-                onTap: () {},
-              ),
-            ],
-          ),
+          _buildGeneralSection(),
           const SizedBox(height: 16),
-          _buildSection(
-            title: 'À propos',
-            children: [
-              _buildSettingTile(
-                icon: Icons.info_outlined,
-                title: 'Version',
-                subtitle: '1.0.0',
-                onTap: () {},
-              ),
-              _buildSettingTile(
-                icon: Icons.help_outlined,
-                title: 'Aide',
-                subtitle: 'Centre d\'aide et support',
-                onTap: () {},
-              ),
-            ],
-          ),
+          _buildAboutSection(),
         ],
       ),
+    );
+  }
+
+  /// Construit la barre d'application
+  AppBar _buildAppBar() {
+    return AppBar(
+      backgroundColor: AppTheme.cardColor,
+      elevation: 0,
+      title: const Text(
+        'Paramètres',
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 20,
+        ),
+      ),
+    );
+  }
+
+  /// Construit la section avancée
+  Widget _buildAdvancedSection(BuildContext context) {
+    return _buildSection(
+      title: 'Avancé',
+      children: [
+        _buildSettingTile(
+          icon: Icons.monitor_heart_outlined,
+          title: 'Monitoring des Agents',
+          subtitle: 'Surveillance et gestion des agents IA',
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AgentsMonitoringPage(),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  /// Construit la section données et synchronisation
+  Widget _buildDataSection(BuildContext context) {
+    return _buildSection(
+      title: 'Données et synchronisation',
+      children: [
+        _buildSettingTile(
+          icon: Icons.sync_outlined,
+          title: 'État de synchronisation',
+          subtitle: 'Voir où sont stockées vos données',
+          onTap: () => _showDevelopmentSnackBar(context),
+        ),
+        _buildSettingTile(
+          icon: Icons.backup_outlined,
+          title: 'Sauvegarde et export',
+          subtitle: 'Exporter et importer vos données',
+          onTap: () => _showDevelopmentSnackBar(context),
+        ),
+        _buildSettingTile(
+          icon: Icons.storage_outlined,
+          title: 'Gestion du stockage',
+          subtitle: 'Contrôler où vos données sont sauvegardées',
+          onTap: () => _showDevelopmentSnackBar(context),
+        ),
+        _buildSettingTile(
+          icon: Icons.delete_sweep_outlined,
+          title: 'Nettoyer les données',
+          subtitle: 'Supprimer toutes vos données personnelles',
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) => const ClearDataDialog(),
+            );
+          },
+          isDestructive: true,
+        ),
+      ],
+    );
+  }
+
+  /// Construit la section générale
+  Widget _buildGeneralSection() {
+    return _buildSection(
+      title: 'Général',
+      children: [
+        _buildSettingTile(
+          icon: Icons.notifications_outlined,
+          title: 'Notifications',
+          subtitle: 'Gérer les notifications',
+          onTap: () {},
+        ),
+        _buildSettingTile(
+          icon: Icons.palette_outlined,
+          title: 'Thème',
+          subtitle: 'Personnaliser l\'apparence',
+          onTap: () {},
+        ),
+      ],
+    );
+  }
+
+  /// Construit la section à propos
+  Widget _buildAboutSection() {
+    return _buildSection(
+      title: 'À propos',
+      children: [
+        _buildSettingTile(
+          icon: Icons.info_outlined,
+          title: 'Version',
+          subtitle: '1.0.0',
+          onTap: () {},
+        ),
+        _buildSettingTile(
+          icon: Icons.help_outlined,
+          title: 'Aide',
+          subtitle: 'Centre d\'aide et support',
+          onTap: () {},
+        ),
+      ],
+    );
+  }
+
+  /// Affiche un SnackBar pour les fonctionnalités en développement
+  void _showDevelopmentSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Page en cours de développement')),
     );
   }
 

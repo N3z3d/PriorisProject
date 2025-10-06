@@ -31,127 +31,156 @@ class PageSkeletonLoader extends StatelessWidget {
   Widget _buildPageSkeleton() {
     switch (pageType) {
       case SkeletonPageType.dashboard:
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Row(
-              children: [
-                _SkeletonBox(
-                  width: 40,
-                  height: 40,
-                  borderRadius: BorderRadiusTokens.radiusCircular,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _SkeletonBox(
-                        width: 120,
-                        height: 20,
-                        borderRadius: BorderRadiusTokens.radiusXs,
-                      ),
-                      const SizedBox(height: 4),
-                      _SkeletonBox(
-                        width: 80,
-                        height: 16,
-                        borderRadius: BorderRadiusTokens.radiusXs,
-                      ),
-                    ],
-                  ),
-                ),
-                _SkeletonBox(
-                  width: 32,
-                  height: 32,
-                  borderRadius: BorderRadiusTokens.radiusCircular,
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            // Stats cards
-            Row(
-              children: List.generate(3, (index) {
-                return Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(right: index < 2 ? 12 : 0),
-                    child: _SkeletonContainer(
-                      height: 80,
-                      borderRadius: BorderRadiusTokens.card,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _SkeletonBox(
-                            width: 30,
-                            height: 24,
-                            borderRadius: BorderRadiusTokens.radiusXs,
-                          ),
-                          const SizedBox(height: 8),
-                          _SkeletonBox(
-                            width: 60,
-                            height: 16,
-                            borderRadius: BorderRadiusTokens.radiusXs,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }),
-            ),
-            const SizedBox(height: 24),
-            // Chart
-            PremiumSkeletons.chartSkeleton(height: 200),
-            const SizedBox(height: 24),
-            // Recent items
-            Expanded(
-              child: PremiumSkeletons.listSkeleton(itemCount: 3),
-            ),
-          ],
-        );
+        return _buildDashboardSkeleton();
       case SkeletonPageType.list:
-        return Column(
-          children: [
-            // Search bar
-            _SkeletonBox(
-              width: double.infinity,
-              height: 48,
-              borderRadius: BorderRadiusTokens.input,
-            ),
-            const SizedBox(height: 16),
-            // Filters
-            Row(
-              children: List.generate(3, (index) {
-                return Padding(
-                  padding: EdgeInsets.only(right: index < 2 ? 12 : 0),
-                  child: _SkeletonBox(
-                    width: 80,
-                    height: 32,
-                    borderRadius: BorderRadiusTokens.chip,
-                  ),
-                );
-              }),
-            ),
-            const SizedBox(height: 24),
-            // List items
-            Expanded(
-              child: PremiumSkeletons.listSkeleton(itemCount: 6),
-            ),
-          ],
-        );
+        return _buildListSkeleton();
       case SkeletonPageType.profile:
-        return Column(
-          children: [
-            PremiumSkeletons.profileSkeleton(avatarSize: 100, showStats: true),
-            const SizedBox(height: 32),
-            PremiumSkeletons.chartSkeleton(height: 150, showLegend: false),
-            const SizedBox(height: 24),
-            Expanded(
-              child: PremiumSkeletons.listSkeleton(itemCount: 4, itemHeight: 60),
-            ),
-          ],
-        );
+        return _buildProfileSkeleton();
     }
+  }
+
+  Widget _buildDashboardSkeleton() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildDashboardHeader(),
+        const SizedBox(height: 24),
+        _buildDashboardStatsCards(),
+        const SizedBox(height: 24),
+        PremiumSkeletons.chartSkeleton(height: 200),
+        const SizedBox(height: 24),
+        Expanded(
+          child: PremiumSkeletons.listSkeleton(itemCount: 3),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDashboardHeader() {
+    return Row(
+      children: [
+        _SkeletonBox(
+          width: 40,
+          height: 40,
+          borderRadius: BorderRadiusTokens.radiusCircular,
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildDashboardHeaderText(),
+        ),
+        _SkeletonBox(
+          width: 32,
+          height: 32,
+          borderRadius: BorderRadiusTokens.radiusCircular,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDashboardHeaderText() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SkeletonBox(
+          width: 120,
+          height: 20,
+          borderRadius: BorderRadiusTokens.radiusXs,
+        ),
+        const SizedBox(height: 4),
+        _SkeletonBox(
+          width: 80,
+          height: 16,
+          borderRadius: BorderRadiusTokens.radiusXs,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDashboardStatsCards() {
+    return Row(
+      children: List.generate(3, (index) {
+        return Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(right: index < 2 ? 12 : 0),
+            child: _buildStatCard(),
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildStatCard() {
+    return _SkeletonContainer(
+      height: 80,
+      borderRadius: BorderRadiusTokens.card,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _SkeletonBox(
+            width: 30,
+            height: 24,
+            borderRadius: BorderRadiusTokens.radiusXs,
+          ),
+          const SizedBox(height: 8),
+          _SkeletonBox(
+            width: 60,
+            height: 16,
+            borderRadius: BorderRadiusTokens.radiusXs,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildListSkeleton() {
+    return Column(
+      children: [
+        _buildSearchBar(),
+        const SizedBox(height: 16),
+        _buildFilterChips(),
+        const SizedBox(height: 24),
+        Expanded(
+          child: PremiumSkeletons.listSkeleton(itemCount: 6),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return _SkeletonBox(
+      width: double.infinity,
+      height: 48,
+      borderRadius: BorderRadiusTokens.input,
+    );
+  }
+
+  Widget _buildFilterChips() {
+    return Row(
+      children: List.generate(3, (index) {
+        return Padding(
+          padding: EdgeInsets.only(right: index < 2 ? 12 : 0),
+          child: _SkeletonBox(
+            width: 80,
+            height: 32,
+            borderRadius: BorderRadiusTokens.chip,
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildProfileSkeleton() {
+    return Column(
+      children: [
+        PremiumSkeletons.profileSkeleton(avatarSize: 100, showStats: true),
+        const SizedBox(height: 32),
+        PremiumSkeletons.chartSkeleton(height: 150, showLegend: false),
+        const SizedBox(height: 24),
+        Expanded(
+          child: PremiumSkeletons.listSkeleton(itemCount: 4, itemHeight: 60),
+        ),
+      ],
+    );
   }
 }
 
