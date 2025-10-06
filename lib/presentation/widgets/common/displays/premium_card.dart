@@ -105,58 +105,76 @@ class _PremiumCardState extends State<PremiumCard>
         animation: _animationController,
         builder: (context, child) {
           return Container(
-          margin: widget.margin ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: MouseRegion(
-            onEnter: (_) => _handleHover(true),
-            onExit: (_) => _handleHover(false),
-            child: GestureDetector(
-              onTap: widget.onTap,
-              child: Transform.scale(
-                scale: _scaleAnimation.value,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: widget.borderRadius ?? BorderRadiusTokens.cardPremium,
-                    color: widget.isGlassmorphism!
-                        ? AppTheme.cardColor.withValues(alpha: 0.8)
-                        : widget.backgroundColor ?? AppTheme.cardColor,
-                    border: Border.all(
-                      color: _isHovered 
-                          ? AppTheme.primaryColor.withValues(alpha: 0.3)
-                          : AppTheme.grey200,
-                      width: 1,
-                    ),
-                    boxShadow: widget.isGlassmorphism!
-                        ? []
-                        : [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05 + _elevationAnimation.value * 0.02),
-                              blurRadius: 10 + _elevationAnimation.value * 2,
-                              offset: Offset(0, 2 + _elevationAnimation.value),
-                              spreadRadius: -2,
-                            ),
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.08 + _elevationAnimation.value * 0.02),
-                              blurRadius: 5 + _elevationAnimation.value,
-                              offset: Offset(0, 1 + _elevationAnimation.value * 0.5),
-                              spreadRadius: -1,
-                            ),
-                          ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: widget.borderRadius ?? BorderRadiusTokens.cardPremium,
-                    child: Container(
-                      padding: widget.padding ?? const EdgeInsets.all(20),
-                      child: widget.child,
-                    ),
-                  ),
+            margin: widget.margin ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: MouseRegion(
+              onEnter: (_) => _handleHover(true),
+              onExit: (_) => _handleHover(false),
+              child: GestureDetector(
+                onTap: widget.onTap,
+                child: Transform.scale(
+                  scale: _scaleAnimation.value,
+                  child: _buildCardContainer(),
                 ),
               ),
             ),
-          ),
           );
         },
       ),
     );
+  }
+
+  Widget _buildCardContainer() {
+    return Container(
+      decoration: _buildCardDecoration(),
+      child: ClipRRect(
+        borderRadius: widget.borderRadius ?? BorderRadiusTokens.cardPremium,
+        child: Container(
+          padding: widget.padding ?? const EdgeInsets.all(20),
+          child: widget.child,
+        ),
+      ),
+    );
+  }
+
+  BoxDecoration _buildCardDecoration() {
+    return BoxDecoration(
+      borderRadius: widget.borderRadius ?? BorderRadiusTokens.cardPremium,
+      color: _getCardBackgroundColor(),
+      border: Border.all(
+        color: _isHovered
+            ? AppTheme.primaryColor.withValues(alpha: 0.3)
+            : AppTheme.grey200,
+        width: 1,
+      ),
+      boxShadow: _buildCardShadows(),
+    );
+  }
+
+  Color _getCardBackgroundColor() {
+    if (widget.isGlassmorphism!) {
+      return AppTheme.cardColor.withValues(alpha: 0.8);
+    }
+    return widget.backgroundColor ?? AppTheme.cardColor;
+  }
+
+  List<BoxShadow> _buildCardShadows() {
+    if (widget.isGlassmorphism!) {
+      return [];
+    }
+    return [
+      BoxShadow(
+        color: Colors.black.withValues(alpha: 0.05 + _elevationAnimation.value * 0.02),
+        blurRadius: 10 + _elevationAnimation.value * 2,
+        offset: Offset(0, 2 + _elevationAnimation.value),
+        spreadRadius: -2,
+      ),
+      BoxShadow(
+        color: Colors.black.withValues(alpha: 0.08 + _elevationAnimation.value * 0.02),
+        blurRadius: 5 + _elevationAnimation.value,
+        offset: Offset(0, 1 + _elevationAnimation.value * 0.5),
+        spreadRadius: -1,
+      ),
+    ];
   }
 }
 
@@ -241,99 +259,120 @@ class _PremiumButtonState extends State<PremiumButton>
             onTapUp: (_) => _handlePress(false),
             onTapCancel: () => _handlePress(false),
             child: Container(
-              decoration: BoxDecoration(
-                color: widget.isOutlined!
-                    ? null
-                    : widget.isSecondary!
-                        ? AppTheme.secondaryColor
-                        : AppTheme.primaryColor,
-                borderRadius: BorderRadius.circular(widget.borderRadius ?? BorderRadiusTokens.lg),
-                border: widget.isOutlined!
-                    ? Border.all(
-                        color: widget.isSecondary!
-                            ? AppTheme.secondaryColor
-                            : AppTheme.primaryColor,
-                        width: 1.5,
-                      )
-                    : null,
-                boxShadow: widget.isOutlined!
-                    ? []
-                    : [
-                        BoxShadow(
-                          color: (widget.isSecondary!
-                                  ? AppTheme.secondaryColor
-                                  : AppTheme.primaryColor)
-                              .withValues(alpha: 0.3),
-                          blurRadius: 12,
-                          offset: const Offset(0, 6),
-                          spreadRadius: -2,
-                        ),
-                      ],
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: widget.isLoading! ? null : widget.onPressed,
-                  borderRadius: BorderRadius.circular(widget.borderRadius ?? BorderRadiusTokens.lg),
-                  child: Container(
-                    padding: widget.padding ??
-                        const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                    constraints: BoxConstraints(
-                      minWidth: widget.minimumSize?.width ?? 0,
-                      minHeight: widget.minimumSize?.height ?? 48,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (widget.isLoading!)
-                          SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                widget.isOutlined!
-                                    ? AppTheme.primaryColor
-                                    : Colors.white,
-                              ),
-                            ),
-                          )
-                        else if (widget.icon != null) ...[
-                          Icon(
-                            widget.icon,
-                            size: 20,
-                            color: widget.isOutlined!
-                                ? (widget.isSecondary!
-                                    ? AppTheme.secondaryColor
-                                    : AppTheme.primaryColor)
-                                : Colors.white,
-                          ),
-                          const SizedBox(width: 8),
-                        ],
-                        if (!widget.isLoading!)
-                          Text(
-                            widget.text,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: widget.isOutlined!
-                                  ? (widget.isSecondary!
-                                      ? AppTheme.secondaryColor
-                                      : AppTheme.primaryColor)
-                                  : Colors.white,
-                              letterSpacing: 0.1,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+              decoration: _buildButtonDecoration(),
+              child: _buildButtonMaterial(),
             ),
           ),
         );
       },
     );
+  }
+
+  BoxDecoration _buildButtonDecoration() {
+    return BoxDecoration(
+      color: _getButtonBackgroundColor(),
+      borderRadius: BorderRadius.circular(widget.borderRadius ?? BorderRadiusTokens.lg),
+      border: _buildButtonBorder(),
+      boxShadow: _buildButtonShadows(),
+    );
+  }
+
+  Color? _getButtonBackgroundColor() {
+    if (widget.isOutlined!) return null;
+    return widget.isSecondary! ? AppTheme.secondaryColor : AppTheme.primaryColor;
+  }
+
+  Border? _buildButtonBorder() {
+    if (!widget.isOutlined!) return null;
+    return Border.all(
+      color: widget.isSecondary! ? AppTheme.secondaryColor : AppTheme.primaryColor,
+      width: 1.5,
+    );
+  }
+
+  List<BoxShadow> _buildButtonShadows() {
+    if (widget.isOutlined!) return [];
+    final color = widget.isSecondary! ? AppTheme.secondaryColor : AppTheme.primaryColor;
+    return [
+      BoxShadow(
+        color: color.withValues(alpha: 0.3),
+        blurRadius: 12,
+        offset: const Offset(0, 6),
+        spreadRadius: -2,
+      ),
+    ];
+  }
+
+  Widget _buildButtonMaterial() {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: widget.isLoading! ? null : widget.onPressed,
+        borderRadius: BorderRadius.circular(widget.borderRadius ?? BorderRadiusTokens.lg),
+        child: Container(
+          padding: widget.padding ?? const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          constraints: BoxConstraints(
+            minWidth: widget.minimumSize?.width ?? 0,
+            minHeight: widget.minimumSize?.height ?? 48,
+          ),
+          child: _buildButtonContent(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildButtonContent() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (widget.isLoading!) _buildLoadingIndicator(),
+        if (!widget.isLoading! && widget.icon != null) ..._buildIconWithSpacing(),
+        if (!widget.isLoading!) _buildButtonText(),
+      ],
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return SizedBox(
+      width: 20,
+      height: 20,
+      child: CircularProgressIndicator(
+        strokeWidth: 2,
+        valueColor: AlwaysStoppedAnimation<Color>(
+          widget.isOutlined! ? AppTheme.primaryColor : Colors.white,
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildIconWithSpacing() {
+    return [
+      Icon(
+        widget.icon,
+        size: 20,
+        color: _getContentColor(),
+      ),
+      const SizedBox(width: 8),
+    ];
+  }
+
+  Widget _buildButtonText() {
+    return Text(
+      widget.text,
+      style: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        color: _getContentColor(),
+        letterSpacing: 0.1,
+      ),
+    );
+  }
+
+  Color _getContentColor() {
+    if (widget.isOutlined!) {
+      return widget.isSecondary! ? AppTheme.secondaryColor : AppTheme.primaryColor;
+    }
+    return Colors.white;
   }
 } 

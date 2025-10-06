@@ -119,112 +119,143 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
           if (_isLoadingStats)
             const Center(child: CircularProgressIndicator())
           else if (_stats != null) ...[
-            const Text(
-              'État actuel de vos données :',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.textPrimary,
-              ),
-            ),
+            _buildStatsHeader(),
             const SizedBox(height: 12),
-            
-            _buildStatCard('Listes personnalisées', _stats!['lists']!, Icons.list_alt),
-            _buildStatCard('Éléments de liste', _stats!['items']!, Icons.check_circle_outline),
-            _buildStatCard('Habitudes', _stats!['habits']!, Icons.track_changes),
-            
+            _buildStatsSection(),
             if (_integrity != null && _integrity!['orphanItems'] > 0) ...[
               const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.orange.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.orange.shade300),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.warning, color: Colors.orange.shade600, size: 20),
-                        const SizedBox(width: 8),
-                        Text(
-                          '${_integrity!['orphanItems']} données orphelines détectées',
-                          style: TextStyle(
-                            color: Colors.orange.shade700,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    CommonButton(
-                      onPressed: _isLoading ? null : _handleCleanOrphans,
-                      text: 'Nettoyer les données orphelines',
-                      isLoading: _isLoading,
-                    ),
-                  ],
-                ),
-              ),
+              _buildOrphanDataSection(),
             ],
-            
             const SizedBox(height: 20),
-            
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.red.shade50,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.red.shade300),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.warning, color: Colors.red.shade600),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Zone de danger',
-                        style: TextStyle(
-                          color: Colors.red.shade700,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Cette action supprimera TOUTES vos données (listes, éléments, habitudes). Cette action est irréversible.',
-                    style: TextStyle(
-                      color: Colors.red.shade700,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _buildDangerZoneSection(),
           ],
-          
           if (_errorMessage != null) ...[
             const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.red.shade50,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.red.shade300),
-              ),
-              child: Text(
-                _errorMessage!,
-                style: TextStyle(color: Colors.red.shade700),
-                textAlign: TextAlign.center,
-              ),
-            ),
+            _buildErrorMessage(),
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildStatsHeader() {
+    return const Text(
+      'État actuel de vos données :',
+      style: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        color: AppTheme.textPrimary,
+      ),
+    );
+  }
+
+  Widget _buildStatsSection() {
+    return Column(
+      children: [
+        _buildStatCard('Listes personnalisées', _stats!['lists']!, Icons.list_alt),
+        _buildStatCard('Éléments de liste', _stats!['items']!, Icons.check_circle_outline),
+        _buildStatCard('Habitudes', _stats!['habits']!, Icons.track_changes),
+      ],
+    );
+  }
+
+  Widget _buildOrphanDataSection() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.orange.shade50,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.orange.shade300),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildOrphanDataHeader(),
+          const SizedBox(height: 8),
+          CommonButton(
+            onPressed: _isLoading ? null : _handleCleanOrphans,
+            text: 'Nettoyer les données orphelines',
+            isLoading: _isLoading,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOrphanDataHeader() {
+    return Row(
+      children: [
+        Icon(Icons.warning, color: Colors.orange.shade600, size: 20),
+        const SizedBox(width: 8),
+        Text(
+          '${_integrity!['orphanItems']} données orphelines détectées',
+          style: TextStyle(
+            color: Colors.orange.shade700,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDangerZoneSection() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.red.shade50,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.red.shade300),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildDangerZoneHeader(),
+          const SizedBox(height: 8),
+          _buildDangerZoneMessage(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDangerZoneHeader() {
+    return Row(
+      children: [
+        Icon(Icons.warning, color: Colors.red.shade600),
+        const SizedBox(width: 8),
+        Text(
+          'Zone de danger',
+          style: TextStyle(
+            color: Colors.red.shade700,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDangerZoneMessage() {
+    return Text(
+      'Cette action supprimera TOUTES vos données (listes, éléments, habitudes). Cette action est irréversible.',
+      style: TextStyle(
+        color: Colors.red.shade700,
+        fontSize: 14,
+      ),
+    );
+  }
+
+  Widget _buildErrorMessage() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.red.shade50,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.red.shade300),
+      ),
+      child: Text(
+        _errorMessage!,
+        style: TextStyle(color: Colors.red.shade700),
+        textAlign: TextAlign.center,
       ),
     );
   }

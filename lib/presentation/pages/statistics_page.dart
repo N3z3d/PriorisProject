@@ -41,110 +41,140 @@ class _StatisticsPageState extends ConsumerState<StatisticsPage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
-      appBar: AppBar(
-        title: const Text(
-          '📊 Statistiques',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
+      appBar: _buildAppBar(),
+      body: _buildBody(),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      title: const Text(
+        '📊 Statistiques',
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
         ),
-        backgroundColor: AppTheme.primaryColor,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                AppTheme.primaryColor,
-                AppTheme.primaryVariant,
-              ],
-            ),
-          ),
-        ),
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: Colors.white,
-          indicatorWeight: 3,
-          labelColor: Colors.white,
-          // Fix: Using AppTheme.grey100 instead of white70 for better contrast
-          unselectedLabelColor: AppTheme.grey100.withValues(alpha: 0.8),
-          labelStyle: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
-          ),
-          unselectedLabelStyle: const TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 14,
-          ),
-          tabs: const [
-            Tab(text: 'Vue d\'ensemble'),
-            Tab(text: 'Habitudes'),
-            Tab(text: 'Tâches'),
+      ),
+      backgroundColor: AppTheme.primaryColor,
+      foregroundColor: Colors.white,
+      elevation: 0,
+      flexibleSpace: _buildAppBarGradient(),
+      bottom: _buildTabBar(),
+    );
+  }
+
+  Widget _buildAppBarGradient() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppTheme.primaryColor,
+            AppTheme.primaryVariant,
           ],
         ),
       ),
-      body: Column(
-        children: [
-          // Sélecteur de période
-          PeriodSelector(
-            selectedPeriod: _statisticsController.selectedPeriod,
-            onPeriodChanged: (period) {
-              _statisticsController.setPeriod(period);
-              setState(() {});
-            },
-          ),
-          // Contenu des onglets
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                // Vue d'ensemble
-                FutureBuilder<Map<String, dynamic>>(
-                  future: _loadData(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      final data = snapshot.data!;
-                      return OverviewTabWidget(
-                        selectedPeriod: _statisticsController.selectedPeriod,
-                        habits: data['habits'] as List<Habit>,
-                        tasks: data['tasks'] as List<Task>,
-                      );
-                    }
-                    return const Center(child: CircularProgressIndicator());
-                  },
-                ),
-                // Habitudes
-                FutureBuilder<List<Habit>>(
-                  future: _loadHabits(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return HabitsTabWidget(
-                        habits: snapshot.data!,
-                      );
-                    }
-                    return const Center(child: CircularProgressIndicator());
-                  },
-                ),
-                // Tâches
-                FutureBuilder<List<Task>>(
-                  future: _loadTasks(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return TasksTabWidget(
-                        tasks: snapshot.data!,
-                      );
-                    }
-                    return const Center(child: CircularProgressIndicator());
-                  },
-                ),
-              ],
-            ),
-          ),
-        ],
+    );
+  }
+
+  TabBar _buildTabBar() {
+    return TabBar(
+      controller: _tabController,
+      indicatorColor: Colors.white,
+      indicatorWeight: 3,
+      labelColor: Colors.white,
+      unselectedLabelColor: AppTheme.grey100.withValues(alpha: 0.8),
+      labelStyle: const TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: 14,
       ),
+      unselectedLabelStyle: const TextStyle(
+        fontWeight: FontWeight.w500,
+        fontSize: 14,
+      ),
+      tabs: const [
+        Tab(text: 'Vue d\'ensemble'),
+        Tab(text: 'Habitudes'),
+        Tab(text: 'Tâches'),
+      ],
+    );
+  }
+
+  Widget _buildBody() {
+    return Column(
+      children: [
+        _buildPeriodSelector(),
+        Expanded(
+          child: _buildTabBarView(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPeriodSelector() {
+    return PeriodSelector(
+      selectedPeriod: _statisticsController.selectedPeriod,
+      onPeriodChanged: (period) {
+        _statisticsController.setPeriod(period);
+        setState(() {});
+      },
+    );
+  }
+
+  Widget _buildTabBarView() {
+    return TabBarView(
+      controller: _tabController,
+      children: [
+        _buildOverviewTab(),
+        _buildHabitsTab(),
+        _buildTasksTab(),
+      ],
+    );
+  }
+
+  Widget _buildOverviewTab() {
+    return FutureBuilder<Map<String, dynamic>>(
+      future: _loadData(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final data = snapshot.data!;
+          return OverviewTabWidget(
+            selectedPeriod: _statisticsController.selectedPeriod,
+            habits: data['habits'] as List<Habit>,
+            tasks: data['tasks'] as List<Task>,
+          );
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+
+  Widget _buildHabitsTab() {
+    return FutureBuilder<List<Habit>>(
+      future: _loadHabits(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return HabitsTabWidget(
+            habits: snapshot.data!,
+          );
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+
+  Widget _buildTasksTab() {
+    return FutureBuilder<List<Task>>(
+      future: _loadTasks(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return TasksTabWidget(
+            tasks: snapshot.data!,
+          );
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
     );
   }
 

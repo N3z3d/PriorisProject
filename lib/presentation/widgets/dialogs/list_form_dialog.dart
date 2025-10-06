@@ -45,85 +45,105 @@ class _ListFormDialogState extends State<ListFormDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                widget.initialList == null ? 'Créer une nouvelle liste' : 'Modifier la liste',
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
+              _buildDialogTitle(context),
               const SizedBox(height: 16),
-              TextFormField(
-                initialValue: _name,
-                decoration: const InputDecoration(
-                  labelText: 'Nom de la liste',
-                  border: OutlineInputBorder(),
-                  hintText: 'Ex: Liste de courses, Voyage Paris...',
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Le nom de la liste est obligatoire pour l\'identifier';
-                  }
-                  if (value.trim().length < 2) {
-                    return 'Le nom doit contenir au moins 2 caractères';
-                  }
-                  if (value.length > 100) {
-                    return 'Le nom ne peut pas dépasser 100 caractères (actuellement ${value.length})';
-                  }
-                  return null;
-                },
-                onSaved: (value) => _name = value!.trim(),
-              ),
+              _buildNameField(),
               const SizedBox(height: 16),
-              TextFormField(
-                initialValue: _description,
-                decoration: const InputDecoration(
-                  labelText: 'Description (optionnel)',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 2,
-                maxLength: 500,
-                onSaved: (value) => _description = value?.trim() ?? '',
-              ),
+              _buildDescriptionField(),
               const SizedBox(height: 16),
-              DropdownButtonFormField<ListType>(
-                value: _type,
-                decoration: const InputDecoration(
-                  labelText: 'Type de liste',
-                  border: OutlineInputBorder(),
-                ),
-                items: ListType.values.map((type) {
-                  return DropdownMenuItem(
-                    value: type,
-                    child: Text(type.displayName),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  if (value != null) setState(() => _type = value);
-                },
-              ),
+              _buildTypeDropdown(),
               const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Annuler'),
-                  ),
-                  const SizedBox(width: 12),
-                  ElevatedButton(
-                    onPressed: _submit,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadiusTokens.button,
-                      ),
-                    ),
-                    child: Text(widget.initialList == null ? 'Créer' : 'Enregistrer'),
-                  ),
-                ],
-              ),
+              _buildActionButtons(context),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDialogTitle(BuildContext context) {
+    return Text(
+      widget.initialList == null ? 'Créer une nouvelle liste' : 'Modifier la liste',
+      style: Theme.of(context).textTheme.headlineSmall,
+    );
+  }
+
+  Widget _buildNameField() {
+    return TextFormField(
+      initialValue: _name,
+      decoration: const InputDecoration(
+        labelText: 'Nom de la liste',
+        border: OutlineInputBorder(),
+        hintText: 'Ex: Liste de courses, Voyage Paris...',
+      ),
+      validator: (value) {
+        if (value == null || value.trim().isEmpty) {
+          return 'Le nom de la liste est obligatoire pour l\'identifier';
+        }
+        if (value.trim().length < 2) {
+          return 'Le nom doit contenir au moins 2 caractères';
+        }
+        if (value.length > 100) {
+          return 'Le nom ne peut pas dépasser 100 caractères (actuellement ${value.length})';
+        }
+        return null;
+      },
+      onSaved: (value) => _name = value!.trim(),
+    );
+  }
+
+  Widget _buildDescriptionField() {
+    return TextFormField(
+      initialValue: _description,
+      decoration: const InputDecoration(
+        labelText: 'Description (optionnel)',
+        border: OutlineInputBorder(),
+      ),
+      maxLines: 2,
+      maxLength: 500,
+      onSaved: (value) => _description = value?.trim() ?? '',
+    );
+  }
+
+  Widget _buildTypeDropdown() {
+    return DropdownButtonFormField<ListType>(
+      value: _type,
+      decoration: const InputDecoration(
+        labelText: 'Type de liste',
+        border: OutlineInputBorder(),
+      ),
+      items: ListType.values.map((type) {
+        return DropdownMenuItem(
+          value: type,
+          child: Text(type.displayName),
+        );
+      }).toList(),
+      onChanged: (value) {
+        if (value != null) setState(() => _type = value);
+      },
+    );
+  }
+
+  Widget _buildActionButtons(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Annuler'),
+        ),
+        const SizedBox(width: 12),
+        ElevatedButton(
+          onPressed: _submit,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppTheme.primaryColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadiusTokens.button,
+            ),
+          ),
+          child: Text(widget.initialList == null ? 'Créer' : 'Enregistrer'),
+        ),
+      ],
     );
   }
 

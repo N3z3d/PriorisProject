@@ -26,105 +26,133 @@ class AccessibleLoadingState extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget content = child;
 
-    // WCAG 4.1.3 : Annoncer les erreurs avec région live
     if (error != null) {
-      content = Column(
-        children: [
-          Semantics(
-            liveRegion: true,
-            label: '$errorPrefix: $error',
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              margin: const EdgeInsets.only(bottom: 16),
-              decoration: BoxDecoration(
-                color: Colors.red.shade50,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.red.shade200),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: Colors.red.shade600,
-                    size: 20,
-                    semanticLabel: 'Icône d\'erreur',
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      error!,
-                      style: TextStyle(
-                        color: Colors.red.shade800,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          child,
-        ],
-      );
+      content = _buildErrorContent(content);
     }
 
-    // WCAG 4.1.3 : Annoncer l'état de chargement
     if (isLoading) {
-      content = Semantics(
-        liveRegion: true,
-        label: loadingMessage ?? 'Chargement en cours, veuillez patienter',
-        child: Stack(
-          children: [
-            // Contenu en arrière-plan avec opacité réduite
-            Opacity(
-              opacity: 0.5,
-              child: content,
-            ),
-            // Indicateur de chargement accessible
-            Center(
-              child: Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      width: 32,
-                      height: 32,
-                      child: CircularProgressIndicator(
-                        semanticsLabel: loadingMessage ?? 'Chargement en cours',
-                        strokeWidth: 3,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      loadingMessage ?? 'Chargement...',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
+      content = _buildLoadingContent(content);
     }
 
     return content;
+  }
+
+  Widget _buildErrorContent(Widget content) {
+    return Column(
+      children: [
+        _buildErrorContainer(),
+        content,
+      ],
+    );
+  }
+
+  Widget _buildErrorContainer() {
+    return Semantics(
+      liveRegion: true,
+      label: '$errorPrefix: $error',
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(12),
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: _buildErrorDecoration(),
+        child: _buildErrorRow(),
+      ),
+    );
+  }
+
+  BoxDecoration _buildErrorDecoration() {
+    return BoxDecoration(
+      color: Colors.red.shade50,
+      borderRadius: BorderRadius.circular(8),
+      border: Border.all(color: Colors.red.shade200),
+    );
+  }
+
+  Widget _buildErrorRow() {
+    return Row(
+      children: [
+        Icon(
+          Icons.error_outline,
+          color: Colors.red.shade600,
+          size: 20,
+          semanticLabel: 'Icône d\'erreur',
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            error!,
+            style: TextStyle(
+              color: Colors.red.shade800,
+              fontSize: 14,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLoadingContent(Widget content) {
+    return Semantics(
+      liveRegion: true,
+      label: loadingMessage ?? 'Chargement en cours, veuillez patienter',
+      child: Stack(
+        children: [
+          Opacity(
+            opacity: 0.5,
+            child: content,
+          ),
+          _buildLoadingIndicator(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: _buildLoadingDecoration(),
+        child: _buildLoadingColumn(),
+      ),
+    );
+  }
+
+  BoxDecoration _buildLoadingDecoration() {
+    return BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          blurRadius: 8,
+          offset: const Offset(0, 2),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLoadingColumn() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          width: 32,
+          height: 32,
+          child: CircularProgressIndicator(
+            semanticsLabel: loadingMessage ?? 'Chargement en cours',
+            strokeWidth: 3,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          loadingMessage ?? 'Chargement...',
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
   }
 }
 
