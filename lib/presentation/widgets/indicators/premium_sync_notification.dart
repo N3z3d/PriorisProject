@@ -143,79 +143,104 @@ class _PremiumSyncNotificationState extends State<PremiumSyncNotification>
     return Semantics(
       liveRegion: true,
       label: 'Notification: ${widget.message}',
-      child: SlideTransition(
-        position: _slideAnimation,
-        child: ScaleTransition(
-          scale: _scaleAnimation,
-          child: FadeTransition(
-            opacity: _fadeAnimation,
-            child: Container(
-              margin: widget.margin,
-              child: ClipRRect(
-                borderRadius: BorderRadiusTokens.card,
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: _getTypeColor().withOpacity(0.15),
-                      borderRadius: BorderRadiusTokens.card,
-                      border: Border.all(
-                        color: _getTypeColor().withOpacity(0.3),
-                        width: 1,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: _getTypeColor().withOpacity(0.2),
-                          blurRadius: 20,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: Stack(
-                      children: [
-                        // Shimmer effect for success
-                        if (widget.type == PremiumNotificationType.success)
-                          _buildShimmerEffect(),
+      child: _buildAnimatedNotification(),
+    );
+  }
 
-                        // Content
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: _getTypeColor().withOpacity(0.2),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                _getTypeIcon(),
-                                color: _getTypeColor(),
-                                size: 20,
-                                semanticLabel: _getTypeSemanticLabel(),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Flexible(
-                              child: Text(
-                                widget.message,
-                                style: TextStyle(
-                                  color: _getTypeColor(),
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  letterSpacing: 0.2,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
+  Widget _buildAnimatedNotification() {
+    return SlideTransition(
+      position: _slideAnimation,
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: Container(
+            margin: widget.margin,
+            child: _buildGlassmorphicCard(),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGlassmorphicCard() {
+    return ClipRRect(
+      borderRadius: BorderRadiusTokens.card,
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: _buildCardDecoration(),
+          child: _buildContentStack(),
+        ),
+      ),
+    );
+  }
+
+  BoxDecoration _buildCardDecoration() {
+    return BoxDecoration(
+      color: _getTypeColor().withOpacity(0.15),
+      borderRadius: BorderRadiusTokens.card,
+      border: Border.all(
+        color: _getTypeColor().withOpacity(0.3),
+        width: 1,
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: _getTypeColor().withOpacity(0.2),
+          blurRadius: 20,
+          offset: const Offset(0, 8),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildContentStack() {
+    return Stack(
+      children: [
+        if (widget.type == PremiumNotificationType.success)
+          _buildShimmerEffect(),
+        _buildContentRow(),
+      ],
+    );
+  }
+
+  Widget _buildContentRow() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildIconWithBackground(),
+        const SizedBox(width: 12),
+        _buildMessageText(),
+      ],
+    );
+  }
+
+  Widget _buildIconWithBackground() {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: _getTypeColor().withOpacity(0.2),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(
+        _getTypeIcon(),
+        color: _getTypeColor(),
+        size: 20,
+        semanticLabel: _getTypeSemanticLabel(),
+      ),
+    );
+  }
+
+  Widget _buildMessageText() {
+    return Flexible(
+      child: Text(
+        widget.message,
+        style: TextStyle(
+          color: _getTypeColor(),
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.2,
         ),
       ),
     );

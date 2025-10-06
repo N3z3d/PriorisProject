@@ -67,75 +67,92 @@ class ListTypeSelector extends StatelessWidget {
       child: AnimatedContainer(
         duration: AppTheme.fastAnimation,
         curve: AppTheme.defaultCurve,
-        decoration: BoxDecoration(
-          color: isSelected 
-            ? _getTypeColor(type).withValues(alpha: 0.1)
-            : Colors.white,
-          border: Border.all(
-            color: isSelected 
-              ? _getTypeColor(type)
-              : Colors.grey[300]!,
-            width: isSelected ? 2 : 1,
-          ),
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: isSelected ? [
-            BoxShadow(
-              color: _getTypeColor(type).withValues(alpha: 0.2),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ] : null,
-        ),
+        decoration: _buildCardDecoration(type, isSelected),
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Icône
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: _getTypeColor(type).withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  _getTypeIcon(type),
-                  color: _getTypeColor(type),
-                  size: 24,
-                ),
-              ),
-              const SizedBox(height: 12),
-              
-              // Nom du type
-              Text(
-                type.displayName,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: isSelected ? _getTypeColor(type) : null,
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              
-              // Description
-              if (type.description.isNotEmpty) ...[
-                const SizedBox(height: 4),
-                Text(
-                  type.description,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ],
-          ),
+          child: _buildCardContent(context, type, isSelected),
         ),
       ),
     );
+  }
+
+  BoxDecoration _buildCardDecoration(ListType type, bool isSelected) {
+    return BoxDecoration(
+      color: isSelected
+        ? _getTypeColor(type).withValues(alpha: 0.1)
+        : Colors.white,
+      border: Border.all(
+        color: isSelected
+          ? _getTypeColor(type)
+          : Colors.grey[300]!,
+        width: isSelected ? 2 : 1,
+      ),
+      borderRadius: BorderRadius.circular(12),
+      boxShadow: isSelected ? [
+        BoxShadow(
+          color: _getTypeColor(type).withValues(alpha: 0.2),
+          blurRadius: 8,
+          offset: const Offset(0, 2),
+        ),
+      ] : null,
+    );
+  }
+
+  Widget _buildCardContent(BuildContext context, ListType type, bool isSelected) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _buildTypeIconContainer(type),
+        const SizedBox(height: 12),
+        _buildTypeName(context, type, isSelected),
+        ..._buildTypeDescription(context, type),
+      ],
+    );
+  }
+
+  Widget _buildTypeIconContainer(ListType type) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: _getTypeColor(type).withValues(alpha: 0.1),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(
+        _getTypeIcon(type),
+        color: _getTypeColor(type),
+        size: 24,
+      ),
+    );
+  }
+
+  Widget _buildTypeName(BuildContext context, ListType type, bool isSelected) {
+    return Text(
+      type.displayName,
+      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+        fontWeight: FontWeight.w600,
+        color: isSelected ? _getTypeColor(type) : null,
+      ),
+      textAlign: TextAlign.center,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  List<Widget> _buildTypeDescription(BuildContext context, ListType type) {
+    if (type.description.isEmpty) return [];
+
+    return [
+      const SizedBox(height: 4),
+      Text(
+        type.description,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Colors.grey[600],
+        ),
+        textAlign: TextAlign.center,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+    ];
   }
 
   /// Retourne l'icône appropriée pour le type

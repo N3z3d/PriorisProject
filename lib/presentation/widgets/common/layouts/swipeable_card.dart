@@ -193,72 +193,81 @@ class _SwipeableCardState extends State<SwipeableCard>
       onHorizontalDragEnd: _handleDragEnd,
       child: Stack(
         children: [
-          // Background actions
-          if (_isSwipingLeft || _isSwipingRight)
-            Container(
-              decoration: BoxDecoration(
-                color: _isSwipingLeft
-                    ? (widget.leftActionColor ?? AppTheme.errorColor)
-                    : (widget.rightActionColor ?? AppTheme.successColor),
-                borderRadius: BorderRadiusTokens.radiusMd,
-              ),
-              child: Align(
-                alignment: _isSwipingLeft
-                    ? Alignment.centerRight
-                    : Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        _isSwipingLeft
-                            ? (widget.leftActionIcon ?? Icons.delete)
-                            : (widget.rightActionIcon ?? Icons.check),
-                        color: Colors.white,
-                        size: 28,
-                      ),
-                      if (_isSwipingLeft && widget.leftActionLabel != null ||
-                          _isSwipingRight && widget.rightActionLabel != null)
-                        const SizedBox(height: 4),
-                      if (_isSwipingLeft && widget.leftActionLabel != null)
-                        Text(
-                          widget.leftActionLabel!,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                          ),
-                        ),
-                      if (_isSwipingRight && widget.rightActionLabel != null)
-                        Text(
-                          widget.rightActionLabel!,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          // Main content
-          AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) {
-              return Transform.translate(
-                offset: Offset(_dragExtent, 0),
-                child: SlideTransition(
-                  position: _animation,
-                  child: widget.child,
-                ),
-              );
-            },
-          ),
+          if (_isSwipingLeft || _isSwipingRight) _buildSwipeBackground(),
+          _buildAnimatedCard(),
         ],
       ),
+    );
+  }
+
+  Widget _buildSwipeBackground() {
+    return Container(
+      decoration: BoxDecoration(
+        color: _isSwipingLeft
+            ? (widget.leftActionColor ?? AppTheme.errorColor)
+            : (widget.rightActionColor ?? AppTheme.successColor),
+        borderRadius: BorderRadiusTokens.radiusMd,
+      ),
+      child: Align(
+        alignment: _isSwipingLeft
+            ? Alignment.centerRight
+            : Alignment.centerLeft,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: _buildActionContent(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionContent() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          _isSwipingLeft
+              ? (widget.leftActionIcon ?? Icons.delete)
+              : (widget.rightActionIcon ?? Icons.check),
+          color: Colors.white,
+          size: 28,
+        ),
+        if (_isSwipingLeft && widget.leftActionLabel != null ||
+            _isSwipingRight && widget.rightActionLabel != null)
+          const SizedBox(height: 4),
+        if (_isSwipingLeft && widget.leftActionLabel != null)
+          Text(
+            widget.leftActionLabel!,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
+            ),
+          ),
+        if (_isSwipingRight && widget.rightActionLabel != null)
+          Text(
+            widget.rightActionLabel!,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildAnimatedCard() {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(_dragExtent, 0),
+          child: SlideTransition(
+            position: _animation,
+            child: widget.child,
+          ),
+        );
+      },
     );
   }
 }
