@@ -307,145 +307,169 @@ class _PremiumSyncStatusIndicatorState extends State<PremiumSyncStatusIndicator>
           ),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: _styleService.getGlassColor(context, widget.status).withOpacity(glassOpacity),
-              borderRadius: BorderRadiusTokens.button,
-              border: Border.all(
-                color: _styleService.getBorderColor(context, widget.status),
-                width: _styleService.getBorderWidth(widget.status),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: _styleService.getShadowColor(context, widget.status),
-                  blurRadius: _styleService.getShadowBlur(widget.status),
-                  offset: const Offset(0, 2),
-                ),
-                if (widget.status == SyncDisplayStatus.attention)
-                  BoxShadow(
-                    color: Colors.red.withOpacity(0.3 * _glowAnimation.value),
-                    blurRadius: 12 * _glowAnimation.value,
-                    spreadRadius: 4 * _glowAnimation.value,
-                  ),
-              ],
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildPremiumIcon(),
-                if (widget.message != null) ...[
-                  const SizedBox(width: 8),
-                  Flexible(
-                    child: Text(
-                      widget.message!,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: _styleService.getTextColor(context, widget.status),
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.2,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ],
-            ),
+            decoration: _buildContainerDecoration(context, glassOpacity),
+            child: _buildContentRow(),
           ),
         ),
       ),
     );
   }
 
+  BoxDecoration _buildContainerDecoration(BuildContext context, double glassOpacity) {
+    return BoxDecoration(
+      color: _styleService.getGlassColor(context, widget.status).withOpacity(glassOpacity),
+      borderRadius: BorderRadiusTokens.button,
+      border: Border.all(
+        color: _styleService.getBorderColor(context, widget.status),
+        width: _styleService.getBorderWidth(widget.status),
+      ),
+      boxShadow: _buildBoxShadows(context),
+    );
+  }
+
+  List<BoxShadow> _buildBoxShadows(BuildContext context) {
+    return [
+      BoxShadow(
+        color: _styleService.getShadowColor(context, widget.status),
+        blurRadius: _styleService.getShadowBlur(widget.status),
+        offset: const Offset(0, 2),
+      ),
+      if (widget.status == SyncDisplayStatus.attention)
+        BoxShadow(
+          color: Colors.red.withOpacity(0.3 * _glowAnimation.value),
+          blurRadius: 12 * _glowAnimation.value,
+          spreadRadius: 4 * _glowAnimation.value,
+        ),
+    ];
+  }
+
+  Widget _buildContentRow() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _buildPremiumIcon(),
+        if (widget.message != null) ...[
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              widget.message!,
+              style: TextStyle(
+                fontSize: 13,
+                color: _styleService.getTextColor(context, widget.status),
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.2,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
   Widget _buildPremiumIcon() {
     switch (widget.status) {
       case SyncDisplayStatus.offline:
-        return Container(
-          width: 10,
-          height: 10,
-          decoration: BoxDecoration(
-            color: Colors.orange,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.orange.withOpacity(0.4),
-                blurRadius: 8,
-                spreadRadius: 2,
-              ),
-            ],
-          ),
-        );
-
+        return _buildOfflineIcon();
       case SyncDisplayStatus.syncing:
-        return AnimatedBuilder(
-          animation: _pulseAnimation,
-          builder: (context, child) {
-            return Transform.scale(
-              scale: _shouldReduceMotion() ? 1.0 : _pulseAnimation.value,
-              child: Container(
-                width: 16,
-                height: 16,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [
-                      Theme.of(context).primaryColor,
-                      Theme.of(context).primaryColor.withOpacity(0.6),
-                    ],
-                  ),
-                ),
-                child: const CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation(Colors.white),
-                ),
-              ),
-            );
-          },
-        );
-
+        return _buildSyncingIcon();
       case SyncDisplayStatus.merged:
-        return Container(
-          padding: const EdgeInsets.all(2),
-          decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.2),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            Icons.merge_type,
-            size: 14,
-            color: Colors.blue,
-            semanticLabel: 'Données fusionnées automatiquement',
-          ),
-        );
-
+        return _buildMergedIcon();
       case SyncDisplayStatus.attention:
-        return AnimatedBuilder(
-          animation: _glowAnimation,
-          builder: (context, child) {
-            return Container(
-              padding: const EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.1 + 0.1 * _glowAnimation.value),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.red.withOpacity(0.3 * _glowAnimation.value),
-                    blurRadius: 8 * _glowAnimation.value,
-                  ),
-                ],
-              ),
-              child: Icon(
-                Icons.warning_rounded,
-                size: 14,
-                color: Colors.red,
-                semanticLabel: 'Attention requise pour la synchronisation',
-              ),
-            );
-          },
-        );
-
+        return _buildAttentionIcon();
       case SyncDisplayStatus.normal:
         return const SizedBox.shrink();
     }
+  }
+
+  Widget _buildOfflineIcon() {
+    return Container(
+      width: 10,
+      height: 10,
+      decoration: BoxDecoration(
+        color: Colors.orange,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.orange.withOpacity(0.4),
+            blurRadius: 8,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSyncingIcon() {
+    return AnimatedBuilder(
+      animation: _pulseAnimation,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _shouldReduceMotion() ? 1.0 : _pulseAnimation.value,
+          child: Container(
+            width: 16,
+            height: 16,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [
+                  Theme.of(context).primaryColor,
+                  Theme.of(context).primaryColor.withOpacity(0.6),
+                ],
+              ),
+            ),
+            child: const CircularProgressIndicator(
+              strokeWidth: 2,
+              valueColor: AlwaysStoppedAnimation(Colors.white),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildMergedIcon() {
+    return Container(
+      padding: const EdgeInsets.all(2),
+      decoration: BoxDecoration(
+        color: Colors.blue.withOpacity(0.2),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(
+        Icons.merge_type,
+        size: 14,
+        color: Colors.blue,
+        semanticLabel: 'Données fusionnées automatiquement',
+      ),
+    );
+  }
+
+  Widget _buildAttentionIcon() {
+    return AnimatedBuilder(
+      animation: _glowAnimation,
+      builder: (context, child) {
+        return Container(
+          padding: const EdgeInsets.all(2),
+          decoration: BoxDecoration(
+            color: Colors.red.withOpacity(0.1 + 0.1 * _glowAnimation.value),
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.red.withOpacity(0.3 * _glowAnimation.value),
+                blurRadius: 8 * _glowAnimation.value,
+              ),
+            ],
+          ),
+          child: Icon(
+            Icons.warning_rounded,
+            size: 14,
+            color: Colors.red,
+            semanticLabel: 'Attention requise pour la synchronisation',
+          ),
+        );
+      },
+    );
   }
 
   // === PRIVATE HELPER METHODS ===

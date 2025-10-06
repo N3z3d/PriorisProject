@@ -52,81 +52,8 @@ class _HabitRecordDialogState extends State<HabitRecordDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(AppTheme.spacingSM),
-            decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(AppTheme.radiusSM),
-            ),
-            child: Icon(
-              Icons.edit,
-              color: AppTheme.primaryColor,
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: AppTheme.spacingMD),
-          Expanded(
-            child: Text(
-              'Enregistrer ${widget.habit.name}',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-          ),
-        ],
-      ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Valeur actuelle pour aujourd\'hui',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          const SizedBox(height: AppTheme.spacingMD),
-          TextFormField(
-            controller: _controller,
-            keyboardType: TextInputType.number,
-            autofocus: true,
-            decoration: InputDecoration(
-              labelText: 'Valeur',
-              suffixText: widget.habit.unit,
-              prefixIcon: const Icon(Icons.numbers),
-            ),
-            onFieldSubmitted: (_) => _saveValue(),
-          ),
-          if (widget.habit.targetValue != null) ...[
-            const SizedBox(height: AppTheme.spacingMD),
-            Container(
-              padding: const EdgeInsets.all(AppTheme.spacingMD),
-              decoration: BoxDecoration(
-                color: AppTheme.infoColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(AppTheme.radiusSM),
-                border: Border.all(
-                  color: AppTheme.infoColor.withValues(alpha: 0.2),
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.flag_outlined,
-                    color: AppTheme.infoColor,
-                    size: 16,
-                  ),
-                  const SizedBox(width: AppTheme.spacingSM),
-                  Text(
-                    'Objectif : ${widget.habit.targetValue} ${widget.habit.unit ?? ''}',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppTheme.infoColor,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ],
-      ),
+      title: _buildDialogTitle(context),
+      content: _buildDialogContent(context),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
@@ -137,6 +64,91 @@ class _HabitRecordDialogState extends State<HabitRecordDialog> {
           child: const Text('Enregistrer'),
         ),
       ],
+    );
+  }
+
+  Widget _buildDialogTitle(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(AppTheme.spacingSM),
+          decoration: BoxDecoration(
+            color: AppTheme.primaryColor.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(AppTheme.radiusSM),
+          ),
+          child: Icon(
+            Icons.edit,
+            color: AppTheme.primaryColor,
+            size: 20,
+          ),
+        ),
+        const SizedBox(width: AppTheme.spacingMD),
+        Expanded(
+          child: Text(
+            'Enregistrer ${widget.habit.name}',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDialogContent(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Valeur actuelle pour aujourd\'hui',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        const SizedBox(height: AppTheme.spacingMD),
+        TextFormField(
+          controller: _controller,
+          keyboardType: TextInputType.number,
+          autofocus: true,
+          decoration: InputDecoration(
+            labelText: 'Valeur',
+            suffixText: widget.habit.unit,
+            prefixIcon: const Icon(Icons.numbers),
+          ),
+          onFieldSubmitted: (_) => _saveValue(),
+        ),
+        if (widget.habit.targetValue != null) ...[
+          const SizedBox(height: AppTheme.spacingMD),
+          _buildTargetInfoBox(context),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildTargetInfoBox(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppTheme.spacingMD),
+      decoration: BoxDecoration(
+        color: AppTheme.infoColor.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(AppTheme.radiusSM),
+        border: Border.all(
+          color: AppTheme.infoColor.withValues(alpha: 0.2),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.flag_outlined,
+            color: AppTheme.infoColor,
+            size: 16,
+          ),
+          const SizedBox(width: AppTheme.spacingSM),
+          Text(
+            'Objectif : ${widget.habit.targetValue} ${widget.habit.unit ?? ''}',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppTheme.infoColor,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
     );
   }
 } 

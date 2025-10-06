@@ -51,74 +51,96 @@ class _ListItemFormDialogState extends State<ListItemFormDialog> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    widget.initialItem == null ? 'Ajouter un élément' : 'Modifier l\'élément',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
+                  _buildDialogHeader(context),
                   const SizedBox(height: 16),
-                  TextFormField(
-                    initialValue: _title,
-                    decoration: const InputDecoration(
-                      labelText: 'Titre',
-                      border: OutlineInputBorder(),
-                      hintText: 'Ex: Terminer rapport projet, Réserver salle réunion...',
-                    ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Le titre est obligatoire pour identifier cet élément';
-                      }
-                      if (value.trim().length < 2) {
-                        return 'Le titre doit contenir au moins 2 caractères';
-                      }
-                      if (value.length > 200) {
-                        return 'Le titre ne peut pas dépasser 200 caractères (actuellement ${value.length})';
-                      }
-                      return null;
-                    },
-                    onSaved: (value) => _title = value!.trim(),
-                  ),
+                  _buildTitleField(),
                   const SizedBox(height: 16),
-                  TextFormField(
-                    initialValue: _description,
-                    decoration: const InputDecoration(
-                      labelText: 'Description (optionnel)',
-                      border: OutlineInputBorder(),
-                    ),
-                    maxLines: 3,
-                    maxLength: 1000,
-                    onSaved: (value) => _description = value?.trim() ?? '',
-                  ),
+                  _buildDescriptionField(),
                   const SizedBox(height: 16),
-                  TextFormField(
-                    initialValue: _category,
-                    decoration: const InputDecoration(
-                      labelText: 'Catégorie (optionnel)',
-                      border: OutlineInputBorder(),
-                      hintText: 'Ex: Travail, Personnel, Urgent...',
-                    ),
-                    onSaved: (value) => _category = value?.trim() ?? '',
-                  ),
+                  _buildCategoryField(),
                 ],
               ),
             ),
             const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Annuler'),
-                ),
-                const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: _handleSubmit,
-                  child: Text(widget.initialItem == null ? 'Ajouter' : 'Modifier'),
-                ),
-              ],
-            ),
+            _buildActionButtons(context),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildDialogHeader(BuildContext context) {
+    return Text(
+      widget.initialItem == null ? 'Ajouter un élément' : 'Modifier l\'élément',
+      style: Theme.of(context).textTheme.headlineSmall,
+    );
+  }
+
+  Widget _buildTitleField() {
+    return TextFormField(
+      initialValue: _title,
+      decoration: const InputDecoration(
+        labelText: 'Titre',
+        border: OutlineInputBorder(),
+        hintText: 'Ex: Terminer rapport projet, Réserver salle réunion...',
+      ),
+      validator: _validateTitle,
+      onSaved: (value) => _title = value!.trim(),
+    );
+  }
+
+  String? _validateTitle(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Le titre est obligatoire pour identifier cet élément';
+    }
+    if (value.trim().length < 2) {
+      return 'Le titre doit contenir au moins 2 caractères';
+    }
+    if (value.length > 200) {
+      return 'Le titre ne peut pas dépasser 200 caractères (actuellement ${value.length})';
+    }
+    return null;
+  }
+
+  Widget _buildDescriptionField() {
+    return TextFormField(
+      initialValue: _description,
+      decoration: const InputDecoration(
+        labelText: 'Description (optionnel)',
+        border: OutlineInputBorder(),
+      ),
+      maxLines: 3,
+      maxLength: 1000,
+      onSaved: (value) => _description = value?.trim() ?? '',
+    );
+  }
+
+  Widget _buildCategoryField() {
+    return TextFormField(
+      initialValue: _category,
+      decoration: const InputDecoration(
+        labelText: 'Catégorie (optionnel)',
+        border: OutlineInputBorder(),
+        hintText: 'Ex: Travail, Personnel, Urgent...',
+      ),
+      onSaved: (value) => _category = value?.trim() ?? '',
+    );
+  }
+
+  Widget _buildActionButtons(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Annuler'),
+        ),
+        const SizedBox(width: 8),
+        ElevatedButton(
+          onPressed: _handleSubmit,
+          child: Text(widget.initialItem == null ? 'Ajouter' : 'Modifier'),
+        ),
+      ],
     );
   }
 

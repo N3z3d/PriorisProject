@@ -66,78 +66,103 @@ class _QuickAddDialogState extends State<QuickAddDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              widget.title,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            _buildDialogTitle(),
             const SizedBox(height: 20),
-            TextField(
-              controller: _controller,
-              focusNode: _focusNode,
-              autofocus: true,
-              decoration: InputDecoration(
-                hintText: widget.hintText,
-                filled: true,
-                fillColor: AppTheme.backgroundColor,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadiusTokens.input,
-                  borderSide: BorderSide.none,
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadiusTokens.input,
-                  borderSide: BorderSide(
-                    color: AppTheme.primaryColor,
-                    width: 2,
-                  ),
-                ),
-                prefixIcon: Icon(
-                  Icons.edit_outlined,
-                  color: AppTheme.textSecondary,
-                ),
-              ),
-              textCapitalization: TextCapitalization.sentences,
-              onSubmitted: (_) => _handleSubmit(),
-            ),
+            _buildTextField(),
             const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(
-                    'Annuler',
-                    style: TextStyle(
-                      color: AppTheme.textSecondary,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                ElevatedButton(
-                  onPressed: _isValid ? _handleSubmit : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryColor,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadiusTokens.input,
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
-                    ),
-                  ),
-                  child: const Text(
-                    'Ajouter',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            _buildActionButtons(context),
           ],
+        ),
+      ),
+    );
+  }
+
+  /// Construit le titre du dialogue
+  Widget _buildDialogTitle() {
+    return Text(
+      widget.title,
+      style: const TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+
+  /// Construit le champ de texte pour la saisie
+  Widget _buildTextField() {
+    return TextField(
+      controller: _controller,
+      focusNode: _focusNode,
+      autofocus: true,
+      decoration: InputDecoration(
+        hintText: widget.hintText,
+        filled: true,
+        fillColor: AppTheme.backgroundColor,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadiusTokens.input,
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadiusTokens.input,
+          borderSide: BorderSide(
+            color: AppTheme.primaryColor,
+            width: 2,
+          ),
+        ),
+        prefixIcon: Icon(
+          Icons.edit_outlined,
+          color: AppTheme.textSecondary,
+        ),
+      ),
+      textCapitalization: TextCapitalization.sentences,
+      onSubmitted: (_) => _handleSubmit(),
+    );
+  }
+
+  /// Construit les boutons d'action (annuler et ajouter)
+  Widget _buildActionButtons(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        _buildCancelButton(context),
+        const SizedBox(width: 12),
+        _buildAddButton(),
+      ],
+    );
+  }
+
+  /// Construit le bouton d'annulation
+  Widget _buildCancelButton(BuildContext context) {
+    return TextButton(
+      onPressed: () => Navigator.of(context).pop(),
+      child: Text(
+        'Annuler',
+        style: TextStyle(
+          color: AppTheme.textSecondary,
+        ),
+      ),
+    );
+  }
+
+  /// Construit le bouton d'ajout
+  Widget _buildAddButton() {
+    return ElevatedButton(
+      onPressed: _isValid ? _handleSubmit : null,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppTheme.primaryColor,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadiusTokens.input,
+        ),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 24,
+          vertical: 12,
+        ),
+      ),
+      child: const Text(
+        'Ajouter',
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
