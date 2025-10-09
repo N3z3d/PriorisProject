@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/data/providers/auth_providers.dart';
 import 'package:prioris/presentation/widgets/common/forms/common_text_field.dart';
@@ -81,52 +81,55 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              'Entrez votre adresse email pour recevoir un lien de réinitialisation de votre mot de passe.',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppTheme.textSecondary,
-              ),
-            ),
-            
+            const _ForgotPasswordIntro(),
             const SizedBox(height: 20),
-            
-            CommonTextField(
-              controller: _emailController,
-              label: 'Adresse email',
-              hint: 'votre@email.com',
-              keyboardType: TextInputType.emailAddress,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Email requis';
-                }
-                if (!value.contains('@')) {
-                  return 'Email invalide';
-                }
-                return null;
-              },
-            ),
-            
-            if (_errorMessage != null) ...[
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.red.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.red.shade300),
-                ),
-                child: Text(
-                  _errorMessage!,
-                  style: TextStyle(color: Colors.red.shade700),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ],
+            _buildEmailField(),
+            ..._buildErrorMessage(),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildEmailField() {
+    return CommonTextField(
+      controller: _emailController,
+      label: 'Adresse email',
+      hint: 'votre@email.com',
+      keyboardType: TextInputType.emailAddress,
+      validator: (value) {
+        if (value == null || value.trim().isEmpty) {
+          return 'Email requis';
+        }
+        if (!value.contains('@')) {
+          return 'Email invalide';
+        }
+        return null;
+      },
+    );
+  }
+
+  List<Widget> _buildErrorMessage() {
+    if (_errorMessage == null) {
+      return const [];
+    }
+
+    return [
+      const SizedBox(height: 16),
+      Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.red.shade50,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.red.shade300),
+        ),
+        child: Text(
+          _errorMessage!,
+          style: TextStyle(color: Colors.red.shade700),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    ];
   }
 
   Widget _buildSuccessContent() {
@@ -191,5 +194,20 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
         text: 'Fermer',
       ),
     ];
+  }
+}
+
+class _ForgotPasswordIntro extends StatelessWidget {
+  const _ForgotPasswordIntro();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Text(
+      'Entrez votre adresse email pour recevoir un lien de réinitialisation de votre mot de passe.',
+      style: TextStyle(
+        fontSize: 14,
+        color: AppTheme.textSecondary,
+      ),
+    );
   }
 }

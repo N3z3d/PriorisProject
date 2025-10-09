@@ -77,52 +77,59 @@ class _PremiumProgressChartState extends State<PremiumProgressChart>
   Widget build(BuildContext context) {
     return Container(
       height: widget.height,
-      decoration: BoxDecoration(
-        color: AppTheme.surfaceColor,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: AppTheme.cardShadow,
-        border: Border.all(
-          color: AppTheme.grey200,
-          width: 1,
-        ),
-      ),
+      decoration: _buildContainerDecoration(),
       child: Padding(
         padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(),
-            const SizedBox(height: 20),
-            Expanded(
-              child: widget.enableAnimation
-                  ? AnimatedBuilder(
-                      animation: _animation,
-                      builder: (context, child) {
-                        return CustomPaint(
-                          size: Size.infinite,
-                          painter: ProgressChartPainter(
-                            data: widget.data,
-                            primaryColor: widget.primaryColor,
-                            gradientColor: widget.gradientColor,
-                            showGrid: widget.showGrid,
-                            animationProgress: _animation.value,
-                          ),
-                        );
-                      },
-                    )
-                  : CustomPaint(
-                      size: Size.infinite,
-                      painter: ProgressChartPainter(
-                        data: widget.data,
-                        primaryColor: widget.primaryColor,
-                        gradientColor: widget.gradientColor,
-                        showGrid: widget.showGrid,
-                        animationProgress: 1.0,
-                      ),
-                    ),
-            ),
-          ],
-        ),
+        child: _buildChartContent(),
+      ),
+    );
+  }
+
+  BoxDecoration _buildContainerDecoration() {
+    return BoxDecoration(
+      color: AppTheme.surfaceColor,
+      borderRadius: BorderRadius.circular(20),
+      boxShadow: AppTheme.cardShadow,
+      border: Border.all(
+        color: AppTheme.grey200,
+        width: 1,
+      ),
+    );
+  }
+
+  Widget _buildChartContent() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildHeader(),
+        const SizedBox(height: 20),
+        Expanded(child: _buildChartPainter()),
+      ],
+    );
+  }
+
+  Widget _buildChartPainter() {
+    if (!widget.enableAnimation) {
+      return _buildCustomPaint(animationProgress: 1.0);
+    }
+
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return _buildCustomPaint(animationProgress: _animation.value);
+      },
+    );
+  }
+
+  Widget _buildCustomPaint({required double animationProgress}) {
+    return CustomPaint(
+      size: Size.infinite,
+      painter: ProgressChartPainter(
+        data: widget.data,
+        primaryColor: widget.primaryColor,
+        gradientColor: widget.gradientColor,
+        showGrid: widget.showGrid,
+        animationProgress: animationProgress,
       ),
     );
   }
@@ -174,14 +181,43 @@ class ProgressChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (data.isEmpty) return;
+    if (data.isEmpty) {
+      return;
+    }
 
-    final paint = Paint()
+    final paints = _ChartPaints(
+      line: _createLinePaint(),
+      gradient: _createGradientPaint(size),
+      grid: _createGridPaint(),
+      dot: _createDotPaint(),
+    );
+
+    if (showGrid) {
+      _drawGrid(canvas, size, paints.grid);
+    }
+
+    final metrics = _ChartMetrics.fromData(data);
+    final positions = _buildPositions(size, metrics);
+
+    if (animationProgress > 0 && positions.length > 1) {
+      _drawGradientArea(canvas, size, positions, paints.gradient);
+      _drawAnimatedLine(canvas, positions, paints.line);
+    }
+
+    if (animationProgress > 0.7) {
+      _drawDots(canvas, positions, paints.dot);
+    }
+  }
+
+  Paint _createLinePaint() {
+    return Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3
       ..color = primaryColor;
+  }
 
-    final gradientPaint = Paint()
+  Paint _createGradientPaint(Size size) {
+    return Paint()
       ..shader = LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
@@ -190,48 +226,35 @@ class ProgressChartPainter extends CustomPainter {
           gradientColor.withOpacity(0.05),
         ],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+  }
 
-    final gridPaint = Paint()
+  Paint _createGridPaint() {
+    return Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1
       ..color = AppTheme.grey300.withOpacity(0.5);
+  }
 
-    final dotPaint = Paint()
+  Paint _createDotPaint() {
+    return Paint()
       ..style = PaintingStyle.fill
       ..color = primaryColor;
+  }
 
-    // Draw grid if enabled
-    if (showGrid) {
-      _drawGrid(canvas, size, gridPaint);
-    }
-
-    // Calculate positions
-    final maxY = data.map((d) => d.value).reduce((a, b) => a > b ? a : b);
-    final minY = data.map((d) => d.value).reduce((a, b) => a < b ? a : b);
-    final range = maxY - minY;
-
+  List<Offset> _buildPositions(Size size, _ChartMetrics metrics) {
+    final denominator = (data.length - 1).clamp(1, double.infinity);
     final positions = <Offset>[];
+
     for (int i = 0; i < data.length; i++) {
-      final x = (i / (data.length - 1)) * size.width;
-      final normalizedY = range > 0 ? (data[i].value - minY) / range : 0.5;
-      final y = size.height - (normalizedY * size.height * 0.8) - (size.height * 0.1);
+      final x = (i / denominator) * size.width;
+      final normalized = metrics.range > 0
+          ? (data[i].value - metrics.min) / metrics.range
+          : 0.5;
+      final y = size.height - (normalized * size.height * 0.8) - (size.height * 0.1);
       positions.add(Offset(x, y));
     }
 
-    // Draw animated gradient area
-    if (animationProgress > 0 && positions.length > 1) {
-      _drawGradientArea(canvas, size, positions, gradientPaint);
-    }
-
-    // Draw animated line
-    if (animationProgress > 0 && positions.length > 1) {
-      _drawAnimatedLine(canvas, positions, paint);
-    }
-
-    // Draw animated dots
-    if (animationProgress > 0.7) {
-      _drawDots(canvas, positions, dotPaint);
-    }
+    return positions;
   }
 
   void _drawGrid(Canvas canvas, Size size, Paint paint) {
@@ -326,6 +349,42 @@ class ProgressChartPainter extends CustomPainter {
         (oldDelegate.animationProgress != animationProgress ||
          oldDelegate.data != data ||
          oldDelegate.primaryColor != primaryColor);
+  }
+}
+
+class _ChartPaints {
+  final Paint line;
+  final Paint gradient;
+  final Paint grid;
+  final Paint dot;
+
+  const _ChartPaints({
+    required this.line,
+    required this.gradient,
+    required this.grid,
+    required this.dot,
+  });
+}
+
+class _ChartMetrics {
+  final double min;
+  final double max;
+
+  const _ChartMetrics({
+    required this.min,
+    required this.max,
+  });
+
+  double get range => max - min;
+
+  factory _ChartMetrics.fromData(List<ChartDataPoint> data) {
+    final minValue = data.map((point) => point.value).reduce(
+          (a, b) => a < b ? a : b,
+        );
+    final maxValue = data.map((point) => point.value).reduce(
+          (a, b) => a > b ? a : b,
+        );
+    return _ChartMetrics(min: minValue, max: maxValue);
   }
 }
 

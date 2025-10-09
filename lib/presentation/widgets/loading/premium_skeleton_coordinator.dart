@@ -164,7 +164,7 @@ class PremiumSkeletonCoordinator implements ISkeletonSystemFactory {
     Map<String, dynamic>? options,
   }) {
     return _AdaptiveSkeletonWrapper(
-      manager: this,
+      coordinator: this,
       child: child,
       isLoading: isLoading,
       skeletonType: skeletonType,
@@ -271,7 +271,7 @@ class PremiumSkeletonCoordinator implements ISkeletonSystemFactory {
 
 /// Adaptive skeleton wrapper for seamless loading transitions
 class _AdaptiveSkeletonWrapper extends StatefulWidget {
-  final PremiumSkeletonManager manager;
+  final PremiumSkeletonCoordinator coordinator;
   final Widget child;
   final bool isLoading;
   final String? skeletonType;
@@ -279,7 +279,7 @@ class _AdaptiveSkeletonWrapper extends StatefulWidget {
   final Map<String, dynamic> options;
 
   const _AdaptiveSkeletonWrapper({
-    required this.manager,
+    required this.coordinator,
     required this.child,
     required this.isLoading,
     this.skeletonType,
@@ -358,9 +358,9 @@ class _AdaptiveSkeletonWrapperState extends State<_AdaptiveSkeletonWrapper>
 
   Widget _buildSkeletonLayer() {
     final skeletonType = widget.skeletonType ??
-        widget.manager.getRecommendedSkeletonType(context, widget.child);
+        widget.coordinator.getRecommendedSkeletonType(context, widget.child);
 
-    return widget.manager.createSkeletonByType(
+    return widget.coordinator.createSkeletonByType(
       skeletonType,
       options: widget.options,
     );

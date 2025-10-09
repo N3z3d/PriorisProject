@@ -2,83 +2,45 @@ import '../../../core/services/domain_service.dart';
 import '../../aggregates/custom_list_aggregate.dart';
 import '../../value_objects/list_item.dart';
 
-/// Analyseur de patterns de complétion
+/// Completion pattern analyzer
 ///
-/// Analyse les habitudes de complétion de l'utilisateur pour identifier
-/// les optimisations possibles et prédire les prochaines tâches susceptibles
-/// d'être complétées.
+/// Examines completion history to detect trends and predict the next
+/// items a user is likely to complete.
 ///
 /// SOLID:
-/// - SRP: Responsabilité unique d'analyse des patterns de complétion
-/// - OCP: Extensible via héritage sans modification
-/// - DIP: Dépend de l'abstraction LoggableDomainService
+/// - SRP: focuses on completion analytics only
+/// - OCP: extendable via inheritance without modification
+/// - DIP: relies on LoggableDomainService abstraction
 class CompletionPatternAnalyzer extends LoggableDomainService {
   @override
   String get serviceName => 'CompletionPatternAnalyzer';
 
-  /// Analyse les patterns d'achèvement pour identifier les optimisations
+  /// Analyse completion patterns and produce actionable metrics
   CompletionPatterns analyzeCompletionPatterns(CustomListAggregate list) {
     return executeOperation(() {
-      log('Analyse des patterns d\'achèvement pour ${list.name}');
+      log("Analysing completion patterns for ${list.name}");
 
       final completedItems = list.getCompletedItems();
-      final incompleteItems = list.getIncompleteItems();
-
       if (completedItems.isEmpty) {
         return CompletionPatterns.empty();
       }
 
-      // Analyser les caractéristiques des éléments complétés
-      final completedByCategory = <String, int>{};
-      final completedElos = <double>[];
+      final incompleteItems = list.getIncompleteItems();
+      final metrics = _buildCompletionMetrics(completedItems);
+      final preferredCategories = _selectPreferredCategories(metrics.completedByCategory);
+      final averageElo = _calculateAverage(metrics.completedElos);
+      final averageCompletionTime = _calculateAverageCompletionTime(completedItems);
+      final nextCandidates = _selectNextCandidates(
+        incompleteItems,
+        averageElo,
+        preferredCategories,
+      );
 
-      for (final item in completedItems) {
-        if (item.category != null) {
-          completedByCategory[item.category!] =
-              (completedByCategory[item.category!] ?? 0) + 1;
-        }
-        completedElos.add(item.eloScore.value);
-      }
-
-      // Identifier les patterns
-      final preferredCategories = completedByCategory.entries
-          .where((entry) => entry.value >= 2)
-          .map((entry) => entry.key)
-          .toList()
-        ..sort((a, b) =>
-            completedByCategory[b]!.compareTo(completedByCategory[a]!));
-
-      final averageCompletedElo = completedElos.isEmpty
-          ? 0.0
-          : completedElos.reduce((a, b) => a + b) / completedElos.length;
-
-      // Analyser la vitesse de complétion
-      final completionTimes = completedItems
-          .where((item) => item.completionTime != null)
-          .map((item) => item.completionTime!.inMinutes)
-          .toList();
-
-      final averageCompletionTime = completionTimes.isEmpty
-          ? Duration.zero
-          : Duration(
-              minutes:
-                  completionTimes.reduce((a, b) => a + b) ~/
-                      completionTimes.length);
-
-      // Prédire les prochains éléments susceptibles d'être complétés
-      final nextCandidates = incompleteItems
-          .where((item) =>
-              item.eloScore.value <= averageCompletedElo + 100 ||
-              (item.category != null &&
-                  preferredCategories.contains(item.category)))
-          .take(3)
-          .toList();
-
-      log('Patterns identifiés - Catégories préférées: ${preferredCategories.join(", ")}');
+      log('Preferred categories detected: ${preferredCategories.join(', ')}');
 
       return CompletionPatterns(
         preferredCategories: preferredCategories,
-        averageEloCompleted: averageCompletedElo,
+        averageEloCompleted: averageElo,
         averageCompletionTime: averageCompletionTime,
         nextLikelyCandidates: nextCandidates,
         completionVelocity: _calculateCompletionVelocity(list),
@@ -87,7 +49,71 @@ class CompletionPatternAnalyzer extends LoggableDomainService {
     });
   }
 
-  /// Calcule la vélocité de complétion (éléments par jour sur 7 jours)
+  _CompletionMetrics _buildCompletionMetrics(List<ListItem> completedItems) {
+    final completedByCategory = <String, int>{};
+    final completedElos = <double>[];
+
+    for (final item in completedItems) {
+      final category = item.category;
+      if (category != null) {
+        completedByCategory[category] = (completedByCategory[category] ?? 0) + 1;
+      }
+      completedElos.add(item.eloScore.value);
+    }
+
+    return _CompletionMetrics(
+      completedByCategory: completedByCategory,
+      completedElos: completedElos,
+    );
+  }
+
+  List<String> _selectPreferredCategories(Map<String, int> completedByCategory) {
+    final categories = completedByCategory.entries
+        .where((entry) => entry.value >= 2)
+        .toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    return categories.map((entry) => entry.key).toList();
+  }
+
+  double _calculateAverage(List<double> values) {
+    if (values.isEmpty) {
+      return 0.0;
+    }
+    final total = values.reduce((a, b) => a + b);
+    return total / values.length;
+  }
+
+  Duration _calculateAverageCompletionTime(List<ListItem> completedItems) {
+    final completionTimes = completedItems
+        .where((item) => item.completionTime != null)
+        .map((item) => item.completionTime!.inMinutes)
+        .toList();
+
+    if (completionTimes.isEmpty) {
+      return Duration.zero;
+    }
+
+    final totalMinutes = completionTimes.reduce((a, b) => a + b);
+    return Duration(minutes: totalMinutes ~/ completionTimes.length);
+  }
+
+  List<ListItem> _selectNextCandidates(
+    List<ListItem> incompleteItems,
+    double averageCompletedElo,
+    List<String> preferredCategories,
+  ) {
+    return incompleteItems
+        .where((item) {
+          final eloWithinRange = item.eloScore.value <= averageCompletedElo + 100;
+          final matchesPreferredCategory =
+              item.category != null && preferredCategories.contains(item.category);
+          return eloWithinRange || matchesPreferredCategory;
+        })
+        .take(3)
+        .toList();
+  }
+
+  /// Calculate completion velocity (items per day over the last week)
   double _calculateCompletionVelocity(CustomListAggregate list) {
     final completedItems = list.getCompletedItems();
     if (completedItems.isEmpty) return 0.0;
@@ -99,20 +125,29 @@ class CompletionPatternAnalyzer extends LoggableDomainService {
             now.difference(item.completedAt!).inDays <= 7)
         .length;
 
-    return recentCompletions / 7.0; // Éléments par jour
+    return recentCompletions / 7.0;
   }
 
-  /// Identifie les éléments bloqués (non complétés depuis > 14 jours)
+  /// Identify stuck items (not completed after two weeks)
   List<ListItem> _identifyStuckItems(List<ListItem> incompleteItems) {
     final now = DateTime.now();
     return incompleteItems
-        .where((item) =>
-            now.difference(item.createdAt).inDays > 14) // Plus de 2 semaines
+        .where((item) => now.difference(item.createdAt).inDays > 14)
         .toList();
   }
 }
 
-/// Patterns de complétion d'une liste
+class _CompletionMetrics {
+  final Map<String, int> completedByCategory;
+  final List<double> completedElos;
+
+  const _CompletionMetrics({
+    required this.completedByCategory,
+    required this.completedElos,
+  });
+}
+
+/// Completion patterns for a list
 class CompletionPatterns {
   final List<String> preferredCategories;
   final double averageEloCompleted;

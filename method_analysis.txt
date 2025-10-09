@@ -1,0 +1,289 @@
+Analyse des methodes >50 lignes dans le projet Prioris
+
+================================================================================
+Fichiers Dart trouves: 470
+
+[FAIL] 66 methodes >50 lignes trouvees:
+
+================================================================================
+  1. presentation\pages\lists\widgets\list_card.dart
+     Methode: build()
+     Lignes: 28-169 (142 lignes)
+
+  2. presentation\widgets\dialogs\simplified_logout_dialog.dart
+     Methode: build()
+     Lignes: 17-158 (142 lignes)
+
+  3. presentation\widgets\common\forms\common_button.dart
+     Methode: build()
+     Lignes: 94-232 (139 lignes)
+
+  4. presentation\widgets\common\forms\common_text_field.dart
+     Methode: build()
+     Lignes: 102-239 (138 lignes)
+
+  5. presentation\widgets\dialogs\custom_list_form_dialog.dart
+     Methode: build()
+     Lignes: 57-192 (136 lignes)
+
+  6. presentation\pages\settings_page.dart
+     Methode: build()
+     Lignes: 12-137 (126 lignes)
+
+  7. presentation\widgets\loading\page_skeleton_loader.dart
+     Methode: _buildPageSkeleton()
+     Lignes: 31-155 (125 lignes)
+
+  8. presentation\pages\home_page.dart
+     Methode: build()
+     Lignes: 20-143 (124 lignes)
+
+  9. presentation\widgets\dialogs\data_persistence_onboarding_dialog.dart
+     Methode: build()
+     Lignes: 12-131 (120 lignes)
+
+ 10. presentation\widgets\dialogs\clear_data_dialog.dart
+     Methode: _buildFormContent()
+     Lignes: 112-230 (119 lignes)
+
+ 11. presentation\pages\statistics_page.dart
+     Methode: build()
+     Lignes: 41-149 (109 lignes)
+
+ 12. presentation\widgets\common\displays\premium_card.dart
+     Methode: build()
+     Lignes: 233-338 (106 lignes)
+
+ 13. presentation\widgets\common\accessibility\accessible_loading_state.dart
+     Methode: build()
+     Lignes: 26-128 (103 lignes)
+
+ 14. presentation\widgets\dialogs\list_form_dialog.dart
+     Methode: build()
+     Lignes: 37-128 (92 lignes)
+
+ 15. presentation\widgets\indicators\premium_sync_status_indicator.dart
+     Methode: _buildPremiumIcon()
+     Lignes: 359-449 (91 lignes)
+
+ 16. presentation\widgets\dialogs\simplified_logout_dialog.dart
+     Methode: _showDataClearConfirmation()
+     Lignes: 166-255 (90 lignes)
+
+ 17. presentation\widgets\dialogs\habit_record_dialog.dart
+     Methode: build()
+     Lignes: 53-141 (89 lignes)
+
+ 18. presentation\pages\statistics\widgets\summary\main_metrics_widget.dart
+     Methode: build()
+     Lignes: 19-105 (87 lignes)
+
+ 19. presentation\widgets\dialogs\quick_add_dialog.dart
+     Methode: build()
+     Lignes: 59-144 (86 lignes)
+
+ 20. presentation\widgets\dialogs\list_item_form_dialog.dart
+     Methode: build()
+     Lignes: 39-123 (85 lignes)
+
+ 21. presentation\widgets\dialogs\enhanced_logout_dialog.dart
+     Methode: build()
+     Lignes: 13-95 (83 lignes)
+
+ 22. presentation\widgets\indicators\premium_sync_notification.dart
+     Methode: build()
+     Lignes: 142-222 (81 lignes)
+
+ 23. presentation\widgets\common\displays\daily_overview_widget.dart
+     Methode: build()
+     Lignes: 10-89 (80 lignes)
+
+ 24. presentation\pages\lists\widgets\list_type_selector.dart
+     Methode: _buildTypeCard()
+     Lignes: 64-139 (76 lignes)
+
+ 25. presentation\widgets\common\layouts\swipeable_card.dart
+     Methode: build()
+     Lignes: 188-263 (76 lignes)
+
+ 26. presentation\pages\habits\components\habit_card_builder.dart
+     Methode: _buildActionButtons()
+     Lignes: 213-286 (74 lignes)
+
+ 27. domain\list\services\optimization\analyzers\completion_pattern_analyzer.dart
+     Methode: analyzeCompletionPatterns()
+     Lignes: 20-88 (69 lignes)
+
+ 28. presentation\pages\lists\widgets\list_detail_header.dart
+     Methode: _buildListStats()
+     Lignes: 38-106 (69 lignes)
+
+ 29. presentation\widgets\dialogs\bulk_add_dialog.dart
+     Methode: build()
+     Lignes: 108-176 (69 lignes)
+
+ 30. presentation\widgets\common\displays\common_progress_bar.dart
+     Methode: build()
+     Lignes: 45-113 (69 lignes)
+
+ 31. domain\list\services\optimization\analyzers\difficulty_analyzer.dart
+     Methode: calculateOptimalDifficulty()
+     Lignes: 18-82 (65 lignes)
+
+ 32. presentation\pages\statistics\widgets\analytics\tasks_stats_widget.dart
+     Methode: build()
+     Lignes: 18-81 (64 lignes)
+
+ 33. presentation\pages\statistics\widgets\smart\period_selector.dart
+     Methode: build()
+     Lignes: 24-87 (64 lignes)
+
+ 34. presentation\widgets\forms\components\recurrence_type_dropdown.dart
+     Methode: build()
+     Lignes: 18-81 (64 lignes)
+
+ 35. presentation\pages\statistics\widgets\analytics\category_performance_widget.dart
+     Methode: build()
+     Lignes: 18-80 (63 lignes)
+
+ 36. presentation\widgets\indicators\premium_sync_status_indicator.dart
+     Methode: _buildGlassContent()
+     Lignes: 295-357 (63 lignes)
+
+ 37. presentation\widgets\common\displays\premium_card.dart
+     Methode: build()
+     Lignes: 99-160 (62 lignes)
+
+ 38. presentation\widgets\charts\premium_progress_chart.dart
+     Methode: paint()
+     Lignes: 176-235 (60 lignes)
+
+ 39. presentation\widgets\forms\habit_basic_info_form.dart
+     Methode: build()
+     Lignes: 36-95 (60 lignes)
+
+ 40. presentation\widgets\common\displays\common_metric_display.dart
+     Methode: build()
+     Lignes: 82-141 (60 lignes)
+
+ 41. presentation\widgets\common\forms\common_dialog.dart
+     Methode: build()
+     Lignes: 43-102 (60 lignes)
+
+ 42. presentation\pages\statistics\widgets\smart\smart_insights_widget.dart
+     Methode: build()
+     Lignes: 16-74 (59 lignes)
+
+ 43. presentation\widgets\common\layouts\common_list_tile.dart
+     Methode: build()
+     Lignes: 53-111 (59 lignes)
+
+ 44. presentation\widgets\onboarding\components\onboarding_benefit_card.dart
+     Methode: build()
+     Lignes: 24-82 (59 lignes)
+
+ 45. presentation\widgets\habit_footer.dart
+     Methode: build()
+     Lignes: 73-129 (57 lignes)
+
+ 46. presentation\pages\lists\services\lists_repository_service.dart
+     Methode: clearAllData()
+     Lignes: 307-363 (57 lignes)
+
+ 47. presentation\widgets\common\layouts\common_section_header.dart
+     Methode: build()
+     Lignes: 56-112 (57 lignes)
+
+ 48. domain\habit\aggregates\habit_aggregate.dart
+     Methode: markCompleted()
+     Lignes: 259-314 (56 lignes)
+
+ 49. presentation\widgets\dialogs\forgot_password_dialog.dart
+     Methode: _buildFormContent()
+     Lignes: 75-130 (56 lignes)
+
+ 50. presentation\widgets\habit_footer.dart
+     Methode: _getRecurrenceText()
+     Lignes: 16-70 (55 lignes)
+
+ 51. presentation\widgets\dialogs\custom_list_form_dialog.dart
+     Methode: _handleSubmit()
+     Lignes: 195-249 (55 lignes)
+
+ 52. presentation\widgets\loading\advanced_loading_widget.dart
+     Methode: build()
+     Lignes: 250-304 (55 lignes)
+
+ 53. presentation\widgets\common\layouts\common_empty_state.dart
+     Methode: build()
+     Lignes: 76-130 (55 lignes)
+
+ 54. presentation\widgets\onboarding\components\onboarding_header.dart
+     Methode: build()
+     Lignes: 12-66 (55 lignes)
+
+ 55. presentation\widgets\dialogs\list_selection_dialog.dart
+     Methode: _buildListSelection()
+     Lignes: 110-163 (54 lignes)
+
+ 56. presentation\widgets\onboarding\simplified_data_onboarding.dart
+     Methode: build()
+     Lignes: 76-129 (54 lignes)
+
+ 57. presentation\widgets\progress\habit_progress_bar.dart
+     Methode: build()
+     Lignes: 56-109 (54 lignes)
+
+ 58. presentation\widgets\common\displays\accessibility_checker_widget.dart
+     Methode: build()
+     Lignes: 185-238 (54 lignes)
+
+ 59. domain\services\calculation\progress_calculation_service.dart
+     Methode: _calculateDayProgress()
+     Lignes: 197-249 (53 lignes)
+
+ 60. presentation\widgets\dialogs\add_habit_dialog.dart
+     Methode: build()
+     Lignes: 78-130 (53 lignes)
+
+ 61. presentation\widgets\indicators\premium_status_indicator.dart
+     Methode: _getStatusConfig()
+     Lignes: 227-279 (53 lignes)
+
+ 62. presentation\animations\widgets\pressable_widget.dart
+     Methode: build()
+     Lignes: 63-114 (52 lignes)
+
+ 63. presentation\widgets\charts\premium_progress_chart.dart
+     Methode: build()
+     Lignes: 77-128 (52 lignes)
+
+ 64. presentation\pages\lists\services\lists_performance_monitor.dart
+     Methode: validateDataConsistency()
+     Lignes: 94-144 (51 lignes)
+
+ 65. presentation\widgets\loading\advanced_loading_widget.dart
+     Methode: build()
+     Lignes: 73-123 (51 lignes)
+
+ 66. presentation\widgets\common\lists\virtualized_list.dart
+     Methode: build()
+     Lignes: 88-138 (51 lignes)
+
+================================================================================
+STATISTIQUES:
+   - Total methodes >50L: 66
+   - Methode la plus longue: 142 lignes
+   - Moyenne: 76.5 lignes
+
+Fichiers avec le plus de violations:
+   - presentation\widgets\dialogs\simplified_logout_dialog.dart: 2 methode(s)
+   - presentation\widgets\dialogs\custom_list_form_dialog.dart: 2 methode(s)
+   - presentation\widgets\common\displays\premium_card.dart: 2 methode(s)
+   - presentation\widgets\indicators\premium_sync_status_indicator.dart: 2 methode(s)
+   - presentation\widgets\charts\premium_progress_chart.dart: 2 methode(s)
+   - presentation\widgets\habit_footer.dart: 2 methode(s)
+   - presentation\widgets\loading\advanced_loading_widget.dart: 2 methode(s)
+   - presentation\pages\lists\widgets\list_card.dart: 1 methode(s)
+   - presentation\widgets\common\forms\common_button.dart: 1 methode(s)
+   - presentation\widgets\common\forms\common_text_field.dart: 1 methode(s)

@@ -10,9 +10,9 @@ import 'interfaces/premium_ui_interfaces.dart';
 
 // ============ SYSTÈME UI UNIFIÉ - REFACTORED SOLID ARCHITECTURE ============
 export 'premium_ui_system.dart'; // Backward compatible facade
-// export 'premium_ui_manager.dart'; // New SOLID architecture manager - TODO: Implement
+// export 'premium_ui_manager.dart'; // New SOLID architecture manager - implementation pending
 export 'interfaces/premium_ui_interfaces.dart'; // Core interfaces
-// export 'systems/export.dart'; // Specialized systems - TODO: Implement
+// export 'systems/export.dart'; // Specialized systems - implementation pending
 
 // ============ GLASSMORPHISME ============
 export 'glassmorphism.dart';

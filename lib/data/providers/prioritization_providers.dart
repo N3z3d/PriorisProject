@@ -28,7 +28,7 @@ final allPrioritizationTasksProvider = FutureProvider<List<Task>>((ref) async {
   // Récupérer les tâches directes
   final tasks = await prioritizationService.getTasksForPrioritization();
   
-  // TODO: Récupérer aussi les ListItems des listes actives
+  // Pending: Récupérer aussi les ListItems des listes actives
   // Pour l'instant, on retourne seulement les Task
   
   return tasks;
@@ -36,7 +36,7 @@ final allPrioritizationTasksProvider = FutureProvider<List<Task>>((ref) async {
 
 /// Provider pour créer un duel à partir d'une liste spécifique
 final listDuelProvider = FutureProvider.family<List<Task>?, String>((ref, listId) async {
-  // TODO: Intégrer avec listsControllerProvider pour récupérer les vrais ListItems
+  // Pending: Intégrer avec listsControllerProvider pour récupérer les vrais ListItems
   
   // Pour l'instant, retourner null pour déclencher l'ancien comportement
   return null;

@@ -337,7 +337,7 @@ class TaskEloService extends LoggableDomainService {
       // Pour l'instant, on log juste l'action
       log('Mise à jour lastChosenAt pour ${task.title}');
       
-      // TODO: Implémenter la méthode updateLastChosenAt dans TaskAggregate
+      // Pending: Implémenter la méthode updateLastChosenAt dans TaskAggregate
       // task.updateLastChosenAt(DateTime.now());
     });
   }

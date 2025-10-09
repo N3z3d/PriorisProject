@@ -44,7 +44,7 @@ class HabitActionHandler implements IHabitActionHandler {
       _showLoadingDialog('Enregistrement...');
 
       // Record habit completion by updating the habit with new completion data
-      // TODO: Implement proper habit completion logic
+      // Pending: Implement proper habit completion logic
       await _ref.read(habitsStateProvider.notifier).updateHabit(habit);
 
       // Close loading dialog

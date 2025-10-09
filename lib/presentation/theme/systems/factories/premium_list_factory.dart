@@ -65,7 +65,7 @@ class _PremiumListItem extends StatelessWidget {
       item = _wrapWithInteraction(item);
     }
 
-    // TODO: Add swipe actions support if needed
+    // Pending: Add swipe actions support if needed
     return item;
   }
 

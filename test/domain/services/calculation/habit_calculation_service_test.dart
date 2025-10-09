@@ -158,7 +158,7 @@ void main() {
         
         expect(insights, isNotEmpty);
         expect(insights.any((insight) => insight['type'] == 'info'), isTrue);
-        expect(insights.any((insight) => insight['message'].contains('régularité')), isTrue);
+        expect(insights.any((insight) => insight['message'].contains('regularite')), isTrue);
       });
     });
 

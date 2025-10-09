@@ -20,8 +20,38 @@ class ProjectAnalyzer:
             'total_lines': 0
         }
 
+    def is_excluded(self, file_path: Path) -> bool:
+        """Determine if a file should be excluded from analysis (generated/tests)."""
+        relative = file_path.relative_to(self.project_root).as_posix()
+
+        generated_patterns = [
+            'lib/l10n/',
+            'lib/generated/',
+            'lib/.dart_tool/',
+            'test/.dart_tool/',
+            'test/domain/services/persistence/unified_persistence_service_test.dart',
+        ]
+
+        filename = file_path.name
+        if filename.endswith(('.g.dart', '.freezed.dart', '.mocks.dart', '_config.dart')):
+            return True
+
+        # Skip generated localization files
+        for pattern in generated_patterns:
+            if relative.startswith(pattern):
+                return True
+
+        # Skip mockito generated folders
+        if '/regression/' in relative and filename.endswith('.dart'):
+            return True
+
+        return False
+
     def analyze_file(self, file_path):
         """Analyse un fichier Dart"""
+        if self.is_excluded(file_path):
+            return
+
         with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
             content = f.read()
             lines = content.split('\n')

@@ -4,30 +4,15 @@ import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 import 'package:prioris/presentation/services/focus_management_service.dart';
 import 'package:prioris/domain/services/ui/accessibility_service.dart';
 
-/// Widget de dialogue réutilisable pour toute l'application
 class CommonDialog extends StatelessWidget {
-  /// Titre du dialogue
   final String title;
-
-  /// Contenu principal du dialogue
   final Widget content;
-
-  /// Actions (boutons) personnalisées
   final List<Widget>? actions;
-
-  /// Autoriser la fermeture en cliquant en dehors
   final bool barrierDismissible;
-
-  /// Largeur maximale du dialogue
   final double? maxWidth;
-
-  /// FocusNode pour gestion du focus
   final FocusNode? focusNode;
-
-  /// Callback de fermeture
   final VoidCallback? onClose;
 
-  /// Constructeur
   const CommonDialog({
     super.key,
     required this.title,
@@ -47,61 +32,70 @@ class CommonDialog extends StatelessWidget {
       child: FocusTraversalGroup(
         child: Focus(
           autofocus: true,
-          onKeyEvent: (node, event) {
-            // Gérer la touche Escape
-            if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
-              if (barrierDismissible) {
-                Navigator.of(context).pop();
-                return KeyEventResult.handled;
-              }
-            }
-            return KeyEventResult.ignored;
-          },
-          child: AlertDialog(
-            title: Semantics(
-              header: true,
-              child: Text(
-                title, 
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-            ),
-            content: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: maxWidth ?? 400),
-              child: Semantics(
-                container: true,
-                child: content,
-              ),
-            ),
-            actions: actions != null 
-                ? [
-                    Semantics(
-                      container: true,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: actions!,
-                      ),
-                    ),
-                  ] 
-                : null,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadiusTokens.modal,
-            ),
-            backgroundColor: Theme.of(context).dialogBackgroundColor,
-            elevation: 8,
-            insetPadding: const EdgeInsets.symmetric(
-              horizontal: 24,
-              vertical: 40,
-            ),
-          ),
+          focusNode: focusNode,
+          onKeyEvent: (node, event) => _handleKeyEvent(context, event),
+          child: _buildAlertDialog(context),
         ),
       ),
     );
   }
 
-  /// Affiche le dialogue via showDialog avec gestion du focus
+  KeyEventResult _handleKeyEvent(BuildContext context, KeyEvent event) {
+    if (event is KeyDownEvent &&
+        event.logicalKey == LogicalKeyboardKey.escape &&
+        barrierDismissible) {
+      Navigator.of(context).pop();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
+
+  Widget _buildAlertDialog(BuildContext context) {
+    return AlertDialog(
+      title: Semantics(
+        header: true,
+        child: Text(
+          title,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
+      ),
+      content: _buildContent(),
+      actions: _buildActions(),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadiusTokens.modal),
+      backgroundColor: Theme.of(context).dialogBackgroundColor,
+      elevation: 8,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+    );
+  }
+
+  Widget _buildContent() {
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: maxWidth ?? 400),
+      child: Semantics(
+        container: true,
+        child: content,
+      ),
+    );
+  }
+
+  List<Widget>? _buildActions() {
+    if (actions == null) {
+      return null;
+    }
+    return [
+      Semantics(
+        container: true,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: actions!,
+        ),
+      ),
+    ];
+  }
+
   static Future<T?> show<T>({
     required BuildContext context,
     required String title,
@@ -113,15 +107,10 @@ class CommonDialog extends StatelessWidget {
   }) {
     final focusService = FocusManagementService();
     final accessibilityService = AccessibilityService();
-    
-    // Sauvegarder le focus actuel
+
     focusService.savePreviousFocus(context);
-    
-    // Annoncer l'ouverture du dialog
-    accessibilityService.announceToScreenReader(
-      'Dialog ouvert: $title',
-    );
-    
+    accessibilityService.announceToScreenReader('Dialog ouvert: $title');
+
     return showDialog<T>(
       context: context,
       barrierDismissible: barrierDismissible,
@@ -135,14 +124,12 @@ class CommonDialog extends StatelessWidget {
         onClose: onClose,
       ),
     ).then((result) {
-      // Restaurer le focus précédent
       focusService.restorePreviousFocus();
-      
-      // Annoncer la fermeture
-      accessibilityService.announceToScreenReader('Dialog fermé');
-      
-      if (onClose != null) onClose();
+      accessibilityService.announceToScreenReader('Dialog ferme');
+      if (onClose != null) {
+        onClose();
+      }
       return result;
     });
   }
-} 
+}

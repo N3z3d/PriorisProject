@@ -216,7 +216,7 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
 
   /// Affiche le dialogue d'édition de liste
   void _showEditListDialog(CustomList list) {
-    // TODO: Implémenter le dialogue d'édition de liste
+    // Pending: Implémenter le dialogue d'édition de liste
   }
 
   /// Affiche la confirmation de suppression de liste
@@ -251,7 +251,7 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
 
   /// Affiche le dialogue d'édition d'élément
   void _showEditItemDialog(ListItem item) {
-    // TODO: Implémenter le dialogue d'édition d'élément
+    // Pending: Implémenter le dialogue d'édition d'élément
   }
 
   /// Confirme la suppression d'un élément

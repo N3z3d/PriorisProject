@@ -213,78 +213,179 @@ class HabitCardBuilder implements IHabitCardBuilder {
   Widget _buildActionButtons(Habit habit) {
     return Row(
       children: [
-        // Record completion button
-        Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  _themeProvider.getHabitTypeColor(habit.type?.name ?? 'default'),
-                  _themeProvider.getHabitTypeColor(habit.type?.name ?? 'default').withOpacity(0.8),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(8),
-                onTap: () => _onActionCallback?.call('record', habit),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 12),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.check_circle_rounded,
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        'Marquer comme fait',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+        Expanded(child: _buildCompleteAction(habit)),
+        const SizedBox(width: 12),
+        Expanded(child: _buildSkipAction(habit)),
+        const SizedBox(width: 12),
+        _buildQuickEditButton(habit),
+      ],
+    );
+  }
+
+  Widget _buildCompleteAction(Habit habit) {
+    return _buildFilledActionButton(
+      icon: Icons.check_circle_rounded,
+      label: 'Marquer comme terminee',
+      subtitle: 'Garde votre streak actif',
+      gradientColors: const [Color(0xFF4ADE80), Color(0xFF22C55E)],
+      shadowColor: const Color(0x3322C55E),
+      onTap: () => _onActionCallback?.call('complete', habit),
+    );
+  }
+
+  Widget _buildSkipAction(Habit habit) {
+    return _buildOutlinedActionButton(
+      icon: Icons.skip_next_rounded,
+      label: 'Reporter',
+      subtitle: 'Deplacer a plus tard',
+      borderColor: const Color(0xFFCBD5F5),
+      backgroundColor: const Color(0xFFF8FAFC),
+      onTap: () => _onActionCallback?.call('skip', habit),
+    );
+  }
+
+  Widget _buildQuickEditButton(Habit habit) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(BorderRadiusTokens.sm),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(BorderRadiusTokens.sm),
+          onTap: () => _onActionCallback?.call('edit', habit),
+          child: const Padding(
+            padding: EdgeInsets.all(12),
+            child: Icon(
+              Icons.edit_rounded,
+              color: Color(0xFF4B5563),
+              size: 18,
             ),
           ),
         ),
+      ),
+    );
+  }
 
-        const SizedBox(width: 12),
-
-        // Quick edit button
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.grey[100],
-            borderRadius: BorderRadius.circular(8),
+  Widget _buildFilledActionButton({
+    required IconData icon,
+    required String label,
+    required String subtitle,
+    required List<Color> gradientColors,
+    required Color shadowColor,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(colors: gradientColors),
+        borderRadius: BorderRadiusTokens.buttonRounded,
+        boxShadow: [
+          BoxShadow(
+            color: shadowColor,
+            blurRadius: 16,
+            offset: const Offset(0, 8),
           ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(8),
-              onTap: () => _onActionCallback?.call('edit', habit),
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Icon(
-                  Icons.edit_rounded,
-                  color: Colors.grey[600],
-                  size: 18,
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadiusTokens.buttonRounded,
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(icon, color: Colors.white, size: 22),
+                    const SizedBox(width: 12),
+                    _buildButtonTexts(
+                      label: label,
+                      subtitle: subtitle,
+                      textColor: Colors.white,
+                    ),
+                  ],
                 ),
-              ),
+                const Icon(Icons.chevron_right_rounded, color: Colors.white),
+              ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOutlinedActionButton({
+    required IconData icon,
+    required String label,
+    required String subtitle,
+    required Color borderColor,
+    required Color backgroundColor,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadiusTokens.buttonRounded,
+        border: Border.all(color: borderColor, width: 1.5),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadiusTokens.buttonRounded,
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+            child: Row(
+              children: [
+                Icon(icon, color: const Color(0xFF475569), size: 22),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildButtonTexts(
+                    label: label,
+                    subtitle: subtitle,
+                    textColor: const Color(0xFF475569),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildButtonTexts({
+    required String label,
+    required String subtitle,
+    required Color textColor,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: textColor,
+            fontWeight: FontWeight.w600,
+            fontSize: 15,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          subtitle,
+          style: TextStyle(
+            color: textColor.withOpacity(0.8),
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],
     );
   }
-
   /// Build detailed progress information
   Widget _buildProgressDetails(Habit habit) {
     final streakDays = _calculateStreak(habit);

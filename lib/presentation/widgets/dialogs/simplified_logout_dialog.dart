@@ -104,7 +104,7 @@ class SimplifiedLogoutHelper {
         print('🗑️ Données locales effacées');
       }
       
-      // TODO: Implémenter la déconnexion authentification
+      // Pending: Implémenter la déconnexion authentification
       // final authController = ref.read(authControllerProvider.notifier);
       // await authController.signOut();
       

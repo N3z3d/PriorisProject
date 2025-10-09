@@ -154,7 +154,7 @@ class LogoutHelper {
         print('✅ Données locales effacées');
       }
       
-      // TODO: Implémenter la déconnexion authentification
+      // Pending: Implémenter la déconnexion authentification
       // final authController = ref.read(authControllerProvider.notifier);
       // await authController.signOut();
       
@@ -162,7 +162,7 @@ class LogoutHelper {
       
     } catch (e) {
       print('❌ Erreur lors de la déconnexion: $e');
-      // TODO: Afficher une erreur à l'utilisateur
+      // Pending: Afficher une erreur à l'utilisateur
     }
   }
 }

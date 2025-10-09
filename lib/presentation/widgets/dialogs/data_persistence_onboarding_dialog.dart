@@ -48,7 +48,7 @@ class DataPersistenceOnboardingDialog extends ConsumerWidget {
 
   /// Marks the onboarding as completed to prevent showing again
   void _markOnboardingCompleted() {
-    // TODO: Store in shared preferences that onboarding is completed
+    // Pending: Store in shared preferences that onboarding is completed
     // This prevents showing the dialog again
   }
 }

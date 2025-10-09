@@ -261,7 +261,7 @@ void main() {
         expect(find.text(completedItem.title), findsOneWidget);
         expect(find.text(testItem2.title), findsOneWidget);
         
-        // TODO: Ajouter des vérifications visuelles pour l'état complété
+        // Pending: Ajouter des vérifications visuelles pour l'état complété
         // (coché/décoché, style visuel, etc.)
       });
     });

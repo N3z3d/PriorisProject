@@ -62,54 +62,65 @@ class _PressableWidgetState extends State<PressableWidget>
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: (_) {
-        if (widget.enableScaleEffect && !_shouldReduceMotion()) {
-          _controller.forward();
-        }
-        if (widget.enableHaptics) {
-          HapticFeedback.lightImpact();
-        }
-      },
-      onTapUp: (_) {
-        if (widget.enableScaleEffect && !_shouldReduceMotion()) {
-          _controller.reverse();
-        }
-        widget.onPressed();
-      },
-      onTapCancel: () {
-        if (widget.enableScaleEffect && !_shouldReduceMotion()) {
-          _controller.reverse();
-        }
-      },
+      onTapDown: (_) => _handleTapDown(),
+      onTapUp: (_) => _handleTapUp(),
+      onTapCancel: _handleTapCancel,
       child: AnimatedBuilder(
         animation: _controller,
-        builder: (context, child) {
-          Widget result = Transform.scale(
-            scale: widget.enableScaleEffect && !_shouldReduceMotion()
-                ? _scaleAnimation.value
-                : 1.0,
-            child: widget.child,
-          );
-
-          if (widget.enableGlowEffect && !_shouldReduceMotion()) {
-            result = Container(
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: (widget.glowColor ?? AppTheme.primaryColor)
-                        .withOpacity(0.3 * _glowAnimation.value),
-                    blurRadius: 20 * _glowAnimation.value,
-                    spreadRadius: 5 * _glowAnimation.value,
-                  ),
-                ],
-              ),
-              child: result,
-            );
-          }
-
-          return result;
-        },
+        builder: (context, child) => _buildAnimatedChild(),
       ),
     );
   }
+
+  void _handleTapDown() {
+    if (widget.enableScaleEffect && !_shouldReduceMotion()) {
+      _controller.forward();
+    }
+    if (widget.enableHaptics) {
+      HapticFeedback.lightImpact();
+    }
+  }
+
+  void _handleTapUp() {
+    if (widget.enableScaleEffect && !_shouldReduceMotion()) {
+      _controller.reverse();
+    }
+    widget.onPressed();
+  }
+
+  void _handleTapCancel() {
+    if (widget.enableScaleEffect && !_shouldReduceMotion()) {
+      _controller.reverse();
+    }
+  }
+
+  Widget _buildAnimatedChild() {
+    final scale = widget.enableScaleEffect && !_shouldReduceMotion()
+        ? _scaleAnimation.value
+        : 1.0;
+
+    Widget result = Transform.scale(
+      scale: scale,
+      child: widget.child,
+    );
+
+    if (widget.enableGlowEffect && !_shouldReduceMotion()) {
+      result = Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: (widget.glowColor ?? AppTheme.primaryColor)
+                  .withOpacity(0.3 * _glowAnimation.value),
+              blurRadius: 20 * _glowAnimation.value,
+              spreadRadius: 5 * _glowAnimation.value,
+            ),
+          ],
+        ),
+        child: result,
+      );
+    }
+
+    return result;
+  }
 }
+

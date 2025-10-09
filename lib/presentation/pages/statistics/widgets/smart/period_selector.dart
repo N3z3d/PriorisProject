@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 
-/// Widget réutilisable pour sélectionner une période d'analyse
-/// Affiche une rangée de chips interactives.
 class PeriodSelector extends StatelessWidget {
   final String selectedPeriod;
   final ValueChanged<String> onPeriodChanged;
@@ -34,55 +32,65 @@ class PeriodSelector extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Text(
-            'Période : ',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
-              color: AppTheme.textPrimary,
-            ),
-          ),
+          _buildLabel(),
           const SizedBox(width: 12),
-          Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: periods.map((period) {
-                  final isSelected = selectedPeriod == period['value'];
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      child: ChoiceChip(
-                        label: Text(period['label']!),
-                        selected: isSelected,
-                        onSelected: (_) => onPeriodChanged(period['value']!),
-                        selectedColor: AppTheme.primaryColor,
-                        labelStyle: TextStyle(
-                          // Fix: Using proper contrast colors from theme
-                          color: isSelected ? Colors.white : AppTheme.textSecondary,
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                          fontSize: 14,
-                        ),
-                        backgroundColor: AppTheme.grey100,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          side: BorderSide(
-                            color: isSelected ? AppTheme.primaryColor : AppTheme.grey300,
-                            width: 1.5,
-                          ),
-                        ),
-                        elevation: isSelected ? 2 : 0,
-                        pressElevation: 4,
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-          ),
+          Expanded(child: _buildPeriodChips()),
         ],
       ),
     );
   }
-} 
+
+  Widget _buildLabel() {
+    return Text(
+      'Periode :',
+      style: TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: 16,
+        color: AppTheme.textPrimary,
+      ),
+    );
+  }
+
+  Widget _buildPeriodChips() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: periods.map(_buildPeriodChip).toList(),
+      ),
+    );
+  }
+
+  Widget _buildPeriodChip(Map<String, String> period) {
+    final value = period['value']!;
+    final label = period['label']!;
+    final isSelected = selectedPeriod == value;
+
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        child: ChoiceChip(
+          label: Text(label),
+          selected: isSelected,
+          onSelected: (_) => onPeriodChanged(value),
+          selectedColor: AppTheme.primaryColor,
+          labelStyle: TextStyle(
+            color: isSelected ? Colors.white : AppTheme.textSecondary,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+            fontSize: 14,
+          ),
+          backgroundColor: AppTheme.grey100,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(
+              color: isSelected ? AppTheme.primaryColor : AppTheme.grey300,
+              width: 1.5,
+            ),
+          ),
+          elevation: isSelected ? 2 : 0,
+          pressElevation: 4,
+        ),
+      ),
+    );
+  }
+}

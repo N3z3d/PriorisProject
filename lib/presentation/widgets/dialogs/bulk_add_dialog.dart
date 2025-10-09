@@ -7,17 +7,11 @@ import 'components/bulk_add_help_message.dart';
 import 'components/bulk_add_keep_open_option.dart';
 import 'components/bulk_add_action_buttons.dart';
 
-/// Mode d'ajout en lot
 enum BulkAddMode {
   single,
   multiple,
 }
 
-/// Dialogue pour ajouter plusieurs éléments à une liste
-/// 
-/// Permet d'ajouter des éléments soit:
-/// - Un par un (mode simple)
-/// - Plusieurs à la fois (mode multiple, séparés par des retours à la ligne)
 class BulkAddDialog extends StatefulWidget {
   final String title;
   final String hintText;
@@ -25,13 +19,13 @@ class BulkAddDialog extends StatefulWidget {
 
   const BulkAddDialog({
     super.key,
-    this.title = 'Ajouter des éléments',
+    this.title = 'Ajouter des elements',
     this.hintText = '',
     required this.onSubmit,
   });
 
   factory BulkAddDialog.create({
-    String title = 'Ajouter des éléments',
+    String title = 'Ajouter des elements',
     required Function(List<String>) onItemsAdded,
   }) {
     return BulkAddDialog(
@@ -63,8 +57,6 @@ class _BulkAddDialogState extends State<BulkAddDialog> with TickerProviderStateM
         _currentMode = BulkAddMode.values[_tabController.index];
       });
     });
-    
-    // Focus automatique sur le champ
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusNode.requestFocus();
     });
@@ -92,15 +84,16 @@ class _BulkAddDialogState extends State<BulkAddDialog> with TickerProviderStateM
         ? text.split('\n').map((e) => e.trim()).where((e) => e.isNotEmpty).toList()
         : [text];
 
-    if (items.isNotEmpty) {
-      widget.onSubmit(items);
-      
-      if (_keepOpen) {
-        _controller.clear();
-        _focusNode.requestFocus();
-      } else {
-        Navigator.of(context).pop();
-      }
+    if (items.isEmpty) {
+      return;
+    }
+
+    widget.onSubmit(items);
+    if (_keepOpen) {
+      _controller.clear();
+      _focusNode.requestFocus();
+    } else {
+      Navigator.of(context).pop();
     }
   }
 
@@ -112,80 +105,77 @@ class _BulkAddDialogState extends State<BulkAddDialog> with TickerProviderStateM
         borderRadius: BorderRadius.circular(16),
       ),
       elevation: 8,
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.9,
-        constraints: const BoxConstraints(maxWidth: 500),
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Header
-            BulkAddHeader(
-              title: widget.title,
-              onClose: () => Navigator.of(context).pop(),
-            ),
+      child: _buildDialogContent(context),
+    );
+  }
 
-            const SizedBox(height: 20),
-
-            // Mode tabs
-            BulkAddModeTabs(
-              controller: _tabController,
-              onModeChanged: (mode) => setState(() => _currentMode = mode),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Text field
-            BulkAddTextField(
-              controller: _controller,
-              focusNode: _focusNode,
-              mode: _currentMode,
-              hintText: _getHintText(),
-              onSubmitted: (_) => _handleSubmit(),
-            ),
-
-            // Help message for multiple mode
-            if (_currentMode == BulkAddMode.multiple) ...[
-              const SizedBox(height: 12),
-              const BulkAddHelpMessage(
-                message: 'Une nouvelle ligne = un nouvel élément',
-              ),
-            ],
-
-            const SizedBox(height: 20),
-
-            // Keep open option
-            BulkAddKeepOpenOption(
-              value: _keepOpen,
-              onChanged: (value) => setState(() => _keepOpen = value ?? false),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Action buttons
-            BulkAddActionButtons(
-              isValid: _isValid,
-              onCancel: () => Navigator.of(context).pop(),
-              onSubmit: _handleSubmit,
-            ),
-          ],
-        ),
+  Widget _buildDialogContent(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.9,
+      constraints: const BoxConstraints(maxWidth: 500),
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: _buildDialogChildren(context),
       ),
     );
   }
 
-  /// Retourne le texte d'aide selon le mode et contexte
+  List<Widget> _buildDialogChildren(BuildContext context) {
+    return [
+      BulkAddHeader(
+        title: widget.title,
+        onClose: () => Navigator.of(context).pop(),
+      ),
+      const SizedBox(height: 20),
+      BulkAddModeTabs(
+        controller: _tabController,
+        onModeChanged: (mode) => setState(() => _currentMode = mode),
+      ),
+      const SizedBox(height: 20),
+      BulkAddTextField(
+        controller: _controller,
+        focusNode: _focusNode,
+        mode: _currentMode,
+        hintText: _getHintText(),
+        onSubmitted: (_) => _handleSubmit(),
+      ),
+      ..._buildHelpSection(),
+      const SizedBox(height: 20),
+      BulkAddKeepOpenOption(
+        value: _keepOpen,
+        onChanged: (value) => setState(() => _keepOpen = value ?? false),
+      ),
+      const SizedBox(height: 20),
+      BulkAddActionButtons(
+        isValid: _isValid,
+        onCancel: () => Navigator.of(context).pop(),
+        onSubmit: _handleSubmit,
+      ),
+    ];
+  }
+
+  List<Widget> _buildHelpSection() {
+    if (_currentMode != BulkAddMode.multiple) {
+      return const [SizedBox.shrink()];
+    }
+    return const [
+      SizedBox(height: 12),
+      BulkAddHelpMessage(message: 'Une nouvelle ligne = un nouvel element'),
+    ];
+  }
+
   String _getHintText() {
     if (widget.hintText.isNotEmpty) {
       return widget.hintText;
     }
-    
+
     switch (_currentMode) {
       case BulkAddMode.single:
-        return 'Ajouter un élément...';
+        return 'Ajouter un element...';
       case BulkAddMode.multiple:
-        return 'Ajouter plusieurs éléments (un par ligne)...';
+        return 'Ajouter plusieurs elements (un par ligne)...';
     }
   }
 }

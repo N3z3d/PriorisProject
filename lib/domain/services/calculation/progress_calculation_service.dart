@@ -1,41 +1,41 @@
 import 'package:flutter/material.dart';
-// import 'package:fl_chart/fl_chart.dart';  // Temporarily disabled
 import 'package:prioris/domain/models/core/entities/habit.dart';
 import 'package:prioris/domain/models/core/entities/task.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'habit_calculation_service.dart';
 import 'task_calculation_service.dart';
 
-// Temporary placeholder classes for fl_chart types
-class FlSpot {
-  final double x;
-  final double y;
-  const FlSpot(this.x, this.y);
-}
-
-class PieChartSectionData {
+/// Point de donn��es g��n��r�� par le service de progression.
+///
+/// Cette structure est agnostique de toute biblioth��que de graphique et
+/// contient les informations n��cessaires pour construire un graphique:
+/// - [index] permet de positionner le point dans l'ordre chronologique
+/// - [value] repr��sente la progression (0-100)
+/// - [date] conserve la r��f��rence temporelle exacte
+/// - [label] est un libell�� pr��format�� pour l'UI (jour, num��ro, etc.)
+class ProgressChartPoint {
+  final int index;
   final double value;
-  final Color color;
-  final String title;
-  const PieChartSectionData({required this.value, required this.color, this.title = ''});
+  final DateTime date;
+  final String label;
+
+  const ProgressChartPoint({
+    required this.index,
+    required this.value,
+    required this.date,
+    required this.label,
+  });
 }
 
-class BarChartGroupData {
-  final int x;
-  final List<dynamic> barRods;
-  const BarChartGroupData({required this.x, this.barRods = const []});
-}
-
-/// Service spécialisé dans les calculs de progression et génération de données pour graphiques
-/// 
-/// Ce service extrait toute la logique de calcul de progression
-/// des widgets et du StatisticsCalculationService pour respecter le principe de
-/// responsabilité unique et faciliter les tests.
+/// Service sp��cialis�� dans les calculs de progression et g��n��ration de
+/// donn��es pour les widgets de statistiques.
+///
+/// Il centralise la logique de calcul afin de conserver les widgets l��gers
+/// et facilement testables.
 class ProgressCalculationService {
-  /// Détermine la couleur de progression basée sur une valeur
-  /// 
-  /// [value] : Valeur entre 0 et 100
-  /// Retourne : Couleur appropriée
+  /// D��termine la couleur de progression bas��e sur une valeur.
+  ///
+  /// [value] : Valeur entre 0 et 100.
   static Color getProgressColor(double value) {
     if (value >= 80) return AppTheme.successColor;
     if (value >= 60) return AppTheme.primaryColor;
@@ -43,13 +43,16 @@ class ProgressCalculationService {
     return AppTheme.errorColor;
   }
 
-  /// Génère les données de progression pour un graphique
-  /// 
-  /// [period] : Période sélectionnée ('7_days', '30_days', '90_days', '365_days')
+  /// G��n��re les donn��es de progression pour un graphique.
+  ///
+  /// [period] : '7_days', '30_days', '90_days' ou '365_days'
   /// [habits] : Liste des habitudes
-  /// [tasks] : Liste des tâches
-  /// Retourne : Liste de points FlSpot pour le graphique
-  static List<FlSpot> generateProgressData(String period, List<Habit> habits, List<Task> tasks) {
+  /// [tasks] : Liste des t��ches
+  static List<ProgressChartPoint> generateProgressData(
+    String period,
+    List<Habit> habits,
+    List<Task> tasks,
+  ) {
     switch (period) {
       case '7_days':
         return _generateWeeklyProgressData(habits, tasks);
@@ -64,10 +67,7 @@ class ProgressCalculationService {
     }
   }
 
-  /// Génère les labels de période pour l'axe X
-  /// 
-  /// [period] : Période sélectionnée
-  /// Retourne : Liste de labels pour l'axe X
+  /// G��n��re les labels de p��riode pour l'axe X.
   static List<String> generatePeriodLabels(String period) {
     switch (period) {
       case '7_days':
@@ -83,268 +83,286 @@ class ProgressCalculationService {
     }
   }
 
-  /// Calcule la progression globale basée sur les habitudes et tâches
-  /// 
-  /// [habits] : Liste des habitudes
-  /// [tasks] : Liste des tâches
-  /// Retourne : Pourcentage de progression globale (0-100)
+  /// Calcule la progression globale bas��e sur les habitudes et t��ches.
   static double calculateOverallProgress(List<Habit> habits, List<Task> tasks) {
     if (habits.isEmpty && tasks.isEmpty) return 0.0;
-    
-    double habitProgress = 0.0;
-    double taskProgress = 0.0;
-    
-    // Calculer la progression des habitudes
+
+    var habitProgress = 0.0;
+    var taskProgress = 0.0;
+
     if (habits.isNotEmpty) {
-      final habitSuccessRate = HabitCalculationService.calculateSuccessRate(habits);
-      habitProgress = habitSuccessRate.toDouble();
+      habitProgress = HabitCalculationService.calculateSuccessRate(habits).toDouble();
     }
-    
-    // Calculer la progression des tâches
     if (tasks.isNotEmpty) {
-      final taskCompletionRate = TaskCalculationService.calculateCompletionRate(tasks);
-      taskProgress = taskCompletionRate.toDouble();
+      taskProgress = TaskCalculationService.calculateCompletionRate(tasks).toDouble();
     }
-    
-    // Moyenne pondérée (habitudes plus importantes)
+
     if (habits.isNotEmpty && tasks.isNotEmpty) {
-      return (habitProgress * 0.7 + taskProgress * 0.3);
-    } else if (habits.isNotEmpty) {
-      return habitProgress;
-    } else {
-      return taskProgress;
+      return (habitProgress * 0.7) + (taskProgress * 0.3);
     }
+    if (habits.isNotEmpty) {
+      return habitProgress;
+    }
+    return taskProgress;
   }
 
-  /// Calcule la progression par jour pour les 7 derniers jours
-  /// 
-  /// [habits] : Liste des habitudes
-  /// [tasks] : Liste des tâches
-  /// Retourne : Liste de points FlSpot pour la semaine
-  static List<FlSpot> _generateWeeklyProgressData(List<Habit> habits, List<Task> tasks) {
-    final List<FlSpot> data = [];
-    final now = DateTime.now();
-    
+  /// Calcule des points de progression pour les 7 derniers jours.
+  static List<ProgressChartPoint> _generateWeeklyProgressData(
+    List<Habit> habits,
+    List<Task> tasks,
+  ) {
+    final List<ProgressChartPoint> data = [];
+    final now = _truncateToDay(DateTime.now());
+
     for (int i = 6; i >= 0; i--) {
       final date = now.subtract(Duration(days: i));
-      final dayProgress = _calculateDayProgress(date, habits, tasks);
-      data.add(FlSpot((6 - i).toDouble(), dayProgress));
+      final progressValue = _calculateDailyProgressValue(habits, tasks, date);
+      final index = 6 - i;
+      data.add(
+        ProgressChartPoint(
+          index: index,
+          value: progressValue,
+          date: date,
+          label: _formatWeekdayLabel(date),
+        ),
+      );
     }
-    
+
     return data;
   }
 
-  /// Calcule la progression par jour pour les 30 derniers jours
-  /// 
-  /// [habits] : Liste des habitudes
-  /// [tasks] : Liste des tâches
-  /// Retourne : Liste de points FlSpot pour le mois
-  static List<FlSpot> _generateMonthlyProgressData(List<Habit> habits, List<Task> tasks) {
-    final List<FlSpot> data = [];
-    final now = DateTime.now();
-    
+  /// Calcule des points de progression pour les 30 derniers jours.
+  static List<ProgressChartPoint> _generateMonthlyProgressData(
+    List<Habit> habits,
+    List<Task> tasks,
+  ) {
+    final List<ProgressChartPoint> data = [];
+    final now = _truncateToDay(DateTime.now());
+
     for (int i = 29; i >= 0; i--) {
       final date = now.subtract(Duration(days: i));
-      final dayProgress = _calculateDayProgress(date, habits, tasks);
-      data.add(FlSpot((29 - i).toDouble(), dayProgress));
+      final progressValue = _calculateDailyProgressValue(habits, tasks, date);
+      final index = 29 - i;
+      data.add(
+        ProgressChartPoint(
+          index: index,
+          value: progressValue,
+          date: date,
+          label: '${index + 1}',
+        ),
+      );
     }
-    
+
     return data;
   }
 
-  /// Calcule la progression par jour pour les 90 derniers jours
-  /// 
-  /// [habits] : Liste des habitudes
-  /// [tasks] : Liste des tâches
-  /// Retourne : Liste de points FlSpot pour le trimestre
-  static List<FlSpot> _generateQuarterlyProgressData(List<Habit> habits, List<Task> tasks) {
-    final List<FlSpot> data = [];
-    final now = DateTime.now();
-    
+  /// Calcule des points de progression pour les 90 derniers jours.
+  static List<ProgressChartPoint> _generateQuarterlyProgressData(
+    List<Habit> habits,
+    List<Task> tasks,
+  ) {
+    final List<ProgressChartPoint> data = [];
+    final now = _truncateToDay(DateTime.now());
+
     for (int i = 89; i >= 0; i--) {
       final date = now.subtract(Duration(days: i));
-      final dayProgress = _calculateDayProgress(date, habits, tasks);
-      data.add(FlSpot((89 - i).toDouble(), dayProgress));
+      final progressValue = _calculateDailyProgressValue(habits, tasks, date);
+      final index = 89 - i;
+      data.add(
+        ProgressChartPoint(
+          index: index,
+          value: progressValue,
+          date: date,
+          label: '${index + 1}',
+        ),
+      );
     }
-    
+
     return data;
   }
 
-  /// Calcule la progression par jour pour les 365 derniers jours
-  /// 
-  /// [habits] : Liste des habitudes
-  /// [tasks] : Liste des tâches
-  /// Retourne : Liste de points FlSpot pour l'année
-  static List<FlSpot> _generateYearlyProgressData(List<Habit> habits, List<Task> tasks) {
-    final List<FlSpot> data = [];
-    final now = DateTime.now();
-    
+  /// Calcule des points de progression pour les 365 derniers jours.
+  static List<ProgressChartPoint> _generateYearlyProgressData(
+    List<Habit> habits,
+    List<Task> tasks,
+  ) {
+    final List<ProgressChartPoint> data = [];
+    final now = _truncateToDay(DateTime.now());
+
     for (int i = 364; i >= 0; i--) {
       final date = now.subtract(Duration(days: i));
-      final dayProgress = _calculateDayProgress(date, habits, tasks);
-      data.add(FlSpot((364 - i).toDouble(), dayProgress));
+      final progressValue = _calculateDailyProgressValue(habits, tasks, date);
+      final index = 364 - i;
+      data.add(
+        ProgressChartPoint(
+          index: index,
+          value: progressValue,
+          date: date,
+          label: '${index + 1}',
+        ),
+      );
     }
-    
+
     return data;
   }
 
-  /// Calcule la progression pour une journée spécifique
-  /// 
-  /// [date] : Date pour laquelle calculer la progression
-  /// [habits] : Liste des habitudes
-  /// [tasks] : Liste des tâches
-  /// Retourne : Pourcentage de progression pour cette journée (0-100)
-  static double _calculateDayProgress(DateTime date, List<Habit> habits, List<Task> tasks) {
-    double habitProgress = 0.0;
-    double taskProgress = 0.0;
-    
-    // Calculer la progression des habitudes pour cette journée
-    if (habits.isNotEmpty) {
-      final dateKey = _getDateKey(date);
-      int completedHabits = 0;
-      
-      for (final habit in habits) {
-        final value = habit.completions[dateKey];
-        bool isCompleted = false;
-        
-        if (habit.type == HabitType.binary && value == true) {
-          isCompleted = true;
-        } else if (habit.type == HabitType.quantitative && 
-                   value != null && 
-                   habit.targetValue != null && 
-                   (value as double) >= habit.targetValue!) {
-          isCompleted = true;
-        }
-        
-        if (isCompleted) completedHabits++;
-      }
-      
-      habitProgress = (completedHabits / habits.length) * 100;
-    }
-    
-    // Calculer la progression des tâches pour cette journée
-    if (tasks.isNotEmpty) {
-      final tasksCompletedToday = tasks.where((task) {
-        if (!task.isCompleted || task.completedAt == null) return false;
-        final taskDate = DateTime(
-          task.completedAt!.year,
-          task.completedAt!.month,
-          task.completedAt!.day,
-        );
-        final targetDate = DateTime(date.year, date.month, date.day);
-        return taskDate.isAtSameMomentAs(targetDate);
-      }).length;
-      
-      taskProgress = (tasksCompletedToday / tasks.length) * 100;
-    }
-    
-    // Moyenne pondérée
-    if (habits.isNotEmpty && tasks.isNotEmpty) {
-      return (habitProgress * 0.7 + taskProgress * 0.3);
-    } else if (habits.isNotEmpty) {
-      return habitProgress;
-    } else {
-      return taskProgress;
-    }
-  }
-
-  /// Génère une clé de date au format YYYY-MM-DD
-  /// 
-  /// [date] : Date à formater
-  /// Retourne : Clé de date formatée
-  static String _getDateKey(DateTime date) {
-    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-  }
-
-  /// Calcule la progression moyenne sur une période donnée
-  /// 
-  /// [period] : Période ('7_days', '30_days', '90_days', '365_days')
-  /// [habits] : Liste des habitudes
-  /// [tasks] : Liste des tâches
-  /// Retourne : Progression moyenne sur la période (0-100)
+  /// Calcule la progression moyenne sur une p��riode donn��e.
   static double calculateAverageProgress(String period, List<Habit> habits, List<Task> tasks) {
     final progressData = generateProgressData(period, habits, tasks);
-    
     if (progressData.isEmpty) return 0.0;
-    
-    final totalProgress = progressData.map((spot) => spot.y).reduce((a, b) => a + b);
+
+    final totalProgress = progressData.map((point) => point.value).reduce((a, b) => a + b);
     return totalProgress / progressData.length;
   }
 
-  /// Calcule la tendance de progression (croissante, décroissante, stable)
-  /// 
-  /// [period] : Période sélectionnée
-  /// [habits] : Liste des habitudes
-  /// [tasks] : Liste des tâches
-  /// Retourne : 'increasing', 'decreasing', ou 'stable'
+  /// Calcule la tendance de progression (croissante, d��croissante ou stable).
   static String calculateProgressTrend(String period, List<Habit> habits, List<Task> tasks) {
     final progressData = generateProgressData(period, habits, tasks);
-    
     if (progressData.length < 2) return 'stable';
-    
-    // Prendre les 3 premiers et 3 derniers points pour calculer la tendance
-    final firstPoints = progressData.take(3).map((spot) => spot.y).toList();
-    final lastPoints = progressData.reversed.take(3).map((spot) => spot.y).toList();
-    
+
+    final firstPoints = progressData.take(3).map((point) => point.value).toList();
+    final lastPoints = progressData.reversed.take(3).map((point) => point.value).toList();
+
     final firstAverage = firstPoints.reduce((a, b) => a + b) / firstPoints.length;
     final lastAverage = lastPoints.reduce((a, b) => a + b) / lastPoints.length;
-    
     final difference = lastAverage - firstAverage;
-    
+
     if (difference > 5) return 'increasing';
     if (difference < -5) return 'decreasing';
     return 'stable';
   }
 
-  /// Calcule le meilleur jour de la période
-  /// 
-  /// [period] : Période sélectionnée
-  /// [habits] : Liste des habitudes
-  /// [tasks] : Liste des tâches
-  /// Retourne : Index du meilleur jour et sa valeur
-  static Map<String, dynamic> calculateBestDay(String period, List<Habit> habits, List<Task> tasks) {
+  /// Calcule le meilleur jour de la p��riode.
+  static Map<String, dynamic> calculateBestDay(
+    String period,
+    List<Habit> habits,
+    List<Task> tasks,
+  ) {
     final progressData = generateProgressData(period, habits, tasks);
-    
     if (progressData.isEmpty) {
       return {'index': 0, 'value': 0.0};
     }
-    
-    double maxValue = progressData.first.y;
-    int maxIndex = 0;
-    
+
+    double maxValue = progressData.first.value;
+    var maxIndex = 0;
+
     for (int i = 1; i < progressData.length; i++) {
-      if (progressData[i].y > maxValue) {
-        maxValue = progressData[i].y;
+      if (progressData[i].value > maxValue) {
+        maxValue = progressData[i].value;
         maxIndex = i;
       }
     }
-    
+
     return {'index': maxIndex, 'value': maxValue};
   }
 
-  /// Calcule le pire jour de la période
-  /// 
-  /// [period] : Période sélectionnée
-  /// [habits] : Liste des habitudes
-  /// [tasks] : Liste des tâches
-  /// Retourne : Index du pire jour et sa valeur
-  static Map<String, dynamic> calculateWorstDay(String period, List<Habit> habits, List<Task> tasks) {
+  /// Calcule le pire jour de la p��riode.
+  static Map<String, dynamic> calculateWorstDay(
+    String period,
+    List<Habit> habits,
+    List<Task> tasks,
+  ) {
     final progressData = generateProgressData(period, habits, tasks);
-    
     if (progressData.isEmpty) {
       return {'index': 0, 'value': 0.0};
     }
-    
-    double minValue = progressData.first.y;
-    int minIndex = 0;
-    
+
+    double minValue = progressData.first.value;
+    var minIndex = 0;
+
     for (int i = 1; i < progressData.length; i++) {
-      if (progressData[i].y < minValue) {
-        minValue = progressData[i].y;
+      if (progressData[i].value < minValue) {
+        minValue = progressData[i].value;
         minIndex = i;
       }
     }
-    
+
     return {'index': minIndex, 'value': minValue};
   }
-} 
+
+  static double _calculateDailyProgressValue(
+    List<Habit> habits,
+    List<Task> tasks,
+    DateTime date,
+  ) {
+    final habitProgress = _calculateHabitProgress(date, habits);
+    final taskProgress = _calculateTaskProgress(date, tasks);
+    return _combineDailyProgress(
+      habitProgress,
+      taskProgress,
+      habits.isNotEmpty,
+      tasks.isNotEmpty,
+    );
+  }
+
+  static double _calculateHabitProgress(DateTime date, List<Habit> habits) {
+    if (habits.isEmpty) {
+      return 0.0;
+    }
+
+    final dateKey = _getDateKey(date);
+    var completedHabits = 0;
+
+    for (final habit in habits) {
+      final value = habit.completions[dateKey];
+      final completed = habit.type == HabitType.binary
+          ? value == true
+          : (value != null && habit.targetValue != null && (value as double) >= habit.targetValue!);
+      if (completed) {
+        completedHabits++;
+      }
+    }
+
+    return (completedHabits / habits.length) * 100;
+  }
+
+  static double _calculateTaskProgress(DateTime date, List<Task> tasks) {
+    if (tasks.isEmpty) {
+      return 0.0;
+    }
+
+    final targetDate = DateTime(date.year, date.month, date.day);
+    final tasksCompletedToday = tasks.where((task) {
+      if (!task.isCompleted || task.completedAt == null) {
+        return false;
+      }
+      final completedDate = DateTime(
+        task.completedAt!.year,
+        task.completedAt!.month,
+        task.completedAt!.day,
+      );
+      return completedDate.isAtSameMomentAs(targetDate);
+    }).length;
+
+    return (tasksCompletedToday / tasks.length) * 100;
+  }
+
+  static double _combineDailyProgress(
+    double habitProgress,
+    double taskProgress,
+    bool hasHabits,
+    bool hasTasks,
+  ) {
+    if (hasHabits && hasTasks) {
+      return (habitProgress * 0.7) + (taskProgress * 0.3);
+    }
+    if (hasHabits) {
+      return habitProgress;
+    }
+    return taskProgress;
+  }
+
+  static String _getDateKey(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
+  static DateTime _truncateToDay(DateTime date) {
+    return DateTime(date.year, date.month, date.day);
+  }
+
+  static String _formatWeekdayLabel(DateTime date) {
+    const weekdays = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+    final index = date.weekday % 7; // DateTime.weekday : 1 (Lundi) -> 7 (Dimanche)
+    return weekdays[index - 1 >= 0 ? index - 1 : 6];
+  }
+}

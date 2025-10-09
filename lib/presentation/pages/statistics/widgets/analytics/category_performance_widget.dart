@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-
 import 'package:prioris/presentation/pages/statistics/services/statistics_calculation_service.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 
-/// Widget affichant la performance par catégorie avec barres de progression colorées
-/// [categories] : Map avec catégorie -> pourcentage de réussite (0-100)
 class CategoryPerformanceWidget extends StatelessWidget {
   final Map<String, double> categories;
 
@@ -23,59 +20,71 @@ class CategoryPerformanceWidget extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              '📊 Performance par Catégorie',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Column(
-              children: categories.entries.map((entry) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            entry.key,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
-                          Text(
-                            '${entry.value.toInt()}%',
-                            style: TextStyle(
-                              color: AppTheme.primaryColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      LinearProgressIndicator(
-                        value: entry.value / 100,
-                        backgroundColor: Colors.grey[300],
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          StatisticsCalculationService.getProgressColor(entry.value),
-                        ),
-                        minHeight: 8,
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
+          children: _buildContent(),
         ),
       ),
     );
   }
-} 
+
+  List<Widget> _buildContent() {
+    return [
+      const Text(
+        'Performance par categorie',
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      const SizedBox(height: 20),
+      ...categories.entries.map(_buildCategorySection),
+    ];
+  }
+
+  Widget _buildCategorySection(MapEntry<String, double> entry) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildCategoryHeader(entry),
+          const SizedBox(height: 8),
+          _buildProgressBar(entry.value),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryHeader(MapEntry<String, double> entry) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          entry.key,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
+        ),
+        Text(
+          '${entry.value.toInt()}%',
+          style: TextStyle(
+            color: AppTheme.primaryColor,
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProgressBar(double percentage) {
+    return LinearProgressIndicator(
+      value: (percentage / 100).clamp(0.0, 1.0),
+      backgroundColor: Colors.grey[300],
+      valueColor: AlwaysStoppedAnimation<Color>(
+        StatisticsCalculationService.getProgressColor(percentage),
+      ),
+      minHeight: 8,
+    );
+  }
+}

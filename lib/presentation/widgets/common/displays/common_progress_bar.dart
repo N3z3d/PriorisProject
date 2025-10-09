@@ -2,33 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 
-/// Widget de barre de progression réutilisable pour toute l'application
 class CommonProgressBar extends StatelessWidget {
-  /// Valeur courante de la progression (obligatoire)
   final double value;
-
-  /// Valeur maximale (défaut: 100)
   final double? maxValue;
-
-  /// Label optionnel à afficher à gauche ou au-dessus
   final String? label;
-
-  /// Couleur personnalisée de la barre
   final Color? color;
-
-  /// Hauteur de la barre (défaut: 12)
   final double? height;
-
-  /// Afficher le pourcentage à droite
   final bool showPercentage;
-
-  /// Rayon de bordure
   final BorderRadius? borderRadius;
-
-  /// Padding autour du widget
   final EdgeInsetsGeometry? padding;
 
-  /// Constructeur
   const CommonProgressBar({
     super.key,
     required this.value,
@@ -43,72 +26,114 @@ class CommonProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double max = maxValue ?? 100.0;
-    final double percent = (max == 0) ? 0 : (value / max).clamp(0.0, 1.0);
-    final Color barColor = color ?? AppTheme.primaryColor;
-    final double barHeight = height ?? 12.0;
-    final BorderRadius radius = borderRadius ?? BorderRadiusTokens.progressBar;
+    final config = _ProgressConfig(
+      max: (maxValue ?? 100.0).clamp(0.0, double.infinity),
+      value: value,
+      color: color ?? AppTheme.primaryColor,
+      height: height ?? 12.0,
+      radius: borderRadius ?? BorderRadiusTokens.progressBar,
+    );
 
     return Padding(
       padding: padding ?? const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (label != null) ...[
-            Text(
-              label!,
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 14,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 4),
-          ],
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: radius,
-                  child: Container(
-                    height: barHeight,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: radius,
-                    ),
-                    child: Stack(
-                      children: [
-                        FractionallySizedBox(
-                          alignment: Alignment.centerLeft,
-                          widthFactor: percent,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: barColor,
-                              borderRadius: radius,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              if (showPercentage) ...[
-                const SizedBox(width: 12),
-                Text(
-                  '${(percent * 100).toStringAsFixed(0)}%',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                    color: Colors.black87,
-                  ),
-                ),
-              ],
-            ],
-          ),
+          ..._buildLabelSection(),
+          _buildProgressRow(config),
         ],
       ),
     );
   }
-} 
+
+  List<Widget> _buildLabelSection() {
+    if (label == null) {
+      return const [];
+    }
+    return [
+      Text(
+        label!,
+        style: const TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: 14,
+          color: Colors.black87,
+        ),
+      ),
+      const SizedBox(height: 4),
+    ];
+  }
+
+  Widget _buildProgressRow(_ProgressConfig config) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(child: _buildProgressBar(config)),
+        if (showPercentage) ...[
+          const SizedBox(width: 12),
+          _buildPercentageLabel(config.percent),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildProgressBar(_ProgressConfig config) {
+    return ClipRRect(
+      borderRadius: config.radius,
+      child: Container(
+        height: config.height,
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          borderRadius: config.radius,
+        ),
+        child: Stack(
+          children: [
+            FractionallySizedBox(
+              alignment: Alignment.centerLeft,
+              widthFactor: config.percent,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: config.color,
+                  borderRadius: config.radius,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPercentageLabel(double percent) {
+    return Text(
+      '${(percent * 100).toStringAsFixed(0)}%',
+      style: const TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: 13,
+        color: Colors.black87,
+      ),
+    );
+  }
+}
+
+class _ProgressConfig {
+  final double max;
+  final double value;
+  final Color color;
+  final double height;
+  final BorderRadius radius;
+
+  const _ProgressConfig({
+    required this.max,
+    required this.value,
+    required this.color,
+    required this.height,
+    required this.radius,
+  });
+
+  double get percent {
+    if (max == 0) {
+      return 0.0;
+    }
+    return (value / max).clamp(0.0, 1.0);
+  }
+}

@@ -77,57 +77,66 @@ class _AddHabitDialogState extends ConsumerState<AddHabitDialog> {
   @override
   Widget build(BuildContext context) {
     final isEdit = widget.habit != null;
-    
+
     return AlertDialog(
-      title: Text(isEdit ? 'Modifier l\'habitude' : 'Nouvelle habitude'),
-      content: SizedBox(
-        width: double.maxFinite,
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                HabitBasicInfoForm(
-                  nameController: _nameController,
-                  descriptionController: _descriptionController,
-                  categoryController: _categoryController,
-                  selectedType: _selectedType,
-                  existingCategories: _existingCategories,
-                  onTypeChanged: (type) => setState(() => _selectedType = type),
-                ),
-                HabitQuantitativeForm(
-                  targetValueController: _targetValueController,
-                  unitController: _unitController,
-                  selectedType: _selectedType,
-                ),
-                HabitRecurrenceForm(
-                  selectedRecurrenceType: _selectedRecurrenceType,
-                  onRecurrenceTypeChanged: (type) => setState(() => _selectedRecurrenceType = type),
-                  intervalDays: _intervalDays,
-                  onIntervalDaysChanged: (days) => setState(() => _intervalDays = days),
-                  selectedWeekdays: _selectedWeekdays,
-                  onWeekdaysChanged: (days) => setState(() => _selectedWeekdays = days),
-                  timesTarget: _timesTarget,
-                  onTimesTargetChanged: (t) => setState(() => _timesTarget = t),
-                ),
-              ],
-            ),
+      title: Text(isEdit ? "Modifier l'habitude" : "Nouvelle habitude"),
+      content: _buildDialogContent(),
+      actions: _buildDialogActions(isEdit),
+    );
+  }
+
+  Widget _buildDialogContent() {
+    return SizedBox(
+      width: double.maxFinite,
+      child: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              HabitBasicInfoForm(
+                nameController: _nameController,
+                descriptionController: _descriptionController,
+                categoryController: _categoryController,
+                selectedType: _selectedType,
+                existingCategories: _existingCategories,
+                onTypeChanged: (type) => setState(() => _selectedType = type),
+              ),
+              HabitQuantitativeForm(
+                targetValueController: _targetValueController,
+                unitController: _unitController,
+                selectedType: _selectedType,
+              ),
+              HabitRecurrenceForm(
+                selectedRecurrenceType: _selectedRecurrenceType,
+                onRecurrenceTypeChanged: (type) => setState(() => _selectedRecurrenceType = type),
+                intervalDays: _intervalDays,
+                onIntervalDaysChanged: (days) => setState(() => _intervalDays = days),
+                selectedWeekdays: _selectedWeekdays,
+                onWeekdaysChanged: (days) => setState(() => _selectedWeekdays = days),
+                timesTarget: _timesTarget,
+                onTimesTargetChanged: (t) => setState(() => _timesTarget = t),
+              ),
+            ],
           ),
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Annuler'),
-        ),
-        ElevatedButton(
-          onPressed: _saveHabit,
-          child: Text(isEdit ? 'Modifier' : 'Ajouter'),
-        ),
-      ],
     );
   }
+
+  List<Widget> _buildDialogActions(bool isEdit) {
+    return [
+      TextButton(
+        onPressed: () => Navigator.of(context).pop(),
+        child: const Text('Annuler'),
+      ),
+      ElevatedButton(
+        onPressed: _saveHabit,
+        child: Text(isEdit ? 'Modifier' : 'Ajouter'),
+      ),
+    ];
+  }
+
 
   void _saveHabit() {
     if (_formKey.currentState!.validate()) {

@@ -1,88 +1,131 @@
 import '../../../core/services/domain_service.dart';
 import '../../aggregates/custom_list_aggregate.dart';
+import '../../value_objects/list_item.dart';
 
-/// Analyseur de difficulté des listes
+/// Difficulty analyzer for custom lists.
 ///
-/// Analyse l'équilibre de difficulté d'une liste et fournit des recommandations
-/// pour maintenir un équilibre optimal entre tâches faciles, moyennes et difficiles.
-///
-/// SOLID:
-/// - SRP: Responsabilité unique d'analyse de difficulté
-/// - OCP: Extensible via héritage sans modification
-/// - DIP: Dépend de l'abstraction LoggableDomainService
+/// Determines how balanced the remaining tasks are and provides
+/// recommendations to maintain an accessible difficulty mix.
 class DifficultyAnalyzer extends LoggableDomainService {
   @override
   String get serviceName => 'DifficultyAnalyzer';
 
-  /// Calcule le score de difficulté optimal pour une liste
+  /// Calculates the optimal difficulty balance for a list.
   DifficultyBalance calculateOptimalDifficulty(CustomListAggregate list) {
     return executeOperation(() {
-      log('Calcul de l\'équilibre de difficulté pour ${list.name}');
+      log("Evaluating difficulty balance for ${list.name}");
 
-      final items = list.items.where((item) => !item.isCompleted).toList();
-
-      if (items.isEmpty) {
-        return DifficultyBalance(
+      final activeItems = list.items.where((item) => !item.isCompleted).toList();
+      if (activeItems.isEmpty) {
+        return const DifficultyBalance(
           easyCount: 0,
           mediumCount: 0,
           hardCount: 0,
           balance: DifficultyBalanceType.perfect,
-          recommendation: 'Liste complétée!',
+          recommendation: 'List already completed',
         );
       }
 
-      // Catégoriser les éléments par difficulté (basé sur ELO)
-      final easyItems = items.where((item) => item.eloScore.value < 1200).length;
-      final mediumItems = items
-          .where((item) =>
-              item.eloScore.value >= 1200 && item.eloScore.value < 1400)
-          .length;
-      final hardItems = items.where((item) => item.eloScore.value >= 1400).length;
+      final counts = _countByDifficulty(activeItems);
+      final targets = _computeTargetDistribution(activeItems.length);
+      final balance = _evaluateBalance(counts, targets);
 
-      // Ratios optimaux: 40% facile, 40% moyen, 20% difficile
-      final totalItems = items.length;
-      final optimalEasy = (totalItems * 0.4).round();
-      final optimalMedium = (totalItems * 0.4).round();
-      final optimalHard = (totalItems * 0.2).round();
-
-      // Analyser l'équilibre actuel
-      final easyDiff = (easyItems - optimalEasy).abs();
-      final mediumDiff = (mediumItems - optimalMedium).abs();
-      final hardDiff = (hardItems - optimalHard).abs();
-
-      final totalDiff = easyDiff + mediumDiff + hardDiff;
-
-      DifficultyBalanceType balanceType;
-      String recommendation;
-
-      if (totalDiff <= 2) {
-        balanceType = DifficultyBalanceType.perfect;
-        recommendation = 'Équilibre optimal maintenu!';
-      } else if (easyItems > optimalEasy + 2) {
-        balanceType = DifficultyBalanceType.tooEasy;
-        recommendation = 'Ajouter des défis plus complexes';
-      } else if (hardItems > optimalHard + 2) {
-        balanceType = DifficultyBalanceType.tooHard;
-        recommendation = 'Ajouter des tâches plus accessibles';
-      } else {
-        balanceType = DifficultyBalanceType.unbalanced;
-        recommendation = 'Rééquilibrer la distribution des difficultés';
-      }
-
-      log('Équilibre analysé - Facile: $easyItems, Moyen: $mediumItems, Difficile: $hardItems');
+      log(
+        'Difficulty mix analysed - easy: ${counts.easy}, medium: ${counts.medium}, hard: ${counts.hard}',
+      );
 
       return DifficultyBalance(
-        easyCount: easyItems,
-        mediumCount: mediumItems,
-        hardCount: hardItems,
-        balance: balanceType,
-        recommendation: recommendation,
+        easyCount: counts.easy,
+        mediumCount: counts.medium,
+        hardCount: counts.hard,
+        balance: balance.type,
+        recommendation: balance.recommendation,
       );
     });
   }
+
+  _DifficultyCounts _countByDifficulty(List<ListItem> activeItems) {
+    var easy = 0;
+    var medium = 0;
+    var hard = 0;
+
+    for (final item in activeItems) {
+      final score = item.eloScore.value;
+      if (score < 1200) {
+        easy++;
+      } else if (score < 1400) {
+        medium++;
+      } else {
+        hard++;
+      }
+    }
+
+    return _DifficultyCounts(easy: easy, medium: medium, hard: hard);
+  }
+
+  _DifficultyTargets _computeTargetDistribution(int totalItems) {
+    return _DifficultyTargets(
+      easy: (totalItems * 0.4).round(),
+      medium: (totalItems * 0.4).round(),
+      hard: (totalItems * 0.2).round(),
+    );
+  }
+
+  _BalanceResult _evaluateBalance(_DifficultyCounts counts, _DifficultyTargets targets) {
+    final diffEasy = (counts.easy - targets.easy).abs();
+    final diffMedium = (counts.medium - targets.medium).abs();
+    final diffHard = (counts.hard - targets.hard).abs();
+    final totalDiff = diffEasy + diffMedium + diffHard;
+
+    if (totalDiff <= 2) {
+      return const _BalanceResult(
+        type: DifficultyBalanceType.perfect,
+        recommendation: 'Difficulty mix is optimal',
+      );
+    }
+    if (counts.easy > targets.easy + 2) {
+      return const _BalanceResult(
+        type: DifficultyBalanceType.tooEasy,
+        recommendation: 'Add more challenging items to keep momentum',
+      );
+    }
+    if (counts.hard > targets.hard + 2) {
+      return const _BalanceResult(
+        type: DifficultyBalanceType.tooHard,
+        recommendation: 'Balance with easier wins to maintain confidence',
+      );
+    }
+    return const _BalanceResult(
+      type: DifficultyBalanceType.unbalanced,
+      recommendation: 'Adjust the mix of task difficulties',
+    );
+  }
 }
 
-/// Représente l'équilibre de difficulté d'une liste
+class _DifficultyCounts {
+  final int easy;
+  final int medium;
+  final int hard;
+
+  const _DifficultyCounts({required this.easy, required this.medium, required this.hard});
+}
+
+class _DifficultyTargets {
+  final int easy;
+  final int medium;
+  final int hard;
+
+  const _DifficultyTargets({required this.easy, required this.medium, required this.hard});
+}
+
+class _BalanceResult {
+  final DifficultyBalanceType type;
+  final String recommendation;
+
+  const _BalanceResult({required this.type, required this.recommendation});
+}
+
+/// Represents the difficulty balance of a list.
 class DifficultyBalance {
   final int easyCount;
   final int mediumCount;
@@ -99,7 +142,7 @@ class DifficultyBalance {
   });
 }
 
-/// Types d'équilibre de difficulté
+/// Difficulty balance categories.
 enum DifficultyBalanceType {
   perfect,
   tooEasy,

@@ -100,7 +100,7 @@ void main() {
       expect(results.length, greaterThanOrEqualTo(2));
     });
 
-    // TODO: Implémenter les tests pour la pondération par ancienneté
+    // Pending: Implémenter les tests pour la pondération par ancienneté
     // group('Mode aléatoire avec pondération par ancienneté', () {
     //   test('selectRandomTaskWithAgeWeight doit favoriser les tâches anciennes', () {
     //     // Ce test échouera jusqu'à ce qu'on implémente la méthode

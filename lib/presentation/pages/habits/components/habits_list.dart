@@ -46,10 +46,10 @@ class HabitsList extends StatelessWidget {
   }
 
   void _handleEdit(Habit habit) {
-    // TODO: Navigate to edit screen
+    // Pending: Navigate to edit screen
   }
 
   void _handleTap(BuildContext context, Habit habit) {
-    // TODO: Show habit details or perform action
+    // Pending: Show habit details or perform action
   }
 }

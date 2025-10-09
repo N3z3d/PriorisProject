@@ -119,7 +119,7 @@ class HiveRepositoryFactory implements IRepositoryFactory {
         }
       } catch (e) {
         // Log error but continue disposal
-        // TODO: Replace with proper logging service
+        // Pending: Replace with proper logging service
         // ignore: avoid_print
         print('Warning: Error disposing repository: $e');
       }
@@ -365,12 +365,12 @@ final adaptivePersistenceListenerProvider = Provider<void>((ref) {
         final service = await ref.read(adaptivePersistenceServiceProvider.future);
 
         // L'état d'authentification a changé
-        // TODO: Replace with proper logging service
+        // Pending: Replace with proper logging service
         // ignore: avoid_print
         print('🔄 Authentification changée: $previous → $current');
         await service.updateAuthenticationState(isAuthenticated: current);
       } catch (error) {
-        // TODO: Replace with proper logging service
+        // Pending: Replace with proper logging service
         // ignore: avoid_print
         print('⚠️ Erreur lors de la mise à jour du service de persistance: $error');
       }

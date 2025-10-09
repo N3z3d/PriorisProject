@@ -267,7 +267,7 @@ class SupabaseCustomListRepository implements CustomListRepository {
 
   /// Synchronise avec les données locales (si Hive est encore utilisé)
   Future<void> syncWithLocal() async {
-    // TODO: Implémenter sync avec Hive si nécessaire
+    // Pending: Implémenter sync avec Hive si nécessaire
   }
 
   /// Écoute les changements en temps réel

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 
 /// Widget Header de section commun réutilisable pour toute l'application
@@ -30,16 +30,6 @@ class CommonSectionHeader extends StatelessWidget {
   /// Espacement entre les éléments
   final double? spacing;
 
-  /// Constructeur du widget CommonSectionHeader
-  /// 
-  /// [title] : Le titre principal (obligatoire)
-  /// [subtitle] : Le sous-titre (optionnel)
-  /// [icon] : L'icône à afficher (optionnel)
-  /// [onAction] : Callback de l'action (optionnel)
-  /// [actionLabel] : Label du bouton d'action (optionnel)
-  /// [titleFontSize] : Taille de la police du titre (défaut: 18)
-  /// [titleColor] : Couleur du titre (défaut: AppTheme.primaryColor)
-  /// [spacing] : Espacement entre les éléments (défaut: 8)
   const CommonSectionHeader({
     super.key,
     required this.title,
@@ -56,58 +46,71 @@ class CommonSectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        // Icône optionnelle
-        if (icon != null) ...[
-          Icon(
-            icon,
+        ..._buildLeading(),
+        Expanded(child: _buildTextColumn()),
+        ..._buildAction(),
+      ],
+    );
+  }
+
+  List<Widget> _buildLeading() {
+    if (icon == null) {
+      return const [];
+    }
+
+    return [
+      Icon(
+        icon,
+        color: titleColor ?? AppTheme.primaryColor,
+        size: titleFontSize ?? 18,
+      ),
+      SizedBox(width: spacing ?? 8),
+    ];
+  }
+
+  Widget _buildTextColumn() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: titleFontSize ?? 18,
+            fontWeight: FontWeight.bold,
             color: titleColor ?? AppTheme.primaryColor,
-            size: titleFontSize ?? 18,
-          ),
-          SizedBox(width: spacing ?? 8),
-        ],
-        
-        // Contenu principal (titre + sous-titre)
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: titleFontSize ?? 18,
-                  fontWeight: FontWeight.bold,
-                  color: titleColor ?? AppTheme.primaryColor,
-                ),
-              ),
-              if (subtitle != null) ...[
-                SizedBox(height: (spacing ?? 8) / 2),
-                Text(
-                  subtitle!,
-                  style: TextStyle(
-                    fontSize: (titleFontSize ?? 18) - 4,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
-            ],
           ),
         ),
-        
-        // Bouton d'action optionnel
-        if (onAction != null && actionLabel != null) ...[
-          SizedBox(width: spacing ?? 8),
-          TextButton(
-            onPressed: onAction,
-            child: Text(
-              actionLabel!,
-              style: TextStyle(
-                color: AppTheme.primaryColor,
-                fontWeight: FontWeight.w600,
-              ),
+        if (subtitle != null) ...[
+          SizedBox(height: (spacing ?? 8) / 2),
+          Text(
+            subtitle!,
+            style: TextStyle(
+              fontSize: (titleFontSize ?? 18) - 4,
+              color: Colors.grey[600],
             ),
           ),
         ],
       ],
     );
   }
-} 
+
+  List<Widget> _buildAction() {
+    if (onAction == null || actionLabel == null) {
+      return const [];
+    }
+
+    return [
+      SizedBox(width: spacing ?? 8),
+      TextButton(
+        onPressed: onAction,
+        child: Text(
+          actionLabel!,
+          style: TextStyle(
+            color: AppTheme.primaryColor,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    ];
+  }
+}

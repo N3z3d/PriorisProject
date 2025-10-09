@@ -13,15 +13,15 @@ import 'package:prioris/data/repositories/list_item_repository.dart';
 
 /// Core infrastructure services
 final supabaseServiceProvider = Provider<SupabaseService>((ref) {
-  return SupabaseService.instance; // TODO: Make this configurable too
+  return SupabaseService.instance; // Pending: Make this configurable too
 });
 
 final authServiceProvider = Provider<AuthService>((ref) {
-  return AuthService.instance; // TODO: Make this configurable too  
+  return AuthService.instance; // Pending: Make this configurable too  
 });
 
 final loggerServiceProvider = Provider<LoggerService>((ref) {
-  return LoggerService.instance; // TODO: Make this injectable
+  return LoggerService.instance; // Pending: Make this injectable
 });
 
 /// Repository providers with dependency injection

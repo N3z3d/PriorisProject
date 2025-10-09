@@ -4,14 +4,13 @@ import 'package:prioris/presentation/pages/statistics/widgets/analytics/habits_s
 import 'package:prioris/presentation/pages/statistics/widgets/charts/streaks_chart_widget.dart';
 import 'package:prioris/presentation/pages/statistics/widgets/smart/top_habits_widget.dart';
 
-/// Widget affichant l'onglet Habitudes des statistiques
-/// 
-/// Ce widget regroupe tous les widgets de l'onglet Habitudes :
-/// - Statistiques des habitudes (HabitsStatsWidget)
-/// - Graphique des séries (StreaksChartWidget)
-/// - Top des habitudes (TopHabitsWidget)
+/// Widget affichant l'onglet Habitudes des statistiques.
+///
+/// Il regroupe :
+/// - les statistiques des habitudes
+/// - le graphique des séries (streaks)
+/// - le top des habitudes
 class HabitsTabWidget extends StatelessWidget {
-  /// Liste des habitudes à analyser
   final List<Habit> habits;
 
   const HabitsTabWidget({
@@ -26,18 +25,13 @@ class HabitsTabWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Statistiques des habitudes
           HabitsStatsWidget(habits: habits),
           const SizedBox(height: 24),
-          
-          // Graphique des streaks
           StreaksChartWidget(
-            data: _getStreakData(),
+            entries: _buildStreakEntries(),
             period: const Duration(days: 30),
           ),
           const SizedBox(height: 24),
-          
-          // Top habitudes
           TopHabitsWidget(
             topHabits: _getTopHabits(),
           ),
@@ -46,33 +40,26 @@ class HabitsTabWidget extends StatelessWidget {
     );
   }
 
-  /// Génère les noms des habitudes pour le graphique des séries
-  List<String> _getHabitNames() {
-    if (habits.isEmpty) return [];
-    
-    // Prendre les 4 premières habitudes ou toutes si moins de 4
+  List<StreakChartEntry> _buildStreakEntries() {
+    if (habits.isEmpty) {
+      return const [];
+    }
+
     final displayHabits = habits.take(4).toList();
-    return displayHabits.map((habit) => habit.name).toList();
+    return displayHabits
+        .map(
+          (habit) => StreakChartEntry(
+            name: habit.name,
+            streakLength: habit.getCurrentStreak().toDouble(),
+            category: habit.category ?? 'Général',
+          ),
+        )
+        .toList();
   }
 
-  /// Génère les données de séries pour le graphique
-  List<Map<String, dynamic>> _getStreakData() {
-    if (habits.isEmpty) return [];
-
-    // Prendre les 4 premières habitudes ou toutes si moins de 4
-    final displayHabits = habits.take(4).toList();
-    return displayHabits.map((habit) => {
-      'name': habit.name,
-      'streak': habit.getCurrentStreak().toDouble(),
-      'category': habit.category ?? 'Général',
-    }).toList();
-  }
-
-  /// Génère le top des habitudes basé sur leur taux de réussite
   List<TopHabit> _getTopHabits() {
-    if (habits.isEmpty) return [];
-    
-    // Calculer le taux de réussite pour chaque habitude
+    if (habits.isEmpty) return const [];
+
     final List<Map<String, dynamic>> habitsWithRate = habits.map((habit) {
       final rate = habit.getSuccessRate() * 100;
       return {
@@ -80,20 +67,17 @@ class HabitsTabWidget extends StatelessWidget {
         'rate': rate,
       };
     }).toList();
-    
-    // Trier par taux de réussite décroissant
+
     habitsWithRate.sort((a, b) => (b['rate'] as double).compareTo(a['rate'] as double));
-    
-    // Prendre le top 5
+
     final top5 = habitsWithRate.take(5).toList();
-    
-    // Convertir en TopHabit
+
     return top5.asMap().entries.map((entry) {
       final index = entry.key;
       final data = entry.value;
       final habit = data['habit'] as Habit;
       final rate = data['rate'] as double;
-      
+
       return TopHabit(
         name: habit.name,
         percentage: '${rate.toInt()}%',
@@ -101,4 +85,4 @@ class HabitsTabWidget extends StatelessWidget {
       );
     }).toList();
   }
-} 
+}

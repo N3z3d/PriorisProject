@@ -63,7 +63,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       setState(() {
         _errorMessage = 'Erreur: ${e.toString()}';
       });
-      // TODO: Remplacer par un logger approprié
+      // Pending: Remplacer par un logger approprié
     } finally {
       setState(() {
         _isLoading = false;

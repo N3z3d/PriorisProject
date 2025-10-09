@@ -86,38 +86,45 @@ class _VirtualizedListState<T> extends State<VirtualizedList<T>> {
 
   @override
   Widget build(BuildContext context) {
-    // Si les données sont en cours de chargement
-    if (widget.items.isEmpty && widget.loadingWidget != null) {
+    if (_isLoadingState()) {
       return widget.loadingWidget!;
     }
-
-    // Si la liste est vide
-    if (widget.items.isEmpty && widget.emptyWidget != null) {
+    if (_isEmptyState()) {
       return widget.emptyWidget!;
     }
 
-    // Si on a un séparateur, utiliser ListView.separated
-    if (widget.separator != null) {
-      return ListView.separated(
-        controller: _scrollController,
-        scrollDirection: widget.scrollDirection,
-        reverse: widget.reverse,
-        padding: widget.padding,
-        physics: widget.physics ?? const AlwaysScrollableScrollPhysics(),
-        shrinkWrap: widget.shrinkWrap,
-        cacheExtent: (widget.cacheExtent ?? 250.0).toDouble(), // Zone de cache par défaut
-        addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
-        addRepaintBoundaries: widget.addRepaintBoundaries,
-        addSemanticIndexes: widget.addSemanticIndexes,
-        itemCount: widget.items.length,
-        separatorBuilder: (context, index) => widget.separator!,
-        itemBuilder: (context, index) {
-          return _buildItem(context, index);
-        },
-      );
-    }
+    return widget.separator != null
+        ? _buildSeparatedList()
+        : _buildBuilderList();
+  }
 
-    // Sinon utiliser ListView.builder
+  bool _isLoadingState() {
+    return widget.items.isEmpty && widget.loadingWidget != null;
+  }
+
+  bool _isEmptyState() {
+    return widget.items.isEmpty && widget.emptyWidget != null;
+  }
+
+  Widget _buildSeparatedList() {
+    return ListView.separated(
+      controller: _scrollController,
+      scrollDirection: widget.scrollDirection,
+      reverse: widget.reverse,
+      padding: widget.padding,
+      physics: widget.physics ?? const AlwaysScrollableScrollPhysics(),
+      shrinkWrap: widget.shrinkWrap,
+      cacheExtent: (widget.cacheExtent ?? 250.0).toDouble(),
+      addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+      addRepaintBoundaries: widget.addRepaintBoundaries,
+      addSemanticIndexes: widget.addSemanticIndexes,
+      itemCount: widget.items.length,
+      separatorBuilder: (context, index) => widget.separator!,
+      itemBuilder: _buildItem,
+    );
+  }
+
+  Widget _buildBuilderList() {
     return ListView.builder(
       controller: _scrollController,
       scrollDirection: widget.scrollDirection,
@@ -125,17 +132,16 @@ class _VirtualizedListState<T> extends State<VirtualizedList<T>> {
       padding: widget.padding,
       physics: widget.physics ?? const AlwaysScrollableScrollPhysics(),
       shrinkWrap: widget.shrinkWrap,
-      itemExtent: widget.itemExtent, // Hauteur fixe des items si définie
-      cacheExtent: (widget.cacheExtent ?? 250.0).toDouble(),
+      itemExtent: widget.itemExtent,
+      cacheExtent: widget.cacheExtent?.toDouble() ?? 250.0,
       addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
       addRepaintBoundaries: widget.addRepaintBoundaries,
       addSemanticIndexes: widget.addSemanticIndexes,
       itemCount: widget.items.length,
-      itemBuilder: (context, index) {
-        return _buildItem(context, index);
-      },
+      itemBuilder: _buildItem,
     );
   }
+
 
   Widget _buildItem(BuildContext context, int index) {
     final item = widget.items[index];

@@ -227,56 +227,29 @@ class _PremiumStatusIndicatorState extends State<PremiumStatusIndicator>
   StatusConfig _getStatusConfig() {
     switch (widget.status) {
       case StatusType.pending:
-        return StatusConfig(
-          label: 'En attente',
-          icon: Icons.schedule_rounded,
-          primaryColor: AppTheme.warningColor,
-          backgroundColor: AppTheme.warningColor.withOpacity(0.1),
-          borderColor: AppTheme.warningColor.withOpacity(0.3),
-          textColor: AppTheme.warningColor,
-        );
-
+        return _buildStatusConfig('En attente', Icons.schedule_rounded, AppTheme.warningColor);
       case StatusType.inProgress:
-        return StatusConfig(
-          label: 'En cours',
-          icon: Icons.play_circle_outline_rounded,
-          primaryColor: AppTheme.primaryColor,
-          backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
-          borderColor: AppTheme.primaryColor.withOpacity(0.3),
-          textColor: AppTheme.primaryColor,
-        );
-
+        return _buildStatusConfig('En cours', Icons.play_circle_outline_rounded, AppTheme.primaryColor);
       case StatusType.completed:
-        return StatusConfig(
-          label: 'Terminé',
-          icon: Icons.check_circle_rounded,
-          primaryColor: AppTheme.successColor,
-          backgroundColor: AppTheme.successColor.withOpacity(0.1),
-          borderColor: AppTheme.successColor.withOpacity(0.3),
-          textColor: AppTheme.successColor,
-        );
-
+        return _buildStatusConfig('Termine', Icons.check_circle_rounded, AppTheme.successColor);
       case StatusType.paused:
-        return StatusConfig(
-          label: 'En pause',
-          icon: Icons.pause_circle_outline_rounded,
-          primaryColor: AppTheme.grey600,
-          backgroundColor: AppTheme.grey600.withOpacity(0.1),
-          borderColor: AppTheme.grey600.withOpacity(0.3),
-          textColor: AppTheme.grey600,
-        );
-
+        return _buildStatusConfig('En pause', Icons.pause_circle_outline_rounded, AppTheme.grey600);
       case StatusType.failed:
-        return StatusConfig(
-          label: 'Échoué',
-          icon: Icons.error_rounded,
-          primaryColor: AppTheme.errorColor,
-          backgroundColor: AppTheme.errorColor.withOpacity(0.1),
-          borderColor: AppTheme.errorColor.withOpacity(0.3),
-          textColor: AppTheme.errorColor,
-        );
+        return _buildStatusConfig('Echoue', Icons.error_rounded, AppTheme.errorColor);
     }
   }
+
+  StatusConfig _buildStatusConfig(String label, IconData icon, Color color) {
+    return StatusConfig(
+      label: label,
+      icon: icon,
+      primaryColor: color,
+      backgroundColor: color.withOpacity(0.1),
+      borderColor: color.withOpacity(0.3),
+      textColor: color,
+    );
+  }
+
 
   String _getAccessibilityLabel() {
     final config = _getStatusConfig();

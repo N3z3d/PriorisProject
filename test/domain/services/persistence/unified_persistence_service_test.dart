@@ -1,7 +1,7 @@
 /// **UNIFIED PERSISTENCE SERVICE TESTS** - Tests Complets
 ///
-/// Tests pour le service de persistance unifi√© qui remplace 36 services dupliqu√©s
-/// V√©rifie le respect des principes SOLID et la fonctionnalit√© compl√®te
+/// Tests pour le service de persistance unifi+Æ qui remplace 36 services dupliqu+Æs
+/// V+Ærifie le respect des principes SOLID et la fonctionnalit+Æ compl+øte
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -81,13 +81,13 @@ void main() {
         logger: mockLogger,
         configuration: const UnifiedPersistenceConfiguration(
           enableDeduplication: true,
-          enableBackgroundSync: false, // D√©sactiv√© pour les tests
+          enableBackgroundSync: false, // D+Æsactiv+Æ pour les tests
         ),
       );
     });
 
     group('Lifecycle Management', () {
-      test('initialise correctement en mode local pour utilisateur invit√©', () async {
+      test('initialise correctement en mode local pour utilisateur invit+Æ', () async {
         // Act
         await service.initialize(isAuthenticated: false);
 
@@ -97,7 +97,7 @@ void main() {
         verify(mockLogger.info(argThat(contains('Initialisation')), context: anyNamed('context')));
       });
 
-      test('initialise correctement en mode cloud pour utilisateur connect√©', () async {
+      test('initialise correctement en mode cloud pour utilisateur connect+Æ', () async {
         // Act
         await service.initialize(isAuthenticated: true);
 
@@ -107,7 +107,7 @@ void main() {
         verify(mockLogger.info(argThat(contains('Initialisation')), context: anyNamed('context')));
       });
 
-      test('lance une exception si d√©j√† initialis√©', () async {
+      test('lance une exception si d+Æj+· initialis+Æ', () async {
         // Arrange
         await service.initialize(isAuthenticated: false);
 
@@ -117,19 +117,19 @@ void main() {
           throwsA(isA<UnifiedPersistenceException>().having(
             (e) => e.message,
             'message',
-            contains('d√©j√† initialis√©'),
+            contains('d+Æj+· initialis+Æ'),
           )),
         );
       });
 
-      test('lance une exception si utilis√© sans initialisation', () async {
+      test('lance une exception si utilis+Æ sans initialisation', () async {
         // Act & Assert
         expect(
           () => service.getAllLists(),
           throwsA(isA<UnifiedPersistenceException>().having(
             (e) => e.message,
             'message',
-            contains('non initialis√©'),
+            contains('non initialis+Æ'),
           )),
         );
       });
@@ -140,7 +140,7 @@ void main() {
         await service.initialize(isAuthenticated: false);
       });
 
-      test('g√®re la transition Invit√© ‚Üí Connect√©', () async {
+      test('g+øre la transition Invit+Æ ‘Â∆ Connect+Æ', () async {
         // Arrange
         final localLists = [TestDataFactory.createTestList()];
         when(mockLocalRepository.getAllLists()).thenAnswer((_) async => localLists);
@@ -157,7 +157,7 @@ void main() {
         verify(mockLogger.info(argThat(contains('Changement d\'authentification')), context: anyNamed('context')));
       });
 
-      test('g√®re la transition Connect√© ‚Üí Invit√©', () async {
+      test('g+øre la transition Connect+Æ ‘Â∆ Invit+Æ', () async {
         // Arrange
         await service.updateAuthenticationState(isAuthenticated: true);
         final cloudLists = [TestDataFactory.createTestList()];
@@ -177,7 +177,7 @@ void main() {
         await service.initialize(isAuthenticated: false);
       });
 
-      test('r√©cup√®re toutes les listes en mode local', () async {
+      test('r+Æcup+øre toutes les listes en mode local', () async {
         // Arrange
         final testLists = [
           TestDataFactory.createTestList(id: '1', name: 'List 1'),
@@ -204,10 +204,10 @@ void main() {
 
         // Assert
         verify(mockLocalRepository.saveList(testList)).called(1);
-        verify(mockLogger.info(argThat(contains('sauvegard√©e')), context: anyNamed('context')));
+        verify(mockLogger.info(argThat(contains('sauvegard+Æe')), context: anyNamed('context')));
       });
 
-      test('g√®re les conflits de d√©duplication lors de la sauvegarde', () async {
+      test('g+øre les conflits de d+Æduplication lors de la sauvegarde', () async {
         // Arrange
         final testList = TestDataFactory.createTestList();
         final existingList = TestDataFactory.createTestList(
@@ -215,7 +215,7 @@ void main() {
         );
 
         when(mockLocalRepository.saveList(testList))
-            .thenThrow(Exception('Une liste avec cet ID existe d√©j√†'));
+            .thenThrow(Exception('Une liste avec cet ID existe d+Æj+·'));
         when(mockLocalRepository.getListById(testList.id))
             .thenAnswer((_) async => existingList);
         when(mockLocalRepository.updateList(existingList))
@@ -230,7 +230,7 @@ void main() {
         verify(mockLocalRepository.updateList(existingList)).called(1);
       });
 
-      test('met √† jour une liste en mode local', () async {
+      test('met +· jour une liste en mode local', () async {
         // Arrange
         final testList = TestDataFactory.createTestList();
         when(mockLocalRepository.updateList(testList)).thenAnswer((_) async {});
@@ -275,7 +275,7 @@ void main() {
         await service.initialize(isAuthenticated: false);
       });
 
-      test('r√©cup√®re les items d\'une liste', () async {
+      test('r+Æcup+øre les items d\'une liste', () async {
         // Arrange
         const listId = 'test-list-1';
         final testItems = [
@@ -306,7 +306,7 @@ void main() {
         verify(mockLocalItemRepository.add(testItem)).called(1);
       });
 
-      test('g√®re les conflits de d√©duplication pour items', () async {
+      test('g+øre les conflits de d+Æduplication pour items', () async {
         // Arrange
         final testItem = TestDataFactory.createTestItem();
         final existingItem = TestDataFactory.createTestItem(
@@ -314,7 +314,7 @@ void main() {
         );
 
         when(mockLocalItemRepository.add(testItem))
-            .thenThrow(Exception('Un item avec cet id existe d√©j√†'));
+            .thenThrow(Exception('Un item avec cet id existe d+Æj+·'));
         when(mockLocalItemRepository.getById(testItem.id))
             .thenAnswer((_) async => existingItem);
         when(mockLocalItemRepository.update(existingItem))
@@ -329,7 +329,7 @@ void main() {
         verify(mockLocalItemRepository.update(existingItem)).called(1);
       });
 
-      test('met √† jour un item', () async {
+      test('met +· jour un item', () async {
         // Arrange
         final testItem = TestDataFactory.createTestItem();
         when(mockLocalItemRepository.update(testItem)).thenAnswer((_) async {});
@@ -374,7 +374,7 @@ void main() {
         await service.initialize(isAuthenticated: true);
       });
 
-      test('r√©cup√®re les listes en mode cloud avec fallback', () async {
+      test('r+Æcup+øre les listes en mode cloud avec fallback', () async {
         // Arrange
         final cloudLists = [TestDataFactory.createTestList()];
         when(mockCloudRepository.getAllLists()).thenAnswer((_) async => cloudLists);
@@ -412,7 +412,7 @@ void main() {
 
         // Assert
         verify(mockLocalRepository.saveList(testList)).called(1);
-        // Note: Cloud sync est asynchrone et ne sera pas v√©rifi√© dans les tests
+        // Note: Cloud sync est asynchrone et ne sera pas v+Ærifi+Æ dans les tests
       });
     });
 
@@ -421,7 +421,7 @@ void main() {
         await service.initialize(isAuthenticated: false);
       });
 
-      test('sauvegarde plusieurs items avec succ√®s', () async {
+      test('sauvegarde plusieurs items avec succ+øs', () async {
         // Arrange
         final items = [
           TestDataFactory.createTestItem(id: '1', title: 'Item 1'),
@@ -442,7 +442,7 @@ void main() {
         }
       });
 
-      test('effectue un rollback en cas d\'√©chec partiel lors de bulk save', () async {
+      test('effectue un rollback en cas d\'+Æchec partiel lors de bulk save', () async {
         // Arrange
         final items = [
           TestDataFactory.createTestItem(id: '1', title: 'Item 1'),
@@ -450,7 +450,7 @@ void main() {
         ];
 
         when(mockLocalItemRepository.add(items[0])).thenAnswer((_) async {});
-        when(mockLocalItemRepository.add(items[1])).thenThrow(Exception('√âchec sauvegarde'));
+        when(mockLocalItemRepository.add(items[1])).thenThrow(Exception('+Îchec sauvegarde'));
         when(mockLocalItemRepository.delete(items[0].id)).thenAnswer((_) async {});
 
         // Act & Assert
@@ -491,7 +491,7 @@ void main() {
         await service.initialize(isAuthenticated: false);
       });
 
-      test('v√©rifie la persistance d\'une liste avec succ√®s', () async {
+      test('v+Ærifie la persistance d\'une liste avec succ+øs', () async {
         // Arrange
         const listId = 'test-list-1';
         final testList = TestDataFactory.createTestList(id: listId);
@@ -502,10 +502,10 @@ void main() {
 
         // Assert
         verify(mockLocalRepository.getListById(listId)).called(1);
-        verify(mockLogger.debug(argThat(contains('V√©rification r√©ussie')), context: anyNamed('context')));
+        verify(mockLogger.debug(argThat(contains('V+Ærification r+Æussie')), context: anyNamed('context')));
       });
 
-      test('lance une exception si liste non trouv√©e apr√®s sauvegarde', () async {
+      test('lance une exception si liste non trouv+Æe apr+øs sauvegarde', () async {
         // Arrange
         const listId = 'test-list-1';
         when(mockLocalRepository.getListById(listId)).thenAnswer((_) async => null);
@@ -516,12 +516,12 @@ void main() {
           throwsA(isA<UnifiedPersistenceException>().having(
             (e) => e.message,
             'message',
-            contains('non trouv√©e apr√®s sauvegarde'),
+            contains('non trouv+Æe apr+øs sauvegarde'),
           )),
         );
       });
 
-      test('v√©rifie la persistance d\'un item avec succ√®s', () async {
+      test('v+Ærifie la persistance d\'un item avec succ+øs', () async {
         // Arrange
         const itemId = 'test-item-1';
         final testItem = TestDataFactory.createTestItem(id: itemId);
@@ -540,7 +540,7 @@ void main() {
         await service.initialize(isAuthenticated: false);
       });
 
-      test('retourne des statistiques compl√®tes', () {
+      test('retourne des statistiques compl+øtes', () {
         // Act
         final stats = service.getPersistenceStats();
 
@@ -553,7 +553,7 @@ void main() {
         expect(stats, contains('configuration'));
       });
 
-      test('indique l\'√©tat de synchronisation', () {
+      test('indique l\'+Ætat de synchronisation', () {
         // Assert
         expect(service.isSyncing, isFalse);
       });
@@ -583,16 +583,16 @@ void main() {
       );
     });
 
-    test('cr√©e un service avec configuration par d√©faut', () {
+    test('cr+Æe un service avec configuration par d+Æfaut', () {
       // Act
       final service = factory.createDefault(logger: mockLogger);
 
       // Assert
       expect(service, isA<IUnifiedPersistenceService>());
-      verify(mockLogger.info(argThat(contains('Cr√©ation')), context: anyNamed('context')));
+      verify(mockLogger.info(argThat(contains('Cr+Æation')), context: anyNamed('context')));
     });
 
-    test('cr√©e un service en mode local uniquement', () {
+    test('cr+Æe un service en mode local uniquement', () {
       // Act
       final service = factory.createLocalOnly(logger: mockLogger);
 
@@ -600,7 +600,7 @@ void main() {
       expect(service, isA<IUnifiedPersistenceService>());
     });
 
-    test('cr√©e un service en mode cloud prioritaire', () {
+    test('cr+Æe un service en mode cloud prioritaire', () {
       // Act
       final service = factory.createCloudFirst(logger: mockLogger);
 
@@ -608,7 +608,7 @@ void main() {
       expect(service, isA<IUnifiedPersistenceService>());
     });
 
-    test('cr√©e un service en mode hybride', () {
+    test('cr+Æe un service en mode hybride', () {
       // Act
       final service = factory.createHybrid(logger: mockLogger);
 
@@ -629,7 +629,7 @@ void main() {
   });
 
   group('Configuration Tests', () {
-    test('UnifiedPersistenceConfiguration utilise les valeurs par d√©faut', () {
+    test('UnifiedPersistenceConfiguration utilise les valeurs par d+Æfaut', () {
       // Act
       const config = UnifiedPersistenceConfiguration();
 
@@ -642,7 +642,7 @@ void main() {
       expect(config.maxRetries, equals(3));
     });
 
-    test('UnifiedPersistenceConfiguration peut √™tre personnalis√©e', () {
+    test('UnifiedPersistenceConfiguration peut +¨tre personnalis+Æe', () {
       // Act
       const config = UnifiedPersistenceConfiguration(
         defaultMode: PersistenceMode.cloudFirst,

@@ -191,49 +191,63 @@ class AccessibilityDebugPanel extends StatelessWidget {
       bottom: 100,
       left: 16,
       right: 16,
-      child: Material(
-        elevation: 8,
-        borderRadius: BorderRadius.circular(8),
-        color: Colors.red.shade50,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  const Icon(Icons.accessibility_new, color: Colors.red),
-                  const SizedBox(width: 8),
-                  const Expanded(
-                    child: Text(
-                      'Violations d\'accessibilité détectées',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
-                      ),
-                    ),
-                  ),
-                  if (onDismiss != null)
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: onDismiss,
-                      iconSize: 16,
-                    ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              ...violations.map((violation) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Text(
-                  '• ${violation.message}',
-                  style: const TextStyle(fontSize: 12),
-                ),
-              )),
-            ],
-          ),
+      child: _buildPanel(context),
+    );
+  }
+
+  Widget _buildPanel(BuildContext context) {
+    return Material(
+      elevation: 8,
+      borderRadius: BorderRadius.circular(8),
+      color: Colors.red.shade50,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildHeader(),
+            const SizedBox(height: 8),
+            ..._buildViolationMessages(),
+          ],
         ),
       ),
     );
+  }
+
+  Widget _buildHeader() {
+    return Row(
+      children: [
+        const Icon(Icons.accessibility_new, color: Colors.red),
+        const SizedBox(width: 8),
+        const Expanded(
+          child: Text(
+            'Violations d'accessibilite detectees',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.red,
+            ),
+          ),
+        ),
+        if (onDismiss != null)
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: onDismiss,
+            iconSize: 16,
+          ),
+      ],
+    );
+  }
+
+  List<Widget> _buildViolationMessages() {
+    return violations
+        .map((violation) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Text(
+                '- ${violation.message}',
+                style: const TextStyle(fontSize: 12),
+              ),
+            ))
+        .toList();
   }
 }

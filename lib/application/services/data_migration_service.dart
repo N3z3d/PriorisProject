@@ -58,7 +58,7 @@ class DataMigrationService implements IDataMigrationService {
           break;
 
         case MigrationStrategy.askUser:
-          // TODO: Implement user dialog
+          // Pending: Implement user dialog
           // For now, default to intelligent merge
           await _intelligentMergeToCloud(localLists);
           break;

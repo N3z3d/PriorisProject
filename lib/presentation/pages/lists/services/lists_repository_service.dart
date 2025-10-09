@@ -306,61 +306,74 @@ class ListsRepositoryService implements IListsRepositoryService {
   @override
   Future<void> clearAllData() async {
     try {
-      LoggerService.instance.info(
-        'Début de l\'effacement de toutes les données...',
-        context: 'ListsRepositoryService'
-      );
-
-      List<CustomList> allLists;
-      List<ListItem> allItems = [];
-
-      // ADAPTIVE: Récupérer toutes les données via le service adaptatif
-      if (_adaptivePersistenceService != null) {
-        allLists = await _adaptivePersistenceService!.getAllLists();
-
-        // Récupérer tous les items de toutes les listes
-        for (final list in allLists) {
-          final items = await _adaptivePersistenceService!.getItemsByListId(list.id);
-          allItems.addAll(items);
-        }
-
-        // Effacer toutes les listes via le service adaptatif
-        for (final list in allLists) {
-          await _adaptivePersistenceService!.deleteList(list.id);
-        }
-
-        // Effacer tous les éléments via le service adaptatif
-        for (final item in allItems) {
-          await _adaptivePersistenceService!.deleteItem(item.id);
-        }
-      } else if (_listRepository != null && _itemRepository != null) {
-        // Fallback legacy
-        allLists = await _listRepository!.getAllLists();
-        for (final list in allLists) {
-          await _listRepository!.deleteList(list.id);
-        }
-
-        allItems = await _itemRepository!.getAll();
-        for (final item in allItems) {
-          await _itemRepository!.delete(item.id);
-        }
-      } else {
-        throw StateError('Aucun service de persistance configuré');
-      }
-
-      LoggerService.instance.info(
-        'Toutes les données effacées avec succès: ${allLists.length} listes et ${allItems.length} éléments',
-        context: 'ListsRepositoryService'
-      );
-    } catch (e) {
+      _logClearStart();
+      final summary = await (_adaptivePersistenceService != null
+          ? _clearWithAdaptive()
+          : _clearWithLegacy());
+      _logClearSuccess(summary);
+    } catch (e, stack) {
       LoggerService.instance.error(
-        'Erreur lors de l\'effacement des données',
+        'Erreur lors de l'effacement des donnees',
         context: 'ListsRepositoryService',
-        error: e
+        error: e,
+        stackTrace: stack,
       );
       rethrow;
     }
   }
+
+  void _logClearStart() {
+    LoggerService.instance.info(
+      'Debut de l'effacement de toutes les donnees...',
+      context: 'ListsRepositoryService',
+    );
+  }
+
+  Future<_ClearSummary> _clearWithAdaptive() async {
+    final lists = await _adaptivePersistenceService!.getAllLists();
+    final items = <ListItem>[];
+
+    for (final list in lists) {
+      final listItems = await _adaptivePersistenceService!.getItemsByListId(list.id);
+      items.addAll(listItems);
+    }
+
+    for (final list in lists) {
+      await _adaptivePersistenceService!.deleteList(list.id);
+    }
+    for (final item in items) {
+      await _adaptivePersistenceService!.deleteItem(item.id);
+    }
+
+    return (listCount: lists.length, itemCount: items.length);
+  }
+
+  Future<_ClearSummary> _clearWithLegacy() async {
+    if (_listRepository == null || _itemRepository == null) {
+      throw StateError('Aucun service de persistance configure');
+    }
+
+    final lists = await _listRepository!.getAllLists();
+    for (final list in lists) {
+      await _listRepository!.deleteList(list.id);
+    }
+
+    final items = await _itemRepository!.getAll();
+    for (final item in items) {
+      await _itemRepository!.delete(item.id);
+    }
+
+    return (listCount: lists.length, itemCount: items.length);
+  }
+
+void _logClearSuccess(_ClearSummary summary) {
+    LoggerService.instance.info(
+      'Toutes les donnees effacees avec succes: ${summary.listCount} listes et ${summary.itemCount} elements',
+      context: 'ListsRepositoryService',
+    );
+}
+
+typedef _ClearSummary = ({int listCount, int itemCount});
 
   @override
   Future<List<CustomList>> forceReloadFromPersistence() async {

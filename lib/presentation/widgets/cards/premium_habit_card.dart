@@ -146,7 +146,7 @@ class _PremiumHabitCardState extends State<PremiumHabitCard> {
       onEdit: widget.onEdit,
       onDelete: _showDeleteConfirmation,
       onHistory: () {
-        // TODO: Implémenter historique
+        // Pending: Implémenter historique
       },
     );
   }

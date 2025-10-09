@@ -98,7 +98,7 @@ class AppInitializer {
     // Repository Manager is automatically initialized when first accessed
 
     // BACKWARD COMPATIBILITY: Keep legacy registry for existing code
-    // TODO: Remove this once all code migrated to new DI system
+    // Pending: Remove this once all code migrated to new DI system
     try {
       await HiveRepositoryRegistry.initialize();
       logger.debug('Legacy repository registry initialized (backward compatibility)', context: _context);

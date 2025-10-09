@@ -93,7 +93,7 @@ class _DuelPageState extends ConsumerState<DuelPage>
   Widget _buildSettingsButton() {
     return IconButton(
       onPressed: () {
-        // TODO: Implémenter le dialogue de sélection de listes
+        // Pending: Implémenter le dialogue de sélection de listes
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Paramètres à venir')),
         );

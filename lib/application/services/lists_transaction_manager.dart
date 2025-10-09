@@ -193,6 +193,7 @@ class ListsTransactionManager implements IListsTransactionManager {
   ) async {
     final transactionId = const Uuid().v4();
     final completedOperations = <int>[];
+    final historyStartIndex = _operationHistory.length;
 
     try {
       LoggerService.instance.debug(
@@ -217,7 +218,10 @@ class ListsTransactionManager implements IListsTransactionManager {
       );
 
       // Rollback completed operations in reverse order
-      await _rollbackBulkOperations(completedOperations);
+      await _rollbackBulkOperations(
+        completedOperations: completedOperations,
+        historyStartIndex: historyStartIndex,
+      );
 
       rethrow;
     }
@@ -293,23 +297,60 @@ class ListsTransactionManager implements IListsTransactionManager {
   }
 
   /// Rolls back bulk operations
-  Future<void> _rollbackBulkOperations(List<int> completedOperations) async {
+  Future<void> _rollbackBulkOperations({
+    required List<int> completedOperations,
+    required int historyStartIndex,
+  }) async {
     LoggerService.instance.info(
       'Rolling back ${completedOperations.length} completed bulk operations',
       context: 'ListsTransactionManager',
     );
 
-    // Find and rollback completed operations
-    // Note: This is a simplified implementation
-    // In a real scenario, you'd need to track what each operation did
-    for (final index in completedOperations.reversed) {
+    if (completedOperations.isEmpty) {
       LoggerService.instance.debug(
-        'Attempting rollback for bulk operation $index',
+        'No completed operations recorded before failure; nothing to rollback.',
         context: 'ListsTransactionManager',
       );
-      // Rollback logic would depend on what the operation did
-      // This is a placeholder for the actual rollback implementation
+      return;
     }
+
+    LoggerService.instance.debug(
+      'Completed operation indexes before failure: ${completedOperations.join(', ')}',
+      context: 'ListsTransactionManager',
+    );
+
+    if (historyStartIndex >= _operationHistory.length) {
+      LoggerService.instance.warning(
+        'No operation history available for bulk rollback (historyStartIndex=$historyStartIndex, historyLength=${_operationHistory.length}).',
+        context: 'ListsTransactionManager',
+      );
+      return;
+    }
+
+    final operationsToRollback = _operationHistory.sublist(historyStartIndex);
+
+    if (operationsToRollback.isEmpty) {
+      LoggerService.instance.warning(
+        'Bulk rollback requested but no operations were recorded via recordOperation().',
+        context: 'ListsTransactionManager',
+      );
+      return;
+    }
+
+    LoggerService.instance.debug(
+      'Rolling back ${operationsToRollback.length} recorded operations created during the bulk transaction.',
+      context: 'ListsTransactionManager',
+    );
+
+    await _rollbackOperations(operationsToRollback);
+
+    // Remove rolled back operations from history to keep it consistent
+    _operationHistory.removeRange(historyStartIndex, _operationHistory.length);
+
+    LoggerService.instance.info(
+      'Bulk rollback completed successfully.',
+      context: 'ListsTransactionManager',
+    );
   }
 
   /// Adds operations to history and manages history size

@@ -2,39 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 
-/// Widget ListTile réutilisable pour toute l'application
 class CommonListTile extends StatelessWidget {
-  /// Titre principal (obligatoire)
   final String title;
-
-  /// Sous-titre optionnel
   final String? subtitle;
-
-  /// Widget à gauche (icône, avatar...)
   final Widget? leading;
-
-  /// Widget à droite (icône, switch...)
   final Widget? trailing;
-
-  /// Callback lors du tap
   final VoidCallback? onTap;
-
-  /// Indique si l'élément est sélectionné
   final bool isSelected;
-
-  /// Couleur de fond si sélectionné
   final Color? selectedColor;
-
-  /// Couleur du texte du titre
   final Color? titleColor;
-
-  /// Couleur du texte du sous-titre
   final Color? subtitleColor;
-
-  /// Padding autour du tile
   final EdgeInsetsGeometry? padding;
 
-  /// Constructeur
   const CommonListTile({
     super.key,
     required this.title,
@@ -51,62 +30,84 @@ class CommonListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color bgColor = isSelected
-        ? (selectedColor ?? AppTheme.primaryColor.withValues(alpha: 0.08))
-        : Colors.transparent;
-    final Color titleTextColor = titleColor ?? Colors.black87;
-    final Color subtitleTextColor = subtitleColor ?? Colors.grey[600]!;
-    final EdgeInsetsGeometry tilePadding = padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 8);
+    final style = _TileStyle(
+      background: isSelected
+          ? (selectedColor ?? AppTheme.primaryColor.withOpacity(0.08))
+          : Colors.transparent,
+      titleColor: titleColor ?? Colors.black87,
+      subtitleColor: subtitleColor ?? Colors.grey[600]!,
+      padding: padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    );
 
     return Material(
-      color: bgColor,
+      color: style.background,
       borderRadius: BorderRadiusTokens.radiusSm,
       child: InkWell(
         borderRadius: BorderRadiusTokens.radiusSm,
         onTap: onTap,
         child: Padding(
-          padding: tilePadding,
+          padding: style.padding,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              if (leading != null) ...[
-                leading!,
-                const SizedBox(width: 16),
-              ],
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                        color: titleTextColor,
-                      ),
-                    ),
-                    if (subtitle != null) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        subtitle!,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: subtitleTextColor,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              if (trailing != null) ...[
-                const SizedBox(width: 16),
-                trailing!,
-              ],
-            ],
+            children: _buildRowChildren(style),
           ),
         ),
       ),
     );
   }
-} 
+
+  List<Widget> _buildRowChildren(_TileStyle style) {
+    return [
+      if (leading != null) ...[
+        leading!,
+        const SizedBox(width: 16),
+      ],
+      Expanded(child: _buildTextColumn(style)),
+      if (trailing != null) ...[
+        const SizedBox(width: 16),
+        trailing!,
+      ],
+    ];
+  }
+
+  Widget _buildTextColumn(_TileStyle style) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+            color: style.titleColor,
+          ),
+        ),
+        if (subtitle != null) ...[
+          const SizedBox(height: 2),
+          Text(
+            subtitle!,
+            style: TextStyle(
+              fontSize: 13,
+              color: style.subtitleColor,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _TileStyle {
+  final Color background;
+  final Color titleColor;
+  final Color subtitleColor;
+  final EdgeInsetsGeometry padding;
+
+  const _TileStyle({
+    required this.background,
+    required this.titleColor,
+    required this.subtitleColor,
+    required this.padding,
+  });
+}

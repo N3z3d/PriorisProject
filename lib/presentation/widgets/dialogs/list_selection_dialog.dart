@@ -114,52 +114,58 @@ class _ListSelectionDialogState extends State<ListSelectionDialog> {
       itemCount: widget.availableLists.length,
       itemBuilder: (context, index) {
         final listData = widget.availableLists[index];
-        final listId = listData['id']!;
-        final listTitle = listData['title']!;
-        final isEnabled = _workingSettings.isListEnabled(listId);
-
-        return ListTile(
-          leading: Icon(
-            isEnabled ? Icons.list_alt : Icons.list_alt_outlined,
-            color: isEnabled 
-                ? AppTheme.primaryColor 
-                : Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
-          ),
-          title: Text(
-            listTitle,
-            style: TextStyle(
-              color: isEnabled 
-                  ? Theme.of(context).colorScheme.onSurface
-                  : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-              fontWeight: isEnabled ? FontWeight.w500 : FontWeight.normal,
-            ),
-          ),
-          subtitle: Text(
-            isEnabled ? 'Participera aux duels' : 'Exclue des duels',
-            style: TextStyle(
-              color: isEnabled 
-                  ? AppTheme.primaryColor.withOpacity(0.7)
-                  : Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
-              fontSize: 12,
-            ),
-          ),
-          trailing: Switch(
-            value: isEnabled,
-            onChanged: (value) {
-              setState(() {
-                if (value) {
-                  _workingSettings = _workingSettings.enableList(listId);
-                } else {
-                  final allListIds = widget.availableLists.map((list) => list['id']!).toList();
-                  _workingSettings = _workingSettings.disableListWithContext(listId, allListIds);
-                }
-              });
-            },
-            activeColor: AppTheme.primaryColor,
-          ),
-        );
+        return _buildListTile(context, listData);
       },
     );
+  }
+
+  Widget _buildListTile(BuildContext context, Map<String, String> listData) {
+    final listId = listData['id']!;
+    final listTitle = listData['title']!;
+    final isEnabled = _workingSettings.isListEnabled(listId);
+    final theme = Theme.of(context);
+
+    return ListTile(
+      leading: Icon(
+        isEnabled ? Icons.list_alt : Icons.list_alt_outlined,
+        color: isEnabled
+            ? AppTheme.primaryColor
+            : theme.colorScheme.onSurface.withOpacity(0.4),
+      ),
+      title: Text(
+        listTitle,
+        style: TextStyle(
+          color: isEnabled
+              ? theme.colorScheme.onSurface
+              : theme.colorScheme.onSurface.withOpacity(0.6),
+          fontWeight: isEnabled ? FontWeight.w500 : FontWeight.normal,
+        ),
+      ),
+      subtitle: Text(
+        isEnabled ? 'Participera aux duels' : 'Exclue des duels',
+        style: TextStyle(
+          color: isEnabled
+              ? AppTheme.primaryColor.withOpacity(0.7)
+              : theme.colorScheme.onSurface.withOpacity(0.4),
+          fontSize: 12,
+        ),
+      ),
+      trailing: Switch(
+        value: isEnabled,
+        onChanged: (value) => _toggleList(listId, value),
+        activeColor: AppTheme.primaryColor,
+      ),
+      onTap: () => _toggleList(listId, !isEnabled),
+    );
+  }
+
+  void _toggleList(String listId, bool enable) {
+    setState(() {
+      final allListIds = widget.availableLists.map((list) => list['id']!).toList();
+      _workingSettings = enable
+          ? _workingSettings.enableList(listId)
+          : _workingSettings.disableListWithContext(listId, allListIds);
+    });
   }
 
   Widget _buildActions() {

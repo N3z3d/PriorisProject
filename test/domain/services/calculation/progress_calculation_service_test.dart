@@ -119,29 +119,29 @@ void main() {
       test('should generate weekly data', () {
         final data = ProgressCalculationService.generateProgressData('7_days', [], []);
         expect(data.length, equals(7));
-        expect(data.first.x, equals(0.0));
-        expect(data.last.x, equals(6.0));
+        expect(data.first.index, equals(0));
+        expect(data.last.index, equals(6));
       });
 
       test('should generate monthly data', () {
         final data = ProgressCalculationService.generateProgressData('30_days', [], []);
         expect(data.length, equals(30));
-        expect(data.first.x, equals(0.0));
-        expect(data.last.x, equals(29.0));
+        expect(data.first.index, equals(0));
+        expect(data.last.index, equals(29));
       });
 
       test('should generate quarterly data', () {
         final data = ProgressCalculationService.generateProgressData('90_days', [], []);
         expect(data.length, equals(90));
-        expect(data.first.x, equals(0.0));
-        expect(data.last.x, equals(89.0));
+        expect(data.first.index, equals(0));
+        expect(data.last.index, equals(89));
       });
 
       test('should generate yearly data', () {
         final data = ProgressCalculationService.generateProgressData('365_days', [], []);
         expect(data.length, equals(365));
-        expect(data.first.x, equals(0.0));
-        expect(data.last.x, equals(364.0));
+        expect(data.first.index, equals(0));
+        expect(data.last.index, equals(364));
       });
 
       test('should default to weekly data for unknown period', () {
@@ -162,7 +162,7 @@ void main() {
 
         final data = ProgressCalculationService.generateProgressData('7_days', [habit], []);
         expect(data.length, equals(7));
-        expect(data.every((spot) => spot.y >= 0 && spot.y <= 100), isTrue);
+        expect(data.every((point) => point.value >= 0 && point.value <= 100), isTrue);
       });
     });
 
@@ -261,4 +261,3 @@ void main() {
     });
   });
 } 
-

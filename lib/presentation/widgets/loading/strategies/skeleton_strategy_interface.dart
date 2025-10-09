@@ -25,6 +25,9 @@ abstract class ISkeletonStrategy {
 /// Following Template Method pattern for common skeleton structure
 abstract class BaseSkeletonStrategy implements ISkeletonStrategy {
   @override
+  bool canHandle(Map<String, dynamic> options) => true;
+
+  @override
   Widget createSkeleton(SkeletonConfig config) {
     if (!canHandle(config.options)) {
       throw ArgumentError('Strategy ${strategyId} cannot handle provided options');

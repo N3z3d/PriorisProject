@@ -88,7 +88,7 @@ void main() {
 
     group('Integration Tests - Placeholder', () {
       test('repository integration tests require refactoring for dependency injection', () {
-        // TODO: Refactor SupabaseCustomListRepository to accept injected dependencies
+        // Pending: Refactor SupabaseCustomListRepository to accept injected dependencies
         // This will allow proper mocking and testing of repository methods
         
         // For now, we test the model serialization which is the core functionality

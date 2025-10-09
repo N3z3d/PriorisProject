@@ -94,54 +94,65 @@ class ListsPerformanceMonitor implements IListsPerformanceMonitor {
   Future<bool> validateDataConsistency(List<CustomList> lists) async {
     try {
       LoggerService.instance.debug(
-        'Validation de la cohérence des données pour ${lists.length} listes',
-        context: 'ListsPerformanceMonitor'
+        "Validation de la coherence des donnees pour ${lists.length} listes",
+        context: 'ListsPerformanceMonitor',
       );
 
-      // Validation de base : vérifier que toutes les listes ont des IDs uniques
-      final listIds = lists.map((list) => list.id).toList();
-      final uniqueIds = listIds.toSet();
-
-      if (listIds.length != uniqueIds.length) {
-        logError('validateDataConsistency',
-            'IDs de listes dupliqués détectés', StackTrace.current);
+      if (_hasDuplicateListIds(lists)) {
+        return false;
+      }
+      if (_hasInvalidItems(lists)) {
         return false;
       }
 
-      // Validation des éléments : vérifier la cohérence des items
-      for (final list in lists) {
-        final itemIds = list.items.map((item) => item.id).toList();
-        final uniqueItemIds = itemIds.toSet();
-
-        if (itemIds.length != uniqueItemIds.length) {
-          logError('validateDataConsistency',
-              'IDs d\'éléments dupliqués détectés dans la liste "${list.name}"',
-              StackTrace.current);
-          return false;
-        }
-
-        // Vérifier que tous les items appartiennent à la bonne liste
-        for (final item in list.items) {
-          if (item.listId != list.id) {
-            logError('validateDataConsistency',
-                'Élément "${item.title}" appartient à la liste ${item.listId} mais se trouve dans la liste ${list.id}',
-                StackTrace.current);
-            return false;
-          }
-        }
-      }
-
       LoggerService.instance.info(
-        'Validation de cohérence réussie pour ${lists.length} listes',
-        context: 'ListsPerformanceMonitor'
+        "Validation de coherence reussie pour ${lists.length} listes",
+        context: 'ListsPerformanceMonitor',
       );
-
       return true;
     } catch (e, stackTrace) {
       logError('validateDataConsistency', e, stackTrace);
       return false;
     }
   }
+
+  bool _hasDuplicateListIds(List<CustomList> lists) {
+    final listIds = lists.map((list) => list.id).toList();
+    final uniqueIds = listIds.toSet();
+    if (listIds.length == uniqueIds.length) {
+      return false;
+    }
+    logError('validateDataConsistency', "IDs de listes dupliques detectes", StackTrace.current);
+    return true;
+  }
+
+  bool _hasInvalidItems(List<CustomList> lists) {
+    for (final list in lists) {
+      final itemIds = list.items.map((item) => item.id).toList();
+      final uniqueItemIds = itemIds.toSet();
+      if (itemIds.length != uniqueItemIds.length) {
+        logError(
+          'validateDataConsistency',
+          "IDs d'elements dupliques detectes dans la liste ${list.name}",
+          StackTrace.current,
+        );
+        return true;
+      }
+
+      for (final item in list.items) {
+        if (item.listId != list.id) {
+          logError(
+            'validateDataConsistency',
+            "Element ${item.title} appartient a la liste ${item.listId} mais se trouve dans la liste ${list.id}",
+            StackTrace.current,
+          );
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
 
   @override
   void cacheLists(List<CustomList> lists) {

@@ -78,98 +78,121 @@ class HabitCalculationService {
   /// [habits] : Liste des habitudes à analyser
   /// Retourne : Liste d'insights sous forme de Map
   static List<Map<String, dynamic>> generateHabitInsights(List<Habit> habits) {
-    final insights = <Map<String, dynamic>>[];
-    
     if (habits.isEmpty) {
-      insights.add({
-        'type': 'info',
-        'message': 'Commencez par créer vos premières habitudes pour générer des insights.',
-        'icon': '🎯',
-      });
-      return insights;
+      return [
+        {
+          'type': 'info',
+          'message': 'Commencez par créer vos premières habitudes pour générer des insights.',
+          'icon': '🎯',
+        },
+      ];
     }
 
-    // Insight 1 : Productivité des habitudes
+    final insights = <Map<String, dynamic>>[];
+    _appendHabitSuccessRateInsights(habits, insights);
+    _appendHabitStreakInsights(habits, insights);
+    _appendHabitCategoryPerformance(habits, insights);
+    _appendHabitCountSummary(habits.length, insights);
+
+    return insights;
+  }
+  static void _appendHabitSuccessRateInsights(
+    List<Habit> habits,
+    List<Map<String, dynamic>> insights,
+  ) {
     final habitSuccessRate = calculateSuccessRate(habits);
     if (habitSuccessRate > 80) {
       insights.add({
         'type': 'success',
-        'message': 'Vos habitudes sont excellentes ! Taux de réussite de $habitSuccessRate%.',
+        'message': 'Vos habitudes sont excellentes ! Taux de reussite de $habitSuccessRate%.',
         'icon': '🎯',
       });
     } else if (habitSuccessRate > 60) {
       insights.add({
         'type': 'warning',
-        'message': 'Vos habitudes sont bonnes ($habitSuccessRate%), mais peuvent encore s\'améliorer.',
+        'message': "Vos habitudes sont bonnes ($habitSuccessRate%), mais peuvent encore s'ameliorer.",
         'icon': '📈',
       });
     } else {
       insights.add({
         'type': 'info',
-        'message': 'Concentrez-vous sur la régularité pour améliorer votre taux de $habitSuccessRate%.',
+        'message': 'Concentrez-vous sur la regularite pour ameliorer votre taux de $habitSuccessRate%.',
         'icon': '💡',
       });
     }
-    
-    // Insight 2 : Série de réussite
+  }
+
+  static void _appendHabitStreakInsights(
+    List<Habit> habits,
+    List<Map<String, dynamic>> insights,
+  ) {
     final currentStreak = calculateCurrentStreak(habits);
     if (currentStreak > 7) {
       insights.add({
         'type': 'success',
-        'message': 'Impressionnant ! Vous avez une série de $currentStreak jours.',
+        'message': 'Impressionnant ! Vous avez une serie de $currentStreak jours.',
         'icon': '🔥',
       });
     } else if (currentStreak > 3) {
       insights.add({
         'type': 'warning',
-        'message': 'Bonne série de $currentStreak jours, continuez !',
+        'message': 'Bonne serie de $currentStreak jours, continuez !',
         'icon': '📊',
       });
     } else {
       insights.add({
         'type': 'info',
-        'message': 'Commencez une nouvelle série pour améliorer votre productivité.',
-        'icon': '🚀',
+        'message': 'Commencez une nouvelle serie pour ameliorer votre productivite.',
+        'icon': '💡',
       });
     }
-    
-    // Insight 3 : Performance par catégorie
+  }
+
+  static void _appendHabitCategoryPerformance(
+    List<Habit> habits,
+    List<Map<String, dynamic>> insights,
+  ) {
     final categoryPerformance = calculateCategoryPerformance(habits);
-    if (categoryPerformance.isNotEmpty) {
-      final bestCategory = categoryPerformance.entries
-          .reduce((a, b) => a.value > b.value ? a : b);
-      
-      insights.add({
-        'type': 'success',
-        'message': 'Votre meilleure catégorie d\'habitudes est "${bestCategory.key}" (${bestCategory.value.round()}%)',
-        'icon': '🏆',
-      });
+    if (categoryPerformance.isEmpty) {
+      return;
     }
-    
-    // Insight 4 : Nombre d'habitudes
-    final activeHabits = habits.length;
+
+    final bestCategory = categoryPerformance.entries
+        .reduce((a, b) => a.value > b.value ? a : b);
+
+    insights.add({
+      'type': 'success',
+      'message': "Votre meilleure categorie d'habitudes est ${bestCategory.key} (${bestCategory.value.round()}%)",
+      'icon': '🏆',
+    });
+  }
+
+  static void _appendHabitCountSummary(
+    int activeHabits,
+    List<Map<String, dynamic>> insights,
+  ) {
     if (activeHabits < 3) {
       insights.add({
         'type': 'info',
         'message': 'Vous avez $activeHabits habitudes actives. Ajoutez-en pour diversifier vos objectifs.',
-        'icon': '➕',
+        'icon': '🧭',
       });
     } else if (activeHabits > 10) {
       insights.add({
         'type': 'warning',
-        'message': 'Vous avez $activeHabits habitudes actives. Considérez en simplifier certaines.',
-        'icon': '⚖️',
+        'message': 'Vous avez $activeHabits habitudes actives. Considerez en simplifier certaines.',
+        'icon': '🧹',
       });
     } else {
       insights.add({
         'type': 'success',
-        'message': 'Excellent équilibre avec $activeHabits habitudes actives.',
+        'message': 'Excellent equilibre avec $activeHabits habitudes actives.',
         'icon': '✅',
       });
     }
-    
-    return insights;
   }
+
+
 
   /// Calcule le nombre d'habitudes actives
   /// 

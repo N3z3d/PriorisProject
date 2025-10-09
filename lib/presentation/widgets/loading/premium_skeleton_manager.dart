@@ -58,4 +58,60 @@ class PremiumSkeletonManager {
     // Forward to coordinator if needed
     _coordinator.registerSystem(systemId, system);
   }
+
+  /// Creates an adaptive skeleton wrapper.
+  Widget createAdaptiveSkeleton({
+    required Widget child,
+    required bool isLoading,
+    String? skeletonType,
+    Duration animationDuration = const Duration(milliseconds: 300),
+    Map<String, dynamic>? options,
+  }) {
+    return _coordinator.createAdaptiveSkeleton(
+      child: child,
+      isLoading: isLoading,
+      skeletonType: skeletonType,
+      animationDuration: animationDuration,
+      options: options,
+    );
+  }
+
+  /// Creates a smart skeleton using hint detection.
+  Widget createSmartSkeleton(
+    String hint, {
+    double? width,
+    double? height,
+    Map<String, dynamic>? options,
+  }) {
+    return _coordinator.createSmartSkeleton(
+      hint,
+      width: width,
+      height: height,
+      options: options,
+    );
+  }
+
+  /// Batch creation helper.
+  List<Widget> createBatchSkeletons(
+    String skeletonType, {
+    required int count,
+    double? width,
+    double? height,
+    Map<String, dynamic>? options,
+  }) {
+    return _coordinator.createBatchSkeletons(
+      skeletonType,
+      count: count,
+      width: width,
+      height: height,
+      options: options,
+    );
+  }
+
+  /// Returns coordinator diagnostics.
+  Map<String, dynamic> getSystemInfo() => _coordinator.getSystemInfo();
+
+  /// Checks skeleton type support.
+  bool isSkeletonTypeSupported(String skeletonType) =>
+      _coordinator.isSkeletonTypeSupported(skeletonType);
 }

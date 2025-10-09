@@ -1,53 +1,77 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:prioris/presentation/pages/statistics/widgets/charts/progress_chart_widget.dart';
+import 'package:prioris/presentation/widgets/charts/premium_progress_chart.dart';
 
 void main() {
   group('ProgressChartWidget', () {
     testWidgets('affiche le titre et le graphique', (tester) async {
-      // Arrange
       final data = [
-        const FlSpot(0, 65),
-        const FlSpot(1, 70),
-        const FlSpot(2, 68),
-        const FlSpot(3, 75),
-        const FlSpot(4, 80),
-        const FlSpot(5, 85),
-        const FlSpot(6, 88),
+        const ChartDataPoint(label: 'Lun', value: 65),
+        const ChartDataPoint(label: 'Mar', value: 70),
+        const ChartDataPoint(label: 'Mer', value: 68),
+        const ChartDataPoint(label: 'Jeu', value: 75),
+        const ChartDataPoint(label: 'Ven', value: 80),
+        const ChartDataPoint(label: 'Sam', value: 85),
+        const ChartDataPoint(label: 'Dim', value: 88),
       ];
-      final labels = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+
       await tester.pumpWidget(
         MaterialApp(
-          home: ProgressChartWidget(data: data, periodLabels: labels),
+          home: Scaffold(
+            body: ProgressChartWidget(
+              data: data,
+              period: '7_days',
+            ),
+          ),
         ),
       );
-      // Assert
-      expect(find.text('📈 Évolution des Performances'), findsOneWidget);
-      expect(find.byType(LineChart), findsOneWidget);
+
+      expect(find.text('�Y"^ �%volution des Performances'), findsOneWidget);
+      expect(find.byType(PremiumProgressChart), findsOneWidget);
+
+      final chart = tester.widget<PremiumProgressChart>(
+        find.byType(PremiumProgressChart),
+      );
+      expect(chart.data.length, equals(7));
     });
 
-    testWidgets('affiche les labels d\'axe X', (tester) async {
-      // Arrange
-      final data = [const FlSpot(0, 10), const FlSpot(1, 20)];
-      final labels = ['A', 'B'];
+    testWidgets('expose les labels fournis via les data points', (tester) async {
+      final data = [
+        const ChartDataPoint(label: 'A', value: 10),
+        const ChartDataPoint(label: 'B', value: 20),
+      ];
+
       await tester.pumpWidget(
         MaterialApp(
-          home: ProgressChartWidget(data: data, periodLabels: labels),
+          home: Scaffold(
+            body: ProgressChartWidget(
+              data: data,
+              period: 'custom',
+            ),
+          ),
         ),
       );
-      // Assert
-      expect(find.text('A'), findsWidgets);
-      expect(find.text('B'), findsWidgets);
+
+      final chart = tester.widget<PremiumProgressChart>(
+        find.byType(PremiumProgressChart),
+      );
+      expect(chart.data.map((point) => point.label), equals(['A', 'B']));
     });
 
-    testWidgets('supporte une liste vide sans crash', (tester) async {
+    testWidgets('génère des données de secours lorsque la liste est vide', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: ProgressChartWidget(data: const [], periodLabels: const []),
+        const MaterialApp(
+          home: Scaffold(
+            body: ProgressChartWidget(data: []),
+          ),
         ),
       );
-      expect(find.byType(LineChart), findsOneWidget);
+
+      final chart = tester.widget<PremiumProgressChart>(
+        find.byType(PremiumProgressChart),
+      );
+      expect(chart.data, isNotEmpty);
     });
   });
-} 
+}

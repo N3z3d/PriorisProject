@@ -104,120 +104,99 @@ class TaskRepositoryImpl extends BaseRepository<Task>
   @override
   Future<List<Task>> sortBy(String field, {bool ascending = true}) async {
     final tasks = await getAll();
-    
-    switch (field.toLowerCase()) {
-      case 'title':
-        tasks.sort((a, b) => ascending 
-          ? a.title.compareTo(b.title)
-          : b.title.compareTo(a.title));
-        break;
-        
-      case 'priority':
-        tasks.sort((a, b) => ascending 
-          ? a.priority.compareTo(b.priority)
-          : b.priority.compareTo(a.priority));
-        break;
-        
-      case 'eloscore':
-      case 'elo':
-        tasks.sort((a, b) => ascending 
-          ? a.eloScore.compareTo(b.eloScore)
-          : b.eloScore.compareTo(a.eloScore));
-        break;
-        
-      case 'duedate':
-      case 'due':
-        tasks.sort((a, b) {
-          if (a.dueDate == null && b.dueDate == null) return 0;
-          if (a.dueDate == null) return ascending ? 1 : -1;
-          if (b.dueDate == null) return ascending ? -1 : 1;
-          return ascending 
-            ? a.dueDate!.compareTo(b.dueDate!)
-            : b.dueDate!.compareTo(a.dueDate!);
-        });
-        break;
-        
-      case 'created':
-      case 'createdat':
-        tasks.sort((a, b) => ascending 
-          ? a.createdAt.compareTo(b.createdAt)
-          : b.createdAt.compareTo(a.createdAt));
-        break;
-        
-      case 'updated':
-      case 'updatedat':
-        tasks.sort((a, b) => ascending 
-          ? a.updatedAt.compareTo(b.updatedAt)
-          : b.updatedAt.compareTo(a.updatedAt));
-        break;
-        
-      case 'completed':
-      case 'status':
-        tasks.sort((a, b) {
-          if (a.isCompleted == b.isCompleted) return 0;
-          if (ascending) {
-            return a.isCompleted ? 1 : -1;
-          } else {
-            return a.isCompleted ? -1 : 1;
-          }
-        });
-        break;
-        
-      default:
-        // Tri par défaut : ELO score décroissant
-        tasks.sort((a, b) => b.eloScore.compareTo(a.eloScore));
-    }
-    
+    final comparator = _resolveComparator(field, ascending);
+    tasks.sort(comparator);
     return tasks;
   }
+
 
   @override
   Future<List<Task>> sortByMultiple(List<SortCriteria> criteria) async {
     if (criteria.isEmpty) return getAll();
-    
-    var tasks = await getAll();
-    
+
+    final tasks = await getAll();
+    final comparators = criteria
+        .map((criterion) => _resolveComparator(criterion.field, criterion.ascending))
+        .toList();
+
     tasks.sort((a, b) {
-      for (final criterion in criteria) {
-        final comparison = _compareByField(a, b, criterion.field, criterion.ascending);
-        if (comparison != 0) return comparison;
+      for (final comparator in comparators) {
+        final result = comparator(a, b);
+        if (result != 0) return result;
       }
       return 0;
     });
-    
+
     return tasks;
   }
 
-  int _compareByField(Task a, Task b, String field, bool ascending) {
-    int result = 0;
-    
+
+  Comparator<Task> _resolveComparator(String field, bool ascending) {
+    final normalized = _normalizeSortField(field);
+    switch (normalized) {
+      case 'title':
+        return (a, b) => _applyOrder(a.title.compareTo(b.title), ascending);
+      case 'priority':
+        return (a, b) => _applyOrder(a.priority.compareTo(b.priority), ascending);
+      case 'elo':
+        return (a, b) => _applyOrder(a.eloScore.compareTo(b.eloScore), ascending);
+      case 'dueDate':
+        return (a, b) => _compareDueDate(a, b, ascending);
+      case 'createdAt':
+        return (a, b) => _applyOrder(a.createdAt.compareTo(b.createdAt), ascending);
+      case 'updatedAt':
+        return (a, b) => _applyOrder(a.updatedAt.compareTo(b.updatedAt), ascending);
+      case 'status':
+        return (a, b) => _compareCompletion(a, b, ascending);
+      default:
+        return (a, b) => b.eloScore.compareTo(a.eloScore);
+    }
+  }
+
+  String _normalizeSortField(String field) {
     switch (field.toLowerCase()) {
       case 'title':
-        result = a.title.compareTo(b.title);
-        break;
+        return 'title';
       case 'priority':
-        result = a.priority.compareTo(b.priority);
-        break;
+        return 'priority';
       case 'eloscore':
-        result = a.eloScore.compareTo(b.eloScore);
-        break;
+      case 'elo':
+        return 'elo';
       case 'duedate':
-        if (a.dueDate == null && b.dueDate == null) {
-          result = 0;
-        } else if (a.dueDate == null) {
-          result = 1;
-        } else if (b.dueDate == null) {
-          result = -1;
-        } else {
-          result = a.dueDate!.compareTo(b.dueDate!);
-        }
-        break;
+      case 'due':
+        return 'dueDate';
+      case 'created':
+      case 'createdat':
+        return 'createdAt';
+      case 'updated':
+      case 'updatedat':
+        return 'updatedAt';
+      case 'completed':
+      case 'status':
+        return 'status';
       default:
-        result = 0;
+        return 'default';
     }
-    
-    return ascending ? result : -result;
   }
+
+  int _compareDueDate(Task a, Task b, bool ascending) {
+    if (a.dueDate == null && b.dueDate == null) return 0;
+    if (a.dueDate == null) return ascending ? 1 : -1;
+    if (b.dueDate == null) return ascending ? -1 : 1;
+    return ascending
+        ? a.dueDate!.compareTo(b.dueDate!)
+        : b.dueDate!.compareTo(a.dueDate!);
+  }
+
+  int _compareCompletion(Task a, Task b, bool ascending) {
+    if (a.isCompleted == b.isCompleted) return 0;
+    if (ascending) {
+      return a.isCompleted ? 1 : -1;
+    }
+    return a.isCompleted ? -1 : 1;
+  }
+
+  int _applyOrder(int result, bool ascending) => ascending ? result : -result;
 
   // ========== IValidatableRepository ==========
   
@@ -230,54 +209,68 @@ class TaskRepositoryImpl extends BaseRepository<Task>
   @override
   Future<List<String>> getValidationErrors(Task entity) async {
     final errors = <String>[];
-    
-    // Validation du titre
+
+    _validateTitle(entity, errors);
+    _validateDescription(entity, errors);
+    _validatePriority(entity, errors);
+    _validateEloScore(entity, errors);
+    _validateDueDate(entity, errors);
+    _validateTimestamps(entity, errors);
+    _validateTags(entity, errors);
+
+    return errors;
+  }
+  void _validateTitle(Task entity, List<String> errors) {
     if (entity.title.isEmpty) {
-      errors.add('Le titre ne peut pas être vide');
+      errors.add("Le titre ne peut pas être vide");
     }
     if (entity.title.length > 200) {
-      errors.add('Le titre ne peut pas dépasser 200 caractères');
+      errors.add("Le titre ne peut pas dépasser 200 caractères");
     }
-    
-    // Validation de la description
+  }
+
+  void _validateDescription(Task entity, List<String> errors) {
     if (entity.description != null && entity.description!.length > 1000) {
-      errors.add('La description ne peut pas dépasser 1000 caractères');
+      errors.add("La description ne peut pas dépasser 1000 caractères");
     }
-    
-    // Validation de la priorité
+  }
+
+  void _validatePriority(Task entity, List<String> errors) {
     if (entity.priority < 1 || entity.priority > 5) {
-      errors.add('La priorité doit être entre 1 et 5');
+      errors.add("La priorité doit être entre 1 et 5");
     }
-    
-    // Validation du score ELO
+  }
+
+  void _validateEloScore(Task entity, List<String> errors) {
     if (entity.eloScore < 0) {
-      errors.add('Le score ELO ne peut pas être négatif');
+      errors.add("Le score ELO ne peut pas être négatif");
     }
-    
-    // Validation de la date d'échéance
+  }
+
+  void _validateDueDate(Task entity, List<String> errors) {
     if (entity.dueDate != null && entity.dueDate!.isBefore(entity.createdAt)) {
-      errors.add('La date d\'échéance ne peut pas être antérieure à la date de création');
+      errors.add("La date d'échéance ne peut pas être antérieure à la date de création");
     }
-    
-    // Validation des dates
+  }
+
+  void _validateTimestamps(Task entity, List<String> errors) {
     if (entity.updatedAt.isBefore(entity.createdAt)) {
-      errors.add('La date de mise à jour ne peut pas être antérieure à la date de création');
+      errors.add("La date de mise à jour ne peut pas être antérieure à la date de création");
     }
-    
-    // Validation des tags
+  }
+
+  void _validateTags(Task entity, List<String> errors) {
     if (entity.tags.length > 10) {
-      errors.add('Une tâche ne peut pas avoir plus de 10 tags');
+      errors.add("Une tâche ne peut pas avoir plus de 10 tags");
     }
     for (final tag in entity.tags) {
       if (tag.isEmpty) {
-        errors.add('Les tags ne peuvent pas être vides');
+        errors.add("Les tags ne peuvent pas être vides");
       }
       if (tag.length > 30) {
-        errors.add('Les tags ne peuvent pas dépasser 30 caractères');
+        errors.add("Les tags ne peuvent pas dépasser 30 caractères");
       }
     }
-    
-    return errors;
   }
 
   @override

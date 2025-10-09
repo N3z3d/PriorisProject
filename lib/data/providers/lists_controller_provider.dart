@@ -1,100 +1,123 @@
-/// SOLID-compliant provider for ListsController
-/// Wires up all dependencies and exports the controller
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:prioris/presentation/pages/lists/controllers/lists_controller.dart';
-import 'package:prioris/presentation/pages/lists/models/lists_state.dart';
-import 'package:prioris/presentation/pages/lists/managers/lists_initialization_manager.dart';
-import 'package:prioris/presentation/pages/lists/managers/lists_persistence_manager.dart';
-import 'package:prioris/presentation/pages/lists/managers/lists_filter_manager.dart';
-import 'package:prioris/presentation/pages/lists/services/lists_validation_service.dart';
-import 'package:prioris/presentation/pages/lists/interfaces/lists_managers_interfaces.dart';
-import 'package:prioris/infrastructure/services/logger_service.dart';
+import 'package:prioris/data/providers/repository_providers.dart';
 import 'package:prioris/domain/core/interfaces/logger_interface.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
-import 'package:prioris/data/providers/repository_providers.dart';
+import 'package:prioris/infrastructure/services/logger_service.dart';
+import 'package:prioris/presentation/pages/lists/controllers/lists_controller.dart';
+import 'package:prioris/presentation/pages/lists/controllers/operations/lists_crud_operations.dart';
+import 'package:prioris/presentation/pages/lists/controllers/operations/lists_validation_service.dart';
+import 'package:prioris/presentation/pages/lists/controllers/state/lists_state_manager.dart';
+import 'package:prioris/presentation/pages/lists/interfaces/lists_managers_interfaces.dart';
+import 'package:prioris/presentation/pages/lists/managers/lists_filter_manager.dart';
+import 'package:prioris/presentation/pages/lists/managers/lists_initialization_manager.dart';
+import 'package:prioris/presentation/pages/lists/managers/lists_persistence_manager.dart';
+import 'package:prioris/presentation/pages/lists/models/lists_state.dart';
+import 'package:prioris/presentation/pages/lists/services/lists_performance_monitor.dart';
 
-/// Provider for ILogger adapter (bridges LoggerService to ILogger interface)
+/// Logger adapter bridging infrastructure LoggerService to the domain ILogger.
 final loggerProvider = Provider<ILogger>((ref) {
   return _LoggerAdapter(LoggerService.instance);
 });
 
-/// Provider for ListsValidationService
 final listsValidationServiceProvider = Provider<ListsValidationService>((ref) {
   return ListsValidationService();
 });
 
-/// Provider for ListsFilterManager
 final listsFilterManagerProvider = Provider<ListsFilterManager>((ref) {
   return ListsFilterManager();
 });
 
-/// Provider for ListsInitializationManager
-final listsInitializationManagerProvider = FutureProvider<ListsInitializationManager>((ref) async {
-  final customListRepository = await ref.watch(hiveCustomListRepositoryProvider.future);
-  final itemRepository = await ref.watch(hiveListItemRepositoryProvider.future);
-
-  return ListsInitializationManager.legacy(
-    customListRepository,
-    itemRepository,
-  );
+final listsStateManagerProvider = Provider<ListsStateManager>((ref) {
+  return const ListsStateManager();
 });
 
-/// Provider for ListsPersistenceManager
-final listsPersistenceManagerProvider = FutureProvider<ListsPersistenceManager>((ref) async {
-  final customListRepository = await ref.watch(hiveCustomListRepositoryProvider.future);
-  final itemRepository = await ref.watch(hiveListItemRepositoryProvider.future);
-
-  return ListsPersistenceManager.legacy(
-    customListRepository,
-    itemRepository,
-  );
+final listsPerformanceMonitorProvider = Provider<IListsPerformanceMonitor>((ref) {
+  return ListsPerformanceMonitor() as IListsPerformanceMonitor;
 });
 
-/// Main provider for RefactoredListsController
-/// This is the primary integration point for the UI
+final listsInitializationManagerProvider = FutureProvider<IListsInitializationManager>((ref) async {
+  final customListRepository = await ref.watch(hiveCustomListRepositoryProvider.future);
+  final itemRepository = await ref.watch(hiveListItemRepositoryProvider.future);
+  return ListsInitializationManager.legacy(customListRepository, itemRepository);
+});
+
+final listsPersistenceManagerProvider = FutureProvider<IListsPersistenceManager>((ref) async {
+  final customListRepository = await ref.watch(hiveCustomListRepositoryProvider.future);
+  final itemRepository = await ref.watch(hiveListItemRepositoryProvider.future);
+  return ListsPersistenceManager.legacy(customListRepository, itemRepository);
+});
+
 final listsControllerProvider = StateNotifierProvider<RefactoredListsController, ListsState>((ref) {
-  // Watch for async providers to be ready
-  final initManager = ref.watch(listsInitializationManagerProvider);
-  final persistenceManager = ref.watch(listsPersistenceManagerProvider);
+  final initManagerAsync = ref.watch(listsInitializationManagerProvider);
+  final persistenceManagerAsync = ref.watch(listsPersistenceManagerProvider);
+  final filterManager = ref.watch(listsFilterManagerProvider);
+  final validator = ref.watch(listsValidationServiceProvider);
+  final logger = ref.watch(loggerProvider);
+  final stateManager = ref.watch(listsStateManagerProvider);
+  final performanceMonitor = ref.watch(listsPerformanceMonitorProvider);
 
-  return initManager.when(
-    data: (initMgr) {
-      return persistenceManager.when(
-        data: (persistMgr) {
+  return initManagerAsync.when(
+    data: (initManager) {
+      return persistenceManagerAsync.when(
+        data: (persistenceManager) {
+          final crud = ListsCrudOperations(
+            persistence: persistenceManager,
+            validator: validator,
+            filterManager: filterManager,
+            stateManager: stateManager,
+            logger: logger,
+          );
+
           return RefactoredListsController(
-            initializationManager: initMgr,
-            persistenceManager: persistMgr,
-            filterManager: ref.read(listsFilterManagerProvider),
-            validationService: ref.read(listsValidationServiceProvider),
-            logger: ref.read(loggerProvider),
+            initializationManager: initManager,
+            performanceMonitor: performanceMonitor,
+            crudOperations: crud,
+            stateManager: stateManager,
+            logger: logger,
           );
         },
-        loading: () => _LoadingListsController(),
-        error: (err, stack) {
+        loading: () => _LoadingListsController(
+          stateManager: stateManager,
+          logger: logger,
+          performanceMonitor: performanceMonitor,
+        ),
+        error: (error, stack) {
           LoggerService.instance.error(
             'Failed to initialize persistence manager',
             context: 'listsControllerProvider',
-            error: err,
+            error: error,
           );
-          return _ErrorListsController(err.toString());
+          return _ErrorListsController(
+            message: error.toString(),
+            stateManager: stateManager,
+            logger: logger,
+            performanceMonitor: performanceMonitor,
+          );
         },
       );
     },
-    loading: () => _LoadingListsController(),
-    error: (err, stack) {
+    loading: () => _LoadingListsController(
+      stateManager: stateManager,
+      logger: logger,
+      performanceMonitor: performanceMonitor,
+    ),
+    error: (error, stack) {
       LoggerService.instance.error(
         'Failed to initialize initialization manager',
         context: 'listsControllerProvider',
-        error: err,
+        error: error,
       );
-      return _ErrorListsController(err.toString());
+      return _ErrorListsController(
+        message: error.toString(),
+        stateManager: stateManager,
+        logger: logger,
+        performanceMonitor: performanceMonitor,
+      );
     },
   );
 });
 
-/// Convenience providers for specific state properties
 final listsProvider = Provider<List<CustomList>>((ref) {
   return ref.watch(listsControllerProvider).lists;
 });
@@ -111,83 +134,42 @@ final listsErrorProvider = Provider<String?>((ref) {
   return ref.watch(listsControllerProvider).error;
 });
 
-/// Provider for finding a list by ID
 final listByIdProvider = Provider.family<CustomList?, String>((ref, listId) {
   final state = ref.watch(listsControllerProvider);
   return state.findListById(listId);
 });
 
-// === Private helper classes ===
-
-/// Temporary controller while loading
 class _LoadingListsController extends RefactoredListsController {
-  _LoadingListsController()
-      : super(
+  _LoadingListsController({
+    required ListsStateManager stateManager,
+    required ILogger logger,
+    required IListsPerformanceMonitor performanceMonitor,
+  }) : super(
           initializationManager: _DummyInitManager(),
-          persistenceManager: _DummyPersistManager(),
-          filterManager: ListsFilterManager(),
-          validationService: ListsValidationService(),
-          logger: _LoggerAdapter(LoggerService.instance),
+          performanceMonitor: performanceMonitor,
+          crudOperations: _DummyCrudOperations(logger, stateManager),
+          stateManager: stateManager,
+          logger: logger,
         );
 }
 
-/// Temporary controller for error state
 class _ErrorListsController extends RefactoredListsController {
-  _ErrorListsController(String error)
-      : super(
+  _ErrorListsController({
+    required String message,
+    required ListsStateManager stateManager,
+    required ILogger logger,
+    required IListsPerformanceMonitor performanceMonitor,
+  }) : super(
           initializationManager: _DummyInitManager(),
-          persistenceManager: _DummyPersistManager(),
-          filterManager: ListsFilterManager(),
-          validationService: ListsValidationService(),
-          logger: _LoggerAdapter(LoggerService.instance),
+          performanceMonitor: performanceMonitor,
+          crudOperations: _DummyCrudOperations(logger, stateManager),
+          stateManager: stateManager,
+          logger: logger,
         ) {
-    state = ListsState.error(error);
+    state = ListsState.error(message);
   }
 }
 
-/// Adapter to bridge LoggerService to ILogger interface
-class _LoggerAdapter implements ILogger {
-  final LoggerService _logger;
-
-  _LoggerAdapter(this._logger);
-
-  @override
-  void debug(String message, {String? context, String? correlationId, dynamic data}) {
-    _logger.debug(message, context: context ?? 'App');
-  }
-
-  @override
-  void info(String message, {String? context, String? correlationId, dynamic data}) {
-    _logger.info(message, context: context ?? 'App');
-  }
-
-  @override
-  void warning(String message, {String? context, String? correlationId, dynamic data}) {
-    _logger.warning(message, context: context ?? 'App');
-  }
-
-  @override
-  void error(String message, {String? context, String? correlationId, dynamic error, StackTrace? stackTrace}) {
-    _logger.error(message, context: context ?? 'App', error: error);
-  }
-
-  @override
-  void fatal(String message, {String? context, String? correlationId, dynamic error, StackTrace? stackTrace}) {
-    _logger.error('[FATAL] $message', context: context ?? 'App', error: error);
-  }
-
-  @override
-  void performance(String operation, Duration duration, {String? context, String? correlationId, Map<String, dynamic>? metrics}) {
-    _logger.debug('[$operation] completed in ${duration.inMilliseconds}ms', context: context ?? 'Performance');
-  }
-
-  @override
-  void userAction(String action, {String? context, String? correlationId, Map<String, dynamic>? properties}) {
-    _logger.debug('[UserAction] $action', context: context ?? 'UserAction');
-  }
-}
-
-/// Dummy implementation for initialization manager (used during loading)
 class _DummyInitManager implements IListsInitializationManager {
   @override
   Future<void> initializeAdaptive() async {}
@@ -205,8 +187,7 @@ class _DummyInitManager implements IListsInitializationManager {
   String get initializationMode => 'dummy';
 }
 
-/// Dummy implementation for persistence manager (used during loading)
-class _DummyPersistManager implements IListsPersistenceManager {
+class _DummyPersistenceManager implements IListsPersistenceManager {
   @override
   Future<List<CustomList>> loadAllLists() async => [];
 
@@ -248,4 +229,56 @@ class _DummyPersistManager implements IListsPersistenceManager {
 
   @override
   Future<void> rollbackItems(List<ListItem> items) async {}
+}
+
+class _DummyCrudOperations extends ListsCrudOperations {
+  _DummyCrudOperations(ILogger logger, ListsStateManager stateManager)
+      : super(
+          persistence: _DummyPersistenceManager(),
+          validator: ListsValidationService(),
+          filterManager: ListsFilterManager(),
+          stateManager: stateManager,
+          logger: logger,
+        );
+}
+
+class _LoggerAdapter implements ILogger {
+  final LoggerService logger;
+
+  _LoggerAdapter(this.logger);
+
+  @override
+  void debug(String message, {String? context, String? correlationId, dynamic data}) {
+    logger.debug(message, context: context ?? 'App');
+  }
+
+  @override
+  void info(String message, {String? context, String? correlationId, dynamic data}) {
+    logger.info(message, context: context ?? 'App');
+  }
+
+  @override
+  void warning(String message, {String? context, String? correlationId, dynamic data}) {
+    logger.warning(message, context: context ?? 'App');
+  }
+
+  @override
+  void error(String message, {String? context, String? correlationId, dynamic error, StackTrace? stackTrace}) {
+    logger.error(message, context: context ?? 'App', error: error);
+  }
+
+  @override
+  void fatal(String message, {String? context, String? correlationId, dynamic error, StackTrace? stackTrace}) {
+    logger.error('[FATAL] $message', context: context ?? 'App', error: error);
+  }
+
+  @override
+  void performance(String operation, Duration duration, {String? context, String? correlationId, Map<String, dynamic>? metrics}) {
+    logger.debug('[$operation] ${duration.inMilliseconds}ms', context: context ?? 'Performance');
+  }
+
+  @override
+  void userAction(String action, {String? context, String? correlationId, Map<String, dynamic>? properties}) {
+    logger.debug('[UserAction] $action', context: context ?? 'UserAction');
+  }
 }

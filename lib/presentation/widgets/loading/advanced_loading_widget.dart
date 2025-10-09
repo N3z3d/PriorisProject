@@ -77,49 +77,69 @@ class _AdvancedLoadingWidgetState extends State<AdvancedLoadingWidget>
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        AnimatedBuilder(
-          animation: _animationController,
-          builder: (context, child) {
-            return Transform.rotate(
-              angle: _rotationAnimation.value * 2 * 3.14159,
-              child: Transform.scale(
-                scale: _scaleAnimation.value,
-                child: _buildLoadingIndicator(color),
-              ),
-            );
-          },
-        ),
-        if (widget.message != null) ...[
-          const SizedBox(height: 16),
-          Text(
-            widget.message!,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-        if (widget.showProgress && widget.progress != null) ...[
-          const SizedBox(height: 12),
-          SizedBox(
-            width: 200,
-            child: LinearProgressIndicator(
-              value: widget.progress,
-              backgroundColor: color.withValues(alpha: 0.2),
-              valueColor: AlwaysStoppedAnimation<Color>(color),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '${(widget.progress! * 100).toInt()}%',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
+        _buildAnimatedIndicator(color),
+        ..._buildMessage(theme),
+        ..._buildProgress(theme, color),
       ],
     );
+  }
+
+  Widget _buildAnimatedIndicator(Color color) {
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (context, child) {
+        return Transform.rotate(
+          angle: _rotationAnimation.value * 2 * 3.14159,
+          child: Transform.scale(
+            scale: _scaleAnimation.value,
+            child: _buildLoadingIndicator(color),
+          ),
+        );
+      },
+    );
+  }
+
+  List<Widget> _buildMessage(ThemeData theme) {
+    if (widget.message == null) {
+      return const [];
+    }
+
+    return [
+      const SizedBox(height: 16),
+      Text(
+        widget.message!,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
+        ),
+        textAlign: TextAlign.center,
+      ),
+    ];
+  }
+
+  List<Widget> _buildProgress(ThemeData theme, Color color) {
+    if (!widget.showProgress || widget.progress == null) {
+      return const [];
+    }
+
+    return [
+      const SizedBox(height: 12),
+      SizedBox(
+        width: 200,
+        child: LinearProgressIndicator(
+          value: widget.progress,
+          backgroundColor: color.withValues(alpha: 0.2),
+          valueColor: AlwaysStoppedAnimation<Color>(color),
+        ),
+      ),
+      const SizedBox(height: 8),
+      Text(
+        '${(widget.progress! * 100).toInt()}%',
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: color,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    ];
   }
 
   Widget _buildLoadingIndicator(Color color) {
@@ -249,7 +269,7 @@ class AdvancedErrorWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -262,46 +282,69 @@ class AdvancedErrorWidget extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            _getErrorIcon(),
-            size: 48,
-            color: theme.colorScheme.error,
-          ),
+          _buildIcon(theme),
           const SizedBox(height: 16),
-          Text(
-            message,
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.error,
-              fontWeight: FontWeight.w600,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          if (details != null) ...[
-            const SizedBox(height: 8),
-            Text(
-              details!,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7),
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-          if (onRetry != null) ...[
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
-              onPressed: onRetry,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Réessayer'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.error,
-                foregroundColor: theme.colorScheme.onError,
-              ),
-            ),
-          ],
+          _buildMessage(theme),
+          ..._buildDetails(theme),
+          ..._buildRetryButton(theme),
         ],
       ),
     );
   }
+
+  Widget _buildIcon(ThemeData theme) {
+    return Icon(
+      _getErrorIcon(),
+      size: 48,
+      color: theme.colorScheme.error,
+    );
+  }
+
+  Widget _buildMessage(ThemeData theme) {
+    return Text(
+      message,
+      style: theme.textTheme.titleMedium?.copyWith(
+        color: theme.colorScheme.error,
+        fontWeight: FontWeight.w600,
+      ),
+      textAlign: TextAlign.center,
+    );
+  }
+
+  List<Widget> _buildDetails(ThemeData theme) {
+    if (details == null) {
+      return const [];
+    }
+    return [
+      const SizedBox(height: 8),
+      Text(
+        details!,
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7),
+        ),
+        textAlign: TextAlign.center,
+      ),
+    ];
+  }
+
+  List<Widget> _buildRetryButton(ThemeData theme) {
+    if (onRetry == null) {
+      return const [];
+    }
+    return [
+      const SizedBox(height: 16),
+      ElevatedButton.icon(
+        onPressed: onRetry,
+        icon: const Icon(Icons.refresh),
+        label: const Text('Reessayer'),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: theme.colorScheme.error,
+          foregroundColor: theme.colorScheme.onError,
+        ),
+      ),
+    ];
+  }
+
 
   IconData _getErrorIcon() {
     switch (type) {
