@@ -14,7 +14,13 @@
       "Bash(git cat-file:*)",
       "Bash(git ls-tree:*)",
       "Bash(gh pr:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git mv:*)",
+      "Bash(flutter pub:*)",
+      "Bash(flutter analyze:*)",
+      "Bash(git commit:*)",
+      "Bash(flutter run:*)",
+      "Bash(nc localhost 56155)"
     ],
     "deny": [],
     "ask": []

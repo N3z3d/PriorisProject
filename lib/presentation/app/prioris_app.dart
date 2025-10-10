@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:prioris/data/providers/lists_controller_provider.dart';
 import 'package:prioris/domain/services/core/language_service.dart';
 import 'package:prioris/domain/services/ui/responsive_service.dart';
 import 'package:prioris/presentation/routes/app_routes.dart';
@@ -15,8 +16,11 @@ class PriorisApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Activer le listener d'authentification pour invalider les repository providers
+    ref.watch(authChangeListenerProvider);
+
     final currentLocale = ref.watch(currentLocaleProvider);
-    
+
     return MaterialApp(
       title: 'Prioris',
       theme: _buildAppTheme(),

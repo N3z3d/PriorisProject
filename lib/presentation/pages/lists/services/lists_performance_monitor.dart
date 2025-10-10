@@ -3,7 +3,7 @@ import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/infrastructure/services/logger_service.dart';
 import 'package:prioris/presentation/services/performance/data_consistency_service.dart';
 import 'package:prioris/presentation/services/performance/performance_monitor.dart';
-import '../interfaces/lists_controller_interfaces.dart';
+import '../interfaces/lists_managers_interfaces.dart';
 
 /// Service responsable du monitoring de performance et de la cohérence des données
 ///
@@ -91,110 +91,82 @@ class ListsPerformanceMonitor implements IListsPerformanceMonitor {
   }
 
   @override
-  Future<bool> validateDataConsistency(List<CustomList> lists) async {
+  void monitorCacheOperation(String operation, bool hit) {
     try {
+      final hitStatus = hit ? 'HIT' : 'MISS';
       LoggerService.instance.debug(
-        "Validation de la coherence des donnees pour ${lists.length} listes",
-        context: 'ListsPerformanceMonitor',
-      );
-
-      if (_hasDuplicateListIds(lists)) {
-        return false;
-      }
-      if (_hasInvalidItems(lists)) {
-        return false;
-      }
-
-      LoggerService.instance.info(
-        "Validation de coherence reussie pour ${lists.length} listes",
-        context: 'ListsPerformanceMonitor',
-      );
-      return true;
-    } catch (e, stackTrace) {
-      logError('validateDataConsistency', e, stackTrace);
-      return false;
-    }
-  }
-
-  bool _hasDuplicateListIds(List<CustomList> lists) {
-    final listIds = lists.map((list) => list.id).toList();
-    final uniqueIds = listIds.toSet();
-    if (listIds.length == uniqueIds.length) {
-      return false;
-    }
-    logError('validateDataConsistency', "IDs de listes dupliques detectes", StackTrace.current);
-    return true;
-  }
-
-  bool _hasInvalidItems(List<CustomList> lists) {
-    for (final list in lists) {
-      final itemIds = list.items.map((item) => item.id).toList();
-      final uniqueItemIds = itemIds.toSet();
-      if (itemIds.length != uniqueItemIds.length) {
-        logError(
-          'validateDataConsistency',
-          "IDs d'elements dupliques detectes dans la liste ${list.name}",
-          StackTrace.current,
-        );
-        return true;
-      }
-
-      for (final item in list.items) {
-        if (item.listId != list.id) {
-          logError(
-            'validateDataConsistency',
-            "Element ${item.title} appartient a la liste ${item.listId} mais se trouve dans la liste ${list.id}",
-            StackTrace.current,
-          );
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-
-  @override
-  void cacheLists(List<CustomList> lists) {
-    try {
-      // Utiliser le service de consistance des données pour le cache
-      DataConsistencyService.cacheLists(lists);
-
-      // Mettre à jour notre cache local pour les statistiques
-      _performanceCache['cached_lists_count'] = lists.length;
-      _performanceCache['last_cache_update'] = DateTime.now();
-
-      LoggerService.instance.debug(
-        'Cache mis à jour avec ${lists.length} listes',
+        'Cache $hitStatus pour l\'opération: $operation',
         context: 'ListsPerformanceMonitor'
       );
+
+      // Enregistrer dans les statistiques
+      final cacheKey = 'cache_${operation}_${hitStatus.toLowerCase()}';
+      _performanceCache[cacheKey] = (_performanceCache[cacheKey] ?? 0) + 1;
     } catch (e) {
       LoggerService.instance.warning(
-        'Erreur lors de la mise en cache des listes: $e',
+        'Erreur lors du monitoring de cache pour $operation: $e',
         context: 'ListsPerformanceMonitor'
       );
     }
   }
 
   @override
-  void invalidateCache() {
+  void monitorCollectionSize(String collection, int size) {
     try {
-      // Invalider le cache du service de consistance des données
-      DataConsistencyService.invalidateCache();
-
-      // Nettoyer notre cache local
-      _performanceCache.clear();
-
       LoggerService.instance.debug(
-        'Cache invalidé avec succès',
+        'Taille de la collection $collection: $size',
         context: 'ListsPerformanceMonitor'
       );
+
+      // Enregistrer dans les statistiques
+      _performanceCache['${collection}_size'] = size;
+      _performanceCache['${collection}_last_measured'] = DateTime.now();
     } catch (e) {
       LoggerService.instance.warning(
-        'Erreur lors de l\'invalidation du cache: $e',
+        'Erreur lors du monitoring de taille pour $collection: $e',
         context: 'ListsPerformanceMonitor'
       );
     }
+  }
+
+  @override
+  Map<String, dynamic> getDetailedMetrics() {
+    try {
+      final baseStats = getPerformanceStats();
+      final detailedMetrics = <String, dynamic>{
+        ...baseStats,
+        'cache_metrics': _getCacheMetrics(),
+        'collection_metrics': _getCollectionMetrics(),
+        'timestamp': DateTime.now().toIso8601String(),
+      };
+      return detailedMetrics;
+    } catch (e) {
+      LoggerService.instance.warning(
+        'Erreur lors de la génération des métriques détaillées: $e',
+        context: 'ListsPerformanceMonitor'
+      );
+      return {'error': 'Failed to generate detailed metrics', 'exception': e.toString()};
+    }
+  }
+
+  Map<String, dynamic> _getCacheMetrics() {
+    final cacheMetrics = <String, dynamic>{};
+    _performanceCache.forEach((key, value) {
+      if (key.startsWith('cache_')) {
+        cacheMetrics[key] = value;
+      }
+    });
+    return cacheMetrics;
+  }
+
+  Map<String, dynamic> _getCollectionMetrics() {
+    final collectionMetrics = <String, dynamic>{};
+    _performanceCache.forEach((key, value) {
+      if (key.endsWith('_size') || key.endsWith('_last_measured')) {
+        collectionMetrics[key] = value;
+      }
+    });
+    return collectionMetrics;
   }
 
   @override
@@ -247,7 +219,7 @@ class ListsPerformanceMonitor implements IListsPerformanceMonitor {
   }
 
   @override
-  void logError(String operation, Object error, StackTrace? stackTrace) {
+  void logError(String operation, Object error, [StackTrace? stackTrace]) {
     try {
       LoggerService.instance.error(
         'Erreur dans l\'opération $operation',

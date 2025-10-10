@@ -79,7 +79,7 @@ class HabitsHeader extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           Text(
-            'Construisez votre meilleure version',
+            'Gérez vos routines et suivez vos progrès',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
@@ -112,14 +112,8 @@ class HabitsHeader extends StatelessWidget {
         ),
         dividerColor: Colors.transparent,
         tabs: const [
-          Tab(
-            icon: Icon(Icons.play_circle_outline, size: 20),
-            text: 'Actives',
-          ),
-          Tab(
-            icon: Icon(Icons.check_circle_outline, size: 20),
-            text: 'Complétées',
-          ),
+          Tab(text: 'Actives'),
+          Tab(text: 'Complétées'),
         ],
       ),
     );

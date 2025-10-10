@@ -51,53 +51,49 @@ class _StatisticsPageState extends ConsumerState<StatisticsPage>
       title: const Text(
         '📊 Statistiques',
         style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w600,
+          color: AppTheme.textPrimary,
+          fontWeight: FontWeight.w700,
+          fontSize: 24,
         ),
       ),
-      backgroundColor: AppTheme.primaryColor,
-      foregroundColor: Colors.white,
+      backgroundColor: AppTheme.backgroundColor,
+      foregroundColor: AppTheme.textPrimary,
       elevation: 0,
-      flexibleSpace: _buildAppBarGradient(),
-      bottom: _buildTabBar(),
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(48),
+        child: _buildTabBar(),
+      ),
     );
   }
 
-  Widget _buildAppBarGradient() {
+  Widget _buildTabBar() {
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppTheme.primaryColor,
-            AppTheme.primaryVariant,
-          ],
+        color: AppTheme.cardColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: TabBar(
+        controller: _tabController,
+        labelColor: AppTheme.primaryColor,
+        unselectedLabelColor: AppTheme.textTertiary,
+        indicatorColor: AppTheme.primaryColor,
+        indicatorWeight: 3,
+        labelStyle: const TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 14,
         ),
+        tabs: const [
+          Tab(text: 'Vue d\'ensemble'),
+          Tab(text: 'Habitudes'),
+          Tab(text: 'Tâches'),
+        ],
       ),
-    );
-  }
-
-  TabBar _buildTabBar() {
-    return TabBar(
-      controller: _tabController,
-      indicatorColor: Colors.white,
-      indicatorWeight: 3,
-      labelColor: Colors.white,
-      unselectedLabelColor: AppTheme.grey100.withValues(alpha: 0.8),
-      labelStyle: const TextStyle(
-        fontWeight: FontWeight.w600,
-        fontSize: 14,
-      ),
-      unselectedLabelStyle: const TextStyle(
-        fontWeight: FontWeight.w500,
-        fontSize: 14,
-      ),
-      tabs: const [
-        Tab(text: 'Vue d\'ensemble'),
-        Tab(text: 'Habitudes'),
-        Tab(text: 'Tâches'),
-      ],
     );
   }
 

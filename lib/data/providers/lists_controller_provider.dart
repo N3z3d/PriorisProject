@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:prioris/data/providers/auth_providers.dart';
 import 'package:prioris/data/providers/repository_providers.dart';
+import 'package:prioris/data/repositories/custom_list_repository.dart';
 import 'package:prioris/domain/core/interfaces/logger_interface.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
@@ -33,19 +35,40 @@ final listsStateManagerProvider = Provider<ListsStateManager>((ref) {
 });
 
 final listsPerformanceMonitorProvider = Provider<IListsPerformanceMonitor>((ref) {
-  return ListsPerformanceMonitor() as IListsPerformanceMonitor;
+  return ListsPerformanceMonitor();
+});
+
+/// Provider qui écoute les changements d'authentification et invalide les repository providers
+final authChangeListenerProvider = Provider<void>((ref) {
+  ref.listen<bool>(isSignedInProvider, (previous, current) {
+    if (previous != null && previous != current) {
+      LoggerService.instance.info(
+        '🔄 Authentification changée: $previous → $current - Invalidation des repository providers',
+        context: 'authChangeListener',
+      );
+
+      // Invalider les repository providers pour forcer leur recréation avec le nouveau statut d'auth
+      ref.invalidate(adaptiveCustomListRepositoryProvider);
+      ref.invalidate(adaptiveListItemRepositoryProvider);
+      ref.invalidate(listsInitializationManagerProvider);
+      ref.invalidate(listsPersistenceManagerProvider);
+      // Ne pas invalider listsControllerProvider ici pour éviter la circularité
+    }
+  });
 });
 
 final listsInitializationManagerProvider = FutureProvider<IListsInitializationManager>((ref) async {
-  final customListRepository = await ref.watch(hiveCustomListRepositoryProvider.future);
-  final itemRepository = await ref.watch(hiveListItemRepositoryProvider.future);
-  return ListsInitializationManager.legacy(customListRepository, itemRepository);
+  // Utiliser les repositories adaptatifs qui choisissent automatiquement entre Hive et Supabase
+  final customListRepository = await ref.watch(adaptiveCustomListRepositoryProvider.future);
+  final itemRepository = await ref.watch(adaptiveListItemRepositoryProvider.future);
+  return ListsInitializationManager.legacy(customListRepository as CustomListRepository, itemRepository);
 });
 
 final listsPersistenceManagerProvider = FutureProvider<IListsPersistenceManager>((ref) async {
-  final customListRepository = await ref.watch(hiveCustomListRepositoryProvider.future);
-  final itemRepository = await ref.watch(hiveListItemRepositoryProvider.future);
-  return ListsPersistenceManager.legacy(customListRepository, itemRepository);
+  // Utiliser les repositories adaptatifs qui choisissent automatiquement entre Hive et Supabase
+  final customListRepository = await ref.watch(adaptiveCustomListRepositoryProvider.future);
+  final itemRepository = await ref.watch(adaptiveListItemRepositoryProvider.future);
+  return ListsPersistenceManager.legacy(customListRepository as CustomListRepository, itemRepository);
 });
 
 final listsControllerProvider = StateNotifierProvider<RefactoredListsController, ListsState>((ref) {

@@ -207,8 +207,17 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
       context: context,
       builder: (context) => BulkAddDialog(
         onSubmit: (itemTitles) {
+          // Convertir les titres en ListItem
+          final items = itemTitles.map((title) => ListItem(
+            id: '', // L'ID sera généré par le controller
+            title: title,
+            listId: widget.list.id,
+            isCompleted: false,
+            createdAt: DateTime.now(),
+          )).toList();
+
           ref.read(listsControllerProvider.notifier)
-             .addMultipleItemsToList(widget.list.id, itemTitles);
+             .addMultipleItemsToList(widget.list.id, items);
         },
       ),
     );

@@ -62,7 +62,7 @@ class _HabitsPageState extends ConsumerState<HabitsPage> with TickerProviderStat
               ),
             ],
           ),
-          floatingActionButton: _buildFloatingActionButton(),
+          floatingActionButton: _buildFloatingActionButton(context),
         );
       },
     );
@@ -115,7 +115,11 @@ class _HabitsPageState extends ConsumerState<HabitsPage> with TickerProviderStat
     );
   }
 
-  Widget _buildFloatingActionButton() {
+  Widget? _buildFloatingActionButton(BuildContext context) {
+    // Hide FAB on desktop (>= 768px), show only on mobile
+    final isDesktop = MediaQuery.of(context).size.width >= 768;
+    if (isDesktop) return null;
+
     return FloatingActionButton(
       heroTag: 'habits_fab',
       onPressed: _controller.navigateToAddTab,

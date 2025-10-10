@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/domain/models/core/entities/task.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/widgets/dialogs/task_edit_dialog.dart';
+import 'package:prioris/presentation/pages/home_page.dart';
 import 'duel/controllers/duel_controller.dart';
 import 'duel/widgets/export.dart';
 
@@ -165,31 +166,70 @@ class _DuelPageState extends ConsumerState<DuelPage>
     );
   }
 
-  /// État sans tâches
+  /// État sans tâches - Onboarding informatif
   Widget _buildNoTasksState() {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.psychology,
-            size: 80,
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Pas assez de tâches',
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Ajoutez au moins 2 tâches pour commencer à les prioriser',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 480),
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.info_outline,
+              size: 64,
+              color: Theme.of(context).colorScheme.primary,
             ),
-            textAlign: TextAlign.center,
-          ),
-        ],
+            const SizedBox(height: 24),
+            Text(
+              'Vous avez besoin d\'au moins 2 tâches actives',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Choisissez une liste et sélectionnez 2 tâches ou plus pour lancer une comparaison.',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  // Navigate to Lists page (index 0)
+                  ref.read(currentPageProvider.notifier).state = 0;
+                },
+                icon: const Icon(Icons.add_task),
+                label: const Text('Ajouter des tâches'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextButton.icon(
+              onPressed: () {
+                // Navigate to Lists page to create new task
+                ref.read(currentPageProvider.notifier).state = 0;
+              },
+              icon: const Icon(Icons.edit_note, size: 20),
+              label: const Text('Créer une nouvelle tâche'),
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -203,7 +243,7 @@ class _DuelPageState extends ConsumerState<DuelPage>
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          const DuelHeaderWidget(),
+          _buildDuelHeader(),
           const SizedBox(height: 32),
           Expanded(
             child: Column(
@@ -217,7 +257,7 @@ class _DuelPageState extends ConsumerState<DuelPage>
                     hideElo: state.hideEloScores,
                   ),
                 ),
-                const VsSeparatorWidget(),
+                _buildVsSeparator(),
                 Expanded(
                   flex: 5,
                   child: DuelTaskCard(
@@ -297,6 +337,50 @@ class _DuelPageState extends ConsumerState<DuelPage>
             );
           }
         },
+      ),
+    );
+  }
+
+  /// Construit le header du duel
+  Widget _buildDuelHeader() {
+    return const Column(
+      children: [
+        Icon(Icons.sports_mma, size: 48, color: Colors.blue),
+        SizedBox(height: 8),
+        Text(
+          'Duel de Priorités',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: 4),
+        Text(
+          'Choisissez la tâche la plus importante',
+          style: TextStyle(color: Colors.grey),
+        ),
+      ],
+    );
+  }
+
+  /// Construit le séparateur VS
+  Widget _buildVsSeparator() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(child: Divider(color: Colors.grey[300])),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              'VS',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue,
+              ),
+            ),
+          ),
+          Expanded(child: Divider(color: Colors.grey[300])),
+        ],
       ),
     );
   }
