@@ -2,14 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/widgets/indicators/premium_status_indicator.dart';
 
-/// Premium Metrics Dashboard with sophisticated cards and animations
-///
-/// Features:
-/// - Glassmorphism metric cards with subtle animations
-/// - Color-coded performance indicators
-/// - Responsive grid layout
-/// - Premium micro-interactions
-/// - Accessibility-compliant design
+/// Tableau de bord premium affichant les métriques clés de productivité.
 class PremiumMetricsDashboard extends StatefulWidget {
   final Map<String, dynamic> metrics;
   final bool enableAnimations;
@@ -21,7 +14,8 @@ class PremiumMetricsDashboard extends StatefulWidget {
   });
 
   @override
-  State<PremiumMetricsDashboard> createState() => _PremiumMetricsDashboardState();
+  State<PremiumMetricsDashboard> createState() =>
+      _PremiumMetricsDashboardState();
 }
 
 class _PremiumMetricsDashboardState extends State<PremiumMetricsDashboard>
@@ -36,7 +30,7 @@ class _PremiumMetricsDashboardState extends State<PremiumMetricsDashboard>
   }
 
   void _initializeAnimations() {
-    final metricCount = _getMetricCards().length;
+    final metricCount = _metricDefinitions().length;
     _controllers = List.generate(
       metricCount,
       (index) => AnimationController(
@@ -45,18 +39,17 @@ class _PremiumMetricsDashboardState extends State<PremiumMetricsDashboard>
       ),
     );
 
-    _animations = _controllers.map((controller) {
-      return Tween<double>(
-        begin: 0.0,
-        end: 1.0,
-      ).animate(CurvedAnimation(
-        parent: controller,
-        curve: Curves.elasticOut,
-      ));
-    }).toList();
+    _animations = _controllers
+        .map(
+          (controller) => CurvedAnimation(
+            parent: controller,
+            curve: Curves.elasticOut,
+          ).drive(Tween<double>(begin: 0, end: 1)),
+        )
+        .toList();
 
     if (widget.enableAnimations) {
-      for (int i = 0; i < _controllers.length; i++) {
+      for (var i = 0; i < _controllers.length; i++) {
         Future.delayed(Duration(milliseconds: i * 150), () {
           if (mounted) {
             _controllers[i].forward();
@@ -76,7 +69,8 @@ class _PremiumMetricsDashboardState extends State<PremiumMetricsDashboard>
 
   @override
   Widget build(BuildContext context) {
-    final metricCards = _getMetricCards();
+    final configs = _metricCardConfigs();
+    final cards = configs.map(_buildCardFromConfig).toList();
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -91,22 +85,21 @@ class _PremiumMetricsDashboardState extends State<PremiumMetricsDashboard>
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
           ),
-          itemCount: metricCards.length,
+          itemCount: cards.length,
           itemBuilder: (context, index) {
             return widget.enableAnimations
                 ? AnimatedBuilder(
                     animation: _animations[index],
                     builder: (context, child) {
+                      final value = _animations[index].value;
                       return Transform.scale(
-                        scale: _animations[index].value,
-                        child: Opacity(
-                          opacity: _animations[index].value,
-                          child: metricCards[index],
-                        ),
+                        scale: value,
+                        child: Opacity(opacity: value, child: child),
                       );
                     },
+                    child: cards[index],
                   )
-                : metricCards[index];
+                : cards[index];
           },
         );
       },
@@ -120,55 +113,98 @@ class _PremiumMetricsDashboardState extends State<PremiumMetricsDashboard>
     return 1;
   }
 
-  List<Widget> _getMetricCards() {
+  Widget _buildCardFromConfig(_MetricCardConfig config) {
+    return _buildMetricCard(
+      title: config.title,
+      value: config.value,
+      subtitle: config.subtitle,
+      icon: config.icon,
+      color: config.color,
+      trend: config.trend,
+    );
+  }
+
+  List<_MetricCardConfig> _metricCardConfigs() {
+    final metrics = widget.metrics;
+    return _metricDefinitions()
+        .map(
+          (definition) => _MetricCardConfig(
+            title: definition.title,
+            subtitle: definition.subtitle,
+            icon: definition.icon,
+            color: definition.color,
+            trend: _calculateTrend(definition.trendKey),
+            value: definition.valueBuilder(metrics),
+          ),
+        )
+        .toList();
+  }
+
+  List<_MetricDefinition> _metricDefinitions() {
     return [
-      _buildMetricCard(
+      ..._productivityDefinitions(),
+      ..._engagementDefinitions(),
+    ];
+  }
+
+  List<_MetricDefinition> _productivityDefinitions() {
+    return [
+      _MetricDefinition(
         title: 'Tâches terminées',
-        value: widget.metrics['completedTasks']?.toString() ?? '0',
         subtitle: 'cette semaine',
         icon: Icons.check_circle_rounded,
         color: AppTheme.successColor,
-        trend: _calculateTrend('completedTasks'),
+        trendKey: 'completedTasks',
+        valueBuilder: _stringValue('completedTasks'),
       ),
-      _buildMetricCard(
+      _MetricDefinition(
         title: 'Tâches en cours',
-        value: widget.metrics['activeTasks']?.toString() ?? '0',
         subtitle: 'actuellement',
         icon: Icons.play_circle_outline_rounded,
         color: AppTheme.primaryColor,
-        trend: _calculateTrend('activeTasks'),
+        trendKey: 'activeTasks',
+        valueBuilder: _stringValue('activeTasks'),
       ),
-      _buildMetricCard(
+      _MetricDefinition(
         title: 'Taux de réussite',
-        value: '${widget.metrics['completionRate']?.toStringAsFixed(1) ?? '0.0'}%',
         subtitle: 'performance globale',
         icon: Icons.trending_up_rounded,
         color: AppTheme.accentSecondary,
-        trend: _calculateTrend('completionRate'),
+        trendKey: 'completionRate',
+        valueBuilder: _numericValue(
+          'completionRate',
+          fractionDigits: 1,
+          suffix: '%',
+        ),
       ),
-      _buildMetricCard(
+    ];
+  }
+
+  List<_MetricDefinition> _engagementDefinitions() {
+    return [
+      _MetricDefinition(
         title: 'Habitudes actives',
-        value: widget.metrics['activeHabits']?.toString() ?? '0',
         subtitle: 'en développement',
         icon: Icons.repeat_rounded,
         color: AppTheme.accentColor,
-        trend: _calculateTrend('activeHabits'),
+        trendKey: 'activeHabits',
+        valueBuilder: _stringValue('activeHabits'),
       ),
-      _buildMetricCard(
+      _MetricDefinition(
         title: 'Score ELO moyen',
-        value: widget.metrics['averageElo']?.toStringAsFixed(0) ?? '1000',
         subtitle: 'performance',
         icon: Icons.star_rounded,
         color: AppTheme.warningColor,
-        trend: _calculateTrend('averageElo'),
+        trendKey: 'averageElo',
+        valueBuilder: _numericValue('averageElo'),
       ),
-      _buildMetricCard(
+      _MetricDefinition(
         title: 'Streak actuel',
-        value: widget.metrics['currentStreak']?.toString() ?? '0',
         subtitle: 'jours consécutifs',
         icon: Icons.local_fire_department_rounded,
         color: AppTheme.errorColor,
-        trend: _calculateTrend('currentStreak'),
+        trendKey: 'currentStreak',
+        valueBuilder: _stringValue('currentStreak', suffix: ' jours'),
       ),
     ];
   }
@@ -203,7 +239,7 @@ class _PremiumMetricsDashboardState extends State<PremiumMetricsDashboard>
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
           onTap: () {
-            // Add navigation to detailed view
+            // Navigation vers une vue détaillée si besoin.
           },
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -218,20 +254,16 @@ class _PremiumMetricsDashboardState extends State<PremiumMetricsDashboard>
                         color: color.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Icon(
-                        icon,
-                        color: color,
-                        size: 20,
-                      ),
+                      child: Icon(icon, color: color, size: 20),
                     ),
                     const Spacer(),
-                    _buildTrendIndicator(trend, color),
+                    _buildTrendIndicator(trend),
                   ],
                 ),
                 const SizedBox(height: 16),
                 Text(
                   value,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.w800,
                     color: AppTheme.textPrimary,
@@ -264,9 +296,9 @@ class _PremiumMetricsDashboardState extends State<PremiumMetricsDashboard>
     );
   }
 
-  Widget _buildTrendIndicator(TrendDirection trend, Color baseColor) {
-    IconData icon;
-    Color color;
+  Widget _buildTrendIndicator(TrendDirection trend) {
+    late final IconData icon;
+    late final Color color;
 
     switch (trend) {
       case TrendDirection.up:
@@ -289,21 +321,15 @@ class _PremiumMetricsDashboardState extends State<PremiumMetricsDashboard>
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(6),
       ),
-      child: Icon(
-        icon,
-        color: color,
-        size: 16,
-      ),
+      child: Icon(icon, color: color, size: 16),
     );
   }
 
-  TrendDirection _calculateTrend(String metricKey) {
-    // Mock trend calculation - in real app, compare with previous period
-    final value = widget.metrics[metricKey];
-    if (value == null) return TrendDirection.stable;
+TrendDirection _calculateTrend(String metricKey) {
+  final value = widget.metrics[metricKey];
+  if (value == null) return TrendDirection.stable;
 
-    final hash = metricKey.hashCode % 3;
-    switch (hash) {
+  switch (metricKey.hashCode % 3) {
       case 0:
         return TrendDirection.up;
       case 1:
@@ -314,8 +340,68 @@ class _PremiumMetricsDashboardState extends State<PremiumMetricsDashboard>
   }
 }
 
-enum TrendDirection {
-  up,
-  down,
-  stable,
+enum TrendDirection { up, down, stable }
+
+class _MetricCardConfig {
+  final String title;
+  final String value;
+  final String subtitle;
+  final IconData icon;
+  final Color color;
+  final TrendDirection trend;
+
+  const _MetricCardConfig({
+    required this.title,
+    required this.value,
+    required this.subtitle,
+    required this.icon,
+    required this.color,
+    required this.trend,
+  });
+}
+
+class _MetricDefinition {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color color;
+  final String trendKey;
+  final String Function(Map<String, dynamic>) valueBuilder;
+
+  const _MetricDefinition({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.color,
+    required this.trendKey,
+    required this.valueBuilder,
+  });
+}
+
+String Function(Map<String, dynamic>) _stringValue(
+  String key, {
+  String suffix = '',
+}) {
+  return (metrics) {
+    final value = metrics[key];
+    final text = value == null ? '0' : value.toString();
+    return '$text$suffix';
+  };
+}
+
+String Function(Map<String, dynamic>) _numericValue(
+  String key, {
+  int fractionDigits = 0,
+  String suffix = '',
+}) {
+  return (metrics) {
+    final value = metrics[key];
+    if (value is num) {
+      final formatted = fractionDigits > 0
+          ? value.toStringAsFixed(fractionDigits)
+          : value.toStringAsFixed(0);
+      return '$formatted$suffix';
+    }
+    return '0$suffix';
+  };
 }
