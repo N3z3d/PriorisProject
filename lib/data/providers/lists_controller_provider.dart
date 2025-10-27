@@ -16,6 +16,7 @@ import 'package:prioris/presentation/pages/lists/managers/lists_initialization_m
 import 'package:prioris/presentation/pages/lists/managers/lists_persistence_manager.dart';
 import 'package:prioris/presentation/pages/lists/models/lists_state.dart';
 import 'package:prioris/presentation/pages/lists/services/lists_performance_monitor.dart';
+import 'package:prioris/presentation/pages/lists/services/list_item_sync_service.dart';
 
 /// Logger adapter bridging infrastructure LoggerService to the domain ILogger.
 final loggerProvider = Provider<ILogger>((ref) {
@@ -36,6 +37,11 @@ final listsStateManagerProvider = Provider<ListsStateManager>((ref) {
 
 final listsPerformanceMonitorProvider = Provider<IListsPerformanceMonitor>((ref) {
   return ListsPerformanceMonitor();
+});
+
+final listItemSyncServiceProvider = Provider<ListItemSyncService>((ref) {
+  final stateManager = ref.watch(listsStateManagerProvider);
+  return ListItemSyncService(stateManager);
 });
 
 /// Provider qui écoute les changements d'authentification et invalide les repository providers
@@ -79,6 +85,7 @@ final listsControllerProvider = StateNotifierProvider<RefactoredListsController,
   final logger = ref.watch(loggerProvider);
   final stateManager = ref.watch(listsStateManagerProvider);
   final performanceMonitor = ref.watch(listsPerformanceMonitorProvider);
+  final syncService = ref.watch(listItemSyncServiceProvider);
 
   return initManagerAsync.when(
     data: (initManager) {
@@ -97,6 +104,7 @@ final listsControllerProvider = StateNotifierProvider<RefactoredListsController,
             performanceMonitor: performanceMonitor,
             crudOperations: crud,
             stateManager: stateManager,
+            syncService: syncService,
             logger: logger,
           );
         },
@@ -172,6 +180,7 @@ class _LoadingListsController extends RefactoredListsController {
           performanceMonitor: performanceMonitor,
           crudOperations: _DummyCrudOperations(logger, stateManager),
           stateManager: stateManager,
+          syncService: ListItemSyncService(stateManager),
           logger: logger,
         );
 }
@@ -187,6 +196,7 @@ class _ErrorListsController extends RefactoredListsController {
           performanceMonitor: performanceMonitor,
           crudOperations: _DummyCrudOperations(logger, stateManager),
           stateManager: stateManager,
+          syncService: ListItemSyncService(stateManager),
           logger: logger,
         ) {
     state = ListsState.error(message);

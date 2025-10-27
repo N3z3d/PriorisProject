@@ -2,17 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/data/providers/habits_state_provider.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
-import 'package:prioris/presentation/pages/habits/controllers/habits_controller.dart';
-import 'package:prioris/presentation/pages/habits/components/habits_header.dart';
 import 'package:prioris/presentation/pages/habits/components/habits_body.dart';
+import 'package:prioris/presentation/pages/habits/components/habits_header.dart';
+import 'package:prioris/presentation/pages/habits/controllers/habits_controller.dart';
+import 'package:prioris/presentation/pages/habits/widgets/habit_form_widget.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 
-/// Refactored HabitsPage following SOLID principles and Clean Architecture
-/// - Single Responsibility: Only handles page structure and coordination
-/// - Open/Closed: Extensible through component injection
-/// - Liskov Substitution: Components are interchangeable
-/// - Interface Segregation: Focused component interfaces
-/// - Dependency Inversion: Depends on abstractions, not concretions
 class HabitsPage extends ConsumerStatefulWidget {
   const HabitsPage({super.key});
 
@@ -20,55 +15,59 @@ class HabitsPage extends ConsumerStatefulWidget {
   ConsumerState<HabitsPage> createState() => _HabitsPageState();
 }
 
-class _HabitsPageState extends ConsumerState<HabitsPage> with TickerProviderStateMixin {
-  late HabitsController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = ref.read(habitsControllerProvider(this).notifier);
-  }
-
+class _HabitsPageState extends ConsumerState<HabitsPage> {
   @override
   Widget build(BuildContext context) {
-    return Consumer(
-      builder: (context, ref, child) {
-        final habits = ref.watch(reactiveHabitsProvider);
-        final isLoading = ref.watch(habitsLoadingProvider);
-        final error = ref.watch(habitsErrorProvider);
-        final controllerState = ref.watch(habitsControllerProvider(this));
+    final habits = ref.watch(reactiveHabitsProvider);
+    final isLoading = ref.watch(habitsLoadingProvider);
+    final error = ref.watch(habitsErrorProvider);
+    final controllerState = ref.watch(habitsControllerProvider);
 
-        // Auto-load habits if needed
-        _autoLoadHabitsIfNeeded(habits, isLoading, error);
+    _autoLoadHabitsIfNeeded(habits, isLoading, error);
+    _handleActionResults(context, controllerState);
 
-        // Handle action results
-        _handleActionResults(context, controllerState);
-
-        return Scaffold(
-          body: Column(
-            children: [
-              HabitsHeader(tabController: _controller.tabController),
-              Expanded(
-                child: HabitsBody(
-                  tabController: _controller.tabController,
-                  habits: habits,
-                  isLoading: isLoading,
-                  error: error,
-                  onAddHabit: _controller.addHabit,
-                  onDeleteHabit: _showDeleteConfirmation,
-                  onRecordHabit: _controller.recordHabit,
-                  onNavigateToAdd: _controller.navigateToAddTab,
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const HabitsHeader(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+              child: ElevatedButton.icon(
+                onPressed: _showCreateHabitModal,
+                icon: const Icon(Icons.add),
+                label: const Text('Cr\u00e9er une habitude'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.accentColor,
+                  foregroundColor: Colors.white,
                 ),
               ),
-            ],
-          ),
-          floatingActionButton: _buildFloatingActionButton(context),
-        );
-      },
+            ),
+            Expanded(
+              child: HabitsBody(
+                habits: habits,
+                isLoading: isLoading,
+                error: error,
+                onDeleteHabit: _showDeleteConfirmation,
+                onRecordHabit:
+                    ref.read(habitsControllerProvider.notifier).recordHabit,
+                onCreateHabit: _showCreateHabitModal,
+                onEditHabit: (habit) =>
+                    _showCreateHabitModal(initialHabit: habit),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
-  void _autoLoadHabitsIfNeeded(List<Habit> habits, bool isLoading, String? error) {
+  void _autoLoadHabitsIfNeeded(
+    List<Habit> habits,
+    bool isLoading,
+    String? error,
+  ) {
     if (habits.isEmpty && !isLoading && error == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(habitsStateProvider.notifier).loadHabits();
@@ -76,62 +75,95 @@ class _HabitsPageState extends ConsumerState<HabitsPage> with TickerProviderStat
     }
   }
 
-  void _handleActionResults(BuildContext context, HabitsControllerState state) {
+  void _handleActionResults(
+    BuildContext context,
+    HabitsControllerState state,
+  ) {
     if (state.lastActionMessage != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        final color = state.actionResult == ActionResult.success
+            ? AppTheme.successColor
+            : AppTheme.errorColor;
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(state.lastActionMessage!),
-            backgroundColor: state.actionResult == ActionResult.success
-                ? AppTheme.successColor
-                : AppTheme.errorColor,
+            backgroundColor: color,
           ),
         );
-        _controller.clearLastAction();
+        ref.read(habitsControllerProvider.notifier).clearLastAction();
       });
     }
   }
 
   void _showDeleteConfirmation(String habitId, String habitName) {
-    showDialog(
+    showDialog<void>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Supprimer l\'habitude'),
-        content: Text('Êtes-vous sûr de vouloir supprimer "$habitName" ?'),
+        content: Text('Supprimer "$habitName" ?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(dialogContext).pop(),
             child: const Text('Annuler'),
           ),
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop();
-              _controller.deleteHabit(habitId, habitName);
+              Navigator.of(dialogContext).pop();
+              ref.read(habitsControllerProvider.notifier).deleteHabit(
+                    habitId,
+                    habitName,
+                  );
             },
-            child: const Text('Supprimer', style: TextStyle(color: Colors.red)),
+            child: const Text(
+              'Supprimer',
+              style: TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget? _buildFloatingActionButton(BuildContext context) {
-    // Hide FAB on desktop (>= 768px), show only on mobile
-    final isDesktop = MediaQuery.of(context).size.width >= 768;
-    if (isDesktop) return null;
+  Future<void> _showCreateHabitModal({Habit? initialHabit}) async {
+    final existingCategories = ref
+        .read(habitsStateProvider)
+        .habits
+        .map((habit) => habit.category)
+        .whereType<String>()
+        .where((category) => category.trim().isNotEmpty)
+        .toSet()
+        .toList()
+      ..sort();
 
-    return FloatingActionButton(
-      heroTag: 'habits_fab',
-      onPressed: _controller.navigateToAddTab,
-      backgroundColor: AppTheme.accentColor,
-      child: const Icon(Icons.add, color: Colors.white),
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        return Dialog(
+          insetPadding: const EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: HabitFormWidget(
+              initialHabit: initialHabit,
+              availableCategories: existingCategories,
+              onSubmit: (habit) async {
+                final controller = ref.read(habitsControllerProvider.notifier);
+
+                if (initialHabit == null) {
+                  await controller.addHabit(habit);
+                } else {
+                  await controller.updateHabit(habit);
+                }
+
+                if (mounted) {
+                  Navigator.of(dialogContext).pop();
+                }
+              },
+            ),
+          ),
+        );
+      },
     );
   }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 }
-

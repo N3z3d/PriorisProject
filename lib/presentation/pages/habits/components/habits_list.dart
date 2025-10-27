@@ -10,21 +10,23 @@ class HabitsList extends StatelessWidget {
   final List<Habit> habits;
   final Function(String, String) onDeleteHabit;
   final Function(Habit) onRecordHabit;
-  final Function() onNavigateToAdd;
+  final VoidCallback onCreateHabit;
+  final Function(Habit) onEditHabit;
 
   const HabitsList({
     super.key,
     required this.habits,
     required this.onDeleteHabit,
     required this.onRecordHabit,
-    required this.onNavigateToAdd,
+    required this.onCreateHabit,
+    required this.onEditHabit,
   });
 
   @override
   Widget build(BuildContext context) {
     if (habits.isEmpty) {
       return HabitsEmptyState(
-        onNavigateToAdd: onNavigateToAdd,
+        onCreateHabit: onCreateHabit,
       );
     }
 
@@ -36,17 +38,13 @@ class HabitsList extends StatelessWidget {
         habit: habit,
         onDelete: () => onDeleteHabit(habit.id, habit.name),
         onRecord: () => onRecordHabit(habit),
-        onEdit: () => _handleEdit(habit),
+        onEdit: () => onEditHabit(habit),
         onTap: () => _handleTap(context, habit),
       ),
       emptyWidget: HabitsEmptyState(
-        onNavigateToAdd: onNavigateToAdd,
+        onCreateHabit: onCreateHabit,
       ),
     );
-  }
-
-  void _handleEdit(Habit habit) {
-    // Pending: Navigate to edit screen
   }
 
   void _handleTap(BuildContext context, Habit habit) {

@@ -1200,11 +1200,149 @@ abstract class AppLocalizations {
   /// **'Default'**
   String get defaultValue;
 
-  /// No description provided for @continueLabel.
+  /// Continue button label
   ///
   /// In en, this message translates to:
   /// **'Continue'**
   String get continueLabel;
+
+  /// Title for the priority duel page
+  ///
+  /// In en, this message translates to:
+  /// **'Priority Mode'**
+  String get duelPriorityTitle;
+
+  /// Subtitle prompting the user to choose between two tasks
+  ///
+  /// In en, this message translates to:
+  /// **'Which task do you prefer?'**
+  String get duelPrioritySubtitle;
+
+  /// Helper text explaining how to select a task
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the card you want to prioritise.'**
+  String get duelPriorityHint;
+
+  /// Action to skip the current duel
+  ///
+  /// In en, this message translates to:
+  /// **'Skip duel'**
+  String get duelSkipAction;
+
+  /// Action to launch a random duel
+  ///
+  /// In en, this message translates to:
+  /// **'Random'**
+  String get duelRandomAction;
+
+  /// Action to display Elo scores
+  ///
+  /// In en, this message translates to:
+  /// **'Show Elo'**
+  String get duelShowElo;
+
+  /// Action to hide Elo scores
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Elo'**
+  String get duelHideElo;
+
+  /// Label displayed above the duel mode selector
+  ///
+  /// In en, this message translates to:
+  /// **'Duel mode'**
+  String get duelModeLabel;
+
+  /// Toggle label for the winner mode
+  ///
+  /// In en, this message translates to:
+  /// **'Winner'**
+  String get duelModeWinner;
+
+  /// Toggle label for the ranking mode
+  ///
+  /// In en, this message translates to:
+  /// **'Ranking'**
+  String get duelModeRanking;
+
+  /// Label displayed above the cards per round selector
+  ///
+  /// In en, this message translates to:
+  /// **'Cards per round'**
+  String get duelCardsPerRoundLabel;
+
+  /// Dropdown option describing the number of cards per round
+  ///
+  /// In en, this message translates to:
+  /// **'{count} cards'**
+  String duelCardsPerRoundOption(int count);
+
+  /// Button label to submit the full ranking
+  ///
+  /// In en, this message translates to:
+  /// **'Save ranking'**
+  String get duelSubmitRanking;
+
+  /// Toast message confirming the duel choice
+  ///
+  /// In en, this message translates to:
+  /// **'Preference saved ✅'**
+  String get duelPreferenceSaved;
+
+  /// Informational label displaying the number of duels left today
+  ///
+  /// In en, this message translates to:
+  /// **'{count} duels remaining today'**
+  String duelRemainingDuels(int count);
+
+  /// Action to configure which lists participate in duels
+  ///
+  /// In en, this message translates to:
+  /// **'Choose lists for duels'**
+  String get duelConfigureLists;
+
+  /// Tooltip displayed when no list can be selected
+  ///
+  /// In en, this message translates to:
+  /// **'No list available'**
+  String get duelNoAvailableLists;
+
+  /// Snackbar shown when no list can be selected for duels
+  ///
+  /// In en, this message translates to:
+  /// **'No list available for prioritisation'**
+  String get duelNoAvailableListsForPrioritization;
+
+  /// Confirmation message when duel lists are updated
+  ///
+  /// In en, this message translates to:
+  /// **'Prioritisation lists updated'**
+  String get duelListsUpdated;
+
+  /// Action to trigger a new duel
+  ///
+  /// In en, this message translates to:
+  /// **'New duel'**
+  String get duelNewDuel;
+
+  /// Title displayed when there are not enough tasks for a duel
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough tasks'**
+  String get duelNotEnoughTasksTitle;
+
+  /// Message explaining that more tasks are needed
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least two tasks to start prioritising.'**
+  String get duelNotEnoughTasksMessage;
+
+  /// Generic error message when a duel fails to load
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load the duel. Try again.'**
+  String get duelErrorMessage;
 }
 
 class _AppLocalizationsDelegate

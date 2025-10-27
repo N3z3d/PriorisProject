@@ -6,11 +6,11 @@ import 'package:prioris/presentation/widgets/common/lists/virtualized_list.dart'
 import 'package:prioris/presentation/pages/lists/models/lists_state.dart';
 import 'package:prioris/data/providers/lists_controller_provider.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
-import 'package:prioris/presentation/widgets/common/displays/daily_overview_widget.dart';
 import 'package:prioris/presentation/pages/lists/widgets/lists_error_state.dart';
 import 'package:prioris/presentation/pages/lists/widgets/lists_no_data_state.dart';
 import 'package:prioris/presentation/pages/lists/widgets/simple_list_card.dart';
 import 'package:prioris/presentation/pages/lists/services/lists_dialog_service.dart';
+import 'package:prioris/presentation/pages/lists/widgets/lists_overview_banner.dart';
 
 /// Page principale pour la gestion des listes personnalisées
 ///
@@ -26,16 +26,11 @@ class ListsPage extends ConsumerStatefulWidget {
 
 class _ListsPageState extends ConsumerState<ListsPage>
     with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
   late ListsDialogService _dialogService;
 
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 200),
-      vsync: this,
-    );
     _initializeData();
   }
 
@@ -47,7 +42,6 @@ class _ListsPageState extends ConsumerState<ListsPage>
 
   @override
   void dispose() {
-    _animationController.dispose();
     super.dispose();
   }
 
@@ -70,7 +64,7 @@ class _ListsPageState extends ConsumerState<ListsPage>
     final error = ref.watch(listsErrorProvider);
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.subtleBackgroundColor,
       appBar: _buildAppBar(),
       body: _buildBody(isLoading, error, listsState),
       floatingActionButton: _buildFloatingActionButton(),
@@ -109,7 +103,10 @@ class _ListsPageState extends ConsumerState<ListsPage>
 
     return Column(
       children: [
-        const DailyOverviewWidget(),
+        ListsOverviewBanner(
+          totalLists: state.totalListsCount,
+          totalItems: state.totalItemsCount,
+        ),
         Expanded(child: _buildListsContent(state)),
       ],
     );

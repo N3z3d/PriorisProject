@@ -1,45 +1,41 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/data/providers/habits_state_provider.dart';
-import 'package:prioris/data/repositories/habit_repository.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
-import 'package:prioris/presentation/theme/app_theme.dart';
 
-/// Controller for Habits page following SRP and Clean Architecture
-/// Handles state management and business logic separation from UI
 class HabitsController extends StateNotifier<HabitsControllerState> {
+  HabitsController(this._ref) : super(const HabitsControllerState());
+
   final Ref _ref;
-  late TabController tabController;
-
-  HabitsController(this._ref, TickerProvider vsync) 
-      : super(const HabitsControllerState()) {
-    tabController = TabController(length: 2, vsync: vsync);
-    _loadInitialData();
-  }
-
-  void _loadInitialData() {
-    final habits = _ref.read(reactiveHabitsProvider);
-    final isLoading = _ref.read(habitsLoadingProvider);
-    final error = _ref.read(habitsErrorProvider);
-
-    if (habits.isEmpty && !isLoading && error == null) {
-      _ref.read(habitsStateProvider.notifier).loadHabits();
-    }
-  }
 
   Future<void> addHabit(Habit habit) async {
     try {
-      final habitRepo = _ref.read(habitRepositoryProvider);
-      await habitRepo.saveHabit(habit);
+      await _ref.read(habitsStateProvider.notifier).addHabit(habit);
       state = state.copyWith(
         lastAction: HabitAction.added,
-        lastActionMessage: 'Habitude "${habit.name}" créée avec succès !',
+        lastActionMessage: 'Habitude créée ✅',
         actionResult: ActionResult.success,
       );
-    } catch (e) {
+    } catch (error) {
       state = state.copyWith(
         lastAction: HabitAction.added,
-        lastActionMessage: 'Erreur lors de la création: $e',
+        lastActionMessage: 'Erreur lors de la création : $error',
+        actionResult: ActionResult.error,
+      );
+    }
+  }
+
+  Future<void> updateHabit(Habit habit) async {
+    try {
+      await _ref.read(habitsStateProvider.notifier).updateHabit(habit);
+      state = state.copyWith(
+        lastAction: HabitAction.edited,
+        lastActionMessage: 'Habitude "${habit.name}" mise à jour',
+        actionResult: ActionResult.success,
+      );
+    } catch (error) {
+      state = state.copyWith(
+        lastAction: HabitAction.edited,
+        lastActionMessage: 'Erreur lors de la mise à jour : $error',
         actionResult: ActionResult.error,
       );
     }
@@ -47,17 +43,16 @@ class HabitsController extends StateNotifier<HabitsControllerState> {
 
   Future<void> deleteHabit(String habitId, String habitName) async {
     try {
-      final habitRepo = _ref.read(habitRepositoryProvider);
-      await habitRepo.deleteHabit(habitId);
+      await _ref.read(habitsStateProvider.notifier).deleteHabit(habitId);
       state = state.copyWith(
         lastAction: HabitAction.deleted,
         lastActionMessage: 'Habitude "$habitName" supprimée',
         actionResult: ActionResult.success,
       );
-    } catch (e) {
+    } catch (error) {
       state = state.copyWith(
         lastAction: HabitAction.deleted,
-        lastActionMessage: 'Erreur lors de la suppression: $e',
+        lastActionMessage: 'Impossible de supprimer l\'habitude : $error',
         actionResult: ActionResult.error,
       );
     }
@@ -66,13 +61,9 @@ class HabitsController extends StateNotifier<HabitsControllerState> {
   void recordHabit(Habit habit) {
     state = state.copyWith(
       lastAction: HabitAction.recorded,
-      lastActionMessage: 'Habitude "${habit.name}" enregistrée !',
+      lastActionMessage: 'Habitude "${habit.name}" enregistrée',
       actionResult: ActionResult.success,
     );
-  }
-
-  void navigateToAddTab() {
-    tabController.animateTo(1);
   }
 
   void clearLastAction() {
@@ -82,46 +73,45 @@ class HabitsController extends StateNotifier<HabitsControllerState> {
       actionResult: null,
     );
   }
-
-  @override
-  void dispose() {
-    tabController.dispose();
-    super.dispose();
-  }
 }
 
-/// State for HabitsController
 class HabitsControllerState {
-  final HabitAction? lastAction;
-  final String? lastActionMessage;
-  final ActionResult? actionResult;
-
   const HabitsControllerState({
     this.lastAction,
     this.lastActionMessage,
     this.actionResult,
   });
 
+  final HabitAction? lastAction;
+  final String? lastActionMessage;
+  final ActionResult? actionResult;
+
+  static const _sentinel = Object();
+
   HabitsControllerState copyWith({
-    HabitAction? lastAction,
-    String? lastActionMessage,
-    ActionResult? actionResult,
+    Object? lastAction = _sentinel,
+    Object? lastActionMessage = _sentinel,
+    Object? actionResult = _sentinel,
   }) {
     return HabitsControllerState(
-      lastAction: lastAction ?? this.lastAction,
-      lastActionMessage: lastActionMessage ?? this.lastActionMessage,
-      actionResult: actionResult ?? this.actionResult,
+      lastAction: identical(lastAction, _sentinel)
+          ? this.lastAction
+          : lastAction as HabitAction?,
+      lastActionMessage: identical(lastActionMessage, _sentinel)
+          ? this.lastActionMessage
+          : lastActionMessage as String?,
+      actionResult: identical(actionResult, _sentinel)
+          ? this.actionResult
+          : actionResult as ActionResult?,
     );
   }
 }
 
-/// Action types for habits
 enum HabitAction { added, deleted, recorded, edited }
 
-/// Result types for actions
 enum ActionResult { success, error }
 
-/// Provider for HabitsController
-final habitsControllerProvider = StateNotifierProvider.family<HabitsController, HabitsControllerState, TickerProvider>(
-  (ref, vsync) => HabitsController(ref, vsync),
+final habitsControllerProvider =
+    StateNotifierProvider<HabitsController, HabitsControllerState>(
+  HabitsController.new,
 );

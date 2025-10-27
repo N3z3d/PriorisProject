@@ -920,5 +920,133 @@
     "description": "Default option"
   },
   
-  "continueLabel": "Continue"
+  "continueLabel": "Continue",
+  "@continueLabel": {
+    "description": "Continue button label"
+  },
+  
+  "duelPriorityTitle": "Priority Mode",
+  "@duelPriorityTitle": {
+    "description": "Title for the priority duel page"
+  },
+  
+  "duelPrioritySubtitle": "Which task do you prefer?",
+  "@duelPrioritySubtitle": {
+    "description": "Subtitle prompting the user to choose between two tasks"
+  },
+  
+  "duelPriorityHint": "Tap the card you want to prioritise.",
+  "@duelPriorityHint": {
+    "description": "Helper text explaining how to select a task"
+  },
+  
+  "duelSkipAction": "Skip duel",
+  "@duelSkipAction": {
+    "description": "Action to skip the current duel"
+  },
+  
+  "duelRandomAction": "Random",
+  "@duelRandomAction": {
+    "description": "Action to launch a random duel"
+  },
+  
+  "duelShowElo": "Show Elo",
+  "@duelShowElo": {
+    "description": "Action to display Elo scores"
+  },
+  
+  "duelHideElo": "Hide Elo",
+  "@duelHideElo": {
+    "description": "Action to hide Elo scores"
+  },
+  
+  "duelModeLabel": "Duel mode",
+  "@duelModeLabel": {
+    "description": "Label displayed above the duel mode selector"
+  },
+  
+  "duelModeWinner": "Winner",
+  "@duelModeWinner": {
+    "description": "Toggle label for the winner mode"
+  },
+  
+  "duelModeRanking": "Ranking",
+  "@duelModeRanking": {
+    "description": "Toggle label for the ranking mode"
+  },
+  
+  "duelCardsPerRoundLabel": "Cards per round",
+  "@duelCardsPerRoundLabel": {
+    "description": "Label displayed above the cards per round selector"
+  },
+  
+  "duelCardsPerRoundOption": "{count} cards",
+  "@duelCardsPerRoundOption": {
+    "description": "Dropdown option describing the number of cards per round",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "duelSubmitRanking": "Save ranking",
+  "@duelSubmitRanking": {
+    "description": "Button label to submit the full ranking"
+  },
+  
+  "duelPreferenceSaved": "Preference saved ✅",
+  "@duelPreferenceSaved": {
+    "description": "Toast message confirming the duel choice"
+  },
+  
+  "duelRemainingDuels": "{count} duels remaining today",
+  "@duelRemainingDuels": {
+    "description": "Informational label displaying the number of duels left today",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "duelConfigureLists": "Choose lists for duels",
+  "@duelConfigureLists": {
+    "description": "Action to configure which lists participate in duels"
+  },
+  
+  "duelNoAvailableLists": "No list available",
+  "@duelNoAvailableLists": {
+    "description": "Tooltip displayed when no list can be selected"
+  },
+  
+  "duelNoAvailableListsForPrioritization": "No list available for prioritisation",
+  "@duelNoAvailableListsForPrioritization": {
+    "description": "Snackbar shown when no list can be selected for duels"
+  },
+  
+  "duelListsUpdated": "Prioritisation lists updated",
+  "@duelListsUpdated": {
+    "description": "Confirmation message when duel lists are updated"
+  },
+  
+  "duelNewDuel": "New duel",
+  "@duelNewDuel": {
+    "description": "Action to trigger a new duel"
+  },
+  
+  "duelNotEnoughTasksTitle": "Not enough tasks",
+  "@duelNotEnoughTasksTitle": {
+    "description": "Title displayed when there are not enough tasks for a duel"
+  },
+  
+  "duelNotEnoughTasksMessage": "Add at least two tasks to start prioritising.",
+  "@duelNotEnoughTasksMessage": {
+    "description": "Message explaining that more tasks are needed"
+  },
+  
+  "duelErrorMessage": "Unable to load the duel. Try again.",
+  "@duelErrorMessage": {
+    "description": "Generic error message when a duel fails to load"
+  }
 } 

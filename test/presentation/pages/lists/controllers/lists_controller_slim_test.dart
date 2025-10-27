@@ -1,349 +1,384 @@
-/// SOLID Architecture Tests: ListsControllerSlim
-///
-/// Comprehensive test suite that validates SOLID principles implementation.
-/// Tests all interfaces and their concrete implementations.
-
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-import 'package:mockito/annotations.dart';
-
-import 'package:prioris/core/interfaces/lists_interfaces.dart';
+import 'package:prioris/domain/core/interfaces/logger_interface.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
 import 'package:prioris/presentation/pages/lists/controllers/refactored/lists_controller_slim.dart';
+import 'package:prioris/presentation/pages/lists/controllers/operations/lists_crud_operations.dart';
+import 'package:prioris/presentation/pages/lists/controllers/operations/lists_validation_service.dart';
+import 'package:prioris/presentation/pages/lists/controllers/state/lists_state_manager.dart';
+import 'package:prioris/presentation/pages/lists/interfaces/lists_managers_interfaces.dart';
+import 'package:prioris/presentation/pages/lists/managers/lists_filter_manager.dart';
+import 'package:prioris/presentation/pages/lists/services/list_item_sync_service.dart';
 
-import 'lists_controller_slim_test.mocks.dart';
+Future<void> _waitForInitialization(ListsControllerSlim controller) async {
+  const pollInterval = Duration(milliseconds: 10);
+  while (!controller.isInitialized) {
+    await Future<void>.delayed(pollInterval);
+  }
+  // Laisse le temps au cycle de chargement initial de se terminer.
+  await Future<void>.delayed(pollInterval);
+}
 
-/// Generate mocks for all SOLID interfaces
-@GenerateMocks([
-  IListsStateManager,
-  IListsCrudOperations,
-  IListsValidationService,
-  IListsEventDispatcher,
-  IListsFilterService,
-])
 void main() {
-  group('ListsControllerSlim SOLID Tests', () {
-    // Test dependencies (mocked interfaces)
-    late MockIListsStateManager mockStateManager;
-    late MockIListsCrudOperations mockCrudOperations;
-    late MockIListsValidationService mockValidationService;
-    late MockIListsEventDispatcher mockEventDispatcher;
-    late MockIListsFilterService mockFilterService;
-
-    // System under test
+  group('ListsControllerSlim', () {
+    late _InMemoryPersistence persistence;
+    late ListsStateManager stateManager;
+    late ListItemSyncService syncService;
     late ListsControllerSlim controller;
+    late _RecordingLogger logger;
+    late CustomList initialList;
 
-    // Test data
-    final testList = CustomList(
-      id: 'test-list-1',
-      name: 'Test List',
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-      items: [],
-    );
+    setUp(() async {
+      logger = _RecordingLogger();
+      stateManager = ListsStateManager();
+      syncService = ListItemSyncService(stateManager);
 
-    final testItem = ListItem(
-      id: 'test-item-1',
-      title: 'Test Item',
-      listId: 'test-list-1',
-      createdAt: DateTime.now(),
-    );
-
-    setUp(() {
-      // Create fresh mocks for each test
-      mockStateManager = MockIListsStateManager();
-      mockCrudOperations = MockIListsCrudOperations();
-      mockValidationService = MockIListsValidationService();
-      mockEventDispatcher = MockIListsEventDispatcher();
-      mockFilterService = MockIListsFilterService();
-
-      // Setup default mock behaviors
-      when(mockStateManager.stateStream).thenAnswer((_) => Stream.fromIterable([
-        ListsStateSnapshot(
-          lists: const [],
-          filteredLists: const [],
-          searchQuery: '',
-          showCompleted: true,
-          showInProgress: true,
-          sortOption: SortOption.NAME_ASC,
-          isLoading: false,
-        ),
-      ]));
-
-      when(mockValidationService.validateListCreation(any))
-          .thenReturn(ValidationResult.valid());
-      when(mockValidationService.validateListUpdate(any))
-          .thenReturn(ValidationResult.valid());
-      when(mockValidationService.validateListDeletion(any))
-          .thenReturn(ValidationResult.valid());
-      when(mockValidationService.validateItemCreation(any))
-          .thenReturn(ValidationResult.valid());
-      when(mockValidationService.validateBulkItemCreation(any))
-          .thenReturn(ValidationResult.valid());
-
-      when(mockCrudOperations.loadAllLists())
-          .thenAnswer((_) async => [testList]);
-      when(mockCrudOperations.createList(any))
-          .thenAnswer((_) async {});
-      when(mockCrudOperations.updateList(any))
-          .thenAnswer((_) async {});
-      when(mockCrudOperations.deleteList(any))
-          .thenAnswer((_) async {});
-      when(mockCrudOperations.addItemToList(any, any))
-          .thenAnswer((_) async {});
-
-      when(mockFilterService.applyFilters(any,
-              searchQuery: anyNamed('searchQuery'),
-              selectedType: anyNamed('selectedType'),
-              showCompleted: anyNamed('showCompleted'),
-              showInProgress: anyNamed('showInProgress'),
-              selectedDateFilter: anyNamed('selectedDateFilter'),
-              sortOption: anyNamed('sortOption')))
-          .thenReturn([testList]);
-
-      // Create controller with mocked dependencies
-      controller = ListsControllerSlim(
-        stateManager: mockStateManager,
-        crudOperations: mockCrudOperations,
-        validationService: mockValidationService,
-        filterService: mockFilterService,
-        eventDispatcher: mockEventDispatcher,
+      final now = DateTime(2024, 1, 1);
+      initialList = CustomList(
+        id: 'list-1',
+        name: 'Liste de test',
+        type: ListType.CUSTOM,
+        createdAt: now,
+        updatedAt: now,
+        items: [
+          ListItem(
+            id: 'item-1',
+            title: 'Tâche existante',
+            listId: 'list-1',
+            createdAt: now,
+            eloScore: 1300,
+          ),
+        ],
       );
+
+      persistence = _InMemoryPersistence([initialList]);
+
+      final crud = ListsCrudOperations(
+        persistence: persistence,
+        validator: ListsValidationService(),
+        filterManager: ListsFilterManager(),
+        stateManager: stateManager,
+        logger: logger,
+      );
+
+      controller = ListsControllerSlim(
+        initializationManager: const _ImmediateInitManager(),
+        performanceMonitor: _SilentPerformanceMonitor(),
+        crudOperations: crud,
+        stateManager: stateManager,
+        syncService: syncService,
+        logger: logger,
+      );
+
+      await _waitForInitialization(controller);
     });
 
     tearDown(() {
       controller.dispose();
     });
 
-    group('SOLID Principle Compliance Tests', () {
-      test('SRP: Controller delegates state management to IListsStateManager', () async {
-        // Act
-        await controller.loadLists();
+    test('loadLists charge les données et désactive le chargement', () {
+      final state = controller.state;
 
-        // Assert - Verify controller delegates to state manager
-        verify(mockStateManager.setLoading(true)).called(1);
-        verify(mockStateManager.updateLists([testList])).called(1);
-        verify(mockStateManager.setLoading(false)).called(1);
-      });
-
-      test('SRP: Controller delegates CRUD operations to IListsCrudOperations', () async {
-        // Act
-        await controller.createList(testList);
-
-        // Assert - Verify controller delegates to CRUD operations
-        verify(mockCrudOperations.createList(testList)).called(1);
-      });
-
-      test('SRP: Controller delegates validation to IListsValidationService', () async {
-        // Act
-        await controller.createList(testList);
-
-        // Assert - Verify controller delegates to validation service
-        verify(mockValidationService.validateListCreation(testList)).called(1);
-      });
-
-      test('DIP: Controller depends on interfaces, not concrete classes', () {
-        // This test verifies that the constructor accepts interfaces
-        expect(controller, isA<ListsControllerSlim>());
-
-        // The fact that we can inject mocks proves DIP compliance
-        // Controller doesn't know about concrete implementations
-      });
-
-      test('OCP: Controller can be extended with new validation rules without modification', () {
-        // Setup validation failure
-        when(mockValidationService.validateListCreation(any))
-            .thenReturn(ValidationResult.invalid('Test validation error'));
-
-        // Act & Assert - Controller handles new validation rules without modification
-        expect(
-          () async => await controller.createList(testList),
-          throwsException,
-        );
-      });
-
-      test('LSP: All interface implementations are substitutable', () {
-        // This test verifies that we can substitute different implementations
-        // The controller works the same way with mocks as with real implementations
-
-        // Setup different behavior
-        when(mockCrudOperations.loadAllLists())
-            .thenAnswer((_) async => [testList, testList.copyWith(id: 'test-2')]);
-
-        // Act
-        controller.loadLists();
-
-        // Assert - Controller works with different implementations
-        verify(mockCrudOperations.loadAllLists()).called(1);
-      });
-
-      test('ISP: Controller only depends on interface methods it actually uses', () {
-        // This test verifies that our interfaces are not too fat
-        // Controller only calls methods it needs from each interface
-
-        // The fact that we can create minimal mocks proves ISP compliance
-        expect(controller, isA<ListsControllerSlim>());
-      });
+      expect(state.isLoading, isFalse);
+      expect(state.lists, isNotEmpty);
+      expect(state.filteredLists.length, equals(1));
+      expect(state.lists.first.id, equals(initialList.id));
+      expect(persistence.loadInvocations, equals(1));
     });
 
-    group('Functionality Tests', () {
-      test('loadLists should load and apply filters', () async {
-        // Act
-        await controller.loadLists();
+    test('createList ajoute une nouvelle liste dans l’état', () async {
+      final now = DateTime(2024, 2, 2);
+      final newList = CustomList(
+        id: 'list-2',
+        name: 'Nouvelle liste',
+        type: ListType.CUSTOM,
+        createdAt: now,
+        updatedAt: now,
+      );
 
-        // Assert
-        verify(mockCrudOperations.loadAllLists()).called(1);
-        verify(mockStateManager.updateLists([testList])).called(1);
-        verify(mockFilterService.applyFilters(any,
-            searchQuery: anyNamed('searchQuery'),
-            selectedType: anyNamed('selectedType'),
-            showCompleted: anyNamed('showCompleted'),
-            showInProgress: anyNamed('showInProgress'),
-            selectedDateFilter: anyNamed('selectedDateFilter'),
-            sortOption: anyNamed('sortOption'))).called(1);
-      });
+      await controller.createList(newList);
 
-      test('createList should validate before creating', () async {
-        // Act
-        await controller.createList(testList);
-
-        // Assert - Validation called before CRUD operation
-        verifyInOrder([
-          mockValidationService.validateListCreation(testList),
-          mockCrudOperations.createList(testList),
-        ]);
-      });
-
-      test('createList should handle validation failure', () async {
-        // Setup validation failure
-        when(mockValidationService.validateListCreation(any))
-            .thenReturn(ValidationResult.invalid('Invalid list name'));
-
-        // Act & Assert
-        await expectLater(
-          () => controller.createList(testList),
-          throwsA(isA<Exception>()),
-        );
-
-        // Verify CRUD operation was not called
-        verifyNever(mockCrudOperations.createList(any));
-      });
-
-      test('updateSearchQuery should update state and apply filters', () {
-        // Act
-        controller.updateSearchQuery('test query');
-
-        // Assert
-        verify(mockStateManager.updateSearchQuery('test query')).called(1);
-        verify(mockFilterService.applyFilters(any,
-            searchQuery: anyNamed('searchQuery'),
-            selectedType: anyNamed('selectedType'),
-            showCompleted: anyNamed('showCompleted'),
-            showInProgress: anyNamed('showInProgress'),
-            selectedDateFilter: anyNamed('selectedDateFilter'),
-            sortOption: anyNamed('sortOption'))).called(1);
-      });
-
-      test('addItemToList should validate and add item', () async {
-        // Act
-        await controller.addItemToList('test-list-1', testItem);
-
-        // Assert
-        verify(mockValidationService.validateItemCreation(testItem)).called(1);
-        verify(mockCrudOperations.addItemToList('test-list-1', testItem)).called(1);
-      });
-
-      test('should dispatch events when operations succeed', () async {
-        // Act
-        await controller.createList(testList);
-
-        // Assert
-        verify(mockEventDispatcher.dispatchListCreated(testList)).called(1);
-      });
-
-      test('should handle errors gracefully', () async {
-        // Setup error
-        when(mockCrudOperations.createList(any))
-            .thenThrow(Exception('Database error'));
-
-        // Act & Assert
-        await expectLater(
-          () => controller.createList(testList),
-          throwsA(isA<Exception>()),
-        );
-
-        // Verify error handling
-        verify(mockStateManager.setError(any)).called(1);
-        verify(mockEventDispatcher.dispatchError(any)).called(1);
-      });
+      expect(controller.state.lists.map((list) => list.id),
+          containsAll(['list-1', 'list-2']));
+      expect(persistence.savedListIds, contains('list-2'));
     });
 
-    group('Lifecycle Tests', () {
-      test('should dispose resources properly', () {
-        // Act
-        controller.dispose();
-
-        // Assert
-        verify(mockStateManager.dispose()).called(1);
-      });
-
-      test('should not execute operations after disposal', () async {
-        // Arrange
-        controller.dispose();
-
-        // Act
-        await controller.loadLists();
-
-        // Assert - No operations should be called after disposal
-        verifyNever(mockCrudOperations.loadAllLists());
-      });
+    test('updateSearchQuery met à jour la requête et filtre les résultats', () {
+      controller.updateSearchQuery('Tâche');
+      expect(controller.state.searchQuery, equals('Tâche'));
+      expect(controller.state.filteredLists.first.items.length, equals(1));
     });
 
-    group('Performance Tests', () {
-      test('controller should be lightweight (<200 lines constraint)', () {
-        // This test ensures our controller stays within Clean Code constraints
-        // The fact that it compiles and passes all tests with minimal code proves this
-        expect(controller, isA<ListsControllerSlim>());
-      });
+    test('addListItem ajoute l’élément et remet les flags de synchronisation',
+        () async {
+      final newItem = ListItem(
+        id: 'item-2',
+        title: 'Nouvelle tâche',
+        listId: initialList.id,
+        createdAt: DateTime(2024, 3, 3),
+        eloScore: 1280,
+      );
 
-      test('should handle bulk operations efficiently', () async {
-        // Setup
-        final itemTitles = List.generate(10, (i) => 'Item $i');
+      await controller.addListItem(initialList.id, newItem);
 
-        // Act
-        await controller.addMultipleItemsToList('test-list-1', itemTitles);
-
-        // Assert
-        verify(mockValidationService.validateBulkItemCreation(itemTitles)).called(1);
-        verify(mockCrudOperations.addMultipleItemsToList('test-list-1', itemTitles)).called(1);
-      });
+      final updated =
+          controller.state.findListById(initialList.id)?.items ?? const [];
+      expect(updated.map((item) => item.id), contains('item-2'));
+      expect(controller.state.syncingItemIds, isEmpty);
     });
 
-    group('Edge Cases', () {
-      test('should handle empty lists gracefully', () async {
-        // Setup
-        when(mockCrudOperations.loadAllLists()).thenAnswer((_) async => []);
+    test('addMultipleItems gère les ajouts groupés et vide les flags',
+        () async {
+      final items = List.generate(
+        3,
+        (index) => ListItem(
+          id: 'batch-${index + 1}',
+          title: 'Batch ${index + 1}',
+          listId: initialList.id,
+          createdAt: DateTime(2024, 4, index + 1),
+          eloScore: 1250 + index * 10,
+        ),
+      );
 
-        // Act
-        await controller.loadLists();
+      await controller.addMultipleItemsToList(initialList.id, items);
 
-        // Assert
-        verify(mockStateManager.updateLists([])).called(1);
-      });
+      final updated =
+          controller.state.findListById(initialList.id)?.items ?? const [];
+      expect(updated.map((item) => item.id),
+          containsAll(['batch-1', 'batch-2', 'batch-3']));
+      expect(controller.state.syncingItemIds, isEmpty);
+    });
 
-      test('should handle concurrent operations safely', () async {
-        // Act - Start multiple operations simultaneously
-        final futures = [
-          controller.loadLists(),
-          controller.createList(testList),
-          controller.updateSearchQuery('test'),
-        ];
+    test(
+        'une erreur pendant la synchronisation nettoie les flags et relance l’exception',
+        () async {
+      persistence.throwOnSaveListItem = true;
+      final failingItem = ListItem(
+        id: 'item-error',
+        title: 'Erreur',
+        listId: initialList.id,
+        createdAt: DateTime(2024, 5, 5),
+      );
 
-        // Assert - Should not throw
-        await Future.wait(futures);
-      });
+      await expectLater(
+        () => controller.addListItem(initialList.id, failingItem),
+        throwsA(isA<StateError>()),
+      );
+
+      expect(controller.state.syncingItemIds, isEmpty);
+      expect(logger.errors.length, isPositive);
+    });
+
+    test('dispose empêche les opérations ultérieures', () async {
+      controller.dispose();
+      final loadsBefore = persistence.loadInvocations;
+
+      await controller.loadLists();
+
+      expect(persistence.loadInvocations, equals(loadsBefore));
     });
   });
+}
+
+class _InMemoryPersistence implements IListsPersistenceManager {
+  List<CustomList> _lists;
+  bool throwOnSaveListItem = false;
+  int loadInvocations = 0;
+  final Set<String> savedListIds = {};
+
+  _InMemoryPersistence(List<CustomList> seed)
+      : _lists = List<CustomList>.from(seed);
+
+  @override
+  Future<void> clearAllData() async {
+    _lists = [];
+  }
+
+  @override
+  Future<void> deleteList(String listId) async {
+    _lists = _lists.where((list) => list.id != listId).toList();
+  }
+
+  @override
+  Future<void> deleteListItem(String itemId) async {
+    _lists = _lists
+        .map((list) => list.removeItem(itemId))
+        .toList(growable: false);
+  }
+
+  @override
+  Future<List<CustomList>> forceReloadFromPersistence() async {
+    loadInvocations += 1;
+    return List<CustomList>.unmodifiable(_lists);
+  }
+
+  @override
+  Future<List<CustomList>> loadAllLists() async {
+    loadInvocations += 1;
+    return List<CustomList>.unmodifiable(_lists);
+  }
+
+  @override
+  Future<List<ListItem>> loadListItems(String listId) async {
+    return List<ListItem>.unmodifiable(
+      _lists.firstWhere((list) => list.id == listId).items,
+    );
+  }
+
+  @override
+  Future<void> rollbackItems(List<ListItem> items) async {
+    for (final item in items) {
+      await deleteListItem(item.id);
+    }
+  }
+
+  @override
+  Future<void> saveList(CustomList list) async {
+    savedListIds.add(list.id);
+    _lists = [
+      ..._lists.where((existing) => existing.id != list.id),
+      list,
+    ];
+  }
+
+  @override
+  Future<void> saveListItem(ListItem item) async {
+    if (throwOnSaveListItem) {
+      throw StateError('Simulated persistence failure');
+    }
+    _lists = _lists
+        .map((list) =>
+            list.id == item.listId ? list.addItem(item) : list)
+        .toList(growable: false);
+  }
+
+  @override
+  Future<void> saveMultipleItems(List<ListItem> items) async {
+    for (final item in items) {
+      await saveListItem(item);
+    }
+  }
+
+  @override
+  Future<void> updateList(CustomList list) async {
+    _lists = _lists
+        .map((existing) => existing.id == list.id ? list : existing)
+        .toList(growable: false);
+  }
+
+  @override
+  Future<void> updateListItem(ListItem item) async {
+    _lists = _lists
+        .map((list) =>
+            list.id == item.listId ? list.updateItem(item) : list)
+        .toList(growable: false);
+  }
+
+  @override
+  Future<void> verifyItemPersistence(String itemId) async {}
+
+  @override
+  Future<void> verifyListPersistence(String listId) async {}
+}
+
+class _ImmediateInitManager implements IListsInitializationManager {
+  const _ImmediateInitManager();
+
+  @override
+  Future<void> initializeAdaptive() async {}
+
+  @override
+  Future<void> initializeAsync() async {}
+
+  @override
+  Future<void> initializeLegacy() async {}
+
+  @override
+  bool get isInitialized => true;
+
+  @override
+  String get initializationMode => 'immediate';
+}
+
+class _SilentPerformanceMonitor implements IListsPerformanceMonitor {
+  @override
+  void endOperation(String operationName) {}
+
+  @override
+  Map<String, dynamic> getDetailedMetrics() => const {};
+
+  @override
+  Map<String, dynamic> getPerformanceStats() => const {};
+
+  @override
+  void logError(String operation, Object error, [StackTrace? stackTrace]) {}
+
+  @override
+  void logInfo(String message, {String? context}) {}
+
+  @override
+  void logWarning(String message, {String? context}) {}
+
+  @override
+  void monitorCacheOperation(String operation, bool hit) {}
+
+  @override
+  void monitorCollectionSize(String collection, int size) {}
+
+  @override
+  void resetStats() {}
+
+  @override
+  void startOperation(String operationName) {}
+}
+
+class _RecordingLogger implements ILogger {
+  final List<String> infos = [];
+  final List<String> errors = [];
+
+  @override
+  void debug(String message,
+      {String? context, String? correlationId, dynamic data}) {}
+
+  @override
+  void error(String message,
+      {String? context,
+      String? correlationId,
+      dynamic error,
+      StackTrace? stackTrace}) {
+    errors.add(message);
+  }
+
+  @override
+  void fatal(String message,
+      {String? context,
+      String? correlationId,
+      dynamic error,
+      StackTrace? stackTrace}) {
+    errors.add(message);
+  }
+
+  @override
+  void info(String message,
+      {String? context, String? correlationId, dynamic data}) {
+    infos.add(message);
+  }
+
+  @override
+  void performance(String operation, Duration duration,
+      {String? context,
+      String? correlationId,
+      Map<String, dynamic>? metrics}) {}
+
+  @override
+  void userAction(String action,
+      {String? context,
+      String? correlationId,
+      Map<String, dynamic>? properties}) {}
+
+  @override
+  void warning(String message,
+      {String? context, String? correlationId, dynamic data}) {}
 }

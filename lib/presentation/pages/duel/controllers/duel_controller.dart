@@ -1,56 +1,51 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:prioris/data/providers/duel_settings_provider.dart';
+import 'package:prioris/domain/core/value_objects/duel_settings.dart';
 import 'package:prioris/domain/models/core/entities/task.dart';
 import '../services/duel_service.dart';
 
-/// Controller pour la page Duel appliquant SRP et MVVM
-///
-/// Responsabilité unique: Gérer l'état du duel et orchestrer les actions utilisateur
+/// Contrôleur principal du flux Priorisé.
 class DuelController extends StateNotifier<DuelState> {
-  final DuelService _duelService;
-  // ignore: unused_field - Utilisé pour l'injection de dépendances
+  final DuelFlowService _duelService;
   final Ref _ref;
 
-  DuelController(this._ref, {DuelService? duelService})
+  DuelController(this._ref, {DuelFlowService? duelService})
       : _duelService = duelService ?? DuelService(_ref),
         super(const DuelState.initial());
 
-  /// Initialise les données nécessaires au duel
+  DuelSettings get _currentSettings => _ref.read(duelSettingsProvider);
+
+  DuelSettingsNotifier get _settingsNotifier =>
+      _ref.read(duelSettingsProvider.notifier);
+
+  /// Initialise les données et charge le premier duel.
   Future<void> initialize() async {
     state = state.copyWith(isLoading: true);
 
     try {
-      // Charger les listes via le service
       await _duelService.ensureListsLoaded();
+      await _settingsNotifier.ensureLoaded();
 
-      // Charger le premier duel
-      await loadNewDuel();
+      final settings = _currentSettings;
+      state = state.copyWith(settings: settings);
+      await _loadNewDuelWithSettings(settings);
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Erreur lors de l\'initialisation: $e',
+        errorMessage: "Erreur lors de l'initialisation: $e",
       );
     }
   }
 
-  /// Charge un nouveau duel
+  /// Recharge un duel en tenant compte des paramètres utilisateurs.
   Future<void> loadNewDuel() async {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {
-      final tasks = await _duelService.loadDuelTasks();
-
-      if (tasks.length >= 2) {
-        state = state.copyWith(
-          currentDuel: [tasks[0], tasks[1]],
-          isLoading: false,
-        );
-      } else {
-        state = state.copyWith(
-          currentDuel: null,
-          isLoading: false,
-          errorMessage: 'Pas assez de tâches pour créer un duel',
-        );
-      }
+      await _settingsNotifier.ensureLoaded();
+      final settings = _currentSettings;
+      state = state.copyWith(settings: settings);
+      await _loadNewDuelWithSettings(settings);
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -59,16 +54,17 @@ class DuelController extends StateNotifier<DuelState> {
     }
   }
 
-  /// Sélectionne le gagnant du duel
+  /// Enregistre un duel 1v1.
   Future<void> selectWinner(Task winner, Task loser) async {
+    if (_currentSettings.mode != DuelMode.winner) {
+      return;
+    }
+
     state = state.copyWith(isLoading: true);
 
     try {
       await _duelService.processWinner(winner, loser);
-
-      // Charger le prochain duel
       await loadNewDuel();
-
       state = state.copyWith(
         lastWinner: winner,
         lastLoser: loser,
@@ -76,58 +72,133 @@ class DuelController extends StateNotifier<DuelState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Erreur lors de la sélection: $e',
+        errorMessage: 'Erreur lors de la selection: $e',
       );
     }
   }
 
-  /// Sélectionne une tâche aléatoirement
-  Future<void> selectRandomTask() async {
-    if (state.currentDuel == null || state.currentDuel!.length < 2) return;
+  /// Enregistre un classement complet.
+  Future<void> submitRanking(List<Task> orderedTasks) async {
+    if (_currentSettings.mode != DuelMode.ranking) {
+      return;
+    }
+    if (orderedTasks.length < 2) {
+      return;
+    }
 
-    final randomTask = _duelService.selectRandom(state.currentDuel!);
-    final otherTask = state.currentDuel!.firstWhere((t) => t.id != randomTask.id);
+    state = state.copyWith(isLoading: true);
 
-    await selectWinner(randomTask, otherTask);
+    try {
+      await _duelService.processRanking(orderedTasks);
+      await loadNewDuel();
+      state = state.copyWith(
+        lastWinner: orderedTasks.first,
+        lastLoser: orderedTasks.last,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: "Erreur lors de l'enregistrement du classement: $e",
+      );
+    }
   }
 
-  /// Met à jour une tâche
+  /// Choisit une tâche aléatoire.
+  Future<void> selectRandomTask() async {
+    final duel = state.currentDuel;
+    if (duel == null || duel.length < 2) return;
+
+    final randomTask = _duelService.selectRandom(duel);
+    if (_currentSettings.mode == DuelMode.winner) {
+      final opponent =
+          duel.firstWhere((task) => task.id != randomTask.id, orElse: () => duel.first);
+      await selectWinner(randomTask, opponent);
+    }
+  }
+
+  /// Met à jour une tâche depuis le duel.
   Future<void> updateTask(Task updatedTask) async {
     state = state.copyWith(isLoading: true);
 
     try {
       await _duelService.updateTask(updatedTask);
-
-      // Recharger le duel
       await loadNewDuel();
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Erreur mise à jour: $e',
+        errorMessage: 'Erreur mise a jour: $e',
       );
     }
   }
 
-  /// Bascule la visibilité des scores ELO
-  void toggleEloVisibility() {
-    state = state.copyWith(hideEloScores: !state.hideEloScores);
+  /// Bascule la visibilité des scores ELO.
+  Future<void> toggleEloVisibility() async {
+    await _settingsNotifier.toggleHideElo();
+    state = state.copyWith(settings: _currentSettings);
   }
 
-  /// Efface le dernier résultat
+  Future<void> updateMode(DuelMode mode) async {
+    await _settingsNotifier.updateMode(mode);
+    if (mode == DuelMode.winner &&
+        _currentSettings.cardsPerRound > DuelSettings.minCardsPerRound) {
+      await _settingsNotifier.updateCardsPerRound(
+        DuelSettings.minCardsPerRound,
+      );
+    }
+    final settings = _currentSettings;
+    state = state.copyWith(settings: settings);
+    await _loadNewDuelWithSettings(settings);
+  }
+
+  Future<void> updateCardsPerRound(int cardsPerRound) async {
+    if (_currentSettings.mode == DuelMode.winner &&
+        cardsPerRound > DuelSettings.minCardsPerRound) {
+      cardsPerRound = DuelSettings.minCardsPerRound;
+    }
+    await _settingsNotifier.updateCardsPerRound(cardsPerRound);
+    final settings = _currentSettings;
+    state = state.copyWith(settings: settings);
+    await _loadNewDuelWithSettings(settings);
+  }
+
+  /// Nettoie les informations sur le dernier duel.
   void clearLastResult() {
     state = state.copyWith(
       lastWinner: null,
       lastLoser: null,
     );
   }
+
+  Future<void> _loadNewDuelWithSettings(DuelSettings settings) async {
+    final tasks =
+        await _duelService.loadDuelTasks(count: settings.cardsPerRound);
+    if (tasks.length >= 2) {
+      final duel = tasks.take(settings.cardsPerRound).toList();
+      state = state.copyWith(
+        currentDuel: duel,
+        isLoading: false,
+        errorMessage: null,
+      );
+      return;
+    }
+
+    state = state.copyWith(
+      currentDuel: null,
+      isLoading: false,
+      errorMessage:
+          'Pas assez de taches eligibles pour creer un duel',
+    );
+  }
 }
 
-/// État immutable pour le Duel (applique Immutability Pattern)
+/// État immutable du duel.
 class DuelState {
+  static const Object _unset = Object();
+
   final List<Task>? currentDuel;
   final bool isLoading;
   final String? errorMessage;
-  final bool hideEloScores;
+  final DuelSettings settings;
   final Task? lastWinner;
   final Task? lastLoser;
 
@@ -135,7 +206,7 @@ class DuelState {
     this.currentDuel,
     this.isLoading = false,
     this.errorMessage,
-    this.hideEloScores = false,
+    this.settings = const DuelSettings.defaults(),
     this.lastWinner,
     this.lastLoser,
   });
@@ -144,30 +215,33 @@ class DuelState {
       : currentDuel = null,
         isLoading = false,
         errorMessage = null,
-        hideEloScores = false,
+        settings = const DuelSettings.defaults(),
         lastWinner = null,
         lastLoser = null;
 
   DuelState copyWith({
     List<Task>? currentDuel,
     bool? isLoading,
-    String? errorMessage,
-    bool? hideEloScores,
+    Object? errorMessage = _unset,
+    DuelSettings? settings,
     Task? lastWinner,
     Task? lastLoser,
   }) {
     return DuelState(
       currentDuel: currentDuel ?? this.currentDuel,
       isLoading: isLoading ?? this.isLoading,
-      errorMessage: errorMessage,
-      hideEloScores: hideEloScores ?? this.hideEloScores,
+      errorMessage: identical(errorMessage, _unset)
+          ? this.errorMessage
+          : errorMessage as String?,
+      settings: settings ?? this.settings,
       lastWinner: lastWinner,
       lastLoser: lastLoser,
     );
   }
+
+  bool get hideEloScores => settings.hideEloScores;
 }
 
-/// Provider pour DuelController
 final duelControllerProvider =
     StateNotifierProvider<DuelController, DuelState>((ref) {
   return DuelController(ref);

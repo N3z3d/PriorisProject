@@ -126,6 +126,8 @@ class _ListSelectionDialogState extends State<ListSelectionDialog> {
     final theme = Theme.of(context);
 
     return ListTile(
+      visualDensity: VisualDensity.compact,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       leading: Icon(
         isEnabled ? Icons.list_alt : Icons.list_alt_outlined,
         color: isEnabled
@@ -150,10 +152,15 @@ class _ListSelectionDialogState extends State<ListSelectionDialog> {
           fontSize: 12,
         ),
       ),
-      trailing: Switch(
+      trailing: Checkbox(
         value: isEnabled,
-        onChanged: (value) => _toggleList(listId, value),
+        onChanged: (value) => _toggleList(listId, value ?? false),
         activeColor: AppTheme.primaryColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(4),
+        ),
+        visualDensity: VisualDensity.compact,
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
       onTap: () => _toggleList(listId, !isEnabled),
     );

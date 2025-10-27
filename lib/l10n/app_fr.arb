@@ -183,5 +183,43 @@
   "travel": "Voyage",
   "shopping": "Shopping",
   "entertainment": "Divertissement",
-  "other": "Autre"
+  "other": "Autre",
+  "duelPriorityTitle": "Mode Priorité",
+  "duelPrioritySubtitle": "Quelle tâche préférez-vous ?",
+  "duelPriorityHint": "Touchez la carte que vous souhaitez prioriser.",
+  "duelSkipAction": "Passer le duel",
+  "duelRandomAction": "Aléatoire",
+  "duelShowElo": "Afficher l’Élo",
+  "duelHideElo": "Masquer l’Élo",
+  "duelModeLabel": "Mode du duel",
+  "duelModeWinner": "Vainqueur",
+  "duelModeRanking": "Classement",
+  "duelCardsPerRoundLabel": "Nombre de cartes par manche",
+  "duelCardsPerRoundOption": "{count} cartes",
+  "@duelCardsPerRoundOption": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "duelSubmitRanking": "Valider le classement",
+  "duelPreferenceSaved": "Préférence enregistrée ✅",
+  "duelRemainingDuels": "{count} duels restants aujourd’hui",
+  "@duelRemainingDuels": {
+    "description": "Nombre de duels restants pour la journée",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "duelConfigureLists": "Choisir les listes pour les duels",
+  "duelNoAvailableLists": "Aucune liste disponible",
+  "duelNoAvailableListsForPrioritization": "Aucune liste disponible pour la priorisation",
+  "duelListsUpdated": "Listes de priorisation mises à jour",
+  "duelNewDuel": "Nouveau duel",
+  "duelNotEnoughTasksTitle": "Pas assez de tâches",
+  "duelNotEnoughTasksMessage": "Ajoutez au moins deux tâches pour commencer à prioriser.",
+  "duelErrorMessage": "Impossible de charger le duel. Réessayez."
 } 

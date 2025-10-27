@@ -1,15 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 
-/// Header component for Habits page following SRP
-/// Responsible only for rendering the header UI
 class HabitsHeader extends StatelessWidget {
-  final TabController tabController;
-
-  const HabitsHeader({
-    super.key,
-    required this.tabController,
-  });
+  const HabitsHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,26 +10,16 @@ class HabitsHeader extends StatelessWidget {
       decoration: _buildHeaderDecoration(),
       child: SafeArea(
         bottom: false,
-        child: Column(
-          children: [
-            _buildTitleSection(),
-            _buildTabSection(),
-            const SizedBox(height: 16),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+          child: Row(
+            children: [
+              _buildIcon(),
+              const SizedBox(width: 16),
+              _buildTitleContent(),
+            ],
+          ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildTitleSection() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-      child: Row(
-        children: [
-          _buildIcon(),
-          const SizedBox(width: 16),
-          _buildTitleContent(),
-        ],
       ),
     );
   }
@@ -69,7 +52,7 @@ class HabitsHeader extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Mes Habitudes',
+            'Mes habitudes',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w700,
@@ -79,41 +62,13 @@ class HabitsHeader extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           Text(
-            'Gérez vos routines et suivez vos progrès',
+            'Suivez vos progr\u00e8s au quotidien',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
               color: AppTheme.textSecondary,
-              letterSpacing: 0,
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTabSection() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      decoration: _buildTabDecoration(),
-      child: TabBar(
-        controller: tabController,
-        indicator: _buildTabIndicator(),
-        indicatorPadding: const EdgeInsets.all(2),
-        labelColor: Colors.white,
-        unselectedLabelColor: AppTheme.textSecondary,
-        labelStyle: const TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 14,
-        ),
-        unselectedLabelStyle: const TextStyle(
-          fontWeight: FontWeight.w500,
-          fontSize: 14,
-        ),
-        dividerColor: Colors.transparent,
-        tabs: const [
-          Tab(text: 'Actives'),
-          Tab(text: 'Complétées'),
         ],
       ),
     );
@@ -133,38 +88,6 @@ class HabitsHeader extends StatelessWidget {
           color: Colors.black.withValues(alpha: 0.02),
           blurRadius: 8,
           offset: const Offset(0, 1),
-        ),
-      ],
-    );
-  }
-
-  BoxDecoration _buildTabDecoration() {
-    return BoxDecoration(
-      color: AppTheme.cleanSurfaceColor,
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(
-        color: AppTheme.grey200,
-        width: 1,
-      ),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withValues(alpha: 0.04),
-          blurRadius: 8,
-          offset: const Offset(0, 2),
-        ),
-      ],
-    );
-  }
-
-  BoxDecoration _buildTabIndicator() {
-    return BoxDecoration(
-      color: AppTheme.primaryColor,
-      borderRadius: BorderRadius.circular(14),
-      boxShadow: [
-        BoxShadow(
-          color: AppTheme.primaryColor.withValues(alpha: 0.2),
-          blurRadius: 8,
-          offset: const Offset(0, 2),
         ),
       ],
     );

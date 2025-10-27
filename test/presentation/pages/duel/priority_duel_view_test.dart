@@ -1,0 +1,107 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:prioris/domain/core/value_objects/duel_settings.dart';
+import 'package:prioris/domain/models/core/entities/task.dart';
+import 'package:prioris/l10n/app_localizations.dart';
+import 'package:prioris/presentation/pages/duel/widgets/priority_duel_view.dart';
+
+void main() {
+  group('PriorityDuelView', () {
+    late List<Task> tasks;
+
+    setUp(() {
+      tasks = List.generate(
+        3,
+        (index) => Task(
+          id: 'task-${index + 1}',
+          title: 'Tâche ${index + 1}',
+          eloScore: 1200 + index * 40,
+          createdAt: DateTime(2024, 10, index + 1),
+        ),
+      );
+    });
+
+    Future<void> _pumpView(
+      WidgetTester tester, {
+      required DuelMode mode,
+      required bool hideElo,
+      required Future<void> Function(List<Task> ordered) onSubmitRanking,
+      required VoidCallback onToggleElo,
+    }) {
+      return tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('fr'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: Scaffold(
+            body: PriorityDuelView(
+              tasks: tasks,
+              hideEloScores: hideElo,
+              mode: mode,
+              cardsPerRound: 3,
+              onSelectTask: (_, __) async {},
+              onSubmitRanking: onSubmitRanking,
+              onSkip: () async {},
+              onRandom: () async {},
+              onToggleElo: () async => onToggleElo(),
+              onRefresh: () async {},
+              onConfigureLists: () async {},
+              onModeChanged: (_) {},
+              onCardsPerRoundChanged: (_) {},
+              hasAvailableLists: true,
+            ),
+          ),
+        ),
+      );
+    }
+
+    testWidgets('relaye la soumission du classement selon le nouvel ordre',
+        (tester) async {
+      List<Task>? submittedOrder;
+
+      await _pumpView(
+        tester,
+        mode: DuelMode.ranking,
+        hideElo: false,
+        onSubmitRanking: (ordered) async {
+          submittedOrder = List<Task>.from(ordered);
+        },
+        onToggleElo: () {},
+      );
+
+      final listView = tester.widget<ReorderableListView>(
+        find.byType(ReorderableListView),
+      );
+
+      listView.onReorder(0, 3);
+      await tester.pump();
+
+      await tester.tap(find.text('Valider le classement'));
+      await tester.pump();
+
+      expect(submittedOrder, isNotNull);
+      expect(
+        submittedOrder!.map((task) => task.id),
+        ['task-2', 'task-3', 'task-1'],
+      );
+    });
+
+    testWidgets('délègue le toggle d’affichage Elo', (tester) async {
+      var toggled = false;
+      await _pumpView(
+        tester,
+        mode: DuelMode.winner,
+        hideElo: true,
+        onSubmitRanking: (_) async {},
+        onToggleElo: () {
+          toggled = true;
+        },
+      );
+
+      await tester.tap(find.text('Afficher l’Élo'));
+      await tester.pump();
+
+      expect(toggled, isTrue);
+    });
+  });
+}

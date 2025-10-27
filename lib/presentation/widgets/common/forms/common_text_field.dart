@@ -5,6 +5,9 @@ import 'package:prioris/domain/services/ui/accessibility_service.dart';
 
 /// Widget TextField réutilisable pour toute l'application
 class CommonTextField extends StatelessWidget {
+  /// Clé appliquée directement au champ de saisie interne.
+  final Key? fieldKey;
+
   /// Label du champ
   final String? label;
 
@@ -74,6 +77,7 @@ class CommonTextField extends StatelessWidget {
   /// Constructeur
   const CommonTextField({
     super.key,
+    this.fieldKey,
     this.label,
     this.hint,
     this.controller,
@@ -133,6 +137,7 @@ class CommonTextField extends StatelessWidget {
           minHeight: AccessibilityService.minTouchTargetSize,
         ),
         child: TextFormField(
+          key: fieldKey,
           controller: controller,
           focusNode: focusNode,
           decoration: decoration,

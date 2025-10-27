@@ -1,11 +1,91 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:prioris/data/providers/lists_controller_provider.dart';
+import 'package:prioris/domain/core/interfaces/logger_interface.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
-import 'package:prioris/presentation/pages/list_detail_page.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
+import 'package:prioris/presentation/pages/list_detail_page.dart';
+import 'package:prioris/presentation/pages/lists/models/task_sort_field.dart';
+import 'package:prioris/presentation/pages/lists/widgets/list_item_card.dart';
+import 'package:prioris/presentation/pages/lists/widgets/list_contextual_fab.dart';
+import 'package:prioris/presentation/pages/lists/controllers/refactored/lists_controller_slim.dart';
+import 'package:prioris/presentation/pages/lists/controllers/operations/lists_crud_operations.dart';
+import 'package:prioris/presentation/pages/lists/controllers/operations/lists_validation_service.dart';
+import 'package:prioris/presentation/pages/lists/controllers/state/lists_state_manager.dart';
+import 'package:prioris/presentation/pages/lists/interfaces/lists_managers_interfaces.dart';
+import 'package:prioris/presentation/pages/lists/managers/lists_filter_manager.dart';
+import 'package:prioris/presentation/pages/lists/services/list_item_sync_service.dart';
+
+ListsControllerSlim _buildControllerWithLists(List<CustomList> initialLists) {
+  final persistence =
+      _InMemoryListsPersistenceManager(initialLists: initialLists);
+  final stateManager = ListsStateManager();
+  final crud = ListsCrudOperations(
+    persistence: persistence,
+    validator: ListsValidationService(),
+    filterManager: ListsFilterManager(),
+    stateManager: stateManager,
+    logger: _NoopLogger(),
+  );
+
+  return _SpyListsController(
+    initializationManager: _ImmediateInitManager(),
+    performanceMonitor: _NoopPerformanceMonitor(),
+    crudOperations: crud,
+    stateManager: stateManager,
+    syncService: ListItemSyncService(stateManager),
+    logger: _NoopLogger(),
+  );
+}
+
+Future<void> _settle(WidgetTester tester) async {
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 100));
+  await tester.pump(const Duration(milliseconds: 100));
+}
+
+Future<void> _waitForCondition(WidgetTester tester, bool Function() predicate) async {
+  for (var i = 0; i < 100; i++) {
+    if (predicate()) {
+      return;
+    }
+    await tester.pump(const Duration(milliseconds: 50));
+  }
+}
+
+Future<void> _pumpListDetailPage(
+  WidgetTester tester, {
+  required CustomList list,
+  ListsControllerSlim? controller,
+}) async {
+  final effectiveController =
+      controller ?? _buildControllerWithLists([list]);
+
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [
+        listsControllerProvider.overrideWith((ref) => effectiveController),
+      ],
+      child: MaterialApp(
+        home: ListDetailPage(list: list),
+      ),
+    ),
+  );
+
+  await _settle(tester);
+}
 
 void main() {
+  setUpAll(() {
+    ListContextualFab.animationsForcedDisabled = true;
+  });
+
+  tearDownAll(() {
+    ListContextualFab.animationsForcedDisabled = false;
+  });
+
   group('ListDetailPage', () {
     late CustomList testList;
 
@@ -21,17 +101,19 @@ void main() {
             id: 'item1',
             title: 'Urgent Task',
             description: 'Urgent description',
-            eloScore: 1600.0, // Score très élevé (équivalent URGENT priority)
+            eloScore: 1600.0,
             isCompleted: false,
             createdAt: now,
+            listId: 'test_list',
           ),
           ListItem(
             id: 'item2',
             title: 'Low Priority Task',
             description: 'Low priority description',
-            eloScore: 1100.0, // Score bas (équivalent LOW priority)
+            eloScore: 1100.0,
             isCompleted: true,
             createdAt: now,
+            listId: 'test_list',
           ),
         ],
         createdAt: now,
@@ -39,183 +121,293 @@ void main() {
       );
     });
 
-    testWidgets('displays list information correctly', (WidgetTester tester) async {
-      // Arrange
-      final widget = MaterialApp(
-            home: ListDetailPage(list: testList),
+    testWidgets('renders list title and items', (WidgetTester tester) async {
+      await _pumpListDetailPage(
+        tester,
+        list: testList,
       );
 
-      // Act
-      await tester.pumpWidget(widget);
-
-      // Assert
-      expect(find.byType(ListDetailPage), findsOneWidget);
-      expect(find.text(testList.name), findsAtLeastNWidgets(1)); // Le nom peut apparaître plusieurs fois (AppBar, titre, etc.)
-      if (testList.description != null) {
-        expect(find.text(testList.description!), findsOneWidget);
-      }
-    });
-
-    testWidgets('shows items with ELO scores', (WidgetTester tester) async {
-      // Arrange
-      final widget = MaterialApp(
-            home: ListDetailPage(list: testList),
-      );
-
-      // Act
-      await tester.pumpWidget(widget);
-
-      // Assert: Les items doivent s'afficher avec leurs scores ELO
-      expect(find.byType(ListDetailPage), findsOneWidget);
+      expect(find.text('Test List'), findsOneWidget);
       expect(find.text('Urgent Task'), findsOneWidget);
       expect(find.text('Low Priority Task'), findsOneWidget);
-      
-      // Vérification des scores ELO
-      expect(testList.items[0].eloScore, equals(1600.0)); // Urgent
-      expect(testList.items[1].eloScore, equals(1100.0)); // Low
     });
 
-    testWidgets('handles item completion toggle', (WidgetTester tester) async {
-      // Arrange
-      final widget = MaterialApp(
-            home: ListDetailPage(list: testList),
+    testWidgets('completion toggle updates controller state',
+        (WidgetTester tester) async {
+      final controller = _buildControllerWithLists([testList]) as _SpyListsController;
+
+      await _pumpListDetailPage(
+        tester,
+        list: testList,
+        controller: controller,
       );
 
-      // Act
-      await tester.pumpWidget(widget);
+      expect(controller.state.lists.first.items.first.isCompleted, isFalse);
 
-      // Assert: Page doit gérer le toggle de completion
-      expect(find.byType(ListDetailPage), findsOneWidget);
-      
-      // Vérification des états de completion
-      expect(testList.items[0].isCompleted, isFalse); // Urgent task pas complétée
-      expect(testList.items[1].isCompleted, isTrue); // Low task complétée
-    });
-
-    group('ELO system integration', () {
-      testWidgets('displays items sorted by ELO score', (WidgetTester tester) async {
-        // Arrange: Liste avec items de scores ELO variés
-        final now = DateTime.now();
-        final sortedList = CustomList(
-          id: 'sorted_list',
-          name: 'Sorted ELO List',
-          type: ListType.CUSTOM,
-          description: 'Items sorted by ELO',
-          items: [
-            ListItem(
-              id: 'high',
-              title: 'High ELO Item',
-              eloScore: 1500.0, // ÉLEVÉ
-              isCompleted: false,
-              createdAt: now,
-            ),
-            ListItem(
-              id: 'urgent',
-              title: 'Urgent ELO Item',
-              eloScore: 1600.0, // URGENT (le plus haut)
-              isCompleted: false,
-              createdAt: now,
-            ),
-            ListItem(
-              id: 'medium',
-              title: 'Medium ELO Item',
-              eloScore: 1300.0, // MOYEN
-              isCompleted: true,
-              createdAt: now,
-            ),
-          ],
-          createdAt: now,
-          updatedAt: now,
-        );
-
-        final widget = MaterialApp(
-          home: ListDetailPage(list: sortedList),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-
-        // Assert: Vérification des scores ELO
-        expect(find.byType(ListDetailPage), findsOneWidget);
-        expect(sortedList.items[0].eloScore, equals(1500.0)); // High
-        expect(sortedList.items[1].eloScore, equals(1600.0)); // Urgent (highest)
-        expect(sortedList.items[2].eloScore, equals(1300.0)); // Medium
-      });
-    });
-
-    group('Item actions', () {
-      testWidgets('supports adding new items', (WidgetTester tester) async {
-        // Arrange
-        final widget = MaterialApp(
-            home: ListDetailPage(list: testList),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-
-        // Assert: Page doit permettre l'ajout d'items
-        expect(find.byType(ListDetailPage), findsOneWidget);
-
-        // Vérification que la liste a bien 2 items initialement
-        expect(testList.items.length, equals(2));
-    });
-
-      testWidgets('supports editing items', (WidgetTester tester) async {
-        // Arrange
-        final widget = MaterialApp(
-            home: ListDetailPage(list: testList),
-        );
-
-        // Act
-        await tester.pumpWidget(widget);
-
-        // Assert: Page doit permettre l'édition d'items
-        expect(find.byType(ListDetailPage), findsOneWidget);
-        
-        // Les items doivent être éditables
-        expect(testList.items[0].title, equals('Urgent Task'));
-        expect(testList.items[1].title, equals('Low Priority Task'));
-    });
-
-      testWidgets('supports deleting items', (WidgetTester tester) async {
-        // Arrange
-        final widget = MaterialApp(
-            home: ListDetailPage(list: testList),
+      final completionButton = find.descendant(
+        of: find.byType(ListItemCard).first,
+        matching: find.byType(AnimatedContainer),
+      );
+      await tester.tap(completionButton);
+      await _settle(tester);
+      await _waitForCondition(
+        tester,
+        () => controller.state.lists.first.items.first.isCompleted,
       );
 
-        // Act
-        await tester.pumpWidget(widget);
+      expect(controller.lastUpdatedItem?.isCompleted, isTrue);
 
-        // Assert: Page doit permettre la suppression d'items
-        expect(find.byType(ListDetailPage), findsOneWidget);
-        
-        // Vérification que les items existent avant suppression
-        expect(testList.items.isNotEmpty, isTrue);
-      });
+      final updatedItems = controller.state.lists.first.items;
+      expect(updatedItems.first.isCompleted, isTrue);
     });
 
-    group('Progress tracking', () {
-      testWidgets('shows completion progress correctly', (WidgetTester tester) async {
-        // Arrange
-        final widget = MaterialApp(
-            home: ListDetailPage(list: testList),
+    testWidgets('sort random option disables ascending button',
+        (WidgetTester tester) async {
+      await _pumpListDetailPage(
+        tester,
+        list: testList,
       );
 
-        // Act
-        await tester.pumpWidget(widget);
+      final dropdown = find.byType(DropdownButtonFormField<TaskSortField>);
+      final dropdownState = tester.state<FormFieldState<TaskSortField>>(dropdown);
+      dropdownState.didChange(TaskSortField.random);
+      await _settle(tester);
 
-        // Assert: Progression doit être affichée correctement
-      expect(find.byType(ListDetailPage), findsOneWidget);
-        
-        // Calcul de la progression: 1 item complété sur 2 = 50%
-        final completedItems = testList.items.where((item) => item.isCompleted).length;
-        final totalItems = testList.items.length;
-        final expectedProgress = (completedItems / totalItems * 100).round();
-        
-        expect(completedItems, equals(1));
-        expect(totalItems, equals(2));
-        expect(expectedProgress, equals(50));
-      });
+      expect(find.byIcon(Icons.casino), findsOneWidget);
+
+      final sortIconFinder = find.ancestor(
+        of: find.byIcon(Icons.arrow_downward),
+        matching: find.byType(IconButton),
+      );
+      final IconButton sortIcon = tester.widget(sortIconFinder);
+      expect(sortIcon.onPressed, isNull);
+    });
+
+    testWidgets('switching sort back to name re-enables ascending button',
+        (WidgetTester tester) async {
+      await _pumpListDetailPage(
+        tester,
+        list: testList,
+      );
+
+      final dropdown = find.byType(DropdownButtonFormField<TaskSortField>);
+      final dropdownState = tester.state<FormFieldState<TaskSortField>>(dropdown);
+      dropdownState.didChange(TaskSortField.random);
+      await _settle(tester);
+
+      dropdownState.didChange(TaskSortField.name);
+      await _settle(tester);
+
+      final sortIconFinder = find.ancestor(
+        of: find.byIcon(Icons.arrow_downward),
+        matching: find.byType(IconButton),
+      );
+      final IconButton sortIcon = tester.widget(sortIconFinder);
+      expect(sortIcon.onPressed, isNotNull);
+      expect(find.byIcon(Icons.casino), findsNothing);
     });
   });
-} 
+}
+
+class _SpyListsController extends ListsControllerSlim {
+  _SpyListsController({
+    required IListsInitializationManager initializationManager,
+    required IListsPerformanceMonitor performanceMonitor,
+    required ListsCrudOperations crudOperations,
+    required ListsStateManager stateManager,
+    required ILogger logger,
+    required ListItemSyncService syncService,
+  }) : super(
+          initializationManager: initializationManager,
+          performanceMonitor: performanceMonitor,
+          crudOperations: crudOperations,
+          stateManager: stateManager,
+          syncService: syncService,
+          logger: logger,
+        );
+
+  ListItem? lastUpdatedItem;
+
+  @override
+  Future<void> updateListItem(String listId, ListItem item) async {
+    lastUpdatedItem = item;
+    await super.updateListItem(listId, item);
+  }
+}
+
+class _InMemoryListsPersistenceManager implements IListsPersistenceManager {
+  _InMemoryListsPersistenceManager({required List<CustomList> initialLists})
+      : _lists = List<CustomList>.from(initialLists);
+
+  List<CustomList> _lists;
+
+  @override
+  Future<List<CustomList>> loadAllLists() async => List.unmodifiable(_lists);
+
+  @override
+  Future<void> saveList(CustomList list) async {
+    _lists = [
+      ..._lists.where((existing) => existing.id != list.id),
+      list,
+    ];
+  }
+
+  @override
+  Future<void> updateList(CustomList list) async {
+    await saveList(list);
+  }
+
+  @override
+  Future<void> deleteList(String listId) async {
+    _lists = _lists.where((list) => list.id != listId).toList();
+  }
+
+  @override
+  Future<List<ListItem>> loadListItems(String listId) async {
+    final list = _lists.firstWhere(
+      (l) => l.id == listId,
+      orElse: () => CustomList(
+        id: listId,
+        name: 'temp',
+        type: ListType.CUSTOM,
+        description: null,
+        items: const [],
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      ),
+    );
+    return List<ListItem>.from(list.items);
+  }
+
+  @override
+  Future<void> saveListItem(ListItem item) async {
+    _lists = _lists.map((list) {
+      if (list.id != item.listId) return list;
+      final updatedItems = [...list.items.where((i) => i.id != item.id), item];
+      return list.copyWith(
+        items: updatedItems,
+        updatedAt: DateTime.now(),
+      );
+    }).toList();
+  }
+
+  @override
+  Future<void> updateListItem(ListItem item) async {
+    _lists = _lists.map((list) {
+      if (list.id != item.listId) return list;
+      return list.updateItem(item);
+    }).toList();
+  }
+
+  @override
+  Future<void> deleteListItem(String itemId) async {
+    _lists = _lists.map((list) {
+      final containsItem = list.items.any((item) => item.id == itemId);
+      if (!containsItem) return list;
+      return list.removeItem(itemId);
+    }).toList();
+  }
+
+  @override
+  Future<void> saveMultipleItems(List<ListItem> items) async {
+    for (final item in items) {
+      await saveListItem(item);
+    }
+  }
+
+  @override
+  Future<List<CustomList>> forceReloadFromPersistence() async =>
+      List.unmodifiable(_lists);
+
+  @override
+  Future<void> clearAllData() async {
+    _lists = [];
+  }
+
+  @override
+  Future<void> verifyListPersistence(String listId) async {}
+
+  @override
+  Future<void> verifyItemPersistence(String itemId) async {}
+
+  @override
+  Future<void> rollbackItems(List<ListItem> items) async {}
+}
+
+class _ImmediateInitManager implements IListsInitializationManager {
+  bool _initialized = false;
+
+  @override
+  Future<void> initializeAdaptive() async {}
+
+  @override
+  Future<void> initializeLegacy() async {}
+
+  @override
+  Future<void> initializeAsync() async {
+    _initialized = true;
+  }
+
+  @override
+  bool get isInitialized => _initialized;
+
+  @override
+  String get initializationMode => 'test';
+}
+
+class _NoopPerformanceMonitor implements IListsPerformanceMonitor {
+  @override
+  void endOperation(String operationName) {}
+
+  @override
+  Map<String, dynamic> getDetailedMetrics() => const {};
+
+  @override
+  Map<String, dynamic> getPerformanceStats() => const {};
+
+  @override
+  void logError(String operation, Object error, [StackTrace? stackTrace]) {}
+
+  @override
+  void logInfo(String message, {String? context}) {}
+
+  @override
+  void logWarning(String message, {String? context}) {}
+
+  @override
+  void monitorCacheOperation(String operation, bool hit) {}
+
+  @override
+  void monitorCollectionSize(String collection, int size) {}
+
+  @override
+  void resetStats() {}
+
+  @override
+  void startOperation(String operationName) {}
+}
+
+class _NoopLogger implements ILogger {
+  @override
+  void debug(String message, {String? context, String? correlationId, dynamic data}) {}
+
+  @override
+  void info(String message, {String? context, String? correlationId, dynamic data}) {}
+
+  @override
+  void warning(String message, {String? context, String? correlationId, dynamic data}) {}
+
+  @override
+  void error(String message, {String? context, String? correlationId, dynamic error, StackTrace? stackTrace}) {}
+
+  @override
+  void fatal(String message, {String? context, String? correlationId, dynamic error, StackTrace? stackTrace}) {}
+
+  @override
+  void performance(String operation, Duration duration,
+      {String? context, String? correlationId, Map<String, dynamic>? metrics}) {}
+
+  @override
+  void userAction(String action,
+      {String? context, String? correlationId, Map<String, dynamic>? properties}) {}
+}

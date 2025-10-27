@@ -18,6 +18,8 @@ enum SortOption {
 /// **SRP compliant** : Se concentre uniquement sur la représentation des données
 /// **Immutable by design** : Toutes les modifications passent par copyWith()
 class ListsState {
+  static const Object _noValue = Object();
+
   /// Toutes les listes chargées depuis la persistance
   final List<CustomList> lists;
 
@@ -48,6 +50,9 @@ class ListsState {
   /// Message d'erreur (null si aucune erreur)
   final String? error;
 
+  /// Identifiants des éléments en cours de synchronisation locale -> persistance
+  final Set<String> syncingItemIds;
+
   const ListsState({
     this.lists = const [],
     this.filteredLists = const [],
@@ -59,6 +64,7 @@ class ListsState {
     this.sortOption = SortOption.NAME_ASC,
     this.isLoading = false,
     this.error,
+    this.syncingItemIds = const {},
   });
 
   /// **Factory constructor** - État initial vide
@@ -68,10 +74,11 @@ class ListsState {
   const ListsState.loading() : this(isLoading: true);
 
   /// **Factory constructor** - État d'erreur
-  const ListsState.error(String errorMessage) : this(
-    isLoading: false,
-    error: errorMessage,
-  );
+  const ListsState.error(String errorMessage)
+      : this(
+          isLoading: false,
+          error: errorMessage,
+        );
 
   /// **Immutable update** - Crée une copie avec de nouvelles valeurs
   ///
@@ -86,7 +93,8 @@ class ListsState {
     String? selectedDateFilter,
     SortOption? sortOption,
     bool? isLoading,
-    String? error,
+    Object? error = _noValue,
+    Set<String>? syncingItemIds,
   }) {
     return ListsState(
       lists: lists ?? this.lists,
@@ -98,7 +106,8 @@ class ListsState {
       selectedDateFilter: selectedDateFilter ?? this.selectedDateFilter,
       sortOption: sortOption ?? this.sortOption,
       isLoading: isLoading ?? this.isLoading,
-      error: error ?? this.error,
+      error: identical(error, _noValue) ? this.error : error as String?,
+      syncingItemIds: syncingItemIds ?? this.syncingItemIds,
     );
   }
 
@@ -128,6 +137,7 @@ class ListsState {
     // Vérifications de base
     if (lists.length < filteredLists.length) return false;
     if (isLoading && error != null) return false;
+    if (syncingItemIds.any((id) => id.isEmpty)) return false;
 
     // Vérifier que filteredLists est un sous-ensemble de lists
     for (final filteredList in filteredLists) {
@@ -148,11 +158,11 @@ class ListsState {
   /// **Computed property** - Indique si des filtres sont actifs
   bool get hasActiveFilters {
     return searchQuery.isNotEmpty ||
-           selectedType != null ||
-           !showCompleted ||
-           !showInProgress ||
-           selectedDateFilter != null ||
-           sortOption != SortOption.NAME_ASC;
+        selectedType != null ||
+        !showCompleted ||
+        !showInProgress ||
+        selectedDateFilter != null ||
+        sortOption != SortOption.NAME_ASC;
   }
 
   /// **Computed property** - Indique si l'état est vide (aucune liste)
@@ -177,8 +187,10 @@ class ListsState {
 
   /// **Utility method** - Compte les éléments terminés dans toutes les listes
   int get completedItemsCount {
-    return lists.fold(0, (sum, list) =>
-      sum + list.items.where((item) => item.isCompleted).length);
+    return lists.fold(
+        0,
+        (sum, list) =>
+            sum + list.items.where((item) => item.isCompleted).length);
   }
 
   /// **Debug method** - Représentation string pour debug
@@ -194,7 +206,8 @@ class ListsState {
         'selectedDateFilter: $selectedDateFilter, '
         'sortOption: $sortOption, '
         'isLoading: $isLoading, '
-        'error: $error'
+        'error: $error, '
+        'syncingItemIds: ${syncingItemIds.length}'
         ')';
   }
 
@@ -213,7 +226,8 @@ class ListsState {
         other.selectedDateFilter == selectedDateFilter &&
         other.sortOption == sortOption &&
         other.isLoading == isLoading &&
-        other.error == error;
+        other.error == error &&
+        _setEquals(other.syncingItemIds, syncingItemIds);
   }
 
   /// **Helper method** - Compare deux listes de CustomList
@@ -238,6 +252,20 @@ class ListsState {
       sortOption,
       isLoading,
       error,
+      Object.hashAll(
+        (() {
+          final ids = syncingItemIds.toList()..sort();
+          return ids;
+        })(),
+      ),
     );
+  }
+
+  bool _setEquals(Set<String> a, Set<String> b) {
+    if (a.length != b.length) return false;
+    for (final value in a) {
+      if (!b.contains(value)) return false;
+    }
+    return true;
   }
 }

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:prioris/data/providers/list_prioritization_settings_provider.dart';
+import 'package:prioris/data/providers/lists_controller_provider.dart';
+import 'package:prioris/domain/core/value_objects/duel_settings.dart';
 import 'package:prioris/domain/models/core/entities/task.dart';
+import 'package:prioris/l10n/app_localizations.dart';
+import 'package:prioris/presentation/pages/duel/controllers/duel_controller.dart';
+import 'package:prioris/presentation/pages/duel/widgets/priority_duel_view.dart';
+import 'package:prioris/presentation/pages/lists/models/lists_state.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
-import 'package:prioris/presentation/widgets/dialogs/task_edit_dialog.dart';
-import 'package:prioris/presentation/pages/home_page.dart';
-import 'duel/controllers/duel_controller.dart';
-import 'duel/widgets/export.dart';
+import 'package:prioris/presentation/widgets/dialogs/list_selection_dialog.dart';
 
-/// Page Duel refactorisée appliquant MVVM et SRP
-///
-/// Responsabilité unique: Composer l'interface utilisateur
-/// La logique métier est déléguée au DuelController
 class DuelPage extends ConsumerStatefulWidget {
   const DuelPage({super.key});
 
@@ -20,9 +20,10 @@ class DuelPage extends ConsumerStatefulWidget {
 
 class _DuelPageState extends ConsumerState<DuelPage>
     with AutomaticKeepAliveClientMixin {
-
   @override
   bool get wantKeepAlive => true;
+
+  AppLocalizations get _l10n => AppLocalizations.of(context)!;
 
   @override
   void initState() {
@@ -38,349 +39,230 @@ class _DuelPageState extends ConsumerState<DuelPage>
   Widget build(BuildContext context) {
     super.build(context);
 
-    final state = ref.watch(duelControllerProvider);
+    final duelState = ref.watch(duelControllerProvider);
+    final listsState = ref.watch(listsControllerProvider);
 
     return Scaffold(
-      appBar: _buildAppBar(state),
-      body: _buildBody(state),
-    );
-  }
-
-  /// Construit l'AppBar avec actions
-  PreferredSizeWidget _buildAppBar(DuelState state) {
-    return AppBar(
-      title: const Text('Comparaison'),
-      flexibleSpace: _buildAppBarBackground(),
-      actions: [
-        _buildEloVisibilityToggle(state),
-        _buildSettingsButton(),
-        _buildRefreshButton(),
-      ],
-    );
-  }
-
-  /// Background de l'AppBar
-  Widget _buildAppBarBackground() {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.primaryColor,
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(24),
-          bottomRight: Radius.circular(24),
+      backgroundColor: AppTheme.subtleBackgroundColor,
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 240),
+        child: _buildStateView(
+          duelState: duelState,
+          listsState: listsState,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.primaryColor.withValues(alpha: 0.2),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
     );
   }
 
-  /// Bouton toggle visibilité ELO
-  Widget _buildEloVisibilityToggle(DuelState state) {
-    return IconButton(
-      onPressed: () {
-        ref.read(duelControllerProvider.notifier).toggleEloVisibility();
-      },
-      icon: Icon(state.hideEloScores ? Icons.visibility : Icons.visibility_off),
-      tooltip: state.hideEloScores ? 'Afficher les scores ELO' : 'Masquer les scores ELO',
-    );
-  }
-
-  /// Bouton paramètres (futur)
-  Widget _buildSettingsButton() {
-    return IconButton(
-      onPressed: () {
-        // Pending: Implémenter le dialogue de sélection de listes
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Paramètres à venir')),
-        );
-      },
-      icon: const Icon(Icons.tune),
-      tooltip: 'Paramètres des listes',
-    );
-  }
-
-  /// Bouton rafraîchir
-  Widget _buildRefreshButton() {
-    return IconButton(
-      onPressed: () {
-        ref.read(duelControllerProvider.notifier).loadNewDuel();
-      },
-      icon: const Icon(Icons.refresh),
-      tooltip: 'Nouveau duel',
-    );
-  }
-
-  /// Construit le corps de la page
-  Widget _buildBody(DuelState state) {
-    if (state.isLoading) {
+  Widget _buildStateView({
+    required DuelState duelState,
+    required ListsState listsState,
+  }) {
+    if (duelState.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (state.errorMessage != null) {
-      return _buildErrorState(state.errorMessage!);
+    if (duelState.errorMessage != null) {
+      return _DuelErrorView(
+        message: _l10n.duelErrorMessage,
+        technicalDetails: duelState.errorMessage!,
+      );
     }
 
-    if (state.currentDuel == null || state.currentDuel!.length < 2) {
-      return _buildNoTasksState();
+    final duel = duelState.currentDuel;
+    if (duel == null || duel.length < 2) {
+      return _DuelEmptyView(
+        title: _l10n.duelNotEnoughTasksTitle,
+        message: _l10n.duelNotEnoughTasksMessage,
+      );
     }
 
-    return _buildDuelInterface(state);
-  }
-
-  /// État d'erreur
-  Widget _buildErrorState(String message) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.error_outline,
-            size: 80,
-            color: Theme.of(context).colorScheme.error.withValues(alpha: 0.5),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Erreur',
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            message,
-            style: Theme.of(context).textTheme.bodyMedium,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              ref.read(duelControllerProvider.notifier).loadNewDuel();
-            },
-            child: const Text('Réessayer'),
-          ),
-        ],
-      ),
+    return PriorityDuelView(
+      tasks: duel,
+      hideEloScores: duelState.hideEloScores,
+      mode: duelState.settings.mode,
+      cardsPerRound: duelState.settings.cardsPerRound,
+      onSelectTask: _selectWinner,
+      onSubmitRanking: _submitRanking,
+      onSkip: _skipDuel,
+      onRandom: _selectRandomTask,
+      onToggleElo: _toggleEloVisibility,
+      onRefresh: _loadNewDuel,
+      onConfigureLists: _openListSelectionDialog,
+      onModeChanged: _changeMode,
+      onCardsPerRoundChanged: _changeCardsPerRound,
+      hasAvailableLists: listsState.lists.isNotEmpty,
+      remainingDuelsToday: null,
     );
   }
 
-  /// État sans tâches - Onboarding informatif
-  Widget _buildNoTasksState() {
+  Future<void> _skipDuel() async {
+    await _loadNewDuel();
+  }
+
+  Future<void> _loadNewDuel() {
+    return ref.read(duelControllerProvider.notifier).loadNewDuel();
+  }
+
+  Future<void> _toggleEloVisibility() {
+    return ref.read(duelControllerProvider.notifier).toggleEloVisibility();
+  }
+
+  Future<void> _selectRandomTask() {
+    return ref.read(duelControllerProvider.notifier).selectRandomTask();
+  }
+
+  Future<void> _selectWinner(Task winner, Task loser) async {
+    await ref.read(duelControllerProvider.notifier).selectWinner(winner, loser);
+
+    if (!mounted) return;
+    _showToast(_l10n.duelPreferenceSaved);
+  }
+
+  Future<void> _submitRanking(List<Task> orderedTasks) async {
+    await ref.read(duelControllerProvider.notifier).submitRanking(orderedTasks);
+    if (!mounted) return;
+    _showToast('Classement enregistré');
+  }
+
+  Future<void> _changeMode(DuelMode mode) {
+    return ref.read(duelControllerProvider.notifier).updateMode(mode);
+  }
+
+  Future<void> _changeCardsPerRound(int cards) {
+    return ref.read(duelControllerProvider.notifier).updateCardsPerRound(cards);
+  }
+
+  Future<void> _openListSelectionDialog() async {
+    final listsState = ref.read(listsControllerProvider);
+
+    if (listsState.lists.isEmpty) {
+      if (!mounted) return;
+      _showToast(_l10n.duelNoAvailableListsForPrioritization);
+      return;
+    }
+
+    final currentSettings = ref.read(listPrioritizationSettingsProvider);
+    final notifier = ref.read(listPrioritizationSettingsProvider.notifier);
+
+    final availableLists = listsState.lists
+        .map((list) => {
+              'id': list.id,
+              'title': list.name,
+            })
+        .toList();
+
+    await showListSelectionDialog(
+      context,
+      currentSettings: currentSettings,
+      availableLists: availableLists,
+      onSettingsChanged: (updatedSettings) async {
+        await notifier.update(updatedSettings);
+        if (mounted) {
+          _showToast(_l10n.duelListsUpdated);
+        }
+      },
+    );
+  }
+
+  void _showToast(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(milliseconds: 1600),
+      ),
+    );
+  }
+}
+
+class _DuelErrorView extends StatelessWidget {
+  final String message;
+  final String technicalDetails;
+
+  const _DuelErrorView({
+    required this.message,
+    required this.technicalDetails,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Center(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 480),
-        padding: const EdgeInsets.all(32),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              Icons.info_outline,
-              size: 64,
-              color: Theme.of(context).colorScheme.primary,
+              Icons.error_outline_rounded,
+              size: 72,
+              color: Theme.of(context).colorScheme.error.withValues(alpha: 0.6),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
             Text(
-              'Vous avez besoin d\'au moins 2 tâches actives',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              message,
               textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Choisissez une liste et sélectionnez 2 tâches ou plus pour lancer une comparaison.',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  // Navigate to Lists page (index 0)
-                  ref.read(currentPageProvider.notifier).state = 0;
-                },
-                icon: const Icon(Icons.add_task),
-                label: const Text('Ajouter des tâches'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.textPrimary,
                   ),
-                ),
-              ),
             ),
-            const SizedBox(height: 12),
-            TextButton.icon(
-              onPressed: () {
-                // Navigate to Lists page to create new task
-                ref.read(currentPageProvider.notifier).state = 0;
-              },
-              icon: const Icon(Icons.edit_note, size: 20),
-              label: const Text('Créer une nouvelle tâche'),
-              style: TextButton.styleFrom(
-                foregroundColor: Theme.of(context).colorScheme.primary,
-              ),
+            const SizedBox(height: 8),
+            Text(
+              technicalDetails,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppTheme.textSecondary.withValues(alpha: 0.8),
+                  ),
             ),
           ],
         ),
       ),
     );
   }
+}
 
-  /// Interface du duel
-  Widget _buildDuelInterface(DuelState state) {
-    final task1 = state.currentDuel![0];
-    final task2 = state.currentDuel![1];
+class _DuelEmptyView extends StatelessWidget {
+  final String title;
+  final String message;
 
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          _buildDuelHeader(),
-          const SizedBox(height: 32),
-          Expanded(
-            child: Column(
-              children: [
-                Expanded(
-                  flex: 5,
-                  child: DuelTaskCard(
-                    task: task1,
-                    onTap: () => _selectWinner(task1, task2),
-                    onEdit: () => _showEditTaskDialog(task1),
-                    hideElo: state.hideEloScores,
-                  ),
-                ),
-                _buildVsSeparator(),
-                Expanded(
-                  flex: 5,
-                  child: DuelTaskCard(
-                    task: task2,
-                    onTap: () => _selectWinner(task2, task1),
-                    onEdit: () => _showEditTaskDialog(task2),
-                    hideElo: state.hideEloScores,
-                  ),
-                ),
-              ],
+  const _DuelEmptyView({
+    required this.title,
+    required this.message,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.psychology_alt_outlined,
+              size: 72,
+              color: AppTheme.primaryColor.withValues(alpha: 0.45),
             ),
-          ),
-          const SizedBox(height: 16),
-          _buildActionButtons(state),
-        ],
-      ),
-    );
-  }
-
-  /// Boutons d'action
-  Widget _buildActionButtons(DuelState state) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        TextButton.icon(
-          onPressed: () {
-            ref.read(duelControllerProvider.notifier).loadNewDuel();
-          },
-          icon: const Icon(Icons.skip_next),
-          label: const Text('Passer ce duel'),
-        ),
-        ElevatedButton.icon(
-          onPressed: () {
-            ref.read(duelControllerProvider.notifier).selectRandomTask();
-          },
-          icon: const Icon(Icons.shuffle),
-          label: const Text('Aléatoire'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.secondary,
-            foregroundColor: Theme.of(context).colorScheme.onSecondary,
-          ),
-        ),
-      ],
-    );
-  }
-
-  /// Sélectionne le gagnant
-  Future<void> _selectWinner(Task task1, Task task2) async {
-    await ref.read(duelControllerProvider.notifier).selectWinner(task1, task2);
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('✅ "${task1.title}" priorisée'),
-          backgroundColor: Colors.green,
-          duration: const Duration(milliseconds: 1500),
-        ),
-      );
-    }
-  }
-
-  /// Affiche le dialogue d'édition de tâche
-  void _showEditTaskDialog(Task task) {
-    showDialog(
-      context: context,
-      builder: (context) => TaskEditDialog(
-        initialTask: task,
-        onSubmit: (updatedTask) async {
-          await ref.read(duelControllerProvider.notifier).updateTask(updatedTask);
-
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Tâche "${updatedTask.title}" mise à jour'),
-                backgroundColor: Colors.green,
-              ),
-            );
-          }
-        },
-      ),
-    );
-  }
-
-  /// Construit le header du duel
-  Widget _buildDuelHeader() {
-    return const Column(
-      children: [
-        Icon(Icons.sports_mma, size: 48, color: Colors.blue),
-        SizedBox(height: 8),
-        Text(
-          'Duel de Priorités',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 4),
-        Text(
-          'Choisissez la tâche la plus importante',
-          style: TextStyle(color: Colors.grey),
-        ),
-      ],
-    );
-  }
-
-  /// Construit le séparateur VS
-  Widget _buildVsSeparator() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(child: Divider(color: Colors.grey[300])),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              'VS',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue,
-              ),
+            const SizedBox(height: 20),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.textPrimary,
+                  ),
             ),
-          ),
-          Expanded(child: Divider(color: Colors.grey[300])),
-        ],
+            const SizedBox(height: 8),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.textSecondary.withValues(alpha: 0.85),
+                    height: 1.4,
+                  ),
+            ),
+          ],
+        ),
       ),
     );
   }

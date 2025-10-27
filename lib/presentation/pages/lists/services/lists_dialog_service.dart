@@ -91,16 +91,20 @@ class ListsDialogService {
       if (context.mounted) {
         messenger.showSnackBar(
           SnackBar(
-            content: Text('Liste "$title" créée avec succès !'),
+            content: Text('Liste "$title" créée ✅'),
             backgroundColor: AppTheme.successColor,
           ),
+        );
+        Navigator.of(context).pushNamed(
+          '/list-detail',
+          arguments: {'list': newList},
         );
       }
     } catch (e) {
       if (context.mounted) {
         messenger.showSnackBar(
           SnackBar(
-            content: Text('Erreur lors de la création : $e'),
+            content: const Text('Impossible de créer la liste. Réessayez.'),
             backgroundColor: AppTheme.errorColor,
           ),
         );

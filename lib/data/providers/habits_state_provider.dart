@@ -66,12 +66,13 @@ class HabitsNotifier extends StateNotifier<HabitsState> {
   Future<void> addHabit(Habit habit) async {
     try {
       final repository = _ref.read(habitRepositoryProvider);
-      await repository.addHabit(habit);
+      await repository.saveHabit(habit);
 
       // Recharge les habitudes pour avoir l'état le plus récent
       await loadHabits();
     } catch (e) {
       state = state.copyWith(error: e.toString());
+      rethrow;
     }
   }
 
@@ -89,6 +90,7 @@ class HabitsNotifier extends StateNotifier<HabitsState> {
       );
     } catch (e) {
       state = state.copyWith(error: e.toString());
+      rethrow;
     }
   }
 
@@ -99,13 +101,16 @@ class HabitsNotifier extends StateNotifier<HabitsState> {
       await repository.updateHabit(habit);
 
       // Met à jour l'état local
-      final updatedHabits = state.habits.map((h) => h.id == habit.id ? habit : h).toList();
+      final updatedHabits = state.habits
+          .map((h) => h.id == habit.id ? habit : h)
+          .toList();
       state = state.copyWith(
         habits: updatedHabits,
         lastUpdated: DateTime.now(),
       );
     } catch (e) {
       state = state.copyWith(error: e.toString());
+      rethrow;
     }
   }
 

@@ -559,4 +559,80 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get continueLabel => 'Continuar';
+
+  @override
+  String get duelPriorityTitle => 'Modo Prioridad';
+
+  @override
+  String get duelPrioritySubtitle => '¿Qué tarea prefieres?';
+
+  @override
+  String get duelPriorityHint => 'Toca la tarjeta que deseas priorizar.';
+
+  @override
+  String get duelSkipAction => 'Saltar duelo';
+
+  @override
+  String get duelRandomAction => 'Aleatorio';
+
+  @override
+  String get duelShowElo => 'Mostrar Elo';
+
+  @override
+  String get duelHideElo => 'Ocultar Elo';
+
+  @override
+  String get duelModeLabel => 'Modo del duelo';
+
+  @override
+  String get duelModeWinner => 'Ganador';
+
+  @override
+  String get duelModeRanking => 'Clasificación';
+
+  @override
+  String get duelCardsPerRoundLabel => 'Cartas por ronda';
+
+  @override
+  String duelCardsPerRoundOption(int count) {
+    return '$count cartas';
+  }
+
+  @override
+  String get duelSubmitRanking => 'Guardar clasificación';
+
+  @override
+  String get duelPreferenceSaved => 'Preferencia guardada ✅';
+
+  @override
+  String duelRemainingDuels(int count) {
+    return '$count duelos restantes hoy';
+  }
+
+  @override
+  String get duelConfigureLists => 'Elegir listas para los duelos';
+
+  @override
+  String get duelNoAvailableLists => 'Ninguna lista disponible';
+
+  @override
+  String get duelNoAvailableListsForPrioritization =>
+      'Ninguna lista disponible para la priorización';
+
+  @override
+  String get duelListsUpdated => 'Listas de priorización actualizadas';
+
+  @override
+  String get duelNewDuel => 'Nuevo duelo';
+
+  @override
+  String get duelNotEnoughTasksTitle => 'No hay suficientes tareas';
+
+  @override
+  String get duelNotEnoughTasksMessage =>
+      'Añade al menos dos tareas para empezar a priorizar.';
+
+  @override
+  String get duelErrorMessage =>
+      'No se pudo cargar el duelo. Inténtalo de nuevo.';
 }

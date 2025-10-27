@@ -183,5 +183,43 @@
   "travel": "Viaje",
   "shopping": "Compras",
   "entertainment": "Entretenimiento",
-  "other": "Otro"
+  "other": "Otro",
+  "duelPriorityTitle": "Modo Prioridad",
+  "duelPrioritySubtitle": "¿Qué tarea prefieres?",
+  "duelPriorityHint": "Toca la tarjeta que deseas priorizar.",
+  "duelSkipAction": "Saltar duelo",
+  "duelRandomAction": "Aleatorio",
+  "duelShowElo": "Mostrar Elo",
+  "duelHideElo": "Ocultar Elo",
+  "duelModeLabel": "Modo del duelo",
+  "duelModeWinner": "Ganador",
+  "duelModeRanking": "Clasificación",
+  "duelCardsPerRoundLabel": "Cartas por ronda",
+  "duelCardsPerRoundOption": "{count} cartas",
+  "@duelCardsPerRoundOption": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "duelSubmitRanking": "Guardar clasificación",
+  "duelPreferenceSaved": "Preferencia guardada ✅",
+  "duelRemainingDuels": "{count} duelos restantes hoy",
+  "@duelRemainingDuels": {
+    "description": "Número de duelos restantes para el día",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "duelConfigureLists": "Elegir listas para los duelos",
+  "duelNoAvailableLists": "Ninguna lista disponible",
+  "duelNoAvailableListsForPrioritization": "Ninguna lista disponible para la priorización",
+  "duelListsUpdated": "Listas de priorización actualizadas",
+  "duelNewDuel": "Nuevo duelo",
+  "duelNotEnoughTasksTitle": "No hay suficientes tareas",
+  "duelNotEnoughTasksMessage": "Añade al menos dos tareas para empezar a priorizar.",
+  "duelErrorMessage": "No se pudo cargar el duelo. Inténtalo de nuevo."
 } 

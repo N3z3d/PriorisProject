@@ -1,19 +1,23 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:prioris/data/providers/lists_controller_provider.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
-import 'package:prioris/presentation/widgets/dialogs/bulk_add_dialog.dart';
-import 'package:prioris/presentation/widgets/buttons/premium_fab.dart';
-import 'package:prioris/presentation/theme/app_theme.dart';
-import 'package:prioris/presentation/pages/lists/controllers/lists_controller.dart';
-import 'package:prioris/data/providers/lists_controller_provider.dart';
+import 'package:prioris/presentation/pages/lists/models/task_sort_field.dart';
 import 'package:prioris/presentation/pages/lists/widgets/list_detail_header.dart';
-import 'package:prioris/presentation/pages/lists/widgets/list_search_bar.dart';
 import 'package:prioris/presentation/pages/lists/widgets/list_empty_state.dart';
-import 'package:prioris/presentation/pages/lists/widgets/list_item_card.dart';
+import 'package:prioris/presentation/pages/lists/widgets/list_contextual_fab.dart';
+import 'package:prioris/presentation/pages/lists/widgets/list_items_list_view.dart';
+import 'package:prioris/presentation/pages/lists/widgets/list_search_bar.dart';
+import 'package:prioris/presentation/pages/lists/widgets/list_sort_toolbar.dart';
+import 'package:prioris/presentation/theme/app_theme.dart';
+import 'package:prioris/presentation/widgets/dialogs/bulk_add_dialog.dart';
+import 'package:uuid/uuid.dart';
 
 /// Page de détail d'une liste personnalisée
-/// 
+///
 /// Affiche les éléments d'une liste avec la possibilité de:
 /// - Ajouter de nouveaux éléments
 /// - Modifier/supprimer des éléments existants
@@ -33,6 +37,17 @@ class ListDetailPage extends ConsumerStatefulWidget {
 
 class _ListDetailPageState extends ConsumerState<ListDetailPage> {
   String _searchQuery = '';
+  TaskSortField _sortField = TaskSortField.elo;
+  bool _isAscending = false;
+  late final int _baseRandomSeed;
+  late int _randomSeed;
+
+  @override
+  void initState() {
+    super.initState();
+    _baseRandomSeed = _normalizeSeed(widget.list.id.hashCode);
+    _randomSeed = _baseRandomSeed;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +55,7 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
     // Les repositories sont pré-initialisés donc pas de risque de null
     final listsState = ref.watch(listsControllerProvider);
     final currentList = listsState.findListById(widget.list.id);
-    
+
     // ARCHITECTURE FIX: Utiliser la liste de l'état ou celle passée en paramètre
     // Mais ne PAS déclencher de rechargement qui causait les pertes de données
     final effectiveList = currentList ?? widget.list;
@@ -86,7 +101,7 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
       children: [
         // Header avec statistiques
         ListDetailHeader(list: currentList),
-        
+
         // Barre de recherche
         Padding(
           padding: const EdgeInsets.all(16.0),
@@ -95,7 +110,7 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
             onSearchChanged: _updateSearchQuery,
           ),
         ),
-        
+
         // Liste des éléments
         Expanded(
           child: _buildItemsList(currentList),
@@ -106,71 +121,69 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
 
   /// Construit la liste des éléments
   Widget _buildItemsList(CustomList currentList) {
-    final items = _filterItems(currentList);
+    final filteredItems = _filterItems(currentList);
+    final syncingItems = ref.watch(
+      listsControllerProvider.select((state) => state.syncingItemIds),
+    );
 
-    if (items.isEmpty) {
+    if (filteredItems.isEmpty) {
       return ListEmptyState(
         searchQuery: _searchQuery,
       );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      itemCount: items.length,
-      itemBuilder: (context, index) {
-        return ListItemCard(
-          item: items[index],
-          onEdit: () => _showEditItemDialog(items[index]),
-          onDelete: () => _confirmDeleteItem(items[index]),
-        );
-      },
+    final sortedItems = _applySorting(filteredItems);
+
+    return Column(
+      children: [
+        ListSortToolbar(
+          sortField: _sortField,
+          isAscending: _isAscending,
+          itemCount: sortedItems.length,
+          onSortChanged: (field) {
+            setState(() {
+              _sortField = field;
+              if (field == TaskSortField.elo) {
+                _isAscending = false;
+              } else if (field == TaskSortField.random) {
+                _resetRandomSeed();
+              }
+            });
+          },
+          onToggleAscending: () {
+            setState(() {
+              _isAscending = !_isAscending;
+            });
+          },
+          onShuffleRequested: () => setState(_reshuffleRandomSeed),
+        ),
+        Expanded(
+          child: ListItemsListView(
+            items: sortedItems,
+            syncingItems: syncingItems,
+            onEdit: _showRenameItemDialog,
+            onDelete: _confirmDeleteItem,
+            onToggleCompletion: _toggleItemCompletion,
+            onMenuAction: _handleItemAction,
+          ),
+        ),
+      ],
     );
   }
 
   /// Construit le bouton d'action flottant avec design premium
   Widget _buildFloatingActionButton() {
-    final currentList = ref.watch(listByIdProvider(widget.list.id)) ?? widget.list;
-    final contextualText = _getContextualButtonText(currentList);
-    
-    return PremiumFAB(
-      heroTag: "list_detail_fab",
-      text: "Ajouter des tâches", // Texte par défaut
-      contextualText: contextualText, // Texte adapté au contexte
-      icon: Icons.add,
-      onPressed: _showBulkAddDialog,
-      backgroundColor: AppTheme.primaryColor,
-      enableAnimations: true,
-      enableHaptics: true,
-    );
-  }
-
-  /// Génère le texte contextuel selon l'état de la liste
-  String _getContextualButtonText(CustomList currentList) {
-    final itemCount = currentList.items.length;
+    final currentList =
+        ref.watch(listByIdProvider(widget.list.id)) ?? widget.list;
     final filteredItems = _filterItems(currentList);
-    
-    // Liste vide
-    if (itemCount == 0) {
-      return "Créer vos premiers éléments";
-    }
-    
-    // Recherche active avec résultats
-    if (_searchQuery.isNotEmpty && filteredItems.isNotEmpty) {
-      return "Ajouter à cette recherche";
-    }
-    
-    // Recherche active sans résultats
-    if (_searchQuery.isNotEmpty && filteredItems.isEmpty) {
-      return "Créer nouvel élément";
-    }
-    
-    // Liste avec peu d'éléments (< 3)
-    if (itemCount < 3) {
-      return "Ajouter plus d'éléments";
-    }
-    
-    // Liste normale avec plusieurs éléments
-    return "Ajouter de nouveaux éléments";
+
+    return ListContextualFab(
+      list: currentList,
+      baseLabel: "Ajouter des tâches",
+      searchQuery: _searchQuery,
+      filteredItems: filteredItems,
+      onPressed: _showBulkAddDialog,
+    );
   }
 
   /// Filtre les éléments selon la requête de recherche
@@ -191,7 +204,7 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
   /// Vérifie les correspondances de recherche
   bool _checkSearchMatches(ListItem item, String query) {
     return item.title.toLowerCase().contains(query) ||
-           item.description?.toLowerCase().contains(query) == true;
+        item.description?.toLowerCase().contains(query) == true;
   }
 
   /// Met à jour la requête de recherche
@@ -208,16 +221,19 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
       builder: (context) => BulkAddDialog(
         onSubmit: (itemTitles) {
           // Convertir les titres en ListItem
-          final items = itemTitles.map((title) => ListItem(
-            id: '', // L'ID sera généré par le controller
-            title: title,
-            listId: widget.list.id,
-            isCompleted: false,
-            createdAt: DateTime.now(),
-          )).toList();
+          final items = itemTitles
+              .map((title) => ListItem(
+                    id: '', // L'ID sera généré par le controller
+                    title: title,
+                    listId: widget.list.id,
+                    isCompleted: false,
+                    createdAt: DateTime.now(),
+                  ))
+              .toList();
 
-          ref.read(listsControllerProvider.notifier)
-             .addMultipleItemsToList(widget.list.id, items);
+          ref
+              .read(listsControllerProvider.notifier)
+              .addMultipleItemsToList(widget.list.id, items);
         },
       ),
     );
@@ -258,11 +274,6 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
     Navigator.of(context).pop(); // Retour à la page précédente
   }
 
-  /// Affiche le dialogue d'édition d'élément
-  void _showEditItemDialog(ListItem item) {
-    // Pending: Implémenter le dialogue d'édition d'élément
-  }
-
   /// Confirme la suppression d'un élément
   void _confirmDeleteItem(ListItem item) {
     showDialog(
@@ -289,9 +300,198 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
 
   /// Supprime un élément
   void _deleteItem(ListItem item) {
-    ref.read(listsControllerProvider.notifier)
-       .removeItemFromList(widget.list.id, item.id);
+    ref
+        .read(listsControllerProvider.notifier)
+        .removeItemFromList(widget.list.id, item.id);
   }
 
+  Future<void> _toggleItemCompletion(ListItem item) async {
+    final updatedItem = item.isCompleted
+        ? item.copyWith(
+            isCompleted: false,
+            forceCompletedAtNull: true,
+          )
+        : item.copyWith(
+            isCompleted: true,
+            completedAt: DateTime.now(),
+          );
 
+    await ref
+        .read(listsControllerProvider.notifier)
+        .updateListItem(widget.list.id, updatedItem);
+  }
+
+  List<ListItem> _applySorting(List<ListItem> items) {
+    final sorted = [...items];
+    switch (_sortField) {
+      case TaskSortField.elo:
+        sorted.sort((a, b) => _isAscending
+            ? a.eloScore.compareTo(b.eloScore)
+            : b.eloScore.compareTo(a.eloScore));
+        break;
+      case TaskSortField.name:
+        sorted.sort((a, b) => _isAscending
+            ? a.title.toLowerCase().compareTo(b.title.toLowerCase())
+            : b.title.toLowerCase().compareTo(a.title.toLowerCase()));
+        break;
+      case TaskSortField.random:
+        final random = Random(_randomSeed);
+        for (var i = sorted.length - 1; i > 0; i--) {
+          final j = random.nextInt(i + 1);
+          final tmp = sorted[i];
+          sorted[i] = sorted[j];
+          sorted[j] = tmp;
+        }
+        break;
+    }
+    return sorted;
+  }
+
+  void _handleItemAction(String action, ListItem item) {
+    switch (action) {
+      case 'rename':
+        _showRenameItemDialog(item);
+        break;
+      case 'move':
+        _showMoveItemDialog(item);
+        break;
+      case 'duplicate':
+        _duplicateItem(item);
+        break;
+    }
+  }
+
+  int _normalizeSeed(int rawSeed) {
+    final normalized = rawSeed & 0x7fffffff;
+    return normalized == 0 ? 1 : normalized;
+  }
+
+  void _resetRandomSeed() {
+    _randomSeed = _baseRandomSeed;
+  }
+
+  void _reshuffleRandomSeed() {
+    final salt = DateTime.now().microsecondsSinceEpoch & 0x7fffffff;
+    _randomSeed = _normalizeSeed(_baseRandomSeed ^ salt);
+  }
+
+  Future<void> _showRenameItemDialog(ListItem item) async {
+    final controller = TextEditingController(text: item.title);
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Renommer la tâche'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            labelText: 'Nom de la tâche',
+          ),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(controller.text.trim()),
+            child: const Text('Enregistrer'),
+          ),
+        ],
+      ),
+    );
+
+    if (result == null || result.isEmpty || result == item.title) return;
+
+    final updated = item.copyWith(title: result);
+    await ref
+        .read(listsControllerProvider.notifier)
+        .updateListItem(widget.list.id, updated);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tâche renommée ✅')),
+      );
+    }
+  }
+
+  Future<void> _showMoveItemDialog(ListItem item) async {
+    final listsState = ref.read(listsControllerProvider);
+    final available =
+        listsState.lists.where((list) => list.id != widget.list.id).toList();
+
+    if (available.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Aucune autre liste disponible')),
+      );
+      return;
+    }
+
+    String targetId = available.first.id;
+    final selected = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Déplacer la tâche'),
+        content: DropdownButtonFormField<String>(
+          value: targetId,
+          decoration: const InputDecoration(
+            labelText: 'Liste de destination',
+          ),
+          items: available
+              .map(
+                (list) => DropdownMenuItem(
+                  value: list.id,
+                  child: Text(list.name),
+                ),
+              )
+              .toList(),
+          onChanged: (value) {
+            if (value != null) {
+              targetId = value;
+            }
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(targetId),
+            child: const Text('Déplacer'),
+          ),
+        ],
+      ),
+    );
+
+    if (selected == null || selected == widget.list.id) return;
+
+    final controller = ref.read(listsControllerProvider.notifier);
+    final updated = item.copyWith(listId: selected, forceCompletedAtNull: true);
+    await controller.removeListItem(widget.list.id, item.id);
+    await controller.addListItem(selected, updated);
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tâche déplacée ✅')),
+      );
+    }
+  }
+
+  Future<void> _duplicateItem(ListItem item) async {
+    final controller = ref.read(listsControllerProvider.notifier);
+    final duplicated = item.copyWith(
+      id: const Uuid().v4(),
+      title: '${item.title} (copie)',
+      isCompleted: false,
+      forceCompletedAtNull: true,
+    );
+    await controller.addListItem(widget.list.id, duplicated);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tâche dupliquée ✅')),
+      );
+    }
+  }
 }
+

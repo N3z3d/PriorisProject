@@ -1,234 +1,284 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/domain/models/core/entities/task.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
-import 'package:prioris/presentation/theme/border_radius_tokens.dart';
-import 'package:prioris/presentation/theme/glassmorphism.dart';
-import 'package:prioris/presentation/widgets/common/displays/premium_card.dart';
 
-/// Widget représentant une carte de tâche dans le système de duel ELO
-/// 
-/// Cette carte affiche une tâche avec son titre, description, score ELO
-/// et permet à l'utilisateur de la sélectionner comme prioritaire ou de l'éditer.
-class DuelTaskCard extends StatelessWidget {
-  /// La tâche à afficher
+/// Interactive card used in the duel grid with hover/press feedback.
+class DuelTaskCard extends StatefulWidget {
   final Task task;
-  
-  /// Callback appelé lorsque l'utilisateur sélectionne cette tâche
   final VoidCallback onTap;
-  
-  /// Callback appelé lorsque l'utilisateur veut éditer cette tâche
-  final VoidCallback? onEdit;
-  
-  /// Indique si les scores ELO doivent être masqués
   final bool hideElo;
+  final VoidCallback? onEdit;
 
   const DuelTaskCard({
     super.key,
     required this.task,
     required this.onTap,
-    this.onEdit,
     required this.hideElo,
+    this.onEdit,
+  });
+
+  @override
+  State<DuelTaskCard> createState() => _DuelTaskCardState();
+}
+
+class _DuelTaskCardState extends State<DuelTaskCard> {
+  bool _isHovered = false;
+  bool _isPressed = false;
+
+  void _setHovered(bool value) {
+    if (_isHovered == value) return;
+    setState(() => _isHovered = value);
+  }
+
+  void _setPressed(bool value) {
+    if (_isPressed == value) return;
+    setState(() => _isPressed = value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scale = _isPressed ? 0.98 : (_isHovered ? 1.02 : 1.0);
+    final shadowOpacity = _isHovered ? 0.14 : 0.08;
+
+    return MouseRegion(
+      onEnter: (_) => _setHovered(true),
+      onExit: (_) {
+        _setHovered(false);
+        _setPressed(false);
+      },
+      child: GestureDetector(
+        onTap: widget.onTap,
+        onTapDown: (_) => _setPressed(true),
+        onTapUp: (_) => _setPressed(false),
+        onTapCancel: () => _setPressed(false),
+        child: AnimatedScale(
+          scale: scale,
+          duration: const Duration(milliseconds: 120),
+          curve: Curves.easeOut,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 120),
+            curve: Curves.easeOut,
+            constraints: const BoxConstraints(
+              maxWidth: 420,
+              minWidth: 280,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+            decoration: BoxDecoration(
+              color: AppTheme.surfaceColor,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: _isHovered
+                    ? AppTheme.primaryColor.withValues(alpha: 0.25)
+                    : AppTheme.dividerColor.withValues(alpha: 0.9),
+                width: 1.2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: shadowOpacity),
+                  blurRadius: _isHovered ? 28 : 18,
+                  offset: const Offset(0, 18),
+                ),
+              ],
+            ),
+            child: _CardContent(
+              task: widget.task,
+              hideElo: widget.hideElo,
+              onEdit: widget.onEdit,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CardContent extends StatelessWidget {
+  final Task task;
+  final bool hideElo;
+  final VoidCallback? onEdit;
+
+  const _CardContent({
+    required this.task,
+    required this.hideElo,
+    required this.onEdit,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: PremiumCard(
-        elevation: 4,
-        padding: EdgeInsets.zero,
-        child: Stack(
-          children: [
-            // Contenu principal de la carte
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildTaskHeader(context),
-                  _buildTaskDescription(context),
-                  const SizedBox(height: 12),
-                  _buildTaskChips(),
-                ],
-              ),
-            ),
-            // Bouton d'édition en haut à droite
-            if (onEdit != null)
-              Positioned(
-                top: 8,
-                right: 8,
-                child: _buildEditButton(),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
+    final theme = Theme.of(context);
 
-  /// Construit le bouton d'édition avec glassmorphisme
-  Widget _buildEditButton() {
-    return Glassmorphism.glassButton(
-      onPressed: onEdit!,
-      color: AppTheme.textSecondary,
-      blur: 8.0,
-      opacity: 0.1,
-      padding: const EdgeInsets.all(8),
-      borderRadius: BorderRadius.circular(20),
-      child: const Icon(
-        Icons.edit,
-        size: 16,
-        color: AppTheme.textSecondary,
-      ),
-    );
-  }
-
-  /// Construit l'en-tête de la carte avec titre et score ELO
-  Widget _buildTaskHeader(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Expanded(
-          child: _buildTaskTitle(context),
+        if (onEdit != null)
+          Align(
+            alignment: Alignment.topRight,
+            child: IconButton(
+              onPressed: onEdit,
+              padding: EdgeInsets.zero,
+              splashRadius: 20,
+              tooltip: AppLocalizations.of(context)?.edit ?? 'Modifier',
+              icon: const Icon(Icons.edit, size: 20),
+            ),
+          ),
+        if (!hideElo) ...[
+          _EloBadge(score: task.eloScore),
+          const SizedBox(height: 16),
+        ],
+        Text(
+          task.title,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: AppTheme.textPrimary,
+            height: 1.2,
+          ),
         ),
-        if (!hideElo) _buildEloScoreBadge(),
+        if (_hasDescription) ...[
+          const SizedBox(height: 12),
+          Text(
+            task.description!.trim(),
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: AppTheme.textSecondary.withValues(alpha: 0.85),
+              height: 1.4,
+            ),
+          ),
+        ],
+        const SizedBox(height: 20),
+        _MetadataSection(task: task),
       ],
     );
   }
 
-  /// Construit le titre de la tâche
-  Widget _buildTaskTitle(BuildContext context) {
-    return Text(
-      task.title,
-      style: Theme.of(context).textTheme.headlineSmall,
-      textAlign: TextAlign.center,
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
-    );
-  }
+  bool get _hasDescription =>
+      task.description != null && task.description!.trim().isNotEmpty;
+}
 
-  /// Construit la description de la tâche si elle existe
-  Widget _buildTaskDescription(BuildContext context) {
-    if (task.description == null || task.description!.isEmpty) {
+class _MetadataSection extends StatelessWidget {
+  final Task task;
+
+  const _MetadataSection({required this.task});
+
+  @override
+  Widget build(BuildContext context) {
+    final chips = <Widget>[];
+
+    if (task.category != null && task.category!.trim().isNotEmpty) {
+      chips.add(_MetadataChip(
+        label: task.category!.trim(),
+        color: AppTheme.primaryColor,
+        background: AppTheme.primaryColor.withValues(alpha: 0.1),
+      ));
+    }
+
+    if (task.dueDate != null) {
+      chips.add(_MetadataChip(
+        label: _formatRelativeDate(task.dueDate!),
+        color: task.dueDate!.isBefore(DateTime.now())
+            ? AppTheme.errorColor
+            : AppTheme.accentColor,
+        background: task.dueDate!.isBefore(DateTime.now())
+            ? AppTheme.errorColor.withValues(alpha: 0.12)
+            : AppTheme.accentColor.withValues(alpha: 0.12),
+      ));
+    }
+
+    if (chips.isEmpty) {
       return const SizedBox.shrink();
     }
-    
-    return Padding(
-      padding: const EdgeInsets.only(top: 6),
-      child: Text(
-        task.description!,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-        ),
-        textAlign: TextAlign.center,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-      ),
-    );
-  }
 
-  /// Construit les chips de catégorie et date d'échéance
-  Widget _buildTaskChips() {
     return Wrap(
-      spacing: 8,
-      runSpacing: 4,
       alignment: WrapAlignment.center,
-      children: [
-        if (task.category != null)
-          _buildCategoryChip(task.category!),
-        if (task.dueDate != null)
-          _buildDueDateChip(task.dueDate!),
-      ],
+      spacing: 8,
+      runSpacing: 6,
+      children: chips,
     );
   }
 
-  /// Construit le badge du score ELO
-  Widget _buildEloScoreBadge() {
-    final scoreColor = _getScoreColor(task.eloScore);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: scoreColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadiusTokens.card,
-        border: Border.all(color: scoreColor.withValues(alpha: 0.3)),
-      ),
-      child: Text(
-        task.eloScore.toStringAsFixed(0),
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          color: scoreColor,
-          fontSize: 12,
-        ),
-      ),
-    );
-  }
-
-  /// Détermine la couleur du score ELO
-  Color _getScoreColor(double score) {
-    if (score >= 1400) {
-      return AppTheme.secondaryColor;
-    } else if (score >= 1200) {
-      return AppTheme.accentColor;
-    } else {
-      return AppTheme.grey400;
-    }
-  }
-
-  /// Construit un chip de catégorie
-  Widget _buildCategoryChip(String category) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: AppTheme.primaryColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadiusTokens.card,
-      ),
-      child: Text(
-        category,
-        style: TextStyle(
-          fontSize: 12,
-          color: AppTheme.primaryColor,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
-  }
-
-  /// Construit un chip de date d'échéance
-  Widget _buildDueDateChip(DateTime dueDate) {
-    final isOverdue = dueDate.isBefore(DateTime.now());
-    final color = isOverdue ? Colors.red : AppTheme.accentColor;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadiusTokens.card,
-      ),
-      child: Text(
-        _formatDate(dueDate),
-        style: TextStyle(
-          fontSize: 12,
-          color: color,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
-  }
-
-  /// Formate une date pour affichage
-  String _formatDate(DateTime date) {
+  String _formatRelativeDate(DateTime date) {
     final now = DateTime.now();
     final difference = date.difference(now).inDays;
-    
-    if (difference == 0) {
-      return 'Aujourd\'hui';
-    } else if (difference == 1) {
-      return 'Demain';
-    } else if (difference > 0) {
-      return 'Dans $difference j';
-    } else {
-      return 'Il y a ${-difference} j';
-    }
+
+    if (difference == 0) return 'Aujourd\'hui';
+    if (difference == 1) return 'Demain';
+    if (difference > 1) return 'Dans $difference j';
+    if (difference == -1) return 'Hier';
+    if (difference < -1) return 'Il y a ${difference.abs()} j';
+
+    return DateFormat.yMMMd().format(date);
   }
-} 
+}
+
+class _MetadataChip extends StatelessWidget {
+  final String label;
+  final Color color;
+  final Color background;
+
+  const _MetadataChip({
+    required this.label,
+    required this.color,
+    required this.background,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.2,
+            ),
+      ),
+    );
+  }
+}
+
+class _EloBadge extends StatelessWidget {
+  final double score;
+
+  const _EloBadge({required this.score});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _resolveColor(score);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Text(
+        score.toStringAsFixed(0),
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: color,
+              letterSpacing: 0.5,
+            ),
+      ),
+    );
+  }
+
+  static Color _resolveColor(double score) {
+    if (score >= 1400) {
+      return AppTheme.secondaryColor;
+    }
+    if (score >= 1200) {
+      return AppTheme.accentColor;
+    }
+    return AppTheme.grey400;
+  }
+}

@@ -1,4 +1,4 @@
-﻿import 'package:prioris/domain/models/core/entities/custom_list.dart';
+import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
 import '../../models/lists_state.dart';
@@ -13,7 +13,10 @@ class ListsStateManager {
   }
 
   ListsState clearError(ListsState state) {
-    return state.withoutError();
+    return state.copyWith(
+      error: null,
+      isLoading: false,
+    );
   }
 
   ListsState setError(ListsState state, String message) {
@@ -21,12 +24,7 @@ class ListsStateManager {
   }
 
   ListsState replaceLists(ListsState state, List<CustomList> lists) {
-    return state.copyWith(
-      lists: lists,
-      filteredLists: lists,
-      isLoading: false,
-      error: null,
-    );
+    return _withLists(state, lists).copyWith(filteredLists: lists);
   }
 
   ListsState updateFilteredLists(ListsState state, List<CustomList> filtered) {
@@ -35,37 +33,45 @@ class ListsStateManager {
 
   ListsState addList(ListsState state, CustomList list) {
     final updated = [...state.lists, list];
-    return state.copyWith(lists: updated);
+    return _withLists(state, updated);
   }
 
   ListsState updateList(ListsState state, CustomList list) {
     final updated = state.lists
         .map((existing) => existing.id == list.id ? list : existing)
         .toList();
-    return state.copyWith(lists: updated);
+    return _withLists(state, updated);
   }
 
   ListsState removeList(ListsState state, String listId) {
     final updated = state.lists.where((list) => list.id != listId).toList();
-    return state.copyWith(lists: updated);
+    return _withLists(state, updated);
   }
 
   ListsState addItem(ListsState state, String listId, ListItem item) {
-    return _transformItems(state, listId, (items) => [...items, item]);
+    return _transformItems(
+      state,
+      listId,
+      (items) => [...items, item],
+    );
   }
 
   ListsState addItems(ListsState state, String listId, List<ListItem> items) {
-    return _transformItems(state, listId, (existing) => [...existing, ...items]);
+    return _transformItems(
+        state, listId, (existing) => [...existing, ...items]);
   }
 
   ListsState updateItem(ListsState state, String listId, ListItem item) {
     return _transformItems(state, listId, (items) {
-      return items.map((current) => current.id == item.id ? item : current).toList();
+      return items
+          .map((current) => current.id == item.id ? item : current)
+          .toList();
     });
   }
 
   ListsState removeItem(ListsState state, String listId, String itemId) {
-    return _transformItems(state, listId, (items) => items.where((item) => item.id != itemId).toList());
+    return _transformItems(state, listId,
+        (items) => items.where((item) => item.id != itemId).toList());
   }
 
   ListsState updateFilters(
@@ -89,6 +95,34 @@ class ListsStateManager {
 
   ListsState clearAll() => const ListsState.initial();
 
+  ListsState setItemSyncing(
+    ListsState state,
+    String itemId, {
+    required bool isSyncing,
+  }) {
+    final updated = Set<String>.from(state.syncingItemIds);
+    if (isSyncing) {
+      updated.add(itemId);
+    } else {
+      updated.remove(itemId);
+    }
+    return state.copyWith(syncingItemIds: updated);
+  }
+
+  ListsState setMultipleItemsSyncing(
+    ListsState state,
+    Set<String> itemIds, {
+    required bool isSyncing,
+  }) {
+    final updated = Set<String>.from(state.syncingItemIds);
+    if (isSyncing) {
+      updated.addAll(itemIds);
+    } else {
+      updated.removeAll(itemIds);
+    }
+    return state.copyWith(syncingItemIds: updated);
+  }
+
   ListsState _transformItems(
     ListsState state,
     String listId,
@@ -100,6 +134,14 @@ class ListsStateManager {
       return list.copyWith(items: newItems);
     }).toList();
 
-    return state.copyWith(lists: updated);
+    return _withLists(state, updated);
+  }
+
+  ListsState _withLists(ListsState state, List<CustomList> lists) {
+    return state.copyWith(
+      lists: lists,
+      isLoading: false,
+      error: null,
+    );
   }
 }

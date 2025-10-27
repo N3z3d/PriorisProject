@@ -186,4 +186,45 @@
   "shopping": "Einkaufen",
   "entertainment": "Unterhaltung",
   "other": "Andere"
-} 
+,
+
+  "duelPriorityTitle": "Prioritätsmodus",
+  "duelPrioritySubtitle": "Welche Aufgabe bevorzugst du?",
+  "duelPriorityHint": "Tippe auf die Karte, die du priorisieren möchtest.",
+  "duelSkipAction": "Duell überspringen",
+  "duelRandomAction": "Zufällig",
+  "duelShowElo": "Elo anzeigen",
+  "duelHideElo": "Elo verbergen",
+  "duelModeLabel": "Duellmodus",
+  "duelModeWinner": "Gewinner",
+  "duelModeRanking": "Rangliste",
+  "duelCardsPerRoundLabel": "Karten pro Runde",
+  "duelCardsPerRoundOption": "{count} Karten",
+  "@duelCardsPerRoundOption": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "duelSubmitRanking": "Rangliste speichern",
+  "duelPreferenceSaved": "Präferenz gespeichert ✅",
+  "duelRemainingDuels": "{count} Duelle heute übrig",
+  "@duelRemainingDuels": {
+    "description": "Anzahl der verbleibenden Duelle für den Tag",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "duelConfigureLists": "Listen für Duelle auswählen",
+  "duelNoAvailableLists": "Keine Liste verfügbar",
+  "duelNoAvailableListsForPrioritization": "Keine Liste für die Priorisierung verfügbar",
+  "duelListsUpdated": "Priorisierungslisten aktualisiert",
+  "duelNewDuel": "Neues Duell",
+  "duelNotEnoughTasksTitle": "Nicht genügend Aufgaben",
+  "duelNotEnoughTasksMessage": "Füge mindestens zwei Aufgaben hinzu, um zu priorisieren.",
+  "duelErrorMessage": "Duell konnte nicht geladen werden. Bitte erneut versuchen."
+
+}
