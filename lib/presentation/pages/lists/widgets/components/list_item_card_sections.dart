@@ -162,7 +162,7 @@ class _MetadataRow extends StatelessWidget {
             icon: Icons.calendar_today,
             label: item.createdAt != null
                 ? '${item.createdAt!.day}/${item.createdAt!.month}/${item.createdAt!.year}'
-                : 'Non datée',
+                : 'Non datÃ©e',
           ),
         ],
       ),
