@@ -7,6 +7,7 @@ import 'package:prioris/presentation/pages/duel/widgets/components/priority_duel
 import 'package:prioris/presentation/pages/duel/widgets/components/priority_duel_instruction.dart';
 import 'package:prioris/presentation/pages/duel/widgets/components/priority_duel_settings_bar.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
+import 'package:prioris/presentation/widgets/common/headers/unified_page_header.dart';
 
 /// New priority duel experience with centred grid and action bar.
 class PriorityDuelView extends StatefulWidget {
@@ -73,24 +74,44 @@ class _PriorityDuelViewState extends State<PriorityDuelView> {
     final localized = AppLocalizations.of(context)!;
 
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildSettingsBar(),
-            const SizedBox(height: 24),
-            PriorityDuelInstruction(mode: widget.mode),
-            const SizedBox(height: 16),
-            Expanded(child: _buildArena()),
-            const SizedBox(height: 24),
-            _buildActionBar(),
-            const SizedBox(height: 8),
-            if (widget.remainingDuelsToday != null)
-              _buildRemainingDuels(localized),
-          ],
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildPageHeader(),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildSettingsBar(),
+                  const SizedBox(height: 24),
+                  PriorityDuelInstruction(mode: widget.mode),
+                  const SizedBox(height: 16),
+                  Expanded(child: _buildArena()),
+                  const SizedBox(height: 24),
+                  _buildActionBar(),
+                  const SizedBox(height: 8),
+                  if (widget.remainingDuelsToday != null)
+                    _buildRemainingDuels(localized),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildPageHeader() {
+    final modeLabel = widget.mode == DuelMode.winner ? 'Vainqueur' : 'Classement';
+    final cardsLabel = '${widget.tasks.length} tâches à comparer';
+
+    return UnifiedPageHeader(
+      icon: Icons.psychology,
+      title: 'Priorisez vos tâches en duel',
+      subtitle: '$modeLabel · $cardsLabel',
+      iconColor: AppTheme.accentColor,
     );
   }
 

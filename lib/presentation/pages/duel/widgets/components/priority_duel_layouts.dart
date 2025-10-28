@@ -3,7 +3,11 @@ import 'package:prioris/domain/models/core/entities/task.dart';
 import 'package:prioris/presentation/pages/duel/widgets/duel_task_card.dart';
 import 'package:prioris/presentation/pages/duel/widgets/components/priority_duel_arena.dart';
 
-/// Layout pour un duel à 2 cartes avec badge VS
+/// Layout pour un duel à 2 cartes avec badge VS strictement centré
+///
+/// Responsive:
+/// - Mobile (<720px): Vertical (1 carte/ligne), VS entre les cartes
+/// - Desktop (≥720px): Horizontal avec VS parfaitement centré
 class DuelTwoCardsLayout extends StatelessWidget {
   final List<Task> tasks;
   final bool hideEloScores;
@@ -20,19 +24,57 @@ class DuelTwoCardsLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final spacing = constraints.maxWidth < 720 ? 20.0 : 32.0;
-        return Wrap(
-          spacing: spacing,
-          runSpacing: spacing,
-          alignment: WrapAlignment.center,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            _buildCard(tasks[0]),
-            const PriorityVsBadge(),
-            _buildCard(tasks[1]),
-          ],
-        );
+        if (constraints.maxWidth < 720) {
+          return _buildVerticalLayout();
+        }
+        return _buildHorizontalLayout();
       },
+    );
+  }
+
+  /// Layout vertical pour mobile (1 carte par ligne)
+  Widget _buildVerticalLayout() {
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _buildCard(tasks[0]),
+          const SizedBox(height: 24),
+          const Center(child: PriorityVsBadge()),
+          const SizedBox(height: 24),
+          _buildCard(tasks[1]),
+        ],
+      ),
+    );
+  }
+
+  /// Layout horizontal pour desktop avec VS parfaitement centré
+  Widget _buildHorizontalLayout() {
+    return Center(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Flexible(
+            flex: 1,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: _buildCard(tasks[0]),
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 32),
+            child: PriorityVsBadge(),
+          ),
+          Flexible(
+            flex: 1,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: _buildCard(tasks[1]),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -48,6 +90,11 @@ class DuelTwoCardsLayout extends StatelessWidget {
 }
 
 /// Layout pour un duel à 3 cartes (responsive)
+///
+/// Responsive:
+/// - Mobile (<720px): Vertical (1 carte/ligne)
+/// - Tablette (720-1024px): Horizontal wrap (2 puis 1)
+/// - Desktop (≥1024px): Horizontal (3 cartes)
 class DuelThreeCardsLayout extends StatelessWidget {
   final List<Task> tasks;
   final bool hideEloScores;
@@ -64,33 +111,58 @@ class DuelThreeCardsLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isNarrow = constraints.maxWidth < 720;
-        if (isNarrow) {
+        if (constraints.maxWidth < 720) {
+          // Mobile: 1 carte/ligne
           return _buildVerticalLayout();
+        } else if (constraints.maxWidth < 1024) {
+          // Tablette: 2 cartes/ligne
+          return _buildTabletLayout();
+        } else {
+          // Desktop: 3 cartes/ligne
+          return _buildDesktopLayout();
         }
-        return _buildHorizontalLayout();
       },
     );
   }
 
-  Widget _buildHorizontalLayout() {
-    return Wrap(
-      spacing: 24,
-      runSpacing: 24,
-      alignment: WrapAlignment.center,
-      children: tasks.map(_buildCard).toList(),
+  Widget _buildVerticalLayout() {
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          for (int i = 0; i < tasks.length; i++) ...[
+            _buildCard(tasks[i]),
+            if (i < tasks.length - 1) const SizedBox(height: 20),
+          ],
+        ],
+      ),
     );
   }
 
-  Widget _buildVerticalLayout() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        for (int i = 0; i < tasks.length; i++) ...[
-          _buildCard(tasks[i]),
-          if (i < tasks.length - 1) const SizedBox(height: 20),
-        ],
-      ],
+  Widget _buildTabletLayout() {
+    return SingleChildScrollView(
+      child: Wrap(
+        spacing: 20,
+        runSpacing: 20,
+        alignment: WrapAlignment.center,
+        children: tasks.map(_buildCard).toList(),
+      ),
+    );
+  }
+
+  Widget _buildDesktopLayout() {
+    return Center(
+      child: Wrap(
+        spacing: 24,
+        runSpacing: 24,
+        alignment: WrapAlignment.center,
+        children: tasks.map((task) {
+          return ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 380),
+            child: _buildCard(task),
+          );
+        }).toList(),
+      ),
     );
   }
 
@@ -105,7 +177,12 @@ class DuelThreeCardsLayout extends StatelessWidget {
   }
 }
 
-/// Layout pour un duel à 4 cartes (grille 2×2)
+/// Layout pour un duel à 4 cartes (grille responsive)
+///
+/// Responsive:
+/// - Mobile (<720px): Vertical (1 carte/ligne)
+/// - Tablette (720-1024px): Grille 2×2
+/// - Desktop (≥1024px): Grille 2×2 avec max width
 class DuelFourCardsLayout extends StatelessWidget {
   final List<Task> tasks;
   final bool hideEloScores;
@@ -122,17 +199,46 @@ class DuelFourCardsLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final maxCardWidth = (constraints.maxWidth - 32) / 2;
-        return GridView.count(
+        if (constraints.maxWidth < 720) {
+          // Mobile: 1 carte/ligne
+          return _buildVerticalLayout();
+        } else {
+          // Tablette & Desktop: Grille 2×2
+          return _buildGridLayout(constraints);
+        }
+      },
+    );
+  }
+
+  Widget _buildVerticalLayout() {
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          for (int i = 0; i < tasks.length; i++) ...[
+            _buildCard(tasks[i]),
+            if (i < tasks.length - 1) const SizedBox(height: 20),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGridLayout(BoxConstraints constraints) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 900),
+        child: GridView.count(
           crossAxisCount: 2,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          childAspectRatio: 0.8,
+          mainAxisSpacing: 20,
+          crossAxisSpacing: 20,
+          childAspectRatio: 0.85,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(16),
           children: tasks.map(_buildCard).toList(),
-        );
-      },
+        ),
+      ),
     );
   }
 

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/data/providers/habits_state_provider.dart';
 import 'package:prioris/presentation/pages/home_page.dart';
+import 'package:prioris/presentation/widgets/common/headers/unified_page_header.dart';
 
 /// Page Insights refactorée selon les specs UX
 /// - Tabs: "Aperçu | Tendances" (pas "Habitudes | Statistiques")
@@ -34,13 +35,27 @@ class _InsightsPageState extends ConsumerState<InsightsPage>
 
   @override
   Widget build(BuildContext context) {
+    final habits = ref.watch(reactiveHabitsProvider);
+
     return Column(
       children: [
+        _buildPageHeader(habits.length),
         _buildTabBar(),
         Expanded(
           child: _buildTabBarView(),
         ),
       ],
+    );
+  }
+
+  Widget _buildPageHeader(int habitCount) {
+    return UnifiedPageHeader(
+      icon: Icons.insights,
+      title: 'Analysez vos progrès',
+      subtitle: habitCount > 0
+          ? 'Aperçu et tendances de vos $habitCount habitudes'
+          : 'Créez des habitudes pour voir vos statistiques',
+      iconColor: AppTheme.secondaryColor,
     );
   }
 
