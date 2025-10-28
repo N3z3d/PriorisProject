@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:prioris/domain/core/value_objects/duel_settings.dart';
 import 'package:prioris/domain/models/core/entities/task.dart';
 import 'package:prioris/presentation/pages/duel/widgets/duel_task_card.dart';
+import 'package:prioris/presentation/pages/duel/widgets/components/priority_duel_layouts.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
+import 'package:prioris/presentation/widgets/common/elo_badge.dart';
 
 class PriorityDuelArena extends StatelessWidget {
   final DuelMode mode;
@@ -50,33 +52,46 @@ class PriorityWinnerArena extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primary = tasks[0];
-    final secondary = tasks[1];
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final spacing = constraints.maxWidth < 720 ? 20.0 : 32.0;
-        return Wrap(
-          spacing: spacing,
-          runSpacing: spacing,
-          alignment: WrapAlignment.center,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            _buildCandidate(primary, secondary),
-            const PriorityVsBadge(),
-            _buildCandidate(secondary, primary),
-          ],
-        );
-      },
-    );
+    return _buildLayoutForCardCount();
   }
 
-  Widget _buildCandidate(Task task, Task opponent) {
-    return DuelTaskCard(
-      key: ValueKey('priority-duel-card-${task.id}'),
-      task: task,
-      hideElo: hideEloScores,
-      onTap: () => onSelectTask(task, opponent),
-    );
+  Widget _buildLayoutForCardCount() {
+    // Adapter pour la nouvelle signature (winner + losers)
+    Future<void> handleWinnerSelection(Task winner, List<Task> losers) async {
+      // Pour compatibilité: on utilise le premier perdant
+      // Le controller gérera les comparaisons multiples si nécessaire
+      if (losers.isNotEmpty) {
+        await onSelectTask(winner, losers.first);
+      }
+    }
+
+    switch (tasks.length) {
+      case 2:
+        return DuelTwoCardsLayout(
+          tasks: tasks,
+          hideEloScores: hideEloScores,
+          onSelectWinner: handleWinnerSelection,
+        );
+      case 3:
+        return DuelThreeCardsLayout(
+          tasks: tasks,
+          hideEloScores: hideEloScores,
+          onSelectWinner: handleWinnerSelection,
+        );
+      case 4:
+        return DuelFourCardsLayout(
+          tasks: tasks,
+          hideEloScores: hideEloScores,
+          onSelectWinner: handleWinnerSelection,
+        );
+      default:
+        // Fallback: utilise layout 3 cartes avec les premières tâches
+        return DuelThreeCardsLayout(
+          tasks: tasks.take(3).toList(),
+          hideEloScores: hideEloScores,
+          onSelectWinner: handleWinnerSelection,
+        );
+    }
   }
 }
 
@@ -126,12 +141,7 @@ class PriorityRankingArena extends StatelessWidget {
               ),
               subtitle: hideEloScores
                   ? null
-                  : Text(
-                      'ELO ${task.eloScore.toStringAsFixed(0)}',
-                      style: textTheme.bodySmall?.copyWith(
-                        color: AppTheme.textSecondary,
-                      ),
-                    ),
+                  : EloBadge(score: task.eloScore, compact: true),
               trailing: ReorderableDragStartListener(
                 index: index,
                 child: const Icon(Icons.drag_handle_rounded),

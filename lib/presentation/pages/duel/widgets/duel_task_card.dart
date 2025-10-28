@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/domain/models/core/entities/task.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
+import 'package:prioris/presentation/widgets/common/elo_badge.dart';
 
 /// Interactive card used in the duel grid with hover/press feedback.
 class DuelTaskCard extends StatefulWidget {
@@ -125,28 +126,36 @@ class _CardContent extends StatelessWidget {
             ),
           ),
         if (!hideElo) ...[
-          _EloBadge(score: task.eloScore),
+          EloBadge(score: task.eloScore),
           const SizedBox(height: 16),
         ],
-        Text(
-          task.title,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: AppTheme.textPrimary,
-            height: 1.2,
+        Tooltip(
+          message: task.title,
+          child: Text(
+            task.title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: AppTheme.textPrimary,
+              height: 1.2,
+            ),
           ),
         ),
         if (_hasDescription) ...[
           const SizedBox(height: 12),
-          Text(
-            task.description!.trim(),
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: AppTheme.textSecondary.withValues(alpha: 0.85),
-              height: 1.4,
+          Tooltip(
+            message: task.description!.trim(),
+            child: Text(
+              task.description!.trim(),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: AppTheme.textSecondary.withValues(alpha: 0.85),
+                height: 1.4,
+              ),
             ),
           ),
         ],
@@ -246,39 +255,3 @@ class _MetadataChip extends StatelessWidget {
   }
 }
 
-class _EloBadge extends StatelessWidget {
-  final double score;
-
-  const _EloBadge({required this.score});
-
-  @override
-  Widget build(BuildContext context) {
-    final color = _resolveColor(score);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
-      ),
-      child: Text(
-        score.toStringAsFixed(0),
-        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: color,
-              letterSpacing: 0.5,
-            ),
-      ),
-    );
-  }
-
-  static Color _resolveColor(double score) {
-    if (score >= 1400) {
-      return AppTheme.secondaryColor;
-    }
-    if (score >= 1200) {
-      return AppTheme.accentColor;
-    }
-    return AppTheme.grey400;
-  }
-}

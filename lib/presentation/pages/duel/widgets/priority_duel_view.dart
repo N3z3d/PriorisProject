@@ -4,6 +4,7 @@ import 'package:prioris/domain/models/core/entities/task.dart';
 import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/pages/duel/widgets/components/priority_duel_action_bar.dart';
 import 'package:prioris/presentation/pages/duel/widgets/components/priority_duel_arena.dart';
+import 'package:prioris/presentation/pages/duel/widgets/components/priority_duel_instruction.dart';
 import 'package:prioris/presentation/pages/duel/widgets/components/priority_duel_settings_bar.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 
@@ -78,7 +79,9 @@ class _PriorityDuelViewState extends State<PriorityDuelView> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _buildSettingsBar(),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
+            PriorityDuelInstruction(mode: widget.mode),
+            const SizedBox(height: 16),
             Expanded(child: _buildArena()),
             const SizedBox(height: 24),
             _buildActionBar(),
