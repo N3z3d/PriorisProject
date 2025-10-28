@@ -100,9 +100,11 @@ class _PriorityDuelViewState extends State<PriorityDuelView> {
       cardsPerRound: widget.cardsPerRound,
       disableCardSelector: false, // Always enabled per spec
       hasAvailableLists: widget.hasAvailableLists,
+      hideEloScores: widget.hideEloScores,
       onModeChanged: widget.onModeChanged,
       onCardsChanged: widget.onCardsPerRoundChanged,
       onConfigureLists: widget.onConfigureLists,
+      onToggleElo: widget.onToggleElo,
     );
   }
 

@@ -25,7 +25,8 @@
       "Bash(tee:*)",
       "Bash(git push)",
       "Bash(flutter clean:*)",
-      "Bash(flutter gen-l10n:*)"
+      "Bash(flutter gen-l10n:*)",
+      "Bash(nc localhost 55879)"
     ],
     "deny": [],
     "ask": []

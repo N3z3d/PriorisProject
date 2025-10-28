@@ -63,41 +63,46 @@ class PriorityDuelActionBar extends StatelessWidget {
   List<Widget> _buildButtons(BuildContext context) {
     final localized = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final buttons = <Widget>[
-      TextButton(
-        onPressed: () => onSkip(),
-        child: Text(localized.duelSkipAction),
-      ),
-      OutlinedButton.icon(
-        onPressed: () => onRandom(),
-        icon: const Icon(Icons.shuffle_rounded, size: 20),
-        label: Text(localized.duelRandomAction),
-        style: OutlinedButton.styleFrom(
-          foregroundColor: theme.colorScheme.primary,
-        ),
-      ),
-      TextButton.icon(
-        onPressed: () => onToggleElo(),
-        icon: Icon(
-          hideEloScores
-              ? Icons.visibility_rounded
-              : Icons.visibility_off_rounded,
-        ),
-        label: Text(
-          hideEloScores ? localized.duelShowElo : localized.duelHideElo,
-        ),
-      ),
-    ];
+    final buttons = <Widget>[];
 
+    // Mode Ranking: Submit button as primary CTA
     if (mode == DuelMode.ranking) {
       buttons.add(
-        ElevatedButton.icon(
+        _PremiumSubmitButton(
           onPressed: () => onSubmitRanking(),
-          icon: const Icon(Icons.check_circle_outline),
-          label: Text(localized.duelSubmitRanking),
+          label: localized.duelSubmitRanking,
         ),
       );
     }
+
+    // Secondary actions
+    buttons.addAll([
+      Tooltip(
+        message: 'Charger de nouvelles tâches pour ce duel',
+        child: OutlinedButton.icon(
+          onPressed: () => onSkip(),
+          icon: const Icon(Icons.refresh_rounded, size: 20),
+          label: Text(localized.duelSkipAction),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppTheme.textSecondary,
+            side: BorderSide(
+              color: AppTheme.dividerColor.withValues(alpha: 0.6),
+            ),
+          ),
+        ),
+      ),
+      Tooltip(
+        message: 'Sélectionner une tâche au hasard',
+        child: TextButton.icon(
+          onPressed: () => onRandom(),
+          icon: const Icon(Icons.casino_rounded, size: 20),
+          label: Text(localized.duelRandomAction),
+          style: TextButton.styleFrom(
+            foregroundColor: AppTheme.textSecondary,
+          ),
+        ),
+      ),
+    ]);
 
     return buttons;
   }
@@ -111,5 +116,82 @@ class PriorityDuelActionBar extends StatelessWidget {
       }
     }
     return result;
+  }
+}
+
+/// Premium Submit button with gradient background and enhanced styling
+class _PremiumSubmitButton extends StatefulWidget {
+  final VoidCallback onPressed;
+  final String label;
+
+  const _PremiumSubmitButton({
+    required this.onPressed,
+    required this.label,
+  });
+
+  @override
+  State<_PremiumSubmitButton> createState() => _PremiumSubmitButtonState();
+}
+
+class _PremiumSubmitButtonState extends State<_PremiumSubmitButton> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppTheme.primaryColor,
+              AppTheme.primaryColor.withValues(alpha: 0.9),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.primaryColor.withValues(alpha: _isHovered ? 0.4 : 0.25),
+              blurRadius: _isHovered ? 16 : 12,
+              offset: Offset(0, _isHovered ? 6 : 4),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: widget.onPressed,
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.check_circle_rounded,
+                    color: Colors.white,
+                    size: 22,
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    widget.label,
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.5,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

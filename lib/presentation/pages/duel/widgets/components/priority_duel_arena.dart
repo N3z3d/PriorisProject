@@ -95,6 +95,7 @@ class PriorityWinnerArena extends StatelessWidget {
   }
 }
 
+/// Premium ranking arena with enhanced visual styling and animations
 class PriorityRankingArena extends StatelessWidget {
   final List<Task> tasks;
   final bool hideEloScores;
@@ -115,88 +116,333 @@ class PriorityRankingArena extends StatelessWidget {
       physics: const BouncingScrollPhysics(),
       itemCount: tasks.length,
       onReorder: onReorder,
+      proxyDecorator: _proxyDecorator,
       itemBuilder: (context, index) {
         final task = tasks[index];
-        return Padding(
+        return _RankingItem(
           key: ValueKey('ranking-item-${task.id}'),
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Material(
-            color: AppTheme.surfaceColor,
-            borderRadius: BorderRadius.circular(16),
-            elevation: 3,
-            child: ListTile(
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              leading: CircleAvatar(
-                backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
-                foregroundColor: AppTheme.primaryColor,
-                child: Text('${index + 1}'),
-              ),
-              title: Text(
-                task.title,
-                style: textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.textPrimary,
-                ),
-              ),
-              subtitle: hideEloScores
-                  ? null
-                  : EloBadge(score: task.eloScore, compact: true),
-              trailing: ReorderableDragStartListener(
-                index: index,
-                child: const Icon(Icons.drag_handle_rounded),
-              ),
-            ),
-          ),
+          task: task,
+          index: index,
+          hideEloScores: hideEloScores,
         );
       },
     );
   }
+
+  Widget _proxyDecorator(Widget child, int index, Animation<double> animation) {
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: 1.05,
+          child: Transform.rotate(
+            angle: 0.01,
+            child: Opacity(
+              opacity: 0.9,
+              child: child,
+            ),
+          ),
+        );
+      },
+      child: child,
+    );
+  }
 }
 
-class PriorityVsBadge extends StatelessWidget {
-  const PriorityVsBadge({super.key});
+class _RankingItem extends StatefulWidget {
+  final Task task;
+  final int index;
+  final bool hideEloScores;
+
+  const _RankingItem({
+    super.key,
+    required this.task,
+    required this.index,
+    required this.hideEloScores,
+  });
+
+  @override
+  State<_RankingItem> createState() => _RankingItemState();
+}
+
+class _RankingItemState extends State<_RankingItem> {
+  bool _isHovered = false;
+
+  Color _getRankColor(int rank) {
+    if (rank == 0) return const Color(0xFFD97706); // Gold
+    if (rank == 1) return const Color(0xFF9CA3AF); // Silver
+    if (rank == 2) return const Color(0xFFCD7F32); // Bronze
+    return AppTheme.primaryColor;
+  }
+
+  IconData _getRankIcon(int rank) {
+    if (rank < 3) return Icons.workspace_premium_rounded;
+    return Icons.drag_indicator_rounded;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final divider = AppTheme.dividerColor.withValues(alpha: 0.8);
+    final textTheme = Theme.of(context).textTheme;
+    final rankColor = _getRankColor(widget.index);
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOutCubic,
+          decoration: BoxDecoration(
+            color: AppTheme.surfaceColor,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: _isHovered
+                  ? rankColor.withValues(alpha: 0.3)
+                  : AppTheme.dividerColor.withValues(alpha: 0.5),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: _isHovered
+                    ? rankColor.withValues(alpha: 0.1)
+                    : Colors.black.withValues(alpha: 0.05),
+                blurRadius: _isHovered ? 16 : 8,
+                offset: Offset(0, _isHovered ? 6 : 3),
+              ),
+            ],
+          ),
+          child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 18,
+              vertical: 14,
+            ),
+            leading: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    rankColor.withValues(alpha: 0.15),
+                    rankColor.withValues(alpha: 0.1),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: rankColor.withValues(alpha: 0.3),
+                  width: 1.5,
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    _getRankIcon(widget.index),
+                    size: 16,
+                    color: rankColor,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '${widget.index + 1}',
+                    style: textTheme.labelSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: rankColor,
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            title: Text(
+              widget.task.title,
+              style: textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+                fontSize: 15,
+              ),
+            ),
+            subtitle: widget.hideEloScores
+                ? null
+                : Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: EloBadge(
+                      score: widget.task.eloScore,
+                      compact: true,
+                    ),
+                  ),
+            trailing: ReorderableDragStartListener(
+              index: widget.index,
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppTheme.grey100,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  Icons.drag_handle_rounded,
+                  color: AppTheme.textTertiary,
+                  size: 20,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Premium VS badge with gradient, animated pulse, and sophisticated styling
+class PriorityVsBadge extends StatefulWidget {
+  const PriorityVsBadge({super.key});
+
+  @override
+  State<PriorityVsBadge> createState() => _PriorityVsBadgeState();
+}
+
+class _PriorityVsBadgeState extends State<PriorityVsBadge>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _pulseController;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _glowAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2500),
+    )..repeat(reverse: true);
+
+    _scaleAnimation = Tween<double>(begin: 0.98, end: 1.02).animate(
+      CurvedAnimation(
+        parent: _pulseController,
+        curve: Curves.easeInOut,
+      ),
+    );
+
+    _glowAnimation = Tween<double>(begin: 0.15, end: 0.25).animate(
+      CurvedAnimation(
+        parent: _pulseController,
+        curve: Curves.easeInOut,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return SizedBox(
-      height: 64,
-      width: 120,
+      height: 80,
+      width: 140,
       child: Stack(
         alignment: Alignment.center,
         children: [
+          // Animated gradient divider lines
           Positioned.fill(
             child: Row(
               children: [
-                Expanded(child: Container(height: 1, color: divider)),
-                Expanded(child: Container(height: 1, color: divider)),
+                Expanded(
+                  child: Container(
+                    height: 2,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppTheme.primaryColor.withValues(alpha: 0.0),
+                          AppTheme.primaryColor.withValues(alpha: 0.3),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 60),
+                Expanded(
+                  child: Container(
+                    height: 2,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppTheme.primaryColor.withValues(alpha: 0.3),
+                          AppTheme.primaryColor.withValues(alpha: 0.0),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-            decoration: BoxDecoration(
-              color: AppTheme.surfaceColor,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-              border: Border.all(
-                color: AppTheme.primaryColor.withValues(alpha: 0.2),
-              ),
-            ),
-            child: Text(
-              'VS',
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1.2,
+
+          // Animated VS badge
+          AnimatedBuilder(
+            animation: _pulseController,
+            builder: (context, child) {
+              return Transform.scale(
+                scale: _scaleAnimation.value,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
                   ),
-            ),
+                  decoration: BoxDecoration(
+                    // Gradient background
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppTheme.primaryColor.withValues(alpha: 0.15),
+                        AppTheme.accentColor.withValues(alpha: 0.12),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      width: 2,
+                      color: AppTheme.primaryColor.withValues(alpha: 0.4),
+                    ),
+                    boxShadow: [
+                      // Animated glow effect
+                      BoxShadow(
+                        color: AppTheme.primaryColor.withValues(
+                          alpha: _glowAnimation.value,
+                        ),
+                        blurRadius: 20,
+                        offset: const Offset(0, 4),
+                      ),
+                      // Depth shadow
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: ShaderMask(
+                    shaderCallback: (bounds) => LinearGradient(
+                      colors: [
+                        AppTheme.primaryColor,
+                        AppTheme.accentColor,
+                      ],
+                    ).createShader(bounds),
+                    child: Text(
+                      'VS',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w900,
+                            fontSize: 16,
+                            letterSpacing: 2.0,
+                            color: Colors.white,
+                          ),
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         ],
       ),
