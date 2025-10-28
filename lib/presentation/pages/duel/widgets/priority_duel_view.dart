@@ -95,12 +95,11 @@ class _PriorityDuelViewState extends State<PriorityDuelView> {
     return PriorityDuelSettingsBar(
       mode: widget.mode,
       cardsPerRound: widget.cardsPerRound,
-      disableCardSelector: widget.mode == DuelMode.winner,
+      disableCardSelector: false, // Always enabled per spec
       hasAvailableLists: widget.hasAvailableLists,
       onModeChanged: widget.onModeChanged,
       onCardsChanged: widget.onCardsPerRoundChanged,
       onConfigureLists: widget.onConfigureLists,
-      onRefresh: widget.onRefresh,
     );
   }
 

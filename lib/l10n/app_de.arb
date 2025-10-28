@@ -192,7 +192,7 @@
   "duelPrioritySubtitle": "Welche Aufgabe bevorzugst du?",
   "duelPriorityHint": "Tippe auf die Karte, die du priorisieren möchtest.",
   "duelSkipAction": "Duell überspringen",
-  "duelRandomAction": "Zufällig",
+  "duelRandomAction": "Zufälliges Ergebnis",
   "duelShowElo": "Elo anzeigen",
   "duelHideElo": "Elo verbergen",
   "duelModeLabel": "Duellmodus",

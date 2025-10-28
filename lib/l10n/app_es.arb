@@ -188,7 +188,7 @@
   "duelPrioritySubtitle": "¿Qué tarea prefieres?",
   "duelPriorityHint": "Toca la tarjeta que deseas priorizar.",
   "duelSkipAction": "Saltar duelo",
-  "duelRandomAction": "Aleatorio",
+  "duelRandomAction": "Resultado aleatorio",
   "duelShowElo": "Mostrar Elo",
   "duelHideElo": "Ocultar Elo",
   "duelModeLabel": "Modo del duelo",

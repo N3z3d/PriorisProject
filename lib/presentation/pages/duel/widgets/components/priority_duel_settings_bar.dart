@@ -11,7 +11,6 @@ class PriorityDuelSettingsBar extends StatelessWidget {
   final ValueChanged<DuelMode> onModeChanged;
   final ValueChanged<int> onCardsChanged;
   final Future<void> Function() onConfigureLists;
-  final Future<void> Function() onRefresh;
 
   const PriorityDuelSettingsBar({
     super.key,
@@ -22,7 +21,6 @@ class PriorityDuelSettingsBar extends StatelessWidget {
     required this.onModeChanged,
     required this.onCardsChanged,
     required this.onConfigureLists,
-    required this.onRefresh,
   });
 
   @override
@@ -35,7 +33,6 @@ class PriorityDuelSettingsBar extends StatelessWidget {
         _TitleRow(
           hasAvailableLists: hasAvailableLists,
           onConfigureLists: onConfigureLists,
-          onRefresh: onRefresh,
         ),
         const SizedBox(height: 12),
         _HeaderHint(text: localized.duelPriorityHint),
@@ -57,12 +54,10 @@ class PriorityDuelSettingsBar extends StatelessWidget {
 class _TitleRow extends StatelessWidget {
   final bool hasAvailableLists;
   final Future<void> Function() onConfigureLists;
-  final Future<void> Function() onRefresh;
 
   const _TitleRow({
     required this.hasAvailableLists,
     required this.onConfigureLists,
-    required this.onRefresh,
   });
 
   @override
@@ -96,22 +91,12 @@ class _TitleRow extends StatelessWidget {
           ),
           Align(
             alignment: Alignment.centerRight,
-            child: Wrap(
-              spacing: 8,
-              children: [
-                IconButton(
-                  onPressed: hasAvailableLists ? () => onConfigureLists() : null,
-                  tooltip: hasAvailableLists
-                      ? localized.duelConfigureLists
-                      : localized.duelNoAvailableLists,
-                  icon: const Icon(Icons.tune_rounded),
-                ),
-                IconButton(
-                  onPressed: () => onRefresh(),
-                  tooltip: localized.duelNewDuel,
-                  icon: const Icon(Icons.refresh_rounded),
-                ),
-              ],
+            child: IconButton(
+              onPressed: hasAvailableLists ? () => onConfigureLists() : null,
+              tooltip: hasAvailableLists
+                  ? localized.duelConfigureLists
+                  : localized.duelNoAvailableLists,
+              icon: const Icon(Icons.tune_rounded),
             ),
           ),
         ],

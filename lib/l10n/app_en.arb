@@ -945,9 +945,9 @@
     "description": "Action to skip the current duel"
   },
   
-  "duelRandomAction": "Random",
+  "duelRandomAction": "Random result",
   "@duelRandomAction": {
-    "description": "Action to launch a random duel"
+    "description": "Action to select a random result for the current duel"
   },
   
   "duelShowElo": "Show Elo",

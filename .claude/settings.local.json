@@ -20,7 +20,12 @@
       "Bash(flutter analyze:*)",
       "Bash(git commit:*)",
       "Bash(flutter run:*)",
-      "Bash(nc localhost 56155)"
+      "Bash(nc localhost 56155)",
+      "Bash(flutter test:*)",
+      "Bash(tee:*)",
+      "Bash(git push)",
+      "Bash(flutter clean:*)",
+      "Bash(flutter gen-l10n:*)"
     ],
     "deny": [],
     "ask": []

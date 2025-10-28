@@ -573,7 +573,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get duelSkipAction => 'Skip duel';
 
   @override
-  String get duelRandomAction => 'Random';
+  String get duelRandomAction => 'Random result';
 
   @override
   String get duelShowElo => 'Show Elo';

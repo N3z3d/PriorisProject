@@ -561,7 +561,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get continueLabel => 'Continuer';
 
   @override
-  String get duelPriorityTitle => 'Mode Priorité';
+  String get duelPriorityTitle => 'Priorisé';
 
   @override
   String get duelPrioritySubtitle => 'Quelle tâche préférez-vous ?';
@@ -574,7 +574,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get duelSkipAction => 'Passer le duel';
 
   @override
-  String get duelRandomAction => 'Aléatoire';
+  String get duelRandomAction => 'Résultat aléatoire';
 
   @override
   String get duelShowElo => 'Afficher l’Élo';

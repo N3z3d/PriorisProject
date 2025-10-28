@@ -1230,10 +1230,10 @@ abstract class AppLocalizations {
   /// **'Skip duel'**
   String get duelSkipAction;
 
-  /// Action to launch a random duel
+  /// Action to select a random result for the current duel
   ///
   /// In en, this message translates to:
-  /// **'Random'**
+  /// **'Random result'**
   String get duelRandomAction;
 
   /// Action to display Elo scores

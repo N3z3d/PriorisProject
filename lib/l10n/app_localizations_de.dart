@@ -574,7 +574,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get duelSkipAction => 'Duell überspringen';
 
   @override
-  String get duelRandomAction => 'Zufällig';
+  String get duelRandomAction => 'Zufälliges Ergebnis';
 
   @override
   String get duelShowElo => 'Elo anzeigen';

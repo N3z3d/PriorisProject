@@ -103,16 +103,30 @@ class DuelController extends StateNotifier<DuelState> {
     }
   }
 
-  /// Choisit une tâche aléatoire.
+  /// Choisit un résultat aléatoire pour la manche en cours.
   Future<void> selectRandomTask() async {
     final duel = state.currentDuel;
     if (duel == null || duel.length < 2) return;
 
-    final randomTask = _duelService.selectRandom(duel);
     if (_currentSettings.mode == DuelMode.winner) {
-      final opponent =
-          duel.firstWhere((task) => task.id != randomTask.id, orElse: () => duel.first);
-      await selectWinner(randomTask, opponent);
+      // En mode Duel: sélectionne un gagnant parmi toutes les cartes
+      final randomWinner = _duelService.selectRandom(duel);
+      final others = duel.where((task) => task.id != randomWinner.id).toList();
+
+      // Compare le gagnant avec tous les autres
+      for (final loser in others) {
+        await _duelService.processWinner(randomWinner, loser);
+      }
+
+      await loadNewDuel();
+      state = state.copyWith(
+        lastWinner: randomWinner,
+        lastLoser: others.isNotEmpty ? others.last : null,
+      );
+    } else if (_currentSettings.mode == DuelMode.ranking) {
+      // En mode Classement: génère un ordre aléatoire
+      final shuffled = List<Task>.from(duel)..shuffle();
+      await submitRanking(shuffled);
     }
   }
 
@@ -139,22 +153,12 @@ class DuelController extends StateNotifier<DuelState> {
 
   Future<void> updateMode(DuelMode mode) async {
     await _settingsNotifier.updateMode(mode);
-    if (mode == DuelMode.winner &&
-        _currentSettings.cardsPerRound > DuelSettings.minCardsPerRound) {
-      await _settingsNotifier.updateCardsPerRound(
-        DuelSettings.minCardsPerRound,
-      );
-    }
     final settings = _currentSettings;
     state = state.copyWith(settings: settings);
     await _loadNewDuelWithSettings(settings);
   }
 
   Future<void> updateCardsPerRound(int cardsPerRound) async {
-    if (_currentSettings.mode == DuelMode.winner &&
-        cardsPerRound > DuelSettings.minCardsPerRound) {
-      cardsPerRound = DuelSettings.minCardsPerRound;
-    }
     await _settingsNotifier.updateCardsPerRound(cardsPerRound);
     final settings = _currentSettings;
     state = state.copyWith(settings: settings);
