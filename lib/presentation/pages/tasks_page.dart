@@ -8,6 +8,7 @@ import 'package:prioris/presentation/widgets/common/forms/common_button.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 import 'package:prioris/domain/services/ui/accessibility_service.dart';
+import 'package:prioris/presentation/widgets/common/headers/page_header.dart';
 
 class TasksPage extends ConsumerStatefulWidget {
   const TasksPage({super.key});
@@ -42,12 +43,9 @@ class _TasksPageState extends ConsumerState<TasksPage> {
     final tasksAsync = ref.watch(allTasksProvider);
     
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mes Tâches'),
-        backgroundColor: AppTheme.backgroundColor,
-        elevation: 0,
-        foregroundColor: AppTheme.textPrimary,
-        systemOverlayStyle: SystemUiOverlayStyle.dark,
+      appBar: const PageHeader(
+        title: 'Mes Tâches',
+        elevated: true,
       ),
       body: tasksAsync.when(
         data: (tasks) => tasks.isEmpty

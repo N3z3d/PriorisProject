@@ -11,6 +11,7 @@ import 'package:prioris/presentation/pages/lists/widgets/lists_no_data_state.dar
 import 'package:prioris/presentation/pages/lists/widgets/simple_list_card.dart';
 import 'package:prioris/presentation/pages/lists/services/lists_dialog_service.dart';
 import 'package:prioris/presentation/pages/lists/widgets/lists_overview_banner.dart';
+import 'package:prioris/presentation/widgets/common/headers/page_header.dart';
 
 /// Page principale pour la gestion des listes personnalisées
 ///
@@ -73,18 +74,9 @@ class _ListsPageState extends ConsumerState<ListsPage>
 
   /// Construit l'AppBar
   PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      title: const Text(
-        'Mes Listes',
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          color: AppTheme.textPrimary,
-        ),
-      ),
-      backgroundColor: AppTheme.surfaceColor,
-      elevation: 1,
-      surfaceTintColor: Colors.transparent,
-      shadowColor: AppTheme.dividerColor,
+    return const PageHeader(
+      title: 'Mes Listes',
+      elevated: true,
     );
   }
 

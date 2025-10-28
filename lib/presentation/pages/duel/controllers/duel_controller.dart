@@ -177,7 +177,8 @@ class DuelController extends StateNotifier<DuelState> {
     final tasks =
         await _duelService.loadDuelTasks(count: settings.cardsPerRound);
     if (tasks.length >= 2) {
-      final duel = tasks.take(settings.cardsPerRound).toList();
+      // Prend autant de cartes que disponible (minimum 2, maximum demandé)
+      final duel = tasks;
       state = state.copyWith(
         currentDuel: duel,
         isLoading: false,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:prioris/domain/core/value_objects/duel_settings.dart';
 import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
+import 'package:prioris/presentation/widgets/common/headers/page_header.dart';
 
 class PriorityDuelSettingsBar extends StatelessWidget {
   final DuelMode mode;
@@ -30,11 +31,20 @@ class PriorityDuelSettingsBar extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        _TitleRow(
-          hasAvailableLists: hasAvailableLists,
-          onConfigureLists: onConfigureLists,
+        SectionHeader(
+          title: localized.duelPriorityTitle,
+          subtitle: localized.duelPrioritySubtitle,
+          centerTitle: true,
+          actions: [
+            IconButton(
+              onPressed: hasAvailableLists ? () => onConfigureLists() : null,
+              tooltip: hasAvailableLists
+                  ? localized.duelConfigureLists
+                  : localized.duelNoAvailableLists,
+              icon: const Icon(Icons.tune_rounded),
+            ),
+          ],
         ),
-        const SizedBox(height: 12),
         _HeaderHint(text: localized.duelPriorityHint),
         const SizedBox(height: 16),
         _SettingsWrap(
@@ -47,60 +57,6 @@ class PriorityDuelSettingsBar extends StatelessWidget {
         const SizedBox(height: 16),
         const _HeaderDivider(),
       ],
-    );
-  }
-}
-
-class _TitleRow extends StatelessWidget {
-  final bool hasAvailableLists;
-  final Future<void> Function() onConfigureLists;
-
-  const _TitleRow({
-    required this.hasAvailableLists,
-    required this.onConfigureLists,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final localized = AppLocalizations.of(context)!;
-    final textTheme = Theme.of(context).textTheme;
-
-    return SizedBox(
-      height: 56,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                localized.duelPriorityTitle,
-                style: textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: AppTheme.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                localized.duelPrioritySubtitle,
-                style: textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.textSecondary,
-                ),
-              ),
-            ],
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: IconButton(
-              onPressed: hasAvailableLists ? () => onConfigureLists() : null,
-              tooltip: hasAvailableLists
-                  ? localized.duelConfigureLists
-                  : localized.duelNoAvailableLists,
-              icon: const Icon(Icons.tune_rounded),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
