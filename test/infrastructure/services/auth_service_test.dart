@@ -1,34 +1,157 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:logger/logger.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart' show LaunchMode;
+import 'package:prioris/infrastructure/security/signup_guard.dart';
 import 'package:prioris/infrastructure/services/auth_service.dart';
+import 'package:prioris/infrastructure/services/logger_service.dart';
 import 'package:prioris/infrastructure/services/supabase_service.dart';
 import 'package:prioris/core/config/app_config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
+import 'package:url_launcher_platform_interface/link.dart';
 
 // Generate mocks
 @GenerateMocks([SupabaseService, GoTrueClient, SupabaseClient])
 import 'auth_service_test.mocks.dart';
 
+class _StubGoTrueClient extends MockGoTrueClient {
+  bool shouldThrowOAuth = false;
+
+  @override
+  Future<bool> signInWithOAuth(
+    OAuthProvider provider, {
+    String? redirectTo,
+    String? scopes,
+    LaunchMode authScreenLaunchMode = LaunchMode.platformDefault,
+    Map<String, String>? queryParams,
+  }) async {
+    super.noSuchMethod(
+      Invocation.method(
+        #signInWithOAuth,
+        [provider],
+        {
+          #redirectTo: redirectTo,
+          #scopes: scopes,
+          #authScreenLaunchMode: authScreenLaunchMode,
+          #queryParams: queryParams,
+        },
+      ),
+      returnValue: Future<bool>.value(!shouldThrowOAuth),
+      returnValueForMissingStub: Future<bool>.value(!shouldThrowOAuth),
+    );
+
+    if (shouldThrowOAuth) {
+      throw Exception('OAuth failed');
+    }
+    return true;
+  }
+
+  @override
+  Future<OAuthResponse> getOAuthSignInUrl({
+    required OAuthProvider? provider,
+    String? redirectTo,
+    String? scopes,
+    Map<String, String>? queryParams,
+  }) async {
+    super.noSuchMethod(
+      Invocation.method(
+        #getOAuthSignInUrl,
+        [],
+        {
+          #provider: provider,
+          #redirectTo: redirectTo,
+          #scopes: scopes,
+          #queryParams: queryParams,
+        },
+      ),
+      returnValue: Future<OAuthResponse>.value(
+        OAuthResponse(
+          provider: provider ?? OAuthProvider.google,
+          url: 'https://example.com/login',
+        ),
+      ),
+      returnValueForMissingStub: Future<OAuthResponse>.value(
+        OAuthResponse(
+          provider: provider ?? OAuthProvider.google,
+          url: 'https://example.com/login',
+        ),
+      ),
+    );
+
+    final effectiveProvider = provider ?? OAuthProvider.google;
+
+    return OAuthResponse(
+      provider: effectiveProvider,
+      url: 'https://example.com/login',
+    );
+  }
+}
+
+class _StubUrlLauncher extends UrlLauncherPlatform {
+  bool launchCalled = false;
+  bool launchShouldThrow = false;
+  bool launchResult = true;
+
+  @override
+  LinkDelegate? get linkDelegate => null;
+
+  @override
+  Future<bool> canLaunch(String url) async => true;
+
+  @override
+  Future<bool> launch(
+    String url, {
+    required bool useSafariVC,
+    required bool useWebView,
+    required bool enableJavaScript,
+    required bool enableDomStorage,
+    required bool universalLinksOnly,
+    required Map<String, String> headers,
+    String? webOnlyWindowName,
+  }) async {
+    launchCalled = true;
+    if (launchShouldThrow) {
+      throw Exception('launch failed');
+    }
+    return launchResult;
+  }
+
+  @override
+  Future<void> closeWebView() async {}
+}
+
 void main() {
   group('AuthService', () {
     late AuthService authService;
     late MockSupabaseService mockSupabaseService;
-    late MockGoTrueClient mockAuth;
+    late _StubGoTrueClient mockAuth;
     late MockSupabaseClient mockClient;
+    late _StubUrlLauncher stubLauncher;
 
-    setUp(() {
+    setUp(() async {
+      SharedPreferences.setMockInitialValues({});
+      await SignupGuard.instance.resetCounters();
+      await AppConfig.initializeOfflineFirst();
       mockSupabaseService = MockSupabaseService();
-      mockAuth = MockGoTrueClient();
+      mockAuth = _StubGoTrueClient();
       mockClient = MockSupabaseClient();
+      stubLauncher = _StubUrlLauncher();
+      UrlLauncherPlatform.instance = stubLauncher;
       
       // Setup mock chain
       when(mockSupabaseService.auth).thenReturn(mockAuth);
       when(mockSupabaseService.client).thenReturn(mockClient);
+      when(mockSupabaseService.currentUser).thenReturn(null);
       
+      AuthService.configureForTesting(
+        supabaseService: mockSupabaseService,
+        logger: LoggerService.testing(Logger()),
+      );
+
       authService = AuthService.instance;
-      
-      // Note: Cannot reset singleton state in this implementation
     });
 
     group('Authentication', () {
@@ -397,41 +520,44 @@ void main() {
       test('signInWithGoogle should return true on success', () async {
         // Arrange
         final redirectUrl = AppConfig.instance.supabaseAuthRedirectUrl;
-        
-        when(mockAuth.signInWithOAuth(
-          OAuthProvider.google,
-          redirectTo: redirectUrl,
-        )).thenAnswer((_) async => true);
+        stubLauncher.launchShouldThrow = false;
+        stubLauncher.launchResult = true;
 
         // Act
         final result = await authService.signInWithGoogle();
 
         // Assert
         expect(result, isTrue);
-        verify(mockAuth.signInWithOAuth(
-          OAuthProvider.google,
-          redirectTo: redirectUrl,
-        )).called(1);
+        expect(stubLauncher.launchCalled, isTrue);
+        verify(
+          mockAuth.getOAuthSignInUrl(
+            provider: OAuthProvider.google,
+            redirectTo: redirectUrl,
+            scopes: null,
+            queryParams: null,
+          ),
+        ).called(1);
       });
 
       test('signInWithGoogle should return false on error', () async {
         // Arrange
         final redirectUrl = AppConfig.instance.supabaseAuthRedirectUrl;
-        
-        when(mockAuth.signInWithOAuth(
-          OAuthProvider.google,
-          redirectTo: redirectUrl,
-        )).thenThrow(Exception('OAuth failed'));
+        stubLauncher.launchShouldThrow = true;
+        stubLauncher.launchResult = false;
 
         // Act
         final result = await authService.signInWithGoogle();
 
         // Assert
         expect(result, isFalse);
-        verify(mockAuth.signInWithOAuth(
-          OAuthProvider.google,
-          redirectTo: redirectUrl,
-        )).called(1);
+        verify(
+          mockAuth.getOAuthSignInUrl(
+            provider: OAuthProvider.google,
+            redirectTo: redirectUrl,
+            scopes: null,
+            queryParams: null,
+          ),
+        ).called(1);
       });
     });
 
@@ -448,10 +574,12 @@ void main() {
         )).thenThrow(Exception('Sign up failed'));
 
         // Act & Assert
-        expect(
-          () => authService.signUp(email: email, password: password),
-          throwsException,
-        );
+        try {
+          await authService.signUp(email: email, password: password);
+          fail('Expected exception');
+        } catch (error) {
+          expect(error, isA<Exception>());
+        }
       });
 
       test('signIn should rethrow exceptions', () async {
@@ -465,10 +593,12 @@ void main() {
         )).thenThrow(Exception('Sign in failed'));
 
         // Act & Assert
-        expect(
-          () => authService.signIn(email: email, password: password),
-          throwsException,
-        );
+        try {
+          await authService.signIn(email: email, password: password);
+          fail('Expected exception');
+        } catch (error) {
+          expect(error, isA<Exception>());
+        }
       });
 
       test('signOut should rethrow exceptions', () async {
@@ -476,10 +606,12 @@ void main() {
         when(mockAuth.signOut()).thenThrow(Exception('Sign out failed'));
 
         // Act & Assert
-        expect(
-          () => authService.signOut(),
-          throwsException,
-        );
+        try {
+          await authService.signOut();
+          fail('Expected exception');
+        } catch (error) {
+          expect(error, isA<Exception>());
+        }
       });
     });
   });

@@ -84,6 +84,25 @@
   "tasksCompleted": "Aufgaben abgeschlossen",
   "habitsCompleted": "Gewohnheiten abgeschlossen",
   "listsCompleted": "Listen abgeschlossen",
+  "listCompletionLabel": "{completed} von {total} Elementen abgeschlossen",
+  "@listCompletionLabel": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "listCompletionProgress": "{percent}% abgeschlossen",
+  "@listCompletionProgress": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
   "progress": "Fortschritt",
   "performance": "Leistung",
   "analytics": "Analysen",
@@ -202,6 +221,18 @@
   "duelCardsPerRoundOption": "{count} Karten",
   "@duelCardsPerRoundOption": {
     "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "duelModeSummary": "Duellmodus: {mode} - {count} Karten",
+  "@duelModeSummary": {
+    "description": "Zusammenfassung fur Modus und Karten pro Runde",
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
       "count": {
         "type": "int"
       }

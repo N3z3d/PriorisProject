@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 
 /// Header widget for the list detail page.
@@ -28,25 +29,29 @@ class ListDetailHeader extends StatelessWidget {
         ),
         boxShadow: AppTheme.cardShadow,
       ),
-      child: _buildListStats(),
+      child: _buildListStats(context),
     );
   }
 
-  Widget _buildListStats() {
+  Widget _buildListStats(BuildContext context) {
     final metrics = _ListProgressMetrics.fromList(list);
 
     return Column(
       children: [
-        _buildHeader(metrics),
+        _buildHeader(context, metrics),
         const SizedBox(height: 16),
         _buildProgressBar(metrics.progress),
         const SizedBox(height: 8),
-        _buildProgressLabel(metrics.progress),
+        _buildProgressLabel(context, metrics.progress),
       ],
     );
   }
 
-  Widget _buildHeader(_ListProgressMetrics metrics) {
+  Widget _buildHeader(BuildContext context, _ListProgressMetrics metrics) {
+    final localized = AppLocalizations.of(context)!;
+    final completionLabel =
+        localized.listCompletionLabel(metrics.completed, metrics.total);
+
     return Row(
       children: [
         Icon(
@@ -69,7 +74,7 @@ class ListDetailHeader extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                metrics.completionLabel,
+                completionLabel,
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey[600],
@@ -100,9 +105,11 @@ class ListDetailHeader extends StatelessWidget {
     );
   }
 
-  Widget _buildProgressLabel(double progress) {
+  Widget _buildProgressLabel(BuildContext context, double progress) {
+    final localized = AppLocalizations.of(context)!;
+    final percentText = (progress * 100).toStringAsFixed(1);
     return Text(
-      '${(progress * 100).toStringAsFixed(1)}% complete',
+      localized.listCompletionProgress(percentText),
       style: TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.w500,
@@ -120,10 +127,12 @@ class _ListProgressMetrics {
 
   double get progress => total > 0 ? completed / total : 0.0;
 
-  String get completionLabel => '$completed of $total items done';
-
   factory _ListProgressMetrics.fromList(CustomList list) {
-    final completedItems = list.items.where((item) => item.isCompleted).length;
-    return _ListProgressMetrics(completed: completedItems, total: list.items.length);
+    final completedItems =
+        list.items.where((item) => item.isCompleted).length;
+    return _ListProgressMetrics(
+      completed: completedItems,
+      total: list.items.length,
+    );
   }
 }

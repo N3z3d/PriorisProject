@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/data/providers/auth_providers.dart';
+import 'package:prioris/infrastructure/security/signup_guard.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
-import 'components/login_header.dart';
-import 'components/login_form_fields.dart';
-import 'components/login_error_display.dart';
 import 'components/login_actions.dart';
+import 'components/login_error_display.dart';
+import 'components/login_form_fields.dart';
+import 'components/login_header.dart';
 
-/// Page de connexion/inscription
+/// Page de connexion / inscription.
 ///
-/// **SRP** : Orchestration de l'authentification uniquement
-/// **Architecture** : MVVM (State management avec Riverpod)
+/// SRP: orchestrer les interactions d'authentification.
+/// Architecture: MVVM (state avec Riverpod).
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
@@ -21,22 +22,25 @@ class LoginPage extends ConsumerStatefulWidget {
 class _LoginPageState extends ConsumerState<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _honeypotController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  
+
   bool _isLoading = false;
   bool _isSignUp = false;
   String? _errorMessage;
+  DateTime? _signUpStartedAt;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _honeypotController.dispose();
     super.dispose();
   }
 
   Future<void> _handleAuth() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -44,11 +48,16 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     try {
       final authController = ref.read(authControllerProvider);
-      
+
       if (_isSignUp) {
+        final metadata = SignupAttemptMetadata(
+          startedAt: _signUpStartedAt,
+          honeypotFilled: _honeypotController.text.trim().isNotEmpty,
+        );
         await authController.signUp(
           email: _emailController.text.trim(),
           password: _passwordController.text,
+          metadata: metadata,
         );
       } else {
         await authController.signIn(
@@ -56,18 +65,23 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           password: _passwordController.text,
         );
       }
-      
-      // Navigation sera gérée par le provider authStateProvider
-      
-    } catch (e) {
+
+      // Navigation geree par authStateProvider.
+    } on SignupThrottledException catch (error) {
       setState(() {
-        _errorMessage = 'Erreur: ${e.toString()}';
+        _errorMessage = error.message;
       });
-      // Pending: Remplacer par un logger approprié
+    } catch (error) {
+      setState(() {
+        _errorMessage = 'Erreur: $error';
+      });
+      // TODO: relier a un logger centralise.
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -92,6 +106,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     LoginFormFields(
                       emailController: _emailController,
                       passwordController: _passwordController,
+                      honeypotController: _honeypotController,
                       isSignUp: _isSignUp,
                       onSubmit: _handleAuth,
                     ),
@@ -117,6 +132,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     setState(() {
       _isSignUp = !_isSignUp;
       _errorMessage = null;
+      _honeypotController.clear();
+      _signUpStartedAt = _isSignUp ? DateTime.now() : null;
     });
   }
 }

@@ -11,13 +11,12 @@ import 'package:prioris/presentation/pages/lists/widgets/lists_no_data_state.dar
 import 'package:prioris/presentation/pages/lists/widgets/simple_list_card.dart';
 import 'package:prioris/presentation/pages/lists/services/lists_dialog_service.dart';
 import 'package:prioris/presentation/pages/lists/widgets/lists_overview_banner.dart';
-import 'package:prioris/presentation/widgets/common/headers/page_header.dart';
 
-/// Page principale pour la gestion des listes personnalisées
+/// Page principale pour la gestion des listes personnalisees
 ///
-/// **Responsabilité** : Composer l'interface et coordonner les interactions
-/// **SRP Compliant** : Se concentre sur la composition, délègue les détails
-/// **MVVM Pattern** : Utilise le controller pour la logique métier
+/// **Responsabilite** : Composer l'interface et coordonner les interactions
+/// **SRP Compliant** : Se concentre sur la composition, delegue les details
+/// **MVVM Pattern** : Utilise le controller pour la logique metier
 class ListsPage extends ConsumerStatefulWidget {
   const ListsPage({super.key});
 
@@ -46,7 +45,7 @@ class _ListsPageState extends ConsumerState<ListsPage>
     super.dispose();
   }
 
-  /// Initialise le chargement des données
+  /// Initialise le chargement des donnees
   void _initializeData() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final controller = ref.read(listsControllerProvider.notifier);
@@ -66,17 +65,10 @@ class _ListsPageState extends ConsumerState<ListsPage>
 
     return Scaffold(
       backgroundColor: AppTheme.subtleBackgroundColor,
-      appBar: _buildAppBar(),
-      body: _buildBody(isLoading, error, listsState),
+      body: SafeArea(
+        child: _buildBody(isLoading, error, listsState),
+      ),
       floatingActionButton: _buildFloatingActionButton(),
-    );
-  }
-
-  /// Construit l'AppBar
-  PreferredSizeWidget _buildAppBar() {
-    return const PageHeader(
-      title: 'Mes Listes',
-      elevated: true,
     );
   }
 
@@ -94,7 +86,9 @@ class _ListsPageState extends ConsumerState<ListsPage>
     }
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        const SizedBox(height: 12),
         ListsOverviewBanner(
           totalLists: state.totalListsCount,
           totalItems: state.totalItemsCount,
@@ -107,13 +101,13 @@ class _ListsPageState extends ConsumerState<ListsPage>
   /// Construit le bouton d'action flottant
   Widget _buildFloatingActionButton() {
     return Semantics(
-      label: 'Créer une nouvelle liste',
+      label: 'Creer une nouvelle liste',
       button: true,
       child: FloatingActionButton(
         heroTag: "lists_fab",
         onPressed: () => _dialogService.showCreateListDialog(),
         backgroundColor: AppTheme.primaryColor,
-        tooltip: 'Créer une nouvelle liste',
+        tooltip: 'Creer une nouvelle liste',
         child: const Icon(
           Icons.add,
           color: Colors.white,
@@ -145,7 +139,7 @@ class _ListsPageState extends ConsumerState<ListsPage>
     );
   }
 
-  /// Construit une carte de liste simplifiée
+  /// Construit une carte de liste simplifiee
   Widget _buildListCard(CustomList list) {
     return SimpleListCard(
       list: list,
@@ -154,7 +148,7 @@ class _ListsPageState extends ConsumerState<ListsPage>
     );
   }
 
-  /// Gère les actions de la liste (modifier, supprimer)
+  /// Gere les actions de la liste (modifier, supprimer)
   void _handleListAction(String action, CustomList list) {
     switch (action) {
       case 'edit':
@@ -166,7 +160,7 @@ class _ListsPageState extends ConsumerState<ListsPage>
     }
   }
 
-  /// Navigue vers la page de détail d'une liste
+  /// Navigue vers la page de detail d'une liste
   void _navigateToListDetail(CustomList list) {
     Navigator.of(context).pushNamed(
       '/list-detail',

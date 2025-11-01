@@ -8,55 +8,33 @@ class PriorityDuelSettingsBar extends StatelessWidget {
   final DuelMode mode;
   final int cardsPerRound;
   final bool disableCardSelector;
-  final bool hasAvailableLists;
-  final bool hideEloScores;
   final ValueChanged<DuelMode> onModeChanged;
   final ValueChanged<int> onCardsChanged;
-  final Future<void> Function() onConfigureLists;
-  final Future<void> Function() onToggleElo;
 
   const PriorityDuelSettingsBar({
     super.key,
     required this.mode,
     required this.cardsPerRound,
     required this.disableCardSelector,
-    required this.hasAvailableLists,
-    required this.hideEloScores,
     required this.onModeChanged,
     required this.onCardsChanged,
-    required this.onConfigureLists,
-    required this.onToggleElo,
   });
 
   @override
   Widget build(BuildContext context) {
     final localized = AppLocalizations.of(context)!;
+    final modeLabel = mode == DuelMode.winner
+        ? localized.duelModeWinner
+        : localized.duelModeRanking;
+    final summary = localized.duelModeSummary(modeLabel, cardsPerRound);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         SectionHeader(
           title: localized.duelPriorityTitle,
-          subtitle: localized.duelPrioritySubtitle,
+          subtitle: summary,
           centerTitle: true,
-          actions: [
-            IconButton(
-              onPressed: () => onToggleElo(),
-              tooltip: hideEloScores ? localized.duelShowElo : localized.duelHideElo,
-              icon: Icon(
-                hideEloScores
-                    ? Icons.visibility_rounded
-                    : Icons.visibility_off_rounded,
-              ),
-            ),
-            IconButton(
-              onPressed: hasAvailableLists ? () => onConfigureLists() : null,
-              tooltip: hasAvailableLists
-                  ? localized.duelConfigureLists
-                  : localized.duelNoAvailableLists,
-              icon: const Icon(Icons.tune_rounded),
-            ),
-          ],
         ),
         _HeaderHint(text: localized.duelPriorityHint),
         const SizedBox(height: 16),
@@ -209,35 +187,26 @@ class _ToggleOptionState extends State<_ToggleOption> {
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
       child: GestureDetector(
+        key: ValueKey(
+          'duel-mode-${widget.label.toLowerCase().replaceAll(' ', '-')}',
+        ),
         onTap: widget.onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOutCubic,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
-            gradient: widget.isSelected
-                ? LinearGradient(
-                    colors: [
-                      AppTheme.primaryColor,
-                      AppTheme.primaryColor.withValues(alpha: 0.9),
-                    ],
-                  )
-                : null,
             color: widget.isSelected
-                ? null
+                ? AppTheme.primaryColor.withValues(alpha: 0.14)
                 : (_isHovered
                     ? AppTheme.grey200
                     : Colors.transparent),
             borderRadius: BorderRadius.circular(12),
-            boxShadow: widget.isSelected
-                ? [
-                    BoxShadow(
-                      color: AppTheme.primaryColor.withValues(alpha: 0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ]
-                : null,
+            border: Border.all(
+              color: widget.isSelected
+                  ? AppTheme.primaryColor.withValues(alpha: 0.5)
+                  : AppTheme.dividerColor.withValues(alpha: 0.6),
+            ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -246,18 +215,18 @@ class _ToggleOptionState extends State<_ToggleOption> {
                 widget.icon,
                 size: 18,
                 color: widget.isSelected
-                    ? Colors.white
+                    ? AppTheme.primaryColor
                     : AppTheme.textSecondary,
               ),
               const SizedBox(width: 8),
               Text(
                 widget.label,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: widget.isSelected
-                          ? Colors.white
-                          : AppTheme.textSecondary,
-                    ),
+                  fontWeight: FontWeight.w600,
+                  color: widget.isSelected
+                      ? AppTheme.primaryColor
+                      : AppTheme.textSecondary,
+                ),
               ),
             ],
           ),
@@ -334,39 +303,30 @@ class _CardCountOptionState extends State<_CardCountOption> {
 
   @override
   Widget build(BuildContext context) {
+    // Rationale: flat styling evite le reflet tres marque observe sur l'ancien
+    // gradient (le survol declenchait un scintillement genant en desktop).
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
       child: GestureDetector(
+        key: ValueKey('card-count-${widget.count}'),
         onTap: widget.onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOutCubic,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           decoration: BoxDecoration(
-            gradient: widget.isSelected && !widget.isDisabled
-                ? LinearGradient(
-                    colors: [
-                      AppTheme.accentColor,
-                      AppTheme.accentColor.withValues(alpha: 0.9),
-                    ],
-                  )
-                : null,
-            color: widget.isSelected
-                ? null
+            color: widget.isSelected && !widget.isDisabled
+                ? AppTheme.accentColor.withValues(alpha: 0.18)
                 : (_isHovered && !widget.isDisabled
                     ? AppTheme.grey200
                     : Colors.transparent),
             borderRadius: BorderRadius.circular(12),
-            boxShadow: widget.isSelected && !widget.isDisabled
-                ? [
-                    BoxShadow(
-                      color: AppTheme.accentColor.withValues(alpha: 0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ]
-                : null,
+            border: Border.all(
+              color: widget.isSelected && !widget.isDisabled
+                  ? AppTheme.accentColor
+                  : AppTheme.dividerColor.withValues(alpha: 0.6),
+            ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -383,13 +343,13 @@ class _CardCountOptionState extends State<_CardCountOption> {
                     height: 12,
                     decoration: BoxDecoration(
                       color: widget.isSelected && !widget.isDisabled
-                          ? Colors.white.withValues(alpha: 0.9)
-                          : AppTheme.primaryColor.withValues(alpha: 0.6),
+                          ? Colors.white
+                          : AppTheme.grey400.withValues(alpha: 0.6),
                       borderRadius: BorderRadius.circular(2),
                       border: Border.all(
                         color: widget.isSelected && !widget.isDisabled
                             ? Colors.white
-                            : AppTheme.primaryColor.withValues(alpha: 0.3),
+                            : AppTheme.grey400.withValues(alpha: 0.4),
                         width: 1,
                       ),
                     ),
@@ -461,3 +421,5 @@ class _DuelSetting extends StatelessWidget {
     );
   }
 }
+
+

@@ -1,49 +1,53 @@
+import 'package:prioris/core/config/app_config.dart';
+import 'package:prioris/infrastructure/services/logger_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../core/config/app_config.dart';
-import 'logger_service.dart';
 
-/// Service de configuration et gestion Supabase
-/// Utilise maintenant les variables d'environnement pour la sécurité
+/// Service d'initialisation et d'acces Supabase.
 class SupabaseService {
   static SupabaseService? _instance;
   static SupabaseService get instance => _instance ??= SupabaseService._();
-  
+
   SupabaseService._();
-  
-  /// Initialise Supabase avec les variables d'environnement
+
+  /// Initialise Supabase a partir de la configuration applicative.
   static Future<void> initialize() async {
     try {
       final config = AppConfig.instance;
-      
+
       await Supabase.initialize(
         url: config.supabaseUrl,
         anonKey: config.supabaseAnonKey,
         debug: config.isDebugMode,
       );
-      
-      LoggerService.instance.info('Supabase initialisé avec succès', context: 'SupabaseService');
+
+      LoggerService.instance.info('Supabase initialise', context: 'SupabaseService');
       if (config.isDebugMode) {
-        LoggerService.instance.debug('Mode debug activé', context: 'SupabaseService');
+        LoggerService.instance.debug('Mode debug actif', context: 'SupabaseService');
         config.printConfigurationInfo();
       }
-    } catch (e) {
-      LoggerService.instance.error('Erreur lors de l\'initialisation de Supabase', context: 'SupabaseService', error: e);
+    } catch (error, stack) {
+      LoggerService.instance.error(
+        'Erreur lors de l\'initialisation Supabase',
+        context: 'SupabaseService',
+        error: error,
+        stackTrace: stack,
+      );
       rethrow;
     }
   }
-  
-  /// Client Supabase global
+
+  /// Client Supabase principal.
   SupabaseClient get client => Supabase.instance.client;
-  
-  /// Client auth
+
+  /// Client d'authentification.
   GoTrueClient get auth => client.auth;
-  
-  /// Base de données  
+
+  /// Alias base de donnees (identique a [client]).
   SupabaseClient get database => client;
-  
-  /// Utilisateur actuel
+
+  /// Utilisateur courant.
   User? get currentUser => auth.currentUser;
-  
-  /// Stream des changements d'auth
+
+  /// Flux des changements d'etat d'authentification.
   Stream<AuthState> get authStateChanges => auth.onAuthStateChange;
 }

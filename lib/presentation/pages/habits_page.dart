@@ -5,7 +5,7 @@ import 'package:prioris/domain/models/core/entities/habit.dart';
 import 'package:prioris/presentation/pages/habits/components/habits_body.dart';
 import 'package:prioris/presentation/pages/habits/components/habits_header.dart';
 import 'package:prioris/presentation/pages/habits/controllers/habits_controller.dart';
-import 'package:prioris/presentation/pages/habits/widgets/habit_form_widget.dart';
+import 'package:prioris/presentation/pages/habits/services/habit_form_dialog_service.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 
 class HabitsPage extends ConsumerStatefulWidget {
@@ -125,45 +125,8 @@ class _HabitsPageState extends ConsumerState<HabitsPage> {
     );
   }
 
-  Future<void> _showCreateHabitModal({Habit? initialHabit}) async {
-    final existingCategories = ref
-        .read(habitsStateProvider)
-        .habits
-        .map((habit) => habit.category)
-        .whereType<String>()
-        .where((category) => category.trim().isNotEmpty)
-        .toSet()
-        .toList()
-      ..sort();
-
-    await showDialog<void>(
-      context: context,
-      barrierDismissible: true,
-      builder: (dialogContext) {
-        return Dialog(
-          insetPadding: const EdgeInsets.all(16),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: HabitFormWidget(
-              initialHabit: initialHabit,
-              availableCategories: existingCategories,
-              onSubmit: (habit) async {
-                final controller = ref.read(habitsControllerProvider.notifier);
-
-                if (initialHabit == null) {
-                  await controller.addHabit(habit);
-                } else {
-                  await controller.updateHabit(habit);
-                }
-
-                if (mounted) {
-                  Navigator.of(dialogContext).pop();
-                }
-              },
-            ),
-          ),
-        );
-      },
-    );
+  Future<void> _showCreateHabitModal({Habit? initialHabit}) {
+    return HabitFormDialogService(context: context, ref: ref)
+        .showHabitForm(initialHabit: initialHabit);
   }
 }

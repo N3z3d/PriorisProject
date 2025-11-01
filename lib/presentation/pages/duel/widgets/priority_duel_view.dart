@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:prioris/domain/core/value_objects/duel_settings.dart';
 import 'package:prioris/domain/models/core/entities/task.dart';
@@ -81,20 +83,26 @@ class _PriorityDuelViewState extends State<PriorityDuelView> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _buildSettingsBar(),
-                  const SizedBox(height: 24),
-                  PriorityDuelInstruction(mode: widget.mode),
-                  const SizedBox(height: 16),
-                  Expanded(child: _buildArena()),
-                  const SizedBox(height: 24),
-                  _buildActionBar(),
-                  const SizedBox(height: 8),
-                  if (widget.remainingDuelsToday != null)
-                    _buildRemainingDuels(localized),
-                ],
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final content = _buildMainContent(localized);
+                  if (!_shouldEnableScroll(constraints)) {
+                    return content;
+                  }
+                  return SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints:
+                          BoxConstraints(minHeight: constraints.maxHeight),
+                      child: SizedBox(
+                        height: math.max(
+                          constraints.maxHeight,
+                          _minimumContentHeight(),
+                        ),
+                        child: content,
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ),
@@ -104,14 +112,48 @@ class _PriorityDuelViewState extends State<PriorityDuelView> {
   }
 
   Widget _buildPageHeader() {
-    final modeLabel = widget.mode == DuelMode.winner ? 'Vainqueur' : 'Classement';
-    final cardsLabel = '${widget.tasks.length} tâches à comparer';
+    final localized = AppLocalizations.of(context)!;
+    final modeLabel = widget.mode == DuelMode.winner
+        ? localized.duelModeWinner
+        : localized.duelModeRanking;
+    final subtitle =
+        localized.duelModeSummary(modeLabel, widget.cardsPerRound);
 
     return UnifiedPageHeader(
       icon: Icons.psychology,
-      title: 'Priorisez vos tâches en duel',
-      subtitle: '$modeLabel · $cardsLabel',
+      title: 'Duel',
+      subtitle: subtitle,
       iconColor: AppTheme.accentColor,
+      actions: [
+        IconButton(
+          onPressed: () => widget.onToggleElo(),
+          tooltip:
+              widget.hideEloScores ? localized.duelShowElo : localized.duelHideElo,
+          icon: Icon(
+            widget.hideEloScores
+                ? Icons.visibility_rounded
+                : Icons.visibility_off_rounded,
+            size: 22,
+          ),
+        ),
+        IconButton(
+          onPressed: () => widget.onSkip(),
+          tooltip: localized.duelSkipAction,
+          icon: const Icon(Icons.refresh_rounded, size: 20),
+        ),
+        IconButton(
+          onPressed: () => widget.onRandom(),
+          tooltip: localized.duelRandomAction,
+          icon: const Icon(Icons.casino_rounded, size: 20),
+        ),
+        IconButton(
+          onPressed: widget.hasAvailableLists ? () => widget.onConfigureLists() : null,
+          tooltip: widget.hasAvailableLists
+              ? localized.duelConfigureLists
+              : localized.duelNoAvailableLists,
+          icon: const Icon(Icons.tune_rounded, size: 22),
+        ),
+      ],
     );
   }
 
@@ -120,13 +162,56 @@ class _PriorityDuelViewState extends State<PriorityDuelView> {
       mode: widget.mode,
       cardsPerRound: widget.cardsPerRound,
       disableCardSelector: false, // Always enabled per spec
-      hasAvailableLists: widget.hasAvailableLists,
-      hideEloScores: widget.hideEloScores,
       onModeChanged: widget.onModeChanged,
       onCardsChanged: widget.onCardsPerRoundChanged,
-      onConfigureLists: widget.onConfigureLists,
-      onToggleElo: widget.onToggleElo,
     );
+  }
+
+  Column _buildMainContent(AppLocalizations localized) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buildSettingsBar(),
+        const SizedBox(height: 16),
+        PriorityDuelInstruction(mode: widget.mode),
+        const SizedBox(height: 20),
+        Expanded(
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: _buildArena(),
+          ),
+        ),
+        const SizedBox(height: 20),
+        _buildActionBar(),
+        const SizedBox(height: 8),
+        if (widget.remainingDuelsToday != null)
+          _buildRemainingDuels(localized),
+      ],
+    );
+  }
+
+  bool _shouldEnableScroll(BoxConstraints constraints) {
+    if (constraints.maxHeight.isInfinite || constraints.maxWidth.isInfinite) {
+      return true;
+    }
+    final hasDenseLayout =
+        widget.mode == DuelMode.ranking || widget.tasks.length >= 3;
+    final requiredWidth = hasDenseLayout ? 980.0 : 760.0;
+    final requiredHeight = _minimumContentHeight();
+
+    if (constraints.maxWidth < requiredWidth) {
+      return true;
+    }
+    if (constraints.maxHeight < requiredHeight) {
+      return true;
+    }
+    return false;
+  }
+
+  double _minimumContentHeight() {
+    final hasDenseLayout =
+        widget.mode == DuelMode.ranking || widget.tasks.length >= 3;
+    return hasDenseLayout ? 820.0 : 720.0;
   }
 
   Widget _buildArena() {
@@ -146,11 +231,7 @@ class _PriorityDuelViewState extends State<PriorityDuelView> {
 
   Widget _buildActionBar() {
     return PriorityDuelActionBar(
-      hideEloScores: widget.hideEloScores,
       mode: widget.mode,
-      onSkip: widget.onSkip,
-      onRandom: widget.onRandom,
-      onToggleElo: widget.onToggleElo,
       onSubmitRanking: () => widget.onSubmitRanking(_rankingOrder),
     );
   }
@@ -188,3 +269,6 @@ bool _haveSameTaskIds(List<Task> a, List<Task> b) {
   }
   return true;
 }
+
+
+

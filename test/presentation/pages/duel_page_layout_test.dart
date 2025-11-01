@@ -3,7 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:prioris/domain/core/value_objects/duel_settings.dart';
 import 'package:prioris/domain/models/core/entities/task.dart';
 import 'package:prioris/l10n/app_localizations.dart';
+import 'package:prioris/presentation/pages/duel/widgets/components/priority_duel_instruction.dart';
 import 'package:prioris/presentation/pages/duel/widgets/priority_duel_view.dart';
+import 'package:prioris/presentation/widgets/common/headers/unified_page_header.dart';
 
 void main() {
   group('PriorityDuelView', () {
@@ -13,7 +15,7 @@ void main() {
     setUp(() {
       taskA = Task(
         id: 'task-a',
-        title: 'Préparer la réunion',
+        title: 'Preparer la reunion',
         description: 'Lister les points prioritaires',
         eloScore: 1420,
         createdAt: DateTime(2024, 10, 10),
@@ -21,11 +23,11 @@ void main() {
       );
       taskB = Task(
         id: 'task-b',
-        title: 'Réviser la roadmap',
+        title: 'Reviser la roadmap',
         description: 'Comparer avec les retours clients',
         eloScore: 1380,
         createdAt: DateTime(2024, 10, 11),
-        category: 'Stratégie',
+        category: 'Strategie',
       );
     });
 
@@ -62,16 +64,21 @@ void main() {
       );
     }
 
-    testWidgets('renders header, subtitle and hint in French', (tester) async {
+    testWidgets('renders header, summary and hint in French', (tester) async {
       await tester.pumpWidget(
         _buildTestApp(tasks: [taskA, taskB]),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
 
-      expect(find.text('Mode Priorité'), findsOneWidget);
-      expect(find.text('Quelle tâche préférez-vous ?'), findsOneWidget);
-      expect(find.text('Touchez la carte que vous souhaitez prioriser.'),
-          findsOneWidget);
+      expect(find.byType(UnifiedPageHeader), findsOneWidget);
+      expect(find.text('Duel'), findsOneWidget);
+      final context = tester.element(find.byType(PriorityDuelView));
+      final localized = AppLocalizations.of(context)!;
+      final summary =
+          localized.duelModeSummary(localized.duelModeWinner, 2);
+      expect(find.text(summary), findsWidgets);
+      expect(find.byType(PriorityDuelInstruction), findsOneWidget);
     });
 
     testWidgets('shows duel cards, VS badge and action bar', (tester) async {
@@ -81,32 +88,40 @@ void main() {
           remainingDuels: 10,
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
 
+      final context = tester.element(find.byType(PriorityDuelView));
+      final localized = AppLocalizations.of(context)!;
       expect(find.text('VS'), findsOneWidget);
-      expect(find.text('Passer le duel'), findsOneWidget);
-      expect(find.text('Aléatoire'), findsOneWidget);
-      expect(find.text('Afficher l’Élo'), findsOneWidget);
-      expect(
-          find.textContaining('10 duels restants aujourd’hui'), findsOneWidget);
+      expect(find.byTooltip(localized.duelShowElo), findsOneWidget);
+      expect(find.byTooltip(localized.duelSkipAction), findsOneWidget);
+      expect(find.byTooltip(localized.duelRandomAction), findsOneWidget);
+      expect(find.byTooltip(localized.duelConfigureLists), findsOneWidget);
+      expect(find.text(localized.duelRemainingDuels(10)), findsOneWidget);
 
-      expect(find.byKey(const ValueKey('priority-duel-card-task-a')),
-          findsOneWidget);
-      expect(find.byKey(const ValueKey('priority-duel-card-task-b')),
-          findsOneWidget);
+      expect(find.byKey(const ValueKey('duel-card-task-a')), findsOneWidget);
+      expect(find.byKey(const ValueKey('duel-card-task-b')), findsOneWidget);
     });
 
-    testWidgets('affiche les réglages de mode et de nombre de cartes',
+    testWidgets('affiche les reglages de mode et de nombre de cartes',
         (tester) async {
       await tester.pumpWidget(
         _buildTestApp(tasks: [taskA, taskB]),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
 
-      expect(find.text('Mode du duel'), findsOneWidget);
-      expect(find.text('Nombre de cartes par manche'), findsOneWidget);
-      expect(find.text('Vainqueur'), findsOneWidget);
-      expect(find.text('Classement'), findsOneWidget);
+      final context = tester.element(find.byType(PriorityDuelView));
+      final localized = AppLocalizations.of(context)!;
+
+      expect(find.text(localized.duelModeLabel), findsOneWidget);
+      expect(find.text(localized.duelCardsPerRoundLabel), findsOneWidget);
+      expect(find.text(localized.duelModeWinner), findsOneWidget);
+      expect(find.text(localized.duelModeRanking), findsOneWidget);
+      expect(find.byKey(const ValueKey('duel-mode-vainqueur')), findsOneWidget);
+      expect(find.byKey(const ValueKey('duel-mode-classement')), findsOneWidget);
+      expect(find.byKey(const ValueKey('card-count-2')), findsOneWidget);
     });
 
     testWidgets('montre le bouton de validation en mode classement',
@@ -116,7 +131,7 @@ void main() {
         taskB,
         Task(
           id: 'task-c',
-          title: 'Préparer la communication',
+          title: 'Preparer la communication',
           eloScore: 1310,
           createdAt: DateTime(2024, 10, 12),
         ),
@@ -129,9 +144,57 @@ void main() {
           cardsPerRound: 3,
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
 
-      expect(find.text('Valider le classement'), findsOneWidget);
+      final context = tester.element(find.byType(PriorityDuelView));
+      final localized = AppLocalizations.of(context)!;
+
+      expect(find.text(localized.duelSubmitRanking), findsOneWidget);
+    });
+
+    testWidgets('affiche toutes les cartes sans overflow sur grand ecran',
+        (tester) async {
+      tester.binding.window.physicalSizeTestValue = const Size(1440, 900);
+      tester.binding.window.devicePixelRatioTestValue = 1.0;
+      addTearDown(() {
+        tester.binding.window.clearPhysicalSizeTestValue();
+        tester.binding.window.clearDevicePixelRatioTestValue();
+      });
+
+      final tasks = [
+        taskA,
+        taskB,
+        Task(
+          id: 'task-c',
+          title: 'Analyser les risques',
+          eloScore: 1350,
+          createdAt: DateTime(2024, 10, 12),
+        ),
+        Task(
+          id: 'task-d',
+          title: 'Planifier la prochaine iteration',
+          eloScore: 1305,
+          createdAt: DateTime(2024, 10, 13),
+        ),
+      ];
+
+      await tester.pumpWidget(
+        _buildTestApp(
+          tasks: tasks,
+          mode: DuelMode.winner,
+          cardsPerRound: 4,
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
+
+      expect(tester.takeException(), isNull);
+      for (final task in tasks) {
+        expect(find.text(task.title), findsOneWidget);
+      }
     });
   });
 }
+
+

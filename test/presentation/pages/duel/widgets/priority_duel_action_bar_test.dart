@@ -5,13 +5,9 @@ import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/pages/duel/widgets/components/priority_duel_action_bar.dart';
 
 void main() {
-  Widget _buildHarness({
+  Widget _harness({
     required DuelMode mode,
-    required Future<void> Function() onToggleElo,
-    Future<void> Function()? onSkip,
-    Future<void> Function()? onRandom,
     Future<void> Function()? onSubmitRanking,
-    bool hideElo = true,
   }) {
     return MaterialApp(
       locale: const Locale('fr'),
@@ -20,10 +16,6 @@ void main() {
       home: Scaffold(
         body: PriorityDuelActionBar(
           mode: mode,
-          hideEloScores: hideElo,
-          onToggleElo: onToggleElo,
-          onSkip: onSkip ?? () async {},
-          onRandom: onRandom ?? () async {},
           onSubmitRanking: onSubmitRanking ?? () async {},
         ),
       ),
@@ -31,45 +23,32 @@ void main() {
   }
 
   group('PriorityDuelActionBar', () {
-    testWidgets('fires toggle callback when eye button tapped', (tester) async {
-      var toggled = false;
+    testWidgets('render hides CTA when not in ranking mode', (tester) async {
+      await tester.pumpWidget(_harness(mode: DuelMode.winner));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Valider le classement'), findsNothing);
+    });
+
+    testWidgets('shows and triggers submit action in ranking mode', (tester) async {
+      var submitted = false;
 
       await tester.pumpWidget(
-        _buildHarness(
-          mode: DuelMode.winner,
-          onToggleElo: () async {
-            toggled = true;
+        _harness(
+          mode: DuelMode.ranking,
+          onSubmitRanking: () async {
+            submitted = true;
           },
         ),
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Afficher l’Élo'));
+      expect(find.text('Valider le classement'), findsOneWidget);
+
+      await tester.tap(find.text('Valider le classement'));
       await tester.pump();
 
-      expect(toggled, isTrue);
-    });
-
-    testWidgets('shows submit button only in ranking mode', (tester) async {
-      await tester.pumpWidget(
-        _buildHarness(
-          mode: DuelMode.winner,
-          onToggleElo: () async {},
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.text('Valider le classement'), findsNothing);
-
-      await tester.pumpWidget(
-        _buildHarness(
-          mode: DuelMode.ranking,
-          onToggleElo: () async {},
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.text('Valider le classement'), findsOneWidget);
+      expect(submitted, isTrue);
     });
   });
 }

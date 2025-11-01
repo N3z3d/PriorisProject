@@ -606,6 +606,18 @@ abstract class AppLocalizations {
   /// **'lists completed'**
   String get listsCompleted;
 
+  /// No description provided for @listCompletionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{completed} of {total} items done'**
+  String listCompletionLabel(int completed, int total);
+
+  /// No description provided for @listCompletionProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% complete'**
+  String listCompletionProgress(String percent);
+
   /// Progress label
   ///
   /// In en, this message translates to:
@@ -1278,6 +1290,12 @@ abstract class AppLocalizations {
   /// **'{count} cards'**
   String duelCardsPerRoundOption(int count);
 
+  /// Summary label combining duel mode and cards per round
+  ///
+  /// In en, this message translates to:
+  /// **'Duel mode: {mode} - {count} cards'**
+  String duelModeSummary(String mode, int count);
+
   /// Button label to submit the full ranking
   ///
   /// In en, this message translates to:
@@ -1287,7 +1305,7 @@ abstract class AppLocalizations {
   /// Toast message confirming the duel choice
   ///
   /// In en, this message translates to:
-  /// **'Preference saved ✅'**
+  /// **'Preference saved.'**
   String get duelPreferenceSaved;
 
   /// Informational label displaying the number of duels left today

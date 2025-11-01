@@ -4,982 +4,801 @@
   "@appTitle": {
     "description": "The title of the application"
   },
-  
   "home": "Home",
   "@home": {
     "description": "Home page title"
   },
-  
   "habits": "Habits",
   "@habits": {
     "description": "Habits page title"
   },
-  
   "tasks": "Tasks",
   "@tasks": {
     "description": "Tasks page title"
   },
-  
   "lists": "Lists",
   "@lists": {
     "description": "Lists page title"
   },
-  
   "statistics": "Statistics",
   "@statistics": {
     "description": "Statistics page title"
   },
-  
   "prioritize": "Prioritize",
   "@prioritize": {
     "description": "Prioritize page title"
   },
-  
   "addHabit": "Add Habit",
   "@addHabit": {
     "description": "Add habit button text"
   },
-  
   "addTask": "Add Task",
   "@addTask": {
     "description": "Add task button text"
   },
-  
   "addList": "Add List",
   "@addList": {
     "description": "Add list button text"
   },
-  
   "name": "Name",
   "@name": {
     "description": "Name field label"
   },
-  
   "description": "Description",
   "@description": {
     "description": "Description field label"
   },
-  
   "category": "Category",
   "@category": {
     "description": "Category field label"
   },
-  
   "priority": "Priority",
   "@priority": {
     "description": "Priority field label"
   },
-  
   "frequency": "Frequency",
   "@frequency": {
     "description": "Frequency field label"
   },
-  
   "save": "Save",
   "@save": {
     "description": "Save button text"
   },
-  
   "cancel": "Cancel",
   "@cancel": {
     "description": "Cancel button text"
   },
-  
   "delete": "Delete",
   "@delete": {
     "description": "Delete button text"
   },
-  
   "edit": "Edit",
   "@edit": {
     "description": "Edit button text"
   },
-  
   "create": "Create",
   "@create": {
     "description": "Create button text"
   },
-  
   "completed": "Completed",
   "@completed": {
     "description": "Completed status"
   },
-  
   "incomplete": "Incomplete",
   "@incomplete": {
     "description": "Incomplete status"
   },
-  
   "hideCompleted": "Hide Completed",
   "@hideCompleted": {
     "description": "Hide completed items button"
   },
-  
   "showCompleted": "Show Completed",
   "@showCompleted": {
     "description": "Show completed items button"
   },
-  
   "hideEloScores": "Hide ELO Scores",
   "@hideEloScores": {
     "description": "Hide ELO scores button"
   },
-  
   "showEloScores": "Show ELO Scores",
   "@showEloScores": {
     "description": "Show ELO scores button"
   },
-  
   "overview": "Overview",
   "@overview": {
     "description": "Overview tab title"
   },
-  
   "habitsTab": "Habits",
   "@habitsTab": {
     "description": "Habits tab title"
   },
-  
   "tasksTab": "Tasks",
   "@tasksTab": {
     "description": "Tasks tab title"
   },
-  
   "totalPoints": "Total Points",
   "@totalPoints": {
     "description": "Total points label"
   },
-  
   "successRate": "Success Rate",
   "@successRate": {
     "description": "Success rate label"
   },
-  
   "currentStreak": "Current Streak",
   "@currentStreak": {
     "description": "Current streak label"
   },
-  
   "longestStreak": "Longest Streak",
   "@longestStreak": {
     "description": "Longest streak label"
   },
-  
   "language": "Language",
   "@language": {
     "description": "Language selection label"
   },
-  
   "settings": "Settings",
   "@settings": {
     "description": "Settings page title"
   },
-  
   "noData": "No data available",
   "@noData": {
     "description": "No data message"
   },
-  
   "loading": "Loading...",
   "@loading": {
     "description": "Loading message"
   },
-  
   "error": "Error",
   "@error": {
     "description": "Error message"
   },
-  
   "success": "Success",
   "@success": {
     "description": "Success message"
   },
-  
   "confirm": "Confirm",
   "@confirm": {
     "description": "Confirm button text"
   },
-  
   "back": "Back",
   "@back": {
     "description": "Back button text"
   },
-  
   "next": "Next",
   "@next": {
     "description": "Next button text"
   },
-  
   "previous": "Previous",
   "@previous": {
     "description": "Previous button text"
   },
-  
   "search": "Search",
   "@search": {
     "description": "Search placeholder"
   },
-  
   "filter": "Filter",
   "@filter": {
     "description": "Filter button text"
   },
-  
   "sort": "Sort",
   "@sort": {
     "description": "Sort button text"
   },
-  
   "clear": "Clear",
   "@clear": {
     "description": "Clear button text"
   },
-  
   "apply": "Apply",
   "@apply": {
     "description": "Apply button text"
   },
-  
   "reset": "Reset",
   "@reset": {
     "description": "Reset button text"
   },
-  
   "close": "Close",
   "@close": {
     "description": "Close button text"
   },
-  
   "open": "Open",
   "@open": {
     "description": "Open button text"
   },
-  
   "refresh": "Refresh",
   "@refresh": {
     "description": "Refresh button text"
   },
-  
   "export": "Export",
   "@export": {
     "description": "Export button text"
   },
-  
   "import": "Import",
   "@import": {
     "description": "Import button text"
   },
-  
   "share": "Share",
   "@share": {
     "description": "Share button text"
   },
-  
   "copy": "Copy",
   "@copy": {
     "description": "Copy button text"
   },
-  
   "paste": "Paste",
   "@paste": {
     "description": "Paste button text"
   },
-  
   "cut": "Cut",
   "@cut": {
     "description": "Cut button text"
   },
-  
   "undo": "Undo",
   "@undo": {
     "description": "Undo button text"
   },
-  
   "redo": "Redo",
   "@redo": {
     "description": "Redo button text"
   },
-  
   "selectAll": "Select All",
   "@selectAll": {
     "description": "Select all button text"
   },
-  
   "deselectAll": "Deselect All",
   "@deselectAll": {
     "description": "Deselect all button text"
   },
-  
   "select": "Select",
   "@select": {
     "description": "Select button text"
   },
-  
   "deselect": "Deselect",
   "@deselect": {
     "description": "Deselect button text"
   },
-  
   "all": "All",
   "@all": {
     "description": "All filter option"
   },
-  
   "none": "None",
   "@none": {
     "description": "None filter option"
   },
-  
   "today": "Today",
   "@today": {
     "description": "Today label"
   },
-  
   "yesterday": "Yesterday",
   "@yesterday": {
     "description": "Yesterday label"
   },
-  
   "tomorrow": "Tomorrow",
   "@tomorrow": {
     "description": "Tomorrow label"
   },
-  
   "thisWeek": "This Week",
   "@thisWeek": {
     "description": "This week label"
   },
-  
   "lastWeek": "Last Week",
   "@lastWeek": {
     "description": "Last week label"
   },
-  
   "thisMonth": "This Month",
   "@thisMonth": {
     "description": "This month label"
   },
-  
   "lastMonth": "Last Month",
   "@lastMonth": {
     "description": "Last month label"
   },
-  
   "thisYear": "This Year",
   "@thisYear": {
     "description": "This year label"
   },
-  
   "lastYear": "Last Year",
   "@lastYear": {
     "description": "Last year label"
   },
-  
   "days": "days",
   "@days": {
     "description": "Days unit"
   },
-  
   "hours": "hours",
   "@hours": {
     "description": "Hours unit"
   },
-  
   "minutes": "minutes",
   "@minutes": {
     "description": "Minutes unit"
   },
-  
   "seconds": "seconds",
   "@seconds": {
     "description": "Seconds unit"
   },
-  
   "points": "points",
   "@points": {
     "description": "Points unit"
   },
-  
   "items": "items",
   "@items": {
     "description": "Items unit"
   },
-  
   "tasksCompleted": "tasks completed",
   "@tasksCompleted": {
     "description": "Tasks completed label"
   },
-  
   "habitsCompleted": "habits completed",
   "@habitsCompleted": {
     "description": "Habits completed label"
   },
-  
   "listsCompleted": "lists completed",
   "@listsCompleted": {
     "description": "Lists completed label"
   },
-  
+  "listCompletionLabel": "{completed} of {total} items done",
+  "@listCompletionLabel": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "listCompletionProgress": "{percent}% complete",
+  "@listCompletionProgress": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
   "progress": "Progress",
   "@progress": {
     "description": "Progress label"
   },
-  
   "performance": "Performance",
   "@performance": {
     "description": "Performance label"
   },
-  
   "analytics": "Analytics",
   "@analytics": {
     "description": "Analytics label"
   },
-  
   "insights": "Insights",
   "@insights": {
     "description": "Insights label"
   },
-  
   "recommendations": "Recommendations",
   "@recommendations": {
     "description": "Recommendations label"
   },
-  
   "suggestions": "Suggestions",
   "@suggestions": {
     "description": "Suggestions label"
   },
-  
   "tips": "Tips",
   "@tips": {
     "description": "Tips label"
   },
-  
   "help": "Help",
   "@help": {
     "description": "Help label"
   },
-  
   "about": "About",
   "@about": {
     "description": "About label"
   },
-  
   "version": "Version",
   "@version": {
     "description": "Version label"
   },
-  
   "developer": "Developer",
   "@developer": {
     "description": "Developer label"
   },
-  
   "contact": "Contact",
   "@contact": {
     "description": "Contact label"
   },
-  
   "feedback": "Feedback",
   "@feedback": {
     "description": "Feedback label"
   },
-  
   "reportBug": "Report Bug",
   "@reportBug": {
     "description": "Report bug button text"
   },
-  
   "requestFeature": "Request Feature",
   "@requestFeature": {
     "description": "Request feature button text"
   },
-  
   "privacyPolicy": "Privacy Policy",
   "@privacyPolicy": {
     "description": "Privacy policy link"
   },
-  
   "termsOfService": "Terms of Service",
   "@termsOfService": {
     "description": "Terms of service link"
   },
-  
   "license": "License",
   "@license": {
     "description": "License link"
   },
-  
   "credits": "Credits",
   "@credits": {
     "description": "Credits link"
   },
-  
   "changelog": "Changelog",
   "@changelog": {
     "description": "Changelog link"
   },
-  
   "updateAvailable": "Update Available",
   "@updateAvailable": {
     "description": "Update available message"
   },
-  
   "updateNow": "Update Now",
   "@updateNow": {
     "description": "Update now button text"
   },
-  
   "later": "Later",
   "@later": {
     "description": "Later button text"
   },
-  
   "never": "Never",
   "@never": {
     "description": "Never button text"
   },
-  
   "always": "Always",
   "@always": {
     "description": "Always button text"
   },
-  
   "sometimes": "Sometimes",
   "@sometimes": {
     "description": "Sometimes button text"
   },
-  
   "rarely": "Rarely",
   "@rarely": {
     "description": "Rarely button text"
   },
-  
   "often": "Often",
   "@often": {
     "description": "Often button text"
   },
-  
   "daily": "Daily",
   "@daily": {
     "description": "Daily frequency"
   },
-  
   "weekly": "Weekly",
   "@weekly": {
     "description": "Weekly frequency"
   },
-  
   "monthly": "Monthly",
   "@monthly": {
     "description": "Monthly frequency"
   },
-  
   "yearly": "Yearly",
   "@yearly": {
     "description": "Yearly frequency"
   },
-  
   "custom": "Custom",
   "@custom": {
     "description": "Custom option"
   },
-  
   "automatic": "Automatic",
   "@automatic": {
     "description": "Automatic option"
   },
-  
   "manual": "Manual",
   "@manual": {
     "description": "Manual option"
   },
-  
   "enabled": "Enabled",
   "@enabled": {
     "description": "Enabled status"
   },
-  
   "disabled": "Disabled",
   "@disabled": {
     "description": "Disabled status"
   },
-  
   "active": "Active",
   "@active": {
     "description": "Active status"
   },
-  
   "inactive": "Inactive",
   "@inactive": {
     "description": "Inactive status"
   },
-  
   "online": "Online",
   "@online": {
     "description": "Online status"
   },
-  
   "offline": "Offline",
   "@offline": {
     "description": "Offline status"
   },
-  
   "connected": "Connected",
   "@connected": {
     "description": "Connected status"
   },
-  
   "disconnected": "Disconnected",
   "@disconnected": {
     "description": "Disconnected status"
   },
-  
   "synchronized": "Synchronized",
   "@synchronized": {
     "description": "Synchronized status"
   },
-  
   "notSynchronized": "Not Synchronized",
   "@notSynchronized": {
     "description": "Not synchronized status"
   },
-  
   "synchronizing": "Synchronizing...",
   "@synchronizing": {
     "description": "Synchronizing message"
   },
-  
   "syncFailed": "Sync Failed",
   "@syncFailed": {
     "description": "Sync failed message"
   },
-  
   "retry": "Retry",
   "@retry": {
     "description": "Retry button text"
   },
-  
   "skip": "Skip",
   "@skip": {
     "description": "Skip button text"
   },
-  
   "finish": "Finish",
   "@finish": {
     "description": "Finish button text"
   },
-  
   "complete": "Complete",
   "@complete": {
     "description": "Complete button text"
   },
-  
-  "incomplete": "Incomplete",
-  "@incomplete": {
-    "description": "Incomplete status"
-  },
-  
   "pending": "Pending",
   "@pending": {
     "description": "Pending status"
   },
-  
   "processing": "Processing...",
   "@processing": {
     "description": "Processing message"
   },
-  
   "waiting": "Waiting...",
   "@waiting": {
     "description": "Waiting message"
   },
-  
   "ready": "Ready",
   "@ready": {
     "description": "Ready status"
   },
-  
   "notReady": "Not Ready",
   "@notReady": {
     "description": "Not ready status"
   },
-  
   "available": "Available",
   "@available": {
     "description": "Available status"
   },
-  
   "unavailable": "Unavailable",
   "@unavailable": {
     "description": "Unavailable status"
   },
-  
   "busy": "Busy",
   "@busy": {
     "description": "Busy status"
   },
-  
   "free": "Free",
   "@free": {
     "description": "Free status"
   },
-  
   "occupied": "Occupied",
   "@occupied": {
     "description": "Occupied status"
   },
-  
   "empty": "Empty",
   "@empty": {
     "description": "Empty status"
   },
-  
   "full": "Full",
   "@full": {
     "description": "Full status"
   },
-  
   "partial": "Partial",
   "@partial": {
     "description": "Partial status"
   },
-  
   "exact": "Exact",
   "@exact": {
     "description": "Exact status"
   },
-  
   "approximate": "Approximate",
   "@approximate": {
     "description": "Approximate status"
   },
-  
   "estimated": "Estimated",
   "@estimated": {
     "description": "Estimated status"
   },
-  
   "actual": "Actual",
   "@actual": {
     "description": "Actual status"
   },
-  
   "planned": "Planned",
   "@planned": {
     "description": "Planned status"
   },
-  
   "unplanned": "Unplanned",
   "@unplanned": {
     "description": "Unplanned status"
   },
-  
   "scheduled": "Scheduled",
   "@scheduled": {
     "description": "Scheduled status"
   },
-  
   "unscheduled": "Unscheduled",
   "@unscheduled": {
     "description": "Unscheduled status"
   },
-  
   "overdue": "Overdue",
   "@overdue": {
     "description": "Overdue status"
   },
-  
   "onTime": "On Time",
   "@onTime": {
     "description": "On time status"
   },
-  
   "early": "Early",
   "@early": {
     "description": "Early status"
   },
-  
   "late": "Late",
   "@late": {
     "description": "Late status"
   },
-  
   "urgent": "Urgent",
   "@urgent": {
     "description": "Urgent priority"
   },
-  
   "high": "High",
   "@high": {
     "description": "High priority"
   },
-  
   "medium": "Medium",
   "@medium": {
     "description": "Medium priority"
   },
-  
   "low": "Low",
   "@low": {
     "description": "Low priority"
   },
-  
   "critical": "Critical",
   "@critical": {
     "description": "Critical priority"
   },
-  
   "important": "Important",
   "@important": {
     "description": "Important priority"
   },
-  
   "normal": "Normal",
   "@normal": {
     "description": "Normal priority"
   },
-  
   "minor": "Minor",
   "@minor": {
     "description": "Minor priority"
   },
-  
   "trivial": "Trivial",
   "@trivial": {
     "description": "Trivial priority"
   },
-  
   "personal": "Personal",
   "@personal": {
     "description": "Personal category"
   },
-  
   "work": "Work",
   "@work": {
     "description": "Work category"
   },
-  
   "health": "Health",
   "@health": {
     "description": "Health category"
   },
-  
   "fitness": "Fitness",
   "@fitness": {
     "description": "Fitness category"
   },
-  
   "education": "Education",
   "@education": {
     "description": "Education category"
   },
-  
   "finance": "Finance",
   "@finance": {
     "description": "Finance category"
   },
-  
   "social": "Social",
   "@social": {
     "description": "Social category"
   },
-  
   "family": "Family",
   "@family": {
     "description": "Family category"
   },
-  
   "hobby": "Hobby",
   "@hobby": {
     "description": "Hobby category"
   },
-  
   "travel": "Travel",
   "@travel": {
     "description": "Travel category"
   },
-  
   "shopping": "Shopping",
   "@shopping": {
     "description": "Shopping category"
   },
-  
   "entertainment": "Entertainment",
   "@entertainment": {
     "description": "Entertainment category"
   },
-  
   "other": "Other",
   "@other": {
     "description": "Other category"
   },
-  
   "defaultValue": "Default",
   "@defaultValue": {
     "description": "Default option"
   },
-  
   "continueLabel": "Continue",
   "@continueLabel": {
     "description": "Continue button label"
   },
-  
   "duelPriorityTitle": "Priority Mode",
   "@duelPriorityTitle": {
     "description": "Title for the priority duel page"
   },
-  
   "duelPrioritySubtitle": "Which task do you prefer?",
   "@duelPrioritySubtitle": {
     "description": "Subtitle prompting the user to choose between two tasks"
   },
-  
   "duelPriorityHint": "Tap the card you want to prioritise.",
   "@duelPriorityHint": {
     "description": "Helper text explaining how to select a task"
   },
-  
   "duelSkipAction": "Skip duel",
   "@duelSkipAction": {
     "description": "Action to skip the current duel"
   },
-  
   "duelRandomAction": "Random result",
   "@duelRandomAction": {
     "description": "Action to select a random result for the current duel"
   },
-  
   "duelShowElo": "Show Elo",
   "@duelShowElo": {
     "description": "Action to display Elo scores"
   },
-  
   "duelHideElo": "Hide Elo",
   "@duelHideElo": {
     "description": "Action to hide Elo scores"
   },
-  
   "duelModeLabel": "Duel mode",
   "@duelModeLabel": {
     "description": "Label displayed above the duel mode selector"
   },
-  
   "duelModeWinner": "Winner",
   "@duelModeWinner": {
     "description": "Toggle label for the winner mode"
   },
-  
   "duelModeRanking": "Ranking",
   "@duelModeRanking": {
     "description": "Toggle label for the ranking mode"
   },
-  
   "duelCardsPerRoundLabel": "Cards per round",
   "@duelCardsPerRoundLabel": {
     "description": "Label displayed above the cards per round selector"
   },
-  
   "duelCardsPerRoundOption": "{count} cards",
   "@duelCardsPerRoundOption": {
     "description": "Dropdown option describing the number of cards per round",
@@ -989,17 +808,26 @@
       }
     }
   },
-  
+  "duelModeSummary": "Duel mode: {mode} - {count} cards",
+  "@duelModeSummary": {
+    "description": "Summary label combining duel mode and cards per round",
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "duelSubmitRanking": "Save ranking",
   "@duelSubmitRanking": {
     "description": "Button label to submit the full ranking"
   },
-  
-  "duelPreferenceSaved": "Preference saved ✅",
+  "duelPreferenceSaved": "Preference saved.",
   "@duelPreferenceSaved": {
     "description": "Toast message confirming the duel choice"
   },
-  
   "duelRemainingDuels": "{count} duels remaining today",
   "@duelRemainingDuels": {
     "description": "Informational label displaying the number of duels left today",
@@ -1009,44 +837,36 @@
       }
     }
   },
-  
   "duelConfigureLists": "Choose lists for duels",
   "@duelConfigureLists": {
     "description": "Action to configure which lists participate in duels"
   },
-  
   "duelNoAvailableLists": "No list available",
   "@duelNoAvailableLists": {
     "description": "Tooltip displayed when no list can be selected"
   },
-  
   "duelNoAvailableListsForPrioritization": "No list available for prioritisation",
   "@duelNoAvailableListsForPrioritization": {
     "description": "Snackbar shown when no list can be selected for duels"
   },
-  
   "duelListsUpdated": "Prioritisation lists updated",
   "@duelListsUpdated": {
     "description": "Confirmation message when duel lists are updated"
   },
-  
   "duelNewDuel": "New duel",
   "@duelNewDuel": {
     "description": "Action to trigger a new duel"
   },
-  
   "duelNotEnoughTasksTitle": "Not enough tasks",
   "@duelNotEnoughTasksTitle": {
     "description": "Title displayed when there are not enough tasks for a duel"
   },
-  
   "duelNotEnoughTasksMessage": "Add at least two tasks to start prioritising.",
   "@duelNotEnoughTasksMessage": {
     "description": "Message explaining that more tasks are needed"
   },
-  
   "duelErrorMessage": "Unable to load the duel. Try again.",
   "@duelErrorMessage": {
     "description": "Generic error message when a duel fails to load"
   }
-} 
+}

@@ -4,7 +4,6 @@ import 'package:prioris/domain/models/core/entities/task.dart';
 import 'package:prioris/presentation/pages/duel/widgets/duel_task_card.dart';
 import 'package:prioris/presentation/pages/duel/widgets/components/priority_duel_layouts.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
-import 'package:prioris/presentation/widgets/common/elo_badge.dart';
 
 class PriorityDuelArena extends StatelessWidget {
   final DuelMode mode;
@@ -58,8 +57,8 @@ class PriorityWinnerArena extends StatelessWidget {
   Widget _buildLayoutForCardCount() {
     // Adapter pour la nouvelle signature (winner + losers)
     Future<void> handleWinnerSelection(Task winner, List<Task> losers) async {
-      // Pour compatibilité: on utilise le premier perdant
-      // Le controller gérera les comparaisons multiples si nécessaire
+      // Pour compatibilite: on utilise le premier perdant
+      // Le controller gerera les comparaisons multiples si necessaire
       if (losers.isNotEmpty) {
         await onSelectTask(winner, losers.first);
       }
@@ -85,7 +84,7 @@ class PriorityWinnerArena extends StatelessWidget {
           onSelectWinner: handleWinnerSelection,
         );
       default:
-        // Fallback: utilise layout 3 cartes avec les premières tâches
+        // Fallback: utilise layout 3 cartes avec les premieres taches
         return DuelThreeCardsLayout(
           tasks: tasks.take(3).toList(),
           hideEloScores: hideEloScores,
@@ -267,23 +266,58 @@ class _RankingItemState extends State<_RankingItem> {
                 ? null
                 : Padding(
                     padding: const EdgeInsets.only(top: 6),
-                    child: EloBadge(
-                      score: widget.task.eloScore,
-                      compact: true,
+                    child: Text(
+                      'ELO ${widget.task.eloScore.toStringAsFixed(0)}',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: AppTheme.textSecondary.withValues(alpha: 0.75),
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.2,
+                      ),
                     ),
                   ),
             trailing: ReorderableDragStartListener(
               index: widget.index,
-              child: Container(
-                padding: const EdgeInsets.all(8),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                curve: Curves.easeOutCubic,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 decoration: BoxDecoration(
-                  color: AppTheme.grey100,
-                  borderRadius: BorderRadius.circular(10),
+                  color: _isHovered
+                      ? AppTheme.surfaceColor
+                      : AppTheme.grey100,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: _isHovered
+                        ? AppTheme.dividerColor.withValues(alpha: 0.6)
+                        : AppTheme.dividerColor.withValues(alpha: 0.3),
+                  ),
+                  boxShadow: _isHovered
+                      ? [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.08),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                      : const [],
                 ),
-                child: Icon(
-                  Icons.drag_handle_rounded,
-                  color: AppTheme.textTertiary,
-                  size: 20,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: List.generate(3, (barIndex) {
+                    return Padding(
+                      padding: EdgeInsets.only(bottom: barIndex == 2 ? 0 : 3),
+                      child: Container(
+                        width: 12,
+                        height: 2,
+                        decoration: BoxDecoration(
+                          color: AppTheme.textSecondary.withValues(
+                            alpha: _isHovered ? 0.9 : 0.6,
+                          ),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                      ),
+                    );
+                  }),
                 ),
               ),
             ),

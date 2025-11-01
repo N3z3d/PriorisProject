@@ -258,7 +258,17 @@ class AppLocalizationsFr extends AppLocalizations {
   String get habitsCompleted => 'habitudes terminées';
 
   @override
-  String get listsCompleted => 'listes terminées';
+  String get listsCompleted => 'listes terminees';
+
+  @override
+  String listCompletionLabel(int completed, int total) {
+    return '$completed sur $total elements termines';
+  }
+
+  @override
+  String listCompletionProgress(String percent) {
+    return '$percent% termine';
+  }
 
   @override
   String get progress => 'Progression';
@@ -600,10 +610,15 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String duelModeSummary(String mode, int count) {
+    return 'Mode du duel : $mode - $count cartes';
+  }
+
+  @override
   String get duelSubmitRanking => 'Valider le classement';
 
   @override
-  String get duelPreferenceSaved => 'Préférence enregistrée ✅';
+  String get duelPreferenceSaved => 'Préférence enregistrée.';
 
   @override
   String duelRemainingDuels(int count) {

@@ -14,7 +14,7 @@ void main() {
         3,
         (index) => Task(
           id: 'task-${index + 1}',
-          title: 'Tâche ${index + 1}',
+          title: 'Tache ${index + 1}',
           eloScore: 1200 + index * 40,
           createdAt: DateTime(2024, 10, index + 1),
         ),
@@ -76,7 +76,12 @@ void main() {
       listView.onReorder(0, 3);
       await tester.pump();
 
-      await tester.tap(find.text('Valider le classement'));
+      final context = tester.element(find.byType(PriorityDuelView));
+      final localized = AppLocalizations.of(context)!;
+
+      final submitButton = find.text(localized.duelSubmitRanking);
+      await tester.ensureVisible(submitButton);
+      await tester.tap(submitButton);
       await tester.pump();
 
       expect(submittedOrder, isNotNull);
@@ -86,7 +91,7 @@ void main() {
       );
     });
 
-    testWidgets('délègue le toggle d’affichage Elo', (tester) async {
+    testWidgets('delegue le toggle affichage Elo', (tester) async {
       var toggled = false;
       await _pumpView(
         tester,
@@ -98,7 +103,14 @@ void main() {
         },
       );
 
-      await tester.tap(find.text('Afficher l’Élo'));
+      // Le bouton il est maintenant dans le header (UnifiedPageHeader)
+      // On cherche par icone au lieu de texte
+      final eyeButton = find.ancestor(
+        of: find.byIcon(Icons.visibility_rounded),
+        matching: find.byType(IconButton),
+      );
+
+      await tester.tap(eyeButton);
       await tester.pump();
 
       expect(toggled, isTrue);

@@ -4,25 +4,22 @@ import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 
 class PriorityDuelActionBar extends StatelessWidget {
-  final bool hideEloScores;
   final DuelMode mode;
-  final Future<void> Function() onSkip;
-  final Future<void> Function() onRandom;
-  final Future<void> Function() onToggleElo;
   final Future<void> Function() onSubmitRanking;
 
   const PriorityDuelActionBar({
     super.key,
-    required this.hideEloScores,
     required this.mode,
-    required this.onSkip,
-    required this.onRandom,
-    required this.onToggleElo,
     required this.onSubmitRanking,
   });
 
   @override
   Widget build(BuildContext context) {
+    final buttons = _buildButtons(context);
+    if (buttons.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
@@ -41,7 +38,6 @@ class PriorityDuelActionBar extends StatelessWidget {
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final buttons = _buildButtons(context);
           final isVertical = constraints.maxWidth < 520;
           if (isVertical) {
             return Column(
@@ -62,10 +58,8 @@ class PriorityDuelActionBar extends StatelessWidget {
 
   List<Widget> _buildButtons(BuildContext context) {
     final localized = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
     final buttons = <Widget>[];
 
-    // Mode Ranking: Submit button as primary CTA
     if (mode == DuelMode.ranking) {
       buttons.add(
         _PremiumSubmitButton(
@@ -74,35 +68,6 @@ class PriorityDuelActionBar extends StatelessWidget {
         ),
       );
     }
-
-    // Secondary actions
-    buttons.addAll([
-      Tooltip(
-        message: 'Charger de nouvelles tâches pour ce duel',
-        child: OutlinedButton.icon(
-          onPressed: () => onSkip(),
-          icon: const Icon(Icons.refresh_rounded, size: 20),
-          label: Text(localized.duelSkipAction),
-          style: OutlinedButton.styleFrom(
-            foregroundColor: AppTheme.textSecondary,
-            side: BorderSide(
-              color: AppTheme.dividerColor.withValues(alpha: 0.6),
-            ),
-          ),
-        ),
-      ),
-      Tooltip(
-        message: 'Sélectionner une tâche au hasard',
-        child: TextButton.icon(
-          onPressed: () => onRandom(),
-          icon: const Icon(Icons.casino_rounded, size: 20),
-          label: Text(localized.duelRandomAction),
-          style: TextButton.styleFrom(
-            foregroundColor: AppTheme.textSecondary,
-          ),
-        ),
-      ),
-    ]);
 
     return buttons;
   }
@@ -195,3 +160,5 @@ class _PremiumSubmitButtonState extends State<_PremiumSubmitButton> {
     );
   }
 }
+
+

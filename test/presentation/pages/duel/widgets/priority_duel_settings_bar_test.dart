@@ -7,12 +7,9 @@ import 'package:prioris/presentation/pages/duel/widgets/components/priority_duel
 void main() {
   Widget _buildHarness({
     required DuelMode mode,
-    required bool hasAvailableLists,
     bool disableCardSelector = false,
     ValueChanged<DuelMode>? onModeChanged,
     ValueChanged<int>? onCardsChanged,
-    Future<void> Function()? onConfigureLists,
-    Future<void> Function()? onRefresh,
   }) {
     return MaterialApp(
       locale: const Locale('fr'),
@@ -23,45 +20,20 @@ void main() {
           mode: mode,
           cardsPerRound: 2,
           disableCardSelector: disableCardSelector,
-          hasAvailableLists: hasAvailableLists,
           onModeChanged: onModeChanged ?? (_) {},
           onCardsChanged: onCardsChanged ?? (_) {},
-          onConfigureLists: onConfigureLists ?? () async {},
-          onRefresh: onRefresh ?? () async {},
         ),
       ),
     );
   }
 
   group('PriorityDuelSettingsBar', () {
-    testWidgets('disables list configuration when no lists', (tester) async {
-      await tester.pumpWidget(
-        _buildHarness(
-          mode: DuelMode.winner,
-          hasAvailableLists: false,
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      final localized = AppLocalizations.of(
-        tester.element(find.byType(PriorityDuelSettingsBar)),
-      )!;
-      final iconButton = tester.widget<IconButton>(
-        find.ancestor(
-          of: find.byTooltip(localized.duelNoAvailableLists),
-          matching: find.byType(IconButton),
-        ),
-      );
-      expect(iconButton.onPressed, isNull);
-    });
-
     testWidgets('notifies when switching to ranking mode', (tester) async {
       DuelMode? selectedMode;
 
       await tester.pumpWidget(
         _buildHarness(
           mode: DuelMode.winner,
-          hasAvailableLists: true,
           onModeChanged: (mode) => selectedMode = mode,
         ),
       );
@@ -78,15 +50,32 @@ void main() {
       await tester.pumpWidget(
         _buildHarness(
           mode: DuelMode.winner,
-          hasAvailableLists: true,
           disableCardSelector: true,
         ),
       );
       await tester.pumpAndSettle();
 
-      final dropdown =
-          tester.widget<DropdownButton<int>>(find.byType(DropdownButton<int>));
-      expect(dropdown.onChanged, isNull);
+      final cardOption =
+          tester.widget<GestureDetector>(find.byKey(const ValueKey('card-count-3')));
+      expect(cardOption.onTap, isNull);
+    });
+
+    testWidgets('affiche les options de mode et de cartes', (tester) async {
+      await tester.pumpWidget(
+        _buildHarness(
+          mode: DuelMode.ranking,
+          disableCardSelector: false,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Vainqueur'), findsOneWidget);
+      expect(find.text('Classement'), findsOneWidget);
+      expect(find.byKey(const ValueKey('card-count-2')), findsOneWidget);
+      expect(find.byKey(const ValueKey('card-count-3')), findsOneWidget);
+      expect(find.byKey(const ValueKey('card-count-4')), findsOneWidget);
+      expect(find.byKey(const ValueKey('duel-mode-vainqueur')), findsOneWidget);
+      expect(find.byKey(const ValueKey('duel-mode-classement')), findsOneWidget);
     });
   });
 }

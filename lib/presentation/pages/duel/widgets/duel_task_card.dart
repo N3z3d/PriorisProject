@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/domain/models/core/entities/task.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
-import 'package:prioris/presentation/widgets/common/elo_badge.dart';
+
+/// Card size variants for different duel layouts
+enum DuelCardSize {
+  /// Standard size for 2-card duels (280px min height)
+  standard,
+  /// Compact size for 3-card duels (220-260px height)
+  compact3,
+  /// Ultra-compact size for 4-card duels (200-240px height)
+  compact4,
+}
 
 /// Premium interactive card with sophisticated animations and glassmorphism
 class DuelTaskCard extends StatefulWidget {
@@ -11,6 +19,7 @@ class DuelTaskCard extends StatefulWidget {
   final VoidCallback onTap;
   final bool hideElo;
   final VoidCallback? onEdit;
+  final DuelCardSize cardSize;
 
   const DuelTaskCard({
     super.key,
@@ -18,6 +27,7 @@ class DuelTaskCard extends StatefulWidget {
     required this.onTap,
     required this.hideElo,
     this.onEdit,
+    this.cardSize = DuelCardSize.standard,
   });
 
   @override
@@ -67,161 +77,154 @@ class _DuelTaskCardState extends State<DuelTaskCard>
 
   @override
   Widget build(BuildContext context) {
-    // Premium animation values
-    final scale = _isPressed ? 0.96 : (_isHovered ? 1.03 : 1.0);
-    final rotation = _isHovered ? 0.002 : 0.0; // Subtle tilt
-    final elevationBlur = _isHovered ? 32.0 : 20.0;
-    final elevationOffset = _isHovered ? 20.0 : 12.0;
+    final constraints = _getConstraints(widget.cardSize);
 
     return MouseRegion(
+      cursor: SystemMouseCursors.click,
       onEnter: (_) => _setHovered(true),
       onExit: (_) {
         _setHovered(false);
         _setPressed(false);
       },
-      child: GestureDetector(
-        onTap: widget.onTap,
-        onTapDown: (_) => _setPressed(true),
-        onTapUp: (_) => _setPressed(false),
-        onTapCancel: () => _setPressed(false),
-        child: AnimatedScale(
-          scale: scale,
+      child: Semantics(
+        button: true,
+        enabled: true,
+        label: 'Choisir la tache: ${widget.task.title}',
+        child: GestureDetector(
+          onTap: widget.onTap,
+          onTapDown: (_) => _setPressed(true),
+          onTapUp: (_) => _setPressed(false),
+          onTapCancel: () => _setPressed(false),
+          child: _buildAnimatedCard(constraints),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAnimatedCard(BoxConstraints constraints) {
+    final scale = _isPressed ? 0.96 : (_isHovered ? 1.04 : 1.0);
+    final rotation = _isHovered ? 0.002 : 0.0;
+
+    return AnimatedScale(
+      scale: scale,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOutCubic,
+      child: AnimatedRotation(
+        turns: rotation,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
+        child: AnimatedContainer(
           duration: const Duration(milliseconds: 250),
           curve: Curves.easeOutCubic,
-          child: AnimatedRotation(
-            turns: rotation,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOutCubic,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.easeOutCubic,
-              constraints: const BoxConstraints(
-                maxWidth: 420,
-                minWidth: 280,
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  // Primary shadow (depth)
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: _isHovered ? 0.15 : 0.08),
-                    blurRadius: elevationBlur,
-                    offset: Offset(0, elevationOffset),
-                    spreadRadius: -4,
-                  ),
-                  // Secondary shadow (ambient)
-                  BoxShadow(
-                    color: AppTheme.primaryColor.withValues(alpha: _isHovered ? 0.08 : 0.0),
-                    blurRadius: elevationBlur * 0.75,
-                    offset: const Offset(0, 8),
-                    spreadRadius: -2,
-                  ),
-                  // Tertiary shadow (glow effect)
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Stack(
-                children: [
-                  // Glassmorphism background layer
-                  Positioned.fill(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            AppTheme.surfaceColor,
-                            AppTheme.surfaceColor.withValues(alpha: 0.98),
-                          ],
-                        ),
-                      ),
+          constraints: constraints,
+          decoration: _buildCardDecoration(),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Stack(
+              children: [
+                if (_isHovered) _buildHoverShimmer(),
+                Center(
+                  child: Padding(
+                    padding: _getPadding(widget.cardSize),
+                    child: _CardContent(
+                      task: widget.task,
+                      hideElo: widget.hideElo,
+                      onEdit: widget.onEdit,
+                      isHovered: _isHovered,
+                      cardSize: widget.cardSize,
                     ),
                   ),
-
-                  // Animated gradient border
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 250),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        width: _isHovered ? 1.5 : 1,
-                        color: _isHovered
-                            ? AppTheme.primaryColor.withValues(alpha: 0.4)
-                            : AppTheme.dividerColor.withValues(alpha: 0.6),
-                      ),
-                      // Subtle gradient overlay on hover
-                      gradient: _isHovered
-                          ? LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                AppTheme.primaryColor.withValues(alpha: 0.03),
-                                AppTheme.accentColor.withValues(alpha: 0.02),
-                              ],
-                            )
-                          : null,
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Stack(
-                        children: [
-                          // Shimmer effect on hover
-                          if (_isHovered)
-                            AnimatedBuilder(
-                              animation: _shimmerAnimation,
-                              builder: (context, child) {
-                                return Positioned(
-                                  left: _shimmerAnimation.value * 100,
-                                  top: -50,
-                                  bottom: -50,
-                                  child: Transform.rotate(
-                                    angle: 0.3,
-                                    child: Container(
-                                      width: 100,
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          colors: [
-                                            Colors.white.withValues(alpha: 0),
-                                            Colors.white.withValues(alpha: 0.15),
-                                            Colors.white.withValues(alpha: 0),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-
-                          // Content
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 28,
-                            ),
-                            child: _CardContent(
-                              task: widget.task,
-                              hideElo: widget.hideElo,
-                              onEdit: widget.onEdit,
-                              isHovered: _isHovered,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  BoxDecoration _buildCardDecoration() {
+    return BoxDecoration(
+      color: AppTheme.surfaceColor,
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(
+        width: _isHovered ? 2.5 : 1.5,
+        color: _isHovered
+            ? AppTheme.primaryColor.withValues(alpha: 0.6)
+            : AppTheme.dividerColor.withValues(alpha: 0.3),
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: _isHovered
+              ? AppTheme.primaryColor.withValues(alpha: 0.15)
+              : Colors.black.withValues(alpha: 0.06),
+          blurRadius: _isHovered ? 32 : 16,
+          offset: Offset(0, _isHovered ? 16 : 8),
+          spreadRadius: _isHovered ? 2 : 0,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHoverShimmer() {
+    return AnimatedBuilder(
+      animation: _shimmerAnimation,
+      builder: (context, child) {
+        return Positioned(
+          left: _shimmerAnimation.value * 100,
+          top: -50,
+          bottom: -50,
+          child: Transform.rotate(
+            angle: 0.3,
+            child: Container(
+              width: 100,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.white.withValues(alpha: 0),
+                    Colors.white.withValues(alpha: 0.1),
+                    Colors.white.withValues(alpha: 0),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  /// Returns adaptive constraints based on card size variant
+  BoxConstraints _getConstraints(DuelCardSize size) {
+    switch (size) {
+      case DuelCardSize.standard:
+        return const BoxConstraints(
+          maxWidth: 320,
+          minHeight: 230,
+        );
+      case DuelCardSize.compact3:
+        return const BoxConstraints(
+          maxWidth: 240,
+          minHeight: 160,
+        );
+      case DuelCardSize.compact4:
+        return const BoxConstraints(
+          maxWidth: 240,
+          minHeight: 130,
+        );
+    }
+  }
+
+  /// Returns adaptive padding based on card size variant
+  EdgeInsets _getPadding(DuelCardSize size) {
+    switch (size) {
+      case DuelCardSize.standard:
+        return const EdgeInsets.symmetric(horizontal: 24, vertical: 28);
+      case DuelCardSize.compact3:
+        return const EdgeInsets.symmetric(horizontal: 16, vertical: 16);
+      case DuelCardSize.compact4:
+        return const EdgeInsets.symmetric(horizontal: 14, vertical: 14);
+    }
   }
 }
 
@@ -230,25 +233,26 @@ class _CardContent extends StatelessWidget {
   final bool hideElo;
   final VoidCallback? onEdit;
   final bool isHovered;
+  final DuelCardSize cardSize;
 
   const _CardContent({
     required this.task,
     required this.hideElo,
     required this.onEdit,
     required this.isHovered,
+    required this.cardSize,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
+    return Stack(
       children: [
         if (onEdit != null)
-          Align(
-            alignment: Alignment.topRight,
+          Positioned(
+            top: 0,
+            right: 0,
             child: Material(
               color: Colors.transparent,
               child: InkWell(
@@ -269,56 +273,137 @@ class _CardContent extends StatelessWidget {
               ),
             ),
           ),
-        if (!hideElo) ...[
-          EloBadge(score: task.eloScore),
-          const SizedBox(height: 18),
-        ],
-
-        // Title with enhanced typography
-        Tooltip(
-          message: task.title,
-          child: Text(
-            task.title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-              fontSize: 18,
-              color: AppTheme.textPrimary,
-              height: 1.3,
-              letterSpacing: -0.3,
-            ),
+        Align(
+          alignment: Alignment.center,
+          child: Column(
+            key: const ValueKey('duel-card-content-column'),
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Tooltip(
+                message: task.title,
+                child: Text(
+                  task.title,
+                  maxLines: _getTitleMaxLines(),
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    fontSize: _getTitleFontSize(),
+                    color: AppTheme.textPrimary,
+                    height: 1.35,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+              ),
+              if (!hideElo) ...[
+                const SizedBox(height: 6),
+                Text(
+                  'ELO ${task.eloScore.toStringAsFixed(0)}',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: AppTheme.textSecondary.withValues(alpha: 0.75),
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+              ],
+              if (_hasDescription) ...[
+                SizedBox(height: _getDescriptionSpacing()),
+                Tooltip(
+                  message: task.description!.trim(),
+                  child: Text(
+                    task.description!.trim(),
+                    maxLines: _getDescriptionMaxLines(),
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: AppTheme.textSecondary.withValues(alpha: 0.95),
+                      height: 1.5,
+                      fontSize: _getDescriptionFontSize(),
+                      letterSpacing: 0.1,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+              SizedBox(height: _getMetadataSpacing()),
+              _MetadataSection(task: task, isHovered: isHovered),
+            ],
           ),
         ),
-
-        if (_hasDescription) ...[
-          const SizedBox(height: 14),
-          Tooltip(
-            message: task.description!.trim(),
-            child: Text(
-              task.description!.trim(),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: AppTheme.textSecondary.withValues(alpha: 0.85),
-                height: 1.5,
-                fontSize: 13.5,
-                letterSpacing: 0.1,
-              ),
-            ),
-          ),
-        ],
-
-        const SizedBox(height: 22),
-        _MetadataSection(task: task, isHovered: isHovered),
       ],
     );
   }
 
   bool get _hasDescription =>
       task.description != null && task.description!.trim().isNotEmpty;
+
+  /// Adaptive typography based on card size
+  double _getTitleFontSize() {
+    switch (cardSize) {
+      case DuelCardSize.standard:
+        return 18;
+      case DuelCardSize.compact3:
+        return 14;
+      case DuelCardSize.compact4:
+        return 13;
+    }
+  }
+
+  int _getTitleMaxLines() {
+    switch (cardSize) {
+      case DuelCardSize.standard:
+        return 3;
+      case DuelCardSize.compact3:
+      case DuelCardSize.compact4:
+        return 2;
+    }
+  }
+
+  double _getDescriptionFontSize() {
+    switch (cardSize) {
+      case DuelCardSize.standard:
+        return 13;
+      case DuelCardSize.compact3:
+        return 11.5;
+      case DuelCardSize.compact4:
+        return 10.5;
+    }
+  }
+
+  int _getDescriptionMaxLines() {
+    switch (cardSize) {
+      case DuelCardSize.standard:
+        return 2;
+      case DuelCardSize.compact3:
+      case DuelCardSize.compact4:
+        return 1;
+    }
+  }
+
+  /// Adaptive spacing based on card size
+  double _getDescriptionSpacing() {
+    switch (cardSize) {
+      case DuelCardSize.standard:
+        return 8;
+      case DuelCardSize.compact3:
+        return 5;
+      case DuelCardSize.compact4:
+        return 4;
+    }
+  }
+
+  double _getMetadataSpacing() {
+    switch (cardSize) {
+      case DuelCardSize.standard:
+        return 12;
+      case DuelCardSize.compact3:
+        return 8;
+      case DuelCardSize.compact4:
+        return 6;
+    }
+  }
 }
 
 class _MetadataSection extends StatelessWidget {

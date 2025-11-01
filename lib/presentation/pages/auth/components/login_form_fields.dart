@@ -3,12 +3,11 @@ import 'package:prioris/presentation/widgets/common/forms/common_text_field.dart
 import 'package:prioris/presentation/widgets/common/forms/password_text_field.dart';
 import 'package:prioris/presentation/validators/form_validators.dart';
 
-/// Widget contenant les champs de formulaire de connexion
-///
-/// **SRP** : Gère uniquement l'affichage des champs email/password
+/// Widget contenant les champs de formulaire de connexion.
 class LoginFormFields extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
+  final TextEditingController honeypotController;
   final bool isSignUp;
   final VoidCallback onSubmit;
 
@@ -16,6 +15,7 @@ class LoginFormFields extends StatelessWidget {
     super.key,
     required this.emailController,
     required this.passwordController,
+    required this.honeypotController,
     required this.isSignUp,
     required this.onSubmit,
   });
@@ -37,12 +37,23 @@ class LoginFormFields extends StatelessWidget {
         PasswordTextField(
           controller: passwordController,
           label: 'Mot de passe',
-          hint: '••••••••',
+          hint: '********',
           textInputAction: TextInputAction.done,
           onSubmitted: (_) => onSubmit(),
           validator: (value) => isSignUp
               ? FormValidators.password(value, minLength: 6)
               : FormValidators.password(value),
+        ),
+        Offstage(
+          offstage: true,
+          child: ExcludeSemantics(
+            child: TextFormField(
+              controller: honeypotController,
+              decoration: const InputDecoration(
+                labelText: 'Champ technique (laisser vide)',
+              ),
+            ),
+          ),
         ),
       ],
     );

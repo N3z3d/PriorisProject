@@ -1,23 +1,23 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:prioris/infrastructure/security/signup_guard.dart';
 import 'package:prioris/infrastructure/services/auth_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// Provider pour le service d'authentification
+/// Provider pour le service d'authentification.
 final authServiceProvider = Provider<AuthService>((ref) {
   return AuthService.instance;
 });
 
-/// Provider pour l'utilisateur actuel
+/// Provider pour l'utilisateur actuel.
 final currentUserProvider = StreamProvider<User?>((ref) {
   final authService = ref.watch(authServiceProvider);
-  
   return authService.authStateChanges.map((state) => state.session?.user);
 });
 
-/// Provider pour l'état de connexion
+/// Provider pour l'etat de connexion.
 final isSignedInProvider = Provider<bool>((ref) {
   final userAsync = ref.watch(currentUserProvider);
-  
+
   return userAsync.when(
     data: (user) => user != null,
     loading: () => false,
@@ -25,13 +25,13 @@ final isSignedInProvider = Provider<bool>((ref) {
   );
 });
 
-/// Provider pour l'état d'authentification
+/// Provider pour l'etat d'authentification.
 final authStateProvider = StreamProvider<AuthState>((ref) {
   final authService = ref.watch(authServiceProvider);
   return authService.authStateChanges;
 });
 
-/// États d'authentification pour l'UI
+/// Etats d'authentification pour l'UI.
 enum AuthUIState {
   loading,
   signedOut,
@@ -39,10 +39,10 @@ enum AuthUIState {
   error,
 }
 
-/// Provider pour l'état UI d'authentification
+/// Provider pour l'etat UI d'authentification.
 final authUIStateProvider = Provider<AuthUIState>((ref) {
   final userAsync = ref.watch(currentUserProvider);
-  
+
   return userAsync.when(
     data: (user) => user != null ? AuthUIState.signedIn : AuthUIState.signedOut,
     loading: () => AuthUIState.loading,
@@ -50,62 +50,64 @@ final authUIStateProvider = Provider<AuthUIState>((ref) {
   );
 });
 
-/// Controller pour les actions d'authentification
+/// Controller pour les actions d'authentification.
 final authControllerProvider = Provider<AuthController>((ref) {
   return AuthController(ref.read(authServiceProvider));
 });
 
-/// Controller pour gérer les actions d'authentification
+/// Controller pour gerer les actions d'authentification.
 class AuthController {
   final AuthService _authService;
-  
+
   AuthController(this._authService);
-  
-  /// Inscription
+
+  /// Inscription.
   Future<AuthResponse> signUp({
     required String email,
     required String password,
     String? fullName,
+    SignupAttemptMetadata metadata = const SignupAttemptMetadata(),
   }) async {
-    return await _authService.signUp(
+    return _authService.signUp(
       email: email,
       password: password,
       fullName: fullName,
+      metadata: metadata,
     );
   }
-  
-  /// Connexion
+
+  /// Connexion.
   Future<AuthResponse> signIn({
     required String email,
     required String password,
   }) async {
-    return await _authService.signIn(
+    return _authService.signIn(
       email: email,
       password: password,
     );
   }
-  
-  /// Connexion Google
+
+  /// Connexion Google.
   Future<bool> signInWithGoogle() async {
-    return await _authService.signInWithGoogle();
+    return _authService.signInWithGoogle();
   }
-  
-  /// Déconnexion
+
+  /// Deconnexion.
   Future<void> signOut() async {
     await _authService.signOut();
   }
-  
-  /// Réinitialisation mot de passe
+
+  /// Reinitialisation mot de passe.
   Future<void> resetPassword(String email) async {
     await _authService.resetPassword(email);
   }
-  
-  /// Mise à jour profil
+
+  /// Mise a jour du profil.
   Future<UserResponse> updateProfile({
     String? fullName,
     String? avatarUrl,
   }) async {
-    return await _authService.updateProfile(
+    return _authService.updateProfile(
       fullName: fullName,
       avatarUrl: avatarUrl,
     );

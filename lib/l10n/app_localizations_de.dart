@@ -261,6 +261,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get listsCompleted => 'Listen abgeschlossen';
 
   @override
+  String listCompletionLabel(int completed, int total) {
+    return '$completed von $total Elementen abgeschlossen';
+  }
+
+  @override
+  String listCompletionProgress(String percent) {
+    return '$percent% abgeschlossen';
+  }
+
+  @override
   String get progress => 'Fortschritt';
 
   @override
@@ -597,6 +607,11 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String duelCardsPerRoundOption(int count) {
     return '$count Karten';
+  }
+
+  @override
+  String duelModeSummary(String mode, int count) {
+    return 'Duellmodus: $mode - $count Karten';
   }
 
   @override

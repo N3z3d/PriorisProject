@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 
-/// En-tête de page unifié utilisé dans toute l'application
+/// En-tete de page unifie utilise dans toute l'application
 ///
-/// Référence : ListsOverviewBanner - "Organisez vos listes en un coup d'œil"
-/// Structure : Icône + Titre + Sous-titre avec style cohérent
+/// Reference : ListsOverviewBanner - "Organisez vos listes en un coup d'il"
+/// Structure : Icone + Titre + Sous-titre avec style coherent
 class UnifiedPageHeader extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
   final Color? iconColor;
   final Color? iconBackgroundColor;
+  final List<Widget>? actions;
 
   const UnifiedPageHeader({
     super.key,
@@ -19,6 +20,7 @@ class UnifiedPageHeader extends StatelessWidget {
     required this.subtitle,
     this.iconColor,
     this.iconBackgroundColor,
+    this.actions,
   });
 
   @override
@@ -35,9 +37,15 @@ class UnifiedPageHeader extends StatelessWidget {
           children: [
             _buildIcon(effectiveIconColor),
             const SizedBox(width: 16),
-            Expanded(
-              child: _buildContent(theme),
-            ),
+            Expanded(child: _buildContent(theme)),
+            if (actions != null && actions!.isNotEmpty) ...[
+              const SizedBox(width: 12),
+              Wrap(
+                alignment: WrapAlignment.end,
+                spacing: 4,
+                children: actions!,
+              ),
+            ],
           ],
         ),
       ),

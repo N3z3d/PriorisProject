@@ -3,21 +3,21 @@ import 'package:prioris/domain/models/core/entities/task.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import '../widgets/export.dart';
 
-/// Service spécialisé pour la construction des composants UI du duel - SOLID COMPLIANT
+/// Service specialise pour la construction des composants UI du duel - SOLID COMPLIANT
 ///
 /// SOLID COMPLIANCE:
-/// - SRP: Responsabilité unique pour la construction des composants visuels
-/// - OCP: Extensible via factory methods et builders personnalisés
+/// - SRP: Responsabilite unique pour la construction des composants visuels
+/// - OCP: Extensible via factory methods et builders personnalises
 /// - LSP: Compatible avec les interfaces de construction UI
-/// - ISP: Interface focalisée sur les opérations de UI building uniquement
-/// - DIP: Dépend des abstractions des widgets spécialisés
+/// - ISP: Interface focalisee sur les operations de UI building uniquement
+/// - DIP: Depend des abstractions des widgets specialises
 ///
 /// Features:
 /// - Construction modulaire de l'AppBar et ses actions
-/// - Création des composants de duel (cartes, séparateur)
-/// - Gestion des états visuels (loading, empty, duel)
-/// - Styling cohérent avec le theme de l'application
-/// - Composants réutilisables et configurables
+/// - Creation des composants de duel (cartes, separateur)
+/// - Gestion des etats visuels (loading, empty, duel)
+/// - Styling coherent avec le theme de l'application
+/// - Composants reutilisables et configurables
 ///
 /// CONSTRAINTS: <200 lignes
 class DuelUIComponentsBuilder {
@@ -43,7 +43,7 @@ class DuelUIComponentsBuilder {
     );
   }
 
-  /// Construit le corps principal selon l'état actuel
+  /// Construit le corps principal selon l'etat actuel
   Widget buildBody({
     required BuildContext context,
     required bool isLoading,
@@ -74,17 +74,17 @@ class DuelUIComponentsBuilder {
     );
   }
 
-  /// Construit l'état de chargement
+  /// Construit l'etat de chargement
   Widget buildLoadingState(BuildContext context) {
     return _buildLoadingState(context);
   }
 
-  /// Construit l'état sans tâches disponibles
+  /// Construit l'etat sans taches disponibles
   Widget buildNoTasksState(BuildContext context) {
     return _buildNoTasksState(context);
   }
 
-  /// Construit l'interface de duel complète
+  /// Construit l'interface de duel complete
   Widget buildDuelInterface({
     required BuildContext context,
     required Task task1,
@@ -141,12 +141,12 @@ class DuelUIComponentsBuilder {
       IconButton(
         onPressed: onToggleEloVisibility,
         icon: Icon(hideEloScores ? Icons.visibility : Icons.visibility_off),
-        tooltip: hideEloScores ? 'Afficher les scores ELO' : 'Masquer les scores ELO',
+        tooltip: hideEloScores ? 'Afficher Elo' : 'Masquer Elo',
       ),
       IconButton(
         onPressed: onShowListSettings,
         icon: const Icon(Icons.tune),
-        tooltip: 'Paramètres des listes',
+        tooltip: 'Parametres des listes',
       ),
       IconButton(
         onPressed: onRefreshDuel,
@@ -156,14 +156,14 @@ class DuelUIComponentsBuilder {
     ];
   }
 
-  /// Construit l'état de chargement avec indicateur centré
+  /// Construit l'etat de chargement avec indicateur centre
   Widget _buildLoadingState(BuildContext context) {
     return const Center(
       child: CircularProgressIndicator(),
     );
   }
 
-  /// Construit l'état sans tâches avec icône et message
+  /// Construit l'etat sans taches avec icone et message
   Widget _buildNoTasksState(BuildContext context) {
     return Center(
       child: Column(
@@ -176,12 +176,12 @@ class DuelUIComponentsBuilder {
           ),
           const SizedBox(height: 16),
           Text(
-            'Pas assez de tâches',
+            'Pas assez de taches',
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizedBox(height: 8),
           Text(
-            'Ajoutez au moins 2 tâches pour commencer à les prioriser',
+            'Ajoutez au moins 2 taches pour commencer a les prioriser',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
@@ -192,7 +192,7 @@ class DuelUIComponentsBuilder {
     );
   }
 
-  /// Construit l'interface complète de duel
+  /// Construit l'interface complete de duel
   Widget _buildDuelInterface({
     required BuildContext context,
     required Task task1,
@@ -207,11 +207,11 @@ class DuelUIComponentsBuilder {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          // En-tête psychologique
+          // En-tete psychologique
           const DuelHeaderWidget(),
           const SizedBox(height: 32),
 
-          // Zone de duel avec cartes et séparateur
+          // Zone de duel avec cartes et separateur
           Expanded(
             child: Column(
               children: [
@@ -250,7 +250,7 @@ class DuelUIComponentsBuilder {
     );
   }
 
-  /// Construit les boutons d'action (Passer et Aléatoire)
+  /// Construit les boutons d'action (Passer et Aleatoire)
   Widget _buildActionButtons({
     required BuildContext context,
     required VoidCallback onSkipDuel,
@@ -267,7 +267,7 @@ class DuelUIComponentsBuilder {
         ElevatedButton.icon(
           onPressed: onRandomSelection,
           icon: const Icon(Icons.shuffle),
-          label: const Text('Aléatoire'),
+          label: const Text('Aleatoire'),
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.secondary,
             foregroundColor: Theme.of(context).colorScheme.onSecondary,

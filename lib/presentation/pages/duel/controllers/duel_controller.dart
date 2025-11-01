@@ -4,7 +4,7 @@ import 'package:prioris/domain/core/value_objects/duel_settings.dart';
 import 'package:prioris/domain/models/core/entities/task.dart';
 import '../services/duel_service.dart';
 
-/// Contrôleur principal du flux Priorisé.
+/// Controleur principal du flux Priorise.
 class DuelController extends StateNotifier<DuelState> {
   final DuelFlowService _duelService;
   final Ref _ref;
@@ -18,7 +18,7 @@ class DuelController extends StateNotifier<DuelState> {
   DuelSettingsNotifier get _settingsNotifier =>
       _ref.read(duelSettingsProvider.notifier);
 
-  /// Initialise les données et charge le premier duel.
+  /// Initialise les donnees et charge le premier duel.
   Future<void> initialize() async {
     state = state.copyWith(isLoading: true);
 
@@ -37,7 +37,7 @@ class DuelController extends StateNotifier<DuelState> {
     }
   }
 
-  /// Recharge un duel en tenant compte des paramètres utilisateurs.
+  /// Recharge un duel en tenant compte des parametres utilisateurs.
   Future<void> loadNewDuel() async {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
@@ -103,17 +103,15 @@ class DuelController extends StateNotifier<DuelState> {
     }
   }
 
-  /// Choisit un résultat aléatoire pour la manche en cours.
+  /// Choisit un resultat aleatoire pour la manche en cours.
   Future<void> selectRandomTask() async {
     final duel = state.currentDuel;
     if (duel == null || duel.length < 2) return;
 
     if (_currentSettings.mode == DuelMode.winner) {
-      // En mode Duel: sélectionne un gagnant parmi toutes les cartes
       final randomWinner = _duelService.selectRandom(duel);
       final others = duel.where((task) => task.id != randomWinner.id).toList();
 
-      // Compare le gagnant avec tous les autres
       for (final loser in others) {
         await _duelService.processWinner(randomWinner, loser);
       }
@@ -124,13 +122,12 @@ class DuelController extends StateNotifier<DuelState> {
         lastLoser: others.isNotEmpty ? others.last : null,
       );
     } else if (_currentSettings.mode == DuelMode.ranking) {
-      // En mode Classement: génère un ordre aléatoire
       final shuffled = List<Task>.from(duel)..shuffle();
       await submitRanking(shuffled);
     }
   }
 
-  /// Met à jour une tâche depuis le duel.
+  /// Met a jour une tache depuis le duel.
   Future<void> updateTask(Task updatedTask) async {
     state = state.copyWith(isLoading: true);
 
@@ -145,7 +142,7 @@ class DuelController extends StateNotifier<DuelState> {
     }
   }
 
-  /// Bascule la visibilité des scores ELO.
+  /// Bascule la visibilite des scores ELO.
   Future<void> toggleEloVisibility() async {
     await _settingsNotifier.toggleHideElo();
     state = state.copyWith(settings: _currentSettings);
@@ -174,29 +171,34 @@ class DuelController extends StateNotifier<DuelState> {
   }
 
   Future<void> _loadNewDuelWithSettings(DuelSettings settings) async {
-    final tasks =
-        await _duelService.loadDuelTasks(count: settings.cardsPerRound);
-    if (tasks.length >= 2) {
-      // Prend autant de cartes que disponible (minimum 2, maximum demandé)
-      final duel = tasks;
-      state = state.copyWith(
-        currentDuel: duel,
-        isLoading: false,
-        errorMessage: null,
-      );
-      return;
-    }
+    try {
+      final tasks =
+          await _duelService.loadDuelTasks(count: settings.cardsPerRound);
+      if (tasks.length >= 2) {
+        state = state.copyWith(
+          currentDuel: tasks,
+          isLoading: false,
+          errorMessage: null,
+        );
+        return;
+      }
 
-    state = state.copyWith(
-      currentDuel: null,
-      isLoading: false,
-      errorMessage:
-          'Pas assez de taches eligibles pour creer un duel',
-    );
+      state = state.copyWith(
+        currentDuel: null,
+        isLoading: false,
+        errorMessage: 'Pas assez de taches eligibles pour creer un duel',
+      );
+    } on DuelLoadingException catch (error) {
+      state = state.copyWith(
+        currentDuel: null,
+        isLoading: false,
+        errorMessage: error.message,
+      );
+    }
   }
 }
 
-/// État immutable du duel.
+/// Etat immutable du duel.
 class DuelState {
   static const Object _unset = Object();
 
