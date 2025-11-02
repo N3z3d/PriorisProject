@@ -14,91 +14,98 @@ class HabitTypeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Type d\'habitude',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: AppTheme.textPrimary,
-          ),
+        Text(
+          'Je veux',
+          style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: AppTheme.textPrimary,
+              ),
         ),
-        const SizedBox(height: 8),
-        Row(
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
           children: [
-            Expanded(
-              child: _TypeOption(
-                label: 'Oui / Non',
-                icon: Icons.check_circle,
-                type: HabitType.binary,
-                isSelected: selectedType == HabitType.binary,
-                onTap: () => onTypeSelected(HabitType.binary),
-              ),
+            _buildChip(
+              context,
+              label: 'Cocher quand c\'est fait',
+              icon: Icons.check_circle_outline,
+              value: HabitType.binary,
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _TypeOption(
-                label: 'Quantité',
-                icon: Icons.show_chart,
-                type: HabitType.quantitative,
-                isSelected: selectedType == HabitType.quantitative,
-                onTap: () => onTypeSelected(HabitType.quantitative),
-              ),
+            _buildChip(
+              context,
+              label: 'Mesurer une quantité',
+              icon: Icons.stacked_line_chart,
+              value: HabitType.quantitative,
             ),
           ],
+        ),
+        const SizedBox(height: 12),
+        Text(
+          _descriptionFor(selectedType),
+          key: const ValueKey('habit-type-description'),
+          style: theme.textTheme.bodyMedium?.copyWith(
+                color: AppTheme.textSecondary.withValues(alpha: 0.85),
+                height: 1.4,
+              ),
         ),
       ],
     );
   }
-}
 
-class _TypeOption extends StatelessWidget {
-  const _TypeOption({
-    required this.label,
-    required this.icon,
-    required this.type,
-    required this.isSelected,
-    required this.onTap,
-  });
+  String _descriptionFor(HabitType type) {
+    switch (type) {
+      case HabitType.binary:
+        return 'Suivez vos routines en cochant chaque fois que c\'est fait.';
+      case HabitType.quantitative:
+        return 'Suivez une quantité mesurable avec un objectif et une unité.';
+    }
+  }
 
-  final String label;
-  final IconData icon;
-  final HabitType type;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = isSelected ? AppTheme.accentColor : Colors.grey;
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isSelected ? color.withValues(alpha: 0.1) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? color : Colors.grey.withValues(alpha: 0.3),
-            width: 2,
+  Widget _buildChip(
+    BuildContext context, {
+    required String label,
+    required IconData icon,
+    required HabitType value,
+  }) {
+    final isSelected = selectedType == value;
+    return ChoiceChip(
+      selected: isSelected,
+      label: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 18,
+            color: isSelected ? Colors.white : AppTheme.textSecondary,
           ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 32, color: color),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: color,
-              ),
-            ),
-          ],
+          const SizedBox(width: 8),
+          Text(label),
+        ],
+      ),
+      labelPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: isSelected
+              ? AppTheme.accentColor
+              : AppTheme.dividerColor.withValues(alpha: 0.6),
+          width: 1.2,
         ),
       ),
+      selectedColor: AppTheme.accentColor,
+      backgroundColor: AppTheme.surfaceColor,
+      pressElevation: 0,
+      onSelected: (_) => onTypeSelected(value),
+      labelStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: isSelected ? Colors.white : AppTheme.textSecondary,
+            fontWeight: FontWeight.w600,
+          ),
     );
   }
 }

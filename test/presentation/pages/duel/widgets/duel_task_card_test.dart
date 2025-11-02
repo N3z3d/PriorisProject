@@ -43,6 +43,7 @@ void main() {
       );
       expect(column.mainAxisAlignment, MainAxisAlignment.center);
       expect(column.crossAxisAlignment, CrossAxisAlignment.center);
+      expect(column.mainAxisSize, MainAxisSize.max);
     }
   });
 }

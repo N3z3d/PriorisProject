@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
 import 'package:prioris/presentation/pages/habits/services/habit_category_service.dart';
 import 'package:prioris/presentation/pages/habits/widgets/components/export.dart';
+import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/widgets/common/forms/common_text_field.dart';
 
 class HabitFormWidget extends StatefulWidget {
@@ -88,36 +89,131 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
   Widget build(BuildContext context) {
     final isEditing = widget.initialHabit != null;
 
-    return HabitFormContainer(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: _buildFormContent(isEditing),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth >= 680;
+        final content = isWide
+            ? _buildWideLayout(context, isEditing)
+            : _buildNarrowLayout(context, isEditing);
+        return HabitFormContainer(child: content);
+      },
+    );
+  }
+
+  Widget _buildNarrowLayout(BuildContext context, bool isEditing) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        HabitFormHeader(isEditing: isEditing),
+        const SizedBox(height: 16),
+        _buildIntro(context),
+        const SizedBox(height: 24),
+        _buildNameField(),
+        const SizedBox(height: 16),
+        _buildCategoryDropdown(),
+        const SizedBox(height: 20),
+        _buildPlanningCard(context),
+        const SizedBox(height: 24),
+        HabitSubmitButton(
+          isEditing: isEditing,
+          onPressed: _submitForm,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWideLayout(BuildContext context, bool isEditing) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        HabitFormHeader(isEditing: isEditing),
+        const SizedBox(height: 16),
+        _buildIntro(context),
+        const SizedBox(height: 24),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: _buildNameField()),
+            const SizedBox(width: 20),
+            Expanded(child: _buildCategoryDropdown()),
+          ],
+        ),
+        const SizedBox(height: 20),
+        _buildPlanningCard(context),
+        const SizedBox(height: 24),
+        HabitSubmitButton(
+          isEditing: isEditing,
+          onPressed: _submitForm,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildIntro(BuildContext context) {
+    final theme = Theme.of(context);
+    return Text(
+      'Donnez un nom clair, associez une catégorie et choisissez comment suivre votre progression.',
+      style: theme.textTheme.bodyMedium?.copyWith(
+        color: AppTheme.textSecondary.withValues(alpha: 0.85),
+        height: 1.45,
       ),
     );
   }
 
-  List<Widget> _buildFormContent(bool isEditing) {
-    return [
-      HabitFormHeader(isEditing: isEditing),
-      const SizedBox(height: 24),
-      _buildNameField(),
-      const SizedBox(height: 16),
-      _buildCategoryDropdown(),
-      const SizedBox(height: 16),
-      _buildTypeSelector(),
-      const SizedBox(height: 16),
-      _buildRecurrenceSelector(),
-      if (_selectedType == HabitType.quantitative) ...[
-        const SizedBox(height: 16),
-        _buildQuantitativeSection(),
-      ],
-      const SizedBox(height: 24),
-      HabitSubmitButton(
-        isEditing: isEditing,
-        onPressed: _submitForm,
+  Widget _buildPlanningCard(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppTheme.dividerColor.withValues(alpha: 0.6)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-    ];
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          HabitTypeSelector(
+            selectedType: _selectedType,
+            onTypeSelected: (type) {
+              if (type == _selectedType) {
+                return;
+              }
+              setState(() {
+                _selectedType = type;
+                if (_selectedType != HabitType.quantitative) {
+                  _targetController.clear();
+                  _unitController.clear();
+                  _targetValue = 1.0;
+                  _unit = '';
+                }
+              });
+            },
+          ),
+          const SizedBox(height: 20),
+          HabitRecurrenceSelector(
+            selectedRecurrence: _selectedRecurrence,
+            onRecurrenceChanged: (value) {
+              setState(() {
+                _selectedRecurrence = value;
+              });
+            },
+          ),
+          if (_selectedType == HabitType.quantitative) ...[
+            const SizedBox(height: 20),
+            _buildQuantitativeSection(),
+          ],
+        ],
+      ),
+    );
   }
 
   Widget _buildNameField() {
@@ -137,28 +233,6 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
       createCategoryValue: _createCategoryValue,
       onCategorySelected: _handleCategorySelection,
       onCreateCategory: _handleCreateCategory,
-    );
-  }
-
-  Widget _buildTypeSelector() {
-    return HabitTypeSelector(
-      selectedType: _selectedType,
-      onTypeSelected: (type) {
-        setState(() {
-          _selectedType = type;
-        });
-      },
-    );
-  }
-
-  Widget _buildRecurrenceSelector() {
-    return HabitRecurrenceSelector(
-      selectedRecurrence: _selectedRecurrence,
-      onRecurrenceChanged: (recurrence) {
-        setState(() {
-          _selectedRecurrence = recurrence;
-        });
-      },
     );
   }
 

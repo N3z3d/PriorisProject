@@ -52,79 +52,48 @@ class _EloBadgeState extends State<EloBadge>
 
     return AnimatedBuilder(
       animation: _pulseAnimation,
+      child: _EloBadgeContent(
+        tier: tier,
+        score: widget.score,
+        compact: widget.compact,
+      ),
       builder: (context, child) {
         return Container(
           padding: padding,
-          decoration: BoxDecoration(
-            // Multi-layer gradient background
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                tier.primaryColor.withValues(alpha: 0.15),
-                tier.secondaryColor.withValues(alpha: 0.12),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(widget.compact ? 14 : 16),
-            border: Border.all(
-              color: tier.primaryColor.withValues(alpha: 0.4),
-              width: 1.5,
-            ),
-            boxShadow: [
-              // Glow effect
-              BoxShadow(
-                color: tier.primaryColor.withValues(alpha: 0.2 * _pulseAnimation.value),
-                blurRadius: 12,
-                offset: const Offset(0, 2),
-              ),
-              // Depth shadow
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 6,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Tier icon with gradient
-              ShaderMask(
-                shaderCallback: (bounds) => LinearGradient(
-                  colors: [
-                    tier.primaryColor,
-                    tier.secondaryColor,
-                  ],
-                ).createShader(bounds),
-                child: Icon(
-                  tier.icon,
-                  size: widget.compact ? 14 : 16,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(width: 6),
-              // Score text with gradient
-              ShaderMask(
-                shaderCallback: (bounds) => LinearGradient(
-                  colors: [
-                    tier.primaryColor,
-                    tier.secondaryColor,
-                  ],
-                ).createShader(bounds),
-                child: Text(
-                  widget.score.toStringAsFixed(0),
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        fontSize: widget.compact ? 12 : 14,
-                        color: Colors.white,
-                        letterSpacing: 0.5,
-                      ),
-                ),
-              ),
-            ],
-          ),
+          decoration: _badgeDecoration(tier, widget.compact),
+          child: child,
         );
       },
+    );
+  }
+
+  BoxDecoration _badgeDecoration(_EloTier tier, bool compact) {
+    return BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          tier.primaryColor.withValues(alpha: 0.15),
+          tier.secondaryColor.withValues(alpha: 0.12),
+        ],
+      ),
+      borderRadius: BorderRadius.circular(compact ? 14 : 16),
+      border: Border.all(
+        color: tier.primaryColor.withValues(alpha: 0.4),
+        width: 1.5,
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: tier.primaryColor.withValues(alpha: 0.2 * _pulseAnimation.value),
+          blurRadius: 12,
+          offset: const Offset(0, 2),
+        ),
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.05),
+          blurRadius: 6,
+          offset: const Offset(0, 2),
+        ),
+      ],
     );
   }
 
@@ -166,4 +135,93 @@ class _EloTier {
     required this.secondaryColor,
     required this.icon,
   });
+}
+
+class _EloBadgeContent extends StatelessWidget {
+  const _EloBadgeContent({
+    required this.tier,
+    required this.score,
+    required this.compact,
+  });
+
+  final _EloTier tier;
+  final double score;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final textStyle = Theme.of(context).textTheme.labelLarge?.copyWith(
+          fontWeight: FontWeight.w800,
+          fontSize: compact ? 12 : 14,
+          color: Colors.white,
+          letterSpacing: 0.5,
+        );
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _GradientIcon(
+          icon: tier.icon,
+          primary: tier.primaryColor,
+          secondary: tier.secondaryColor,
+          size: compact ? 14 : 16,
+        ),
+        const SizedBox(width: 6),
+        _GradientText(
+          text: score.toStringAsFixed(0),
+          primary: tier.primaryColor,
+          secondary: tier.secondaryColor,
+          style: textStyle,
+        ),
+      ],
+    );
+  }
+}
+
+class _GradientIcon extends StatelessWidget {
+  const _GradientIcon({
+    required this.icon,
+    required this.primary,
+    required this.secondary,
+    required this.size,
+  });
+
+  final IconData icon;
+  final Color primary;
+  final Color secondary;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShaderMask(
+      shaderCallback: (bounds) => LinearGradient(
+        colors: [primary, secondary],
+      ).createShader(bounds),
+      child: Icon(icon, size: size, color: Colors.white),
+    );
+  }
+}
+
+class _GradientText extends StatelessWidget {
+  const _GradientText({
+    required this.text,
+    required this.primary,
+    required this.secondary,
+    required this.style,
+  });
+
+  final String text;
+  final Color primary;
+  final Color secondary;
+  final TextStyle? style;
+
+  @override
+  Widget build(BuildContext context) {
+    return ShaderMask(
+      shaderCallback: (bounds) => LinearGradient(
+        colors: [primary, secondary],
+      ).createShader(bounds),
+      child: Text(text, style: style),
+    );
+  }
 }

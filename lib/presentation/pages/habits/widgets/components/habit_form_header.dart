@@ -8,21 +8,30 @@ class HabitFormHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final title = isEditing ? 'Modifier l\'habitude' : 'Nouvelle habitude';
+
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Icon(
-          Icons.add_circle_outline,
-          color: AppTheme.accentColor,
-          size: 32,
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: AppTheme.accentColor.withValues(alpha: 0.12),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            isEditing ? Icons.edit : Icons.auto_awesome,
+            color: AppTheme.accentColor,
+            size: 28,
+          ),
         ),
         const SizedBox(width: 16),
         Text(
-          isEditing ? 'Modifier l\'habitude' : 'Nouvelle habitude',
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: AppTheme.textPrimary,
-          ),
+          title,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: AppTheme.textPrimary,
+              ),
         ),
       ],
     );

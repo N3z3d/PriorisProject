@@ -181,147 +181,165 @@ class _RankingItemState extends State<_RankingItem> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final rankColor = _getRankColor(widget.index);
-
     return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
+      onEnter: (_) => _toggleHover(true),
+      onExit: (_) => _toggleHover(false),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 6),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOutCubic,
-          decoration: BoxDecoration(
-            color: AppTheme.surfaceColor,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: _isHovered
-                  ? rankColor.withValues(alpha: 0.3)
-                  : AppTheme.dividerColor.withValues(alpha: 0.5),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: _isHovered
-                    ? rankColor.withValues(alpha: 0.1)
-                    : Colors.black.withValues(alpha: 0.05),
-                blurRadius: _isHovered ? 16 : 8,
-                offset: Offset(0, _isHovered ? 6 : 3),
-              ),
-            ],
+          decoration: _containerDecoration(rankColor),
+          child: _buildTile(context, rankColor),
+        ),
+      ),
+    );
+  }
+
+  void _toggleHover(bool value) {
+    if (_isHovered != value) {
+      setState(() => _isHovered = value);
+    }
+  }
+
+  BoxDecoration _containerDecoration(Color rankColor) {
+    return BoxDecoration(
+      color: AppTheme.surfaceColor,
+      borderRadius: BorderRadius.circular(18),
+      border: Border.all(
+        color: _isHovered
+            ? rankColor.withValues(alpha: 0.3)
+            : AppTheme.dividerColor.withValues(alpha: 0.5),
+        width: 1.5,
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: _isHovered
+              ? rankColor.withValues(alpha: 0.1)
+              : Colors.black.withValues(alpha: 0.05),
+          blurRadius: _isHovered ? 16 : 8,
+          offset: Offset(0, _isHovered ? 6 : 3),
+        ),
+      ],
+    );
+  }
+
+  ListTile _buildTile(BuildContext context, Color rankColor) {
+    final textTheme = Theme.of(context).textTheme;
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+      leading: _buildLeadingBadge(textTheme, rankColor),
+      title: Text(
+        widget.task.title,
+        style: textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: AppTheme.textPrimary,
+          fontSize: 15,
+        ),
+      ),
+      subtitle: widget.hideEloScores ? null : _buildEloSubtitle(textTheme),
+      trailing: _buildDragHandle(),
+    );
+  }
+
+  Widget _buildLeadingBadge(TextTheme textTheme, Color rankColor) {
+    return Container(
+      width: 44,
+      height: 44,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            rankColor.withValues(alpha: 0.15),
+            rankColor.withValues(alpha: 0.1),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: rankColor.withValues(alpha: 0.3),
+          width: 1.5,
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            _getRankIcon(widget.index),
+            size: 16,
+            color: rankColor,
           ),
-          child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 18,
-              vertical: 14,
+          const SizedBox(height: 2),
+          Text(
+            '${widget.index + 1}',
+            style: textTheme.labelSmall?.copyWith(
+              fontWeight: FontWeight.w800,
+              color: rankColor,
+              fontSize: 10,
             ),
-            leading: Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    rankColor.withValues(alpha: 0.15),
-                    rankColor.withValues(alpha: 0.1),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: rankColor.withValues(alpha: 0.3),
-                  width: 1.5,
-                ),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    _getRankIcon(widget.index),
-                    size: 16,
-                    color: rankColor,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEloSubtitle(TextTheme textTheme) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 6),
+      child: Text(
+        'ELO ${widget.task.eloScore.toStringAsFixed(0)}',
+        style: textTheme.bodySmall?.copyWith(
+          color: AppTheme.textSecondary.withValues(alpha: 0.75),
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.2,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDragHandle() {
+    return ReorderableDragStartListener(
+      index: widget.index,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOutCubic,
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        decoration: BoxDecoration(
+          color: _isHovered ? AppTheme.surfaceColor : AppTheme.grey100,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: _isHovered
+                ? AppTheme.dividerColor.withValues(alpha: 0.6)
+                : AppTheme.dividerColor.withValues(alpha: 0.3),
+          ),
+          boxShadow: _isHovered
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '${widget.index + 1}',
-                    style: textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
-                      color: rankColor,
-                      fontSize: 10,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            title: Text(
-              widget.task.title,
-              style: textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: AppTheme.textPrimary,
-                fontSize: 15,
-              ),
-            ),
-            subtitle: widget.hideEloScores
-                ? null
-                : Padding(
-                    padding: const EdgeInsets.only(top: 6),
-                    child: Text(
-                      'ELO ${widget.task.eloScore.toStringAsFixed(0)}',
-                      style: textTheme.bodySmall?.copyWith(
-                        color: AppTheme.textSecondary.withValues(alpha: 0.75),
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.2,
-                      ),
-                    ),
-                  ),
-            trailing: ReorderableDragStartListener(
-              index: widget.index,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                curve: Curves.easeOutCubic,
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                ]
+              : const [],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: List.generate(3, (barIndex) {
+            return Padding(
+              padding: EdgeInsets.only(bottom: barIndex == 2 ? 0 : 3),
+              child: Container(
+                width: 12,
+                height: 2,
                 decoration: BoxDecoration(
-                  color: _isHovered
-                      ? AppTheme.surfaceColor
-                      : AppTheme.grey100,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: _isHovered
-                        ? AppTheme.dividerColor.withValues(alpha: 0.6)
-                        : AppTheme.dividerColor.withValues(alpha: 0.3),
+                  color: AppTheme.textSecondary.withValues(
+                    alpha: _isHovered ? 0.9 : 0.6,
                   ),
-                  boxShadow: _isHovered
-                      ? [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.08),
-                            blurRadius: 6,
-                            offset: const Offset(0, 2),
-                          ),
-                        ]
-                      : const [],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: List.generate(3, (barIndex) {
-                    return Padding(
-                      padding: EdgeInsets.only(bottom: barIndex == 2 ? 0 : 3),
-                      child: Container(
-                        width: 12,
-                        height: 2,
-                        decoration: BoxDecoration(
-                          color: AppTheme.textSecondary.withValues(
-                            alpha: _isHovered ? 0.9 : 0.6,
-                          ),
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                      ),
-                    );
-                  }),
+                  borderRadius: BorderRadius.circular(999),
                 ),
               ),
-            ),
-          ),
+            );
+          }),
         ),
       ),
     );
@@ -379,106 +397,94 @@ class _PriorityVsBadgeState extends State<PriorityVsBadge>
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Animated gradient divider lines
-          Positioned.fill(
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    height: 2,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          AppTheme.primaryColor.withValues(alpha: 0.0),
-                          AppTheme.primaryColor.withValues(alpha: 0.3),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 60),
-                Expanded(
-                  child: Container(
-                    height: 2,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          AppTheme.primaryColor.withValues(alpha: 0.3),
-                          AppTheme.primaryColor.withValues(alpha: 0.0),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _buildDividerLines(),
+          _buildAnimatedBadge(context),
+        ],
+      ),
+    );
+  }
 
-          // Animated VS badge
-          AnimatedBuilder(
-            animation: _pulseController,
-            builder: (context, child) {
-              return Transform.scale(
-                scale: _scaleAnimation.value,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    // Gradient background
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        AppTheme.primaryColor.withValues(alpha: 0.15),
-                        AppTheme.accentColor.withValues(alpha: 0.12),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      width: 2,
-                      color: AppTheme.primaryColor.withValues(alpha: 0.4),
-                    ),
-                    boxShadow: [
-                      // Animated glow effect
-                      BoxShadow(
-                        color: AppTheme.primaryColor.withValues(
-                          alpha: _glowAnimation.value,
-                        ),
-                        blurRadius: 20,
-                        offset: const Offset(0, 4),
-                      ),
-                      // Depth shadow
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: ShaderMask(
-                    shaderCallback: (bounds) => LinearGradient(
-                      colors: [
-                        AppTheme.primaryColor,
-                        AppTheme.accentColor,
-                      ],
-                    ).createShader(bounds),
-                    child: Text(
-                      'VS',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w900,
-                            fontSize: 16,
-                            letterSpacing: 2.0,
-                            color: Colors.white,
-                          ),
-                    ),
-                  ),
-                ),
-              );
-            },
+  Widget _buildDividerLines() {
+    return Positioned.fill(
+      child: Row(
+        children: [
+          Expanded(child: _dividerGradient(AppTheme.primaryColor.withValues(alpha: 0.0), AppTheme.primaryColor.withValues(alpha: 0.3))),
+          const SizedBox(width: 60),
+          Expanded(child: _dividerGradient(AppTheme.primaryColor.withValues(alpha: 0.3), AppTheme.primaryColor.withValues(alpha: 0.0))),
+        ],
+      ),
+    );
+  }
+
+  Widget _dividerGradient(Color start, Color end) {
+    return Container(
+      height: 2,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [start, end],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAnimatedBadge(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _pulseController,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _scaleAnimation.value,
+          child: _buildBadgeShell(context),
+        );
+      },
+    );
+  }
+
+  Widget _buildBadgeShell(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppTheme.primaryColor.withValues(alpha: 0.15),
+            AppTheme.accentColor.withValues(alpha: 0.12),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          width: 2,
+          color: AppTheme.primaryColor.withValues(alpha: 0.4),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.primaryColor.withValues(alpha: _glowAnimation.value),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
+      ),
+      child: ShaderMask(
+        shaderCallback: (bounds) => LinearGradient(
+          colors: [
+            AppTheme.primaryColor,
+            AppTheme.accentColor,
+          ],
+        ).createShader(bounds),
+        child: Text(
+          'VS',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w900,
+                fontSize: 16,
+                letterSpacing: 2.0,
+                color: Colors.white,
+              ),
+        ),
       ),
     );
   }

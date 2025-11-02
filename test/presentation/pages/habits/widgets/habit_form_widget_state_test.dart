@@ -16,9 +16,12 @@ void main() {
             body: StatefulBuilder(
               builder: (context, setState) {
                 triggerRebuild = setState;
-                return HabitFormWidget(
-                  onSubmit: (_) {},
-                  availableCategories: const ['Personnel'],
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: HabitFormWidget(
+                    onSubmit: (_) {},
+                    availableCategories: const ['Personnel'],
+                  ),
                 );
               },
             ),
@@ -40,17 +43,19 @@ void main() {
       expect(field.controller.text, 'Nouvelle habitude');
     });
 
-    testWidgets('ajoute une catégorie personnalisée et la conserve',
-        (tester) async {
+    testWidgets('ajoute une catégorie personnalisée et la conserve', (tester) async {
       final fakeService = HabitCategoryServiceSpy(createdValue: 'Business');
 
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: HabitFormWidget(
-              onSubmit: (_) {},
-              availableCategories: const ['Personnel'],
-              categoryService: fakeService,
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: HabitFormWidget(
+                onSubmit: (_) {},
+                availableCategories: const ['Personnel'],
+                categoryService: fakeService,
+              ),
             ),
           ),
         ),
@@ -59,24 +64,26 @@ void main() {
       await tester.tap(find.byKey(const ValueKey('habit-category-dropdown')));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('+ Créer une nouvelle catégorie…'));
+      await tester.tap(find.byKey(const ValueKey('habit-category-create-item')));
       await tester.pumpAndSettle();
 
       expect(fakeService.promptInvocationCount, 1);
       expect(find.text('Business'), findsWidgets);
     });
 
-    testWidgets('annulation de création n\'altère pas la sélection',
-        (tester) async {
+    testWidgets('annulation de création n\'altère pas la sélection', (tester) async {
       final fakeService = HabitCategoryServiceSpy(createdValue: null);
 
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: HabitFormWidget(
-              onSubmit: (_) {},
-              availableCategories: const ['Personnel'],
-              categoryService: fakeService,
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: HabitFormWidget(
+                onSubmit: (_) {},
+                availableCategories: const ['Personnel'],
+                categoryService: fakeService,
+              ),
             ),
           ),
         ),
@@ -84,12 +91,11 @@ void main() {
 
       await tester.tap(find.byKey(const ValueKey('habit-category-dropdown')));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('+ Créer une nouvelle catégorie…'));
+      await tester.tap(find.byKey(const ValueKey('habit-category-create-item')));
       await tester.pumpAndSettle();
 
       expect(fakeService.promptInvocationCount, 1);
 
-      // Rouvre le menu pour vérifier qu'aucune nouvelle entrée n'est ajoutée.
       await tester.tap(find.byKey(const ValueKey('habit-category-dropdown')));
       await tester.pumpAndSettle();
 

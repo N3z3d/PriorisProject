@@ -31,17 +31,24 @@ void main() {
       WidgetTester tester, {
       required Future<void> Function(Task winner, Task loser) onSelect,
       bool hideElo = true,
+      List<Task>? customTasks,
+      Size? viewportSize,
     }) {
+      final tasks = customTasks ?? [taskA, taskB];
       return tester.pumpWidget(
         MaterialApp(
           locale: const Locale('fr'),
           supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           home: Scaffold(
-            body: PriorityWinnerArena(
-              tasks: [taskA, taskB],
-              hideEloScores: hideElo,
-              onSelectTask: onSelect,
+            body: SizedBox(
+              width: viewportSize?.width,
+              height: viewportSize?.height,
+              child: PriorityWinnerArena(
+                tasks: tasks,
+                hideEloScores: hideElo,
+                onSelectTask: onSelect,
+              ),
             ),
           ),
         ),
@@ -60,7 +67,7 @@ void main() {
         },
       );
 
-      await tester.tap(find.byKey(const ValueKey('priority-duel-card-task-a')));
+      await tester.tap(find.byKey(const ValueKey('duel-card-task-a')));
       await tester.pump();
 
       expect(winner, equals(taskA));
@@ -76,6 +83,30 @@ void main() {
       await tester.pump();
 
       expect(find.textContaining('ELO'), findsNothing);
+    });
+
+    testWidgets(
+        'utilise une disposition en grille reguliere pour 4 cartes sur grand ecran',
+        (tester) async {
+      final tasks = List.generate(
+        4,
+        (index) => Task(
+          id: 'task-$index',
+          title: 'Carte $index',
+          eloScore: 1200 + (index * 20),
+          createdAt: DateTime(2024, 10, index + 1),
+        ),
+      );
+
+      await _pumpArena(
+        tester,
+        onSelect: (_, __) async {},
+        customTasks: tasks,
+        viewportSize: const Size(1280, 800),
+      );
+      await tester.pump();
+
+      expect(find.byType(GridView), findsOneWidget);
     });
   });
 

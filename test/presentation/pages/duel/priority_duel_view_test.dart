@@ -27,7 +27,10 @@ void main() {
       required bool hideElo,
       required Future<void> Function(List<Task> ordered) onSubmitRanking,
       required VoidCallback onToggleElo,
+      List<Task>? customTasks,
+      int? cardsPerRound,
     }) {
+      final viewTasks = customTasks ?? tasks;
       return tester.pumpWidget(
         MaterialApp(
           locale: const Locale('fr'),
@@ -35,10 +38,10 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           home: Scaffold(
             body: PriorityDuelView(
-              tasks: tasks,
+              tasks: viewTasks,
               hideEloScores: hideElo,
               mode: mode,
-              cardsPerRound: 3,
+              cardsPerRound: cardsPerRound ?? viewTasks.length,
               onSelectTask: (_, __) async {},
               onSubmitRanking: onSubmitRanking,
               onSkip: () async {},
@@ -114,6 +117,78 @@ void main() {
       await tester.pump();
 
       expect(toggled, isTrue);
+    });
+
+    testWidgets('affiche VS sous la consigne pour un duel a 3 cartes',
+        (tester) async {
+      final customTasks = List.generate(
+        3,
+        (index) => Task(
+          id: 'task-${index + 1}',
+          title: 'Carte ${index + 1}',
+          eloScore: 1200 + index * 10,
+          createdAt: DateTime(2024, 10, index + 1),
+        ),
+      );
+
+      await _pumpView(
+        tester,
+        mode: DuelMode.winner,
+        hideElo: true,
+        onSubmitRanking: (_) async {},
+        onToggleElo: () {},
+        customTasks: customTasks,
+        cardsPerRound: 3,
+      );
+
+      await tester.pump();
+
+      final instructionFinder = find.text('Choisissez 1 gagnant');
+      final vsFinder = find.text('VS');
+
+      expect(instructionFinder, findsOneWidget);
+      expect(vsFinder, findsOneWidget);
+
+      final instructionRect = tester.getRect(instructionFinder);
+      final vsRect = tester.getRect(vsFinder);
+
+      expect(vsRect.top, greaterThan(instructionRect.bottom));
+    });
+
+    testWidgets('affiche VS sous la consigne pour un duel a 4 cartes',
+        (tester) async {
+      final customTasks = List.generate(
+        4,
+        (index) => Task(
+          id: 'task-${index + 1}',
+          title: 'Carte ${index + 1}',
+          eloScore: 1200 + index * 10,
+          createdAt: DateTime(2024, 10, index + 1),
+        ),
+      );
+
+      await _pumpView(
+        tester,
+        mode: DuelMode.winner,
+        hideElo: true,
+        onSubmitRanking: (_) async {},
+        onToggleElo: () {},
+        customTasks: customTasks,
+        cardsPerRound: 4,
+      );
+
+      await tester.pump();
+
+      final instructionFinder = find.text('Choisissez 1 gagnant');
+      final vsFinder = find.text('VS');
+
+      expect(instructionFinder, findsOneWidget);
+      expect(vsFinder, findsOneWidget);
+
+      final instructionRect = tester.getRect(instructionFinder);
+      final vsRect = tester.getRect(vsFinder);
+
+      expect(vsRect.top, greaterThan(instructionRect.bottom));
     });
   });
 }

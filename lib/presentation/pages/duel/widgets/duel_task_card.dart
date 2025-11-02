@@ -245,99 +245,108 @@ class _CardContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Stack(
       children: [
-        if (onEdit != null)
-          Positioned(
-            top: 0,
-            right: 0,
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: onEdit,
-                borderRadius: BorderRadius.circular(20),
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withValues(alpha: 0.05),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Icon(
-                    Icons.edit_rounded,
-                    size: 18,
-                    color: AppTheme.primaryColor.withValues(alpha: 0.7),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        Align(
-          alignment: Alignment.center,
-          child: Column(
-            key: const ValueKey('duel-card-content-column'),
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Tooltip(
-                message: task.title,
-                child: Text(
-                  task.title,
-                  maxLines: _getTitleMaxLines(),
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    fontSize: _getTitleFontSize(),
-                    color: AppTheme.textPrimary,
-                    height: 1.35,
-                    letterSpacing: -0.3,
-                  ),
-                ),
-              ),
-              if (!hideElo) ...[
-                const SizedBox(height: 6),
-                Text(
-                  'ELO ${task.eloScore.toStringAsFixed(0)}',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: AppTheme.textSecondary.withValues(alpha: 0.75),
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.2,
-                  ),
-                ),
-              ],
-              if (_hasDescription) ...[
-                SizedBox(height: _getDescriptionSpacing()),
-                Tooltip(
-                  message: task.description!.trim(),
-                  child: Text(
-                    task.description!.trim(),
-                    maxLines: _getDescriptionMaxLines(),
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: AppTheme.textSecondary.withValues(alpha: 0.95),
-                      height: 1.5,
-                      fontSize: _getDescriptionFontSize(),
-                      letterSpacing: 0.1,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-              SizedBox(height: _getMetadataSpacing()),
-              _MetadataSection(task: task, isHovered: isHovered),
-            ],
-          ),
-        ),
+        if (onEdit != null) _buildEditButton(),
+        Center(child: _buildContentColumn(context)),
       ],
     );
   }
 
   bool get _hasDescription =>
       task.description != null && task.description!.trim().isNotEmpty;
+
+  Widget _buildEditButton() {
+    return Positioned(
+      top: 0,
+      right: 0,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onEdit,
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppTheme.primaryColor.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Icon(
+              Icons.edit_rounded,
+              size: 18,
+              color: AppTheme.primaryColor.withValues(alpha: 0.7),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContentColumn(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Column(
+      key: const ValueKey('duel-card-content-column'),
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        _buildTitle(textTheme),
+        if (!hideElo) ...[const SizedBox(height: 6), _buildElo(textTheme)],
+        if (_hasDescription) ...[SizedBox(height: _getDescriptionSpacing()), _buildDescription(textTheme)],
+        SizedBox(height: _getMetadataSpacing()),
+        _MetadataSection(task: task, isHovered: isHovered),
+      ],
+    );
+  }
+
+  Widget _buildTitle(TextTheme textTheme) {
+    return Tooltip(
+      message: task.title,
+      child: Text(
+        task.title,
+        maxLines: _getTitleMaxLines(),
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
+        style: textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.w700,
+          fontSize: _getTitleFontSize(),
+          color: AppTheme.textPrimary,
+          height: 1.35,
+          letterSpacing: -0.3,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildElo(TextTheme textTheme) {
+    return Text(
+      'ELO ${task.eloScore.toStringAsFixed(0)}',
+      style: textTheme.bodySmall?.copyWith(
+        color: AppTheme.textSecondary.withValues(alpha: 0.75),
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.2,
+      ),
+    );
+  }
+
+  Widget _buildDescription(TextTheme textTheme) {
+    return Tooltip(
+      message: task.description!.trim(),
+      child: Text(
+        task.description!.trim(),
+        maxLines: _getDescriptionMaxLines(),
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
+        style: textTheme.bodyMedium?.copyWith(
+          color: AppTheme.textSecondary.withValues(alpha: 0.95),
+          height: 1.5,
+          fontSize: _getDescriptionFontSize(),
+          letterSpacing: 0.1,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
 
   /// Adaptive typography based on card size
   double _getTitleFontSize() {

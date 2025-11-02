@@ -5,6 +5,44 @@ import 'package:prioris/presentation/pages/duel/widgets/components/priority_duel
 
 export 'package:prioris/presentation/pages/duel/widgets/duel_task_card.dart' show DuelCardSize;
 
+typedef _WinnerSelection = Future<void> Function(Task winner, List<Task> losers);
+
+Widget _buildScrollableWinnerList({
+  required List<Task> tasks,
+  required double spacing,
+  required Widget Function(Task task) buildCard,
+}) {
+  return SingleChildScrollView(
+    padding: const EdgeInsets.all(16),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        for (var i = 0; i < tasks.length; i++) ...[
+          Center(child: buildCard(tasks[i])),
+          if (i < tasks.length - 1) SizedBox(height: spacing),
+        ],
+      ],
+    ),
+  );
+}
+
+Widget _buildSelectableDuelCard({
+  required Task task,
+  required List<Task> allTasks,
+  required bool hideEloScores,
+  required _WinnerSelection onSelectWinner,
+  required DuelCardSize size,
+}) {
+  final losers = allTasks.where((candidate) => candidate.id != task.id).toList();
+  return DuelTaskCard(
+    key: ValueKey('duel-card-${task.id}'),
+    task: task,
+    hideElo: hideEloScores,
+    onTap: () => onSelectWinner(task, losers),
+    cardSize: size,
+  );
+}
+
 /// Layout pour un duel a 2 cartes avec badge VS strictement centre.
 ///
 /// Responsive:
@@ -86,13 +124,12 @@ class DuelTwoCardsLayout extends StatelessWidget {
   }
 
   Widget _buildCard(Task task) {
-    final losers = tasks.where((t) => t.id != task.id).toList();
-    return DuelTaskCard(
-      key: ValueKey('duel-card-${task.id}'),
+    return _buildSelectableDuelCard(
       task: task,
-      hideElo: hideEloScores,
-      onTap: () => onSelectWinner(task, losers),
-      cardSize: DuelCardSize.standard, // Standard size for 2-card duels
+      allTasks: tasks,
+      hideEloScores: hideEloScores,
+      onSelectWinner: onSelectWinner,
+      size: DuelCardSize.standard,
     );
   }
 }
@@ -134,17 +171,10 @@ class DuelThreeCardsLayout extends StatelessWidget {
   }
 
   Widget _buildVerticalLayout() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          for (int i = 0; i < tasks.length; i++) ...[
-            Center(child: _buildCard(tasks[i])),
-            if (i < tasks.length - 1) const SizedBox(height: 20),
-          ],
-        ],
-      ),
+    return _buildScrollableWinnerList(
+      tasks: tasks,
+      spacing: 20,
+      buildCard: _buildCard,
     );
   }
 
@@ -196,13 +226,12 @@ class DuelThreeCardsLayout extends StatelessWidget {
   }
 
   Widget _buildCard(Task task) {
-    final losers = tasks.where((t) => t.id != task.id).toList();
-    return DuelTaskCard(
-      key: ValueKey('duel-card-${task.id}'),
+    return _buildSelectableDuelCard(
       task: task,
-      hideElo: hideEloScores,
-      onTap: () => onSelectWinner(task, losers),
-      cardSize: DuelCardSize.compact3,
+      allTasks: tasks,
+      hideEloScores: hideEloScores,
+      onSelectWinner: onSelectWinner,
+      size: DuelCardSize.compact3,
     );
   }
 }
@@ -241,45 +270,47 @@ class DuelFourCardsLayout extends StatelessWidget {
   }
 
   Widget _buildVerticalLayout() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          for (int i = 0; i < tasks.length; i++) ...[
-            Center(child: _buildCard(tasks[i])),
-            if (i < tasks.length - 1) const SizedBox(height: 20),
-          ],
-        ],
-      ),
+    return _buildScrollableWinnerList(
+      tasks: tasks,
+      spacing: 20,
+      buildCard: _buildCard,
     );
   }
 
   Widget _buildGridLayout(BoxConstraints constraints) {
-    final isWide = constraints.maxWidth >= 1024;
-    final cardMaxWidth = isWide ? 280.0 : 260.0;
+    final isUltraWide = constraints.maxWidth >= 1400;
+    final crossAxisCount = isUltraWide ? 4 : 2;
+    final maxWidth = isUltraWide ? 1400.0 : 960.0;
+    final cardMaxWidth = isUltraWide ? 260.0 : 280.0;
 
     return Center(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 1200),
+        constraints: BoxConstraints(maxWidth: maxWidth),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          child: Wrap(
-            spacing: 20,
-            runSpacing: 18,
-            alignment: WrapAlignment.center,
-            runAlignment: WrapAlignment.center,
-            children: tasks
-                .map(
-                  (task) => ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minWidth: 220,
-                      maxWidth: cardMaxWidth,
-                    ),
-                    child: _buildCard(task),
+          child: GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            primary: false,
+            itemCount: tasks.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: crossAxisCount,
+              mainAxisSpacing: 20,
+              crossAxisSpacing: 20,
+              childAspectRatio: 0.86,
+            ),
+            itemBuilder: (context, index) {
+              final task = tasks[index];
+              return Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minWidth: 220,
+                    maxWidth: cardMaxWidth,
                   ),
-                )
-                .toList(),
+                  child: _buildCard(task),
+                ),
+              );
+            },
           ),
         ),
       ),
@@ -287,13 +318,12 @@ class DuelFourCardsLayout extends StatelessWidget {
   }
 
   Widget _buildCard(Task task) {
-    final losers = tasks.where((t) => t.id != task.id).toList();
-    return DuelTaskCard(
-      key: ValueKey('duel-card-${task.id}'),
+    return _buildSelectableDuelCard(
       task: task,
-      hideElo: hideEloScores,
-      onTap: () => onSelectWinner(task, losers),
-      cardSize: DuelCardSize.compact4,
+      allTasks: tasks,
+      hideEloScores: hideEloScores,
+      onSelectWinner: onSelectWinner,
+      size: DuelCardSize.compact4,
     );
   }
 }

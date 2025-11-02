@@ -19,14 +19,19 @@ class HabitCategoryDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final effectiveValue = selectedValue.isEmpty ? '' : selectedValue;
 
     return DropdownButtonFormField<String>(
       key: const ValueKey('habit-category-dropdown'),
       value: effectiveValue,
-      decoration: const InputDecoration(
+      isExpanded: true,
+      decoration: InputDecoration(
         labelText: 'Catégorie (facultatif)',
-        prefixIcon: Icon(Icons.category),
+        prefixIcon: const Icon(Icons.category),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
       ),
       hint: const Text('Sélectionner une catégorie'),
       items: [
@@ -41,13 +46,31 @@ class HabitCategoryDropdown extends StatelessWidget {
           ),
         ),
         DropdownMenuItem<String>(
+          key: const ValueKey('habit-category-create-item'),
           value: createCategoryValue,
-          child: Row(
-            children: const [
-              Icon(Icons.add, size: 18, color: AppTheme.accentColor),
-              SizedBox(width: 8),
-              Text('+ Créer une nouvelle catégorie…'),
-            ],
+          child: Text.rich(
+            TextSpan(
+              children: [
+                WidgetSpan(
+                  alignment: PlaceholderAlignment.middle,
+                  child: Icon(
+                    Icons.add,
+                    size: 18,
+                    color: AppTheme.accentColor,
+                  ),
+                ),
+                const WidgetSpan(
+                  child: SizedBox(width: 8),
+                ),
+                TextSpan(
+                  text: '+ Créer une nouvelle catégorie…',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.accentColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],

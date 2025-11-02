@@ -174,6 +174,11 @@ class _PriorityDuelViewState extends State<PriorityDuelView> {
         _buildSettingsBar(),
         const SizedBox(height: 16),
         PriorityDuelInstruction(mode: widget.mode),
+        if (_shouldShowWinnerVsBadge()) ...[
+          const SizedBox(height: 12),
+          const Center(child: PriorityVsBadge()),
+          const SizedBox(height: 4),
+        ],
         const SizedBox(height: 20),
         Expanded(
           child: Align(
@@ -245,6 +250,13 @@ class _PriorityDuelViewState extends State<PriorityDuelView> {
             height: 1.4,
           ),
     );
+  }
+
+  bool _shouldShowWinnerVsBadge() {
+    if (widget.mode != DuelMode.winner) {
+      return false;
+    }
+    return widget.cardsPerRound >= 3;
   }
 
   void _handleRankingReorder(int oldIndex, int newIndex) {

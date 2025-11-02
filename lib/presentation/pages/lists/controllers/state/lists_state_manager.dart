@@ -32,20 +32,23 @@ class ListsStateManager {
   }
 
   ListsState addList(ListsState state, CustomList list) {
-    final updated = [...state.lists, list];
-    return _withLists(state, updated);
+    return _modifyLists(state, (lists) => [...lists, list]);
   }
 
   ListsState updateList(ListsState state, CustomList list) {
-    final updated = state.lists
-        .map((existing) => existing.id == list.id ? list : existing)
-        .toList();
-    return _withLists(state, updated);
+    return _modifyLists(
+      state,
+      (lists) => lists
+          .map((existing) => existing.id == list.id ? list : existing)
+          .toList(),
+    );
   }
 
   ListsState removeList(ListsState state, String listId) {
-    final updated = state.lists.where((list) => list.id != listId).toList();
-    return _withLists(state, updated);
+    return _modifyLists(
+      state,
+      (lists) => lists.where((list) => list.id != listId).toList(),
+    );
   }
 
   ListsState addItem(ListsState state, String listId, ListItem item) {
@@ -143,5 +146,13 @@ class ListsStateManager {
       isLoading: false,
       error: null,
     );
+  }
+
+  ListsState _modifyLists(
+    ListsState state,
+    List<CustomList> Function(List<CustomList>) transform,
+  ) {
+    final updated = transform(state.lists);
+    return _withLists(state, updated);
   }
 }

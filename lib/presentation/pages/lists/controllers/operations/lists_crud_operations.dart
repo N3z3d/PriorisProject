@@ -21,20 +21,15 @@ class ListsCrudOperations {
     required this.logger,
   });
 
-  Future<ListsState> loadLists(ListsState current) async {
-    final lists = await persistence.loadAllLists();
-    final sanitized = validator.sanitizeLists(lists);
-    final filtered = filterManager.applyFilters(sanitized, current);
-    final baseState = stateManager.replaceLists(current, sanitized);
-    return stateManager.updateFilteredLists(baseState, filtered);
+  Future<ListsState> loadLists(ListsState current) {
+    return _loadAndFilter(current, () => persistence.loadAllLists());
   }
 
-  Future<ListsState> forceReload(ListsState current) async {
-    final lists = await persistence.forceReloadFromPersistence();
-    final sanitized = validator.sanitizeLists(lists);
-    final filtered = filterManager.applyFilters(sanitized, current);
-    final baseState = stateManager.replaceLists(current, sanitized);
-    return stateManager.updateFilteredLists(baseState, filtered);
+  Future<ListsState> forceReload(ListsState current) {
+    return _loadAndFilter(
+      current,
+      () => persistence.forceReloadFromPersistence(),
+    );
   }
 
   Future<ListsState> clearAllData(ListsState current) async {
@@ -99,8 +94,7 @@ class ListsCrudOperations {
 
   Future<ListsState> changeSortOption(ListsState current, SortOption option) async {
     final updated = stateManager.updateFilters(current, sortOption: option);
-    final filtered = filterManager.applyFilters(updated.lists, updated);
-    return stateManager.updateFilteredLists(updated, filtered);
+    return _applyFilters(updated);
   }
 
   ListsState updateFilters(
@@ -119,8 +113,17 @@ class ListsCrudOperations {
       showInProgress: showInProgress,
       selectedDateFilter: selectedDateFilter,
     );
-    final filtered = filterManager.applyFilters(updated.lists, updated);
-    return stateManager.updateFilteredLists(updated, filtered);
+    return _applyFilters(updated);
+  }
+
+  Future<ListsState> _loadAndFilter(
+    ListsState current,
+    Future<List<CustomList>> Function() loader,
+  ) async {
+    final lists = await loader();
+    final sanitized = validator.sanitizeLists(lists);
+    final baseState = stateManager.replaceLists(current, sanitized);
+    return _applyFilters(baseState);
   }
 
   ListsState _applyFilters(ListsState state) {
