@@ -108,6 +108,76 @@ void main() {
 
       expect(find.byType(GridView), findsOneWidget);
     });
+
+    testWidgets(
+        'centre verticalement le contenu des cartes pour la disposition desktop a 3 cartes',
+        (tester) async {
+      final tasks = List.generate(
+        3,
+        (index) => Task(
+          id: 'task-$index',
+          title: 'Carte $index',
+          eloScore: 1300 + index * 20,
+          createdAt: DateTime(2024, 10, index + 1),
+        ),
+      );
+
+      await _pumpArena(
+        tester,
+        onSelect: (_, __) async {},
+        customTasks: tasks,
+        viewportSize: const Size(1280, 800),
+      );
+      await tester.pump();
+
+      final cardFinder = find.byKey(const ValueKey('duel-card-task-0'));
+      final cardRect = tester.getRect(cardFinder);
+      final titleFinder = find.descendant(
+        of: cardFinder,
+        matching: find.text('Carte 0'),
+      );
+      final titleRect = tester.getRect(titleFinder);
+
+      final verticalOffset =
+          (cardRect.center.dy - titleRect.center.dy).abs();
+
+      expect(verticalOffset, lessThan(12),
+          reason:
+              'Le titre doit rester visuellement centré dans la carte (offset actuel: $verticalOffset)');
+    });
+
+    testWidgets(
+        'aligne regulierement les cartes sur deux lignes pour le layout 4 cartes standard desktop',
+        (tester) async {
+      final tasks = List.generate(
+        4,
+        (index) => Task(
+          id: 'task-$index',
+          title: 'Carte $index',
+          eloScore: 1200 + index * 10,
+          createdAt: DateTime(2024, 10, index + 1),
+        ),
+      );
+
+      await _pumpArena(
+        tester,
+        onSelect: (_, __) async {},
+        customTasks: tasks,
+        viewportSize: const Size(1200, 800),
+      );
+      await tester.pump();
+
+      final topPositions = <int>{};
+      for (var i = 0; i < tasks.length; i++) {
+        final rect =
+            tester.getRect(find.byKey(ValueKey('duel-card-task-$i')));
+        topPositions.add(rect.top.round());
+      }
+
+      expect(topPositions.length, 2,
+          reason:
+              'Le layout doit afficher deux lignes régulières de cartes (tops: $topPositions)');
+    });
   });
 
   group('PriorityRankingArena', () {

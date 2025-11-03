@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 
 class HabitCategoryDropdown extends StatelessWidget {
   const HabitCategoryDropdown({
@@ -20,6 +21,7 @@ class HabitCategoryDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final effectiveValue = selectedValue.isEmpty ? '' : selectedValue;
 
     return DropdownButtonFormField<String>(
@@ -27,17 +29,17 @@ class HabitCategoryDropdown extends StatelessWidget {
       value: effectiveValue,
       isExpanded: true,
       decoration: InputDecoration(
-        labelText: 'Catégorie (facultatif)',
+        labelText: l10n.habitFormCategoryLabel,
         prefixIcon: const Icon(Icons.category),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),
       ),
-      hint: const Text('Sélectionner une catégorie'),
+      hint: Text(l10n.habitFormCategoryHint),
       items: [
-        const DropdownMenuItem<String>(
+        DropdownMenuItem<String>(
           value: '',
-          child: Text('Aucune catégorie'),
+          child: Text(l10n.habitFormCategoryNone),
         ),
         ...categories.map(
           (category) => DropdownMenuItem<String>(
@@ -63,7 +65,7 @@ class HabitCategoryDropdown extends StatelessWidget {
                   child: SizedBox(width: 8),
                 ),
                 TextSpan(
-                  text: '+ Créer une nouvelle catégorie…',
+                  text: l10n.habitFormCategoryCreate,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: AppTheme.accentColor,
                     fontWeight: FontWeight.w600,

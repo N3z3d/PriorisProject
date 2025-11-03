@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 
 class HabitRecurrenceSelector extends StatelessWidget {
   const HabitRecurrenceSelector({
@@ -14,12 +15,13 @@ class HabitRecurrenceSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Fréquence',
-          style: TextStyle(
+        Text(
+          l10n.frequency,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             color: AppTheme.textPrimary,
@@ -41,7 +43,7 @@ class HabitRecurrenceSelector extends StatelessWidget {
               .map(
                 (recurrence) => DropdownMenuItem(
                   value: recurrence,
-                  child: Text(_recurrenceLabel(recurrence)),
+                  child: Text(_recurrenceLabel(recurrence, l10n)),
                 ),
               )
               .toList(),
@@ -55,32 +57,32 @@ class HabitRecurrenceSelector extends StatelessWidget {
     );
   }
 
-  String _recurrenceLabel(RecurrenceType type) {
+  String _recurrenceLabel(RecurrenceType type, AppLocalizations l10n) {
     switch (type) {
       case RecurrenceType.dailyInterval:
-        return 'Quotidienne';
+        return l10n.habitRecurrenceDaily;
       case RecurrenceType.weeklyDays:
-        return 'Hebdomadaire';
+        return l10n.habitRecurrenceWeekly;
       case RecurrenceType.monthly:
-        return 'Mensuelle';
+        return l10n.habitRecurrenceMonthly;
       case RecurrenceType.timesPerWeek:
-        return 'Plusieurs fois par semaine';
+        return l10n.habitRecurrenceTimesPerWeek;
       case RecurrenceType.timesPerDay:
-        return 'Plusieurs fois par jour';
+        return l10n.habitRecurrenceTimesPerDay;
       case RecurrenceType.monthlyDay:
-        return 'Jour fixe du mois';
+        return l10n.habitRecurrenceMonthlyDay;
       case RecurrenceType.quarterly:
-        return 'Trimestrielle';
+        return l10n.habitRecurrenceQuarterly;
       case RecurrenceType.yearly:
-        return 'Annuelle';
+        return l10n.habitRecurrenceYearly;
       case RecurrenceType.hourlyInterval:
-        return 'Toutes les X heures';
+        return l10n.habitRecurrenceHourlyInterval;
       case RecurrenceType.timesPerHour:
-        return 'Plusieurs fois par heure';
+        return l10n.habitRecurrenceTimesPerHour;
       case RecurrenceType.weekends:
-        return 'Week-ends';
+        return l10n.habitRecurrenceWeekends;
       case RecurrenceType.weekdays:
-        return 'Jours de semaine';
+        return l10n.habitRecurrenceWeekdays;
     }
   }
 }

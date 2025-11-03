@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prioris/presentation/widgets/common/forms/common_text_field.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 
 class HabitQuantitativeSection extends StatelessWidget {
   const HabitQuantitativeSection({
@@ -21,6 +22,7 @@ class HabitQuantitativeSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
         Expanded(
@@ -28,8 +30,8 @@ class HabitQuantitativeSection extends StatelessWidget {
           child: CommonTextField(
             fieldKey: targetFieldKey,
             controller: targetController,
-            label: 'Objectif',
-            hint: '8',
+            label: l10n.habitFormQuantTargetLabel,
+            hint: l10n.habitFormQuantTargetHint,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             onChanged: (value) => onTargetChanged(_parseTarget(value)),
             prefix: const Icon(Icons.flag),
@@ -40,8 +42,8 @@ class HabitQuantitativeSection extends StatelessWidget {
           child: CommonTextField(
             fieldKey: unitFieldKey,
             controller: unitController,
-            label: 'Unité',
-            hint: 'verres',
+            label: l10n.habitFormQuantUnitLabel,
+            hint: l10n.habitFormQuantUnitHint,
             onChanged: (value) => onUnitChanged(value?.trim() ?? ''),
             prefix: const Icon(Icons.straighten),
           ),

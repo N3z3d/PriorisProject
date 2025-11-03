@@ -24,6 +24,106 @@ class AppLocalizationsEs extends AppLocalizations {
   String get lists => 'Listas';
 
   @override
+  String get habitFormTitleNew => 'Nuevo hábito';
+
+  @override
+  String get habitFormTitleEdit => 'Editar hábito';
+
+  @override
+  String get habitFormIntro =>
+      'Ponle a este hábito un nombre claro, asigna una categoría y elige cómo seguirás tu progreso.';
+
+  @override
+  String get habitFormNameLabel => 'Nombre del hábito';
+
+  @override
+  String get habitFormNameHint => 'Ej.: Beber 8 vasos de agua';
+
+  @override
+  String get habitFormCategoryLabel => 'Categoría (opcional)';
+
+  @override
+  String get habitFormCategoryHint => 'Seleccionar una categoría';
+
+  @override
+  String get habitFormCategoryNone => 'Sin categoría';
+
+  @override
+  String get habitFormCategoryCreate => '+ Crear una nueva categoría…';
+
+  @override
+  String get habitFormQuantTargetLabel => 'Objetivo';
+
+  @override
+  String get habitFormQuantTargetHint => '8';
+
+  @override
+  String get habitFormQuantUnitLabel => 'Unidad';
+
+  @override
+  String get habitFormQuantUnitHint => 'vasos';
+
+  @override
+  String get habitFormTypePrompt => 'Quiero seguir este hábito';
+
+  @override
+  String get habitFormTypeBinaryOption => 'marcándolo cuando esté hecho';
+
+  @override
+  String get habitFormTypeQuantOption => 'registrando la cantidad realizada';
+
+  @override
+  String get habitFormTypeBinaryDescription =>
+      'Perfecto para hábitos de sí/no: márcalo cada vez que lo completes.';
+
+  @override
+  String get habitFormTypeQuantDescription =>
+      'Controla una cantidad medible con una meta numérica y una unidad personalizada.';
+
+  @override
+  String get habitRecurrenceDaily => 'Diaria';
+
+  @override
+  String get habitRecurrenceWeekly => 'Semanal';
+
+  @override
+  String get habitRecurrenceMonthly => 'Mensual';
+
+  @override
+  String get habitRecurrenceTimesPerWeek => 'Varias veces por semana';
+
+  @override
+  String get habitRecurrenceTimesPerDay => 'Varias veces al día';
+
+  @override
+  String get habitRecurrenceMonthlyDay => 'Día específico del mes';
+
+  @override
+  String get habitRecurrenceQuarterly => 'Trimestral';
+
+  @override
+  String get habitRecurrenceYearly => 'Anual';
+
+  @override
+  String get habitRecurrenceHourlyInterval => 'Cada X horas';
+
+  @override
+  String get habitRecurrenceTimesPerHour => 'Varias veces por hora';
+
+  @override
+  String get habitRecurrenceWeekends => 'Fines de semana';
+
+  @override
+  String get habitRecurrenceWeekdays => 'Días laborables';
+
+  @override
+  String get habitFormSubmitCreate => 'Crear hábito';
+
+  @override
+  String get habitFormValidationNameRequired =>
+      'Introduce un nombre para el hábito';
+
+  @override
   String get statistics => 'Estadísticas';
 
   @override

@@ -117,22 +117,22 @@ class _DuelTaskCardState extends State<DuelTaskCard>
           duration: const Duration(milliseconds: 250),
           curve: Curves.easeOutCubic,
           constraints: constraints,
+          alignment: Alignment.center,
           decoration: _buildCardDecoration(),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: Stack(
               children: [
                 if (_isHovered) _buildHoverShimmer(),
-                Center(
-                  child: Padding(
-                    padding: _getPadding(widget.cardSize),
-                    child: _CardContent(
-                      task: widget.task,
-                      hideElo: widget.hideElo,
-                      onEdit: widget.onEdit,
-                      isHovered: _isHovered,
-                      cardSize: widget.cardSize,
-                    ),
+                Container(
+                  alignment: Alignment.center,
+                  padding: _getPadding(widget.cardSize),
+                  child: _CardContent(
+                    task: widget.task,
+                    hideElo: widget.hideElo,
+                    onEdit: widget.onEdit,
+                    isHovered: _isHovered,
+                    cardSize: widget.cardSize,
                   ),
                 ),
               ],
@@ -245,10 +245,15 @@ class _CardContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (onEdit == null) {
+      return Center(child: _buildContentColumn(context));
+    }
+
     return Stack(
+      alignment: Alignment.center,
       children: [
-        if (onEdit != null) _buildEditButton(),
         Center(child: _buildContentColumn(context)),
+        _buildEditButton(),
       ],
     );
   }

@@ -1,4 +1,6 @@
-import 'package:flutter/widgets.dart';
+import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -7,48 +9,41 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Provides utilities specifically designed to prevent common test
 /// performance issues like infinite loops, memory leaks, and timeouts.
 class PerformanceTestUtils {
-  /// Safe alternative to pumpAndSettle() that prevents infinite loops
-  ///
-  /// Unlike pumpAndSettle(), this method has built-in timeouts and
-  /// monitoring to detect when widgets are stuck in rebuild cycles.
+  /// Safe alternative to pumpAndSettle() that prevents infinite loops.
   static Future<void> pumpUntilSettled(
     WidgetTester tester, {
     Duration timeout = const Duration(seconds: 5),
     Duration frameInterval = const Duration(milliseconds: 16),
   }) async {
     final stopwatch = Stopwatch()..start();
+    int consecutiveIdleFrames = 0;
+    const requiredIdleFrames = 3;
 
-    // Initial pump
     await tester.pump();
 
-    int consecutiveIdleFrames = 0;
-    const requiredIdleFrames = 3; // Consider settled after 3 idle frames
-
     while (stopwatch.elapsed < timeout) {
-      final hadWork = await tester.pump(frameInterval);
+      await tester.pump(frameInterval);
+      final hasScheduledFrame = tester.binding.hasScheduledFrame ||
+          tester.binding.transientCallbackCount > 0;
 
-      if (!hadWork) {
+      if (!hasScheduledFrame) {
         consecutiveIdleFrames++;
         if (consecutiveIdleFrames >= requiredIdleFrames) {
-          break; // Widget tree is settled
+          return;
         }
       } else {
-        consecutiveIdleFrames = 0; // Reset counter
+        consecutiveIdleFrames = 0;
       }
     }
 
-    if (stopwatch.elapsed >= timeout) {
-      throw TimeoutException(
-        'Widget tree did not settle within $timeout. This usually indicates '
-        'an infinite rebuild cycle or animation that never completes.',
-        timeout,
-      );
-    }
+    throw TimeoutException(
+      'Widget tree did not settle within ${timeout.inMilliseconds}ms. This usually '
+      'indicates an infinite rebuild cycle or animation that never completes.',
+      timeout,
+    );
   }
 
-  /// Fast widget build with minimal overhead
-  ///
-  /// Use this for tests that don't need full app context.
+  /// Fast widget build with minimal overhead.
   static Future<void> pumpWidgetFast(
     WidgetTester tester,
     Widget widget, {
@@ -57,26 +52,23 @@ class PerformanceTestUtils {
     await tester.pumpWidget(
       MaterialApp(
         home: widget,
-        debugShowCheckedModeBanner: false, // Reduce render overhead
+        debugShowCheckedModeBanner: false,
       ),
     );
 
     if (settleTimeout != null) {
       await pumpUntilSettled(tester, timeout: settleTimeout);
     } else {
-      await tester.pump(); // Single pump for simple widgets
+      await tester.pump();
     }
   }
 
-  /// Memory-safe provider container setup
-  ///
-  /// Automatically handles disposal and provides leak detection.
+  /// Memory-safe provider container setup.
   static Future<T> withProviderContainer<T>(
     List<Override> overrides,
     Future<T> Function(ProviderContainer container) test,
   ) async {
     late ProviderContainer container;
-
     try {
       container = ProviderContainer(overrides: overrides);
       return await test(container);
@@ -85,9 +77,7 @@ class PerformanceTestUtils {
     }
   }
 
-  /// Performance monitoring wrapper
-  ///
-  /// Measures test execution time and memory usage.
+  /// Performance monitoring wrapper.
   static Future<PerformanceResult<T>> measurePerformance<T>(
     String operationName,
     Future<T> Function() operation,
@@ -98,9 +88,7 @@ class PerformanceTestUtils {
     try {
       final result = await operation();
       stopwatch.stop();
-
       final memoryAfter = _getCurrentMemoryUsage();
-
       return PerformanceResult(
         result: result,
         duration: stopwatch.elapsed,
@@ -113,9 +101,29 @@ class PerformanceTestUtils {
     }
   }
 
-  /// Detect widget rebuild loops
-  ///
-  /// Useful for debugging infinite rebuild issues.
+  /// Helper used by legacy tests to assert completion time.
+  static Future<void> assertCompletesWithinTime(
+    Future<void> Function() operation,
+    Duration maxDuration, {
+    String? reason,
+  }) async {
+    final result = await measurePerformance<void>(
+      'assertCompletesWithinTime',
+      () async {
+        await operation();
+        return null;
+      },
+    );
+
+    expect(
+      result.duration,
+      lessThanOrEqualTo(maxDuration),
+      reason: reason ??
+          'Operation took ${result.duration} which exceeds $maxDuration',
+    );
+  }
+
+  /// Detect widget rebuild loops.
   static Future<void> detectRebuildLoops(
     WidgetTester tester, {
     Duration monitorDuration = const Duration(seconds: 2),
@@ -125,44 +133,35 @@ class PerformanceTestUtils {
     final stopwatch = Stopwatch()..start();
 
     while (stopwatch.elapsed < monitorDuration) {
-      final hadWork = await tester.pump(Duration(milliseconds: 100));
-      if (hadWork) {
+      await tester.pump(const Duration(milliseconds: 100));
+      final hasScheduledFrame = tester.binding.hasScheduledFrame ||
+          tester.binding.transientCallbackCount > 0;
+      if (hasScheduledFrame) {
         rebuildCount++;
         if (rebuildCount > maxRebuilds) {
           throw StateError(
             'Detected potential rebuild loop: $rebuildCount rebuilds in '
-            '${stopwatch.elapsed}. This usually indicates a widget that '
-            'triggers its own rebuild in its build method.',
+            '${stopwatch.elapsed}.',
           );
         }
       }
     }
   }
 
-  /// Get current memory usage (approximation)
   static int _getCurrentMemoryUsage() {
-    // Note: This is an approximation since Dart doesn't expose
-    // direct memory usage APIs for tests
     return DateTime.now().millisecondsSinceEpoch % 1000000;
   }
 
-  /// Batch multiple widget operations for better performance
   static Future<void> batchOperations(
     WidgetTester tester,
     List<Future<void> Function()> operations,
   ) async {
-    // Execute all operations
     for (final operation in operations) {
       await operation();
     }
-
-    // Single pump at the end instead of after each operation
     await tester.pump();
   }
 
-  /// Safe finder with timeout
-  ///
-  /// Prevents tests from hanging when elements aren't found.
   static Future<Finder> findWithTimeout(
     Finder finder,
     WidgetTester tester, {
@@ -171,20 +170,16 @@ class PerformanceTestUtils {
     final stopwatch = Stopwatch()..start();
 
     while (stopwatch.elapsed < timeout) {
-      await tester.pump(Duration(milliseconds: 100));
-
+      await tester.pump(const Duration(milliseconds: 100));
       if (finder.evaluate().isNotEmpty) {
         return finder;
       }
     }
 
-    throw StateError(
-      'Element not found within $timeout. Finder: $finder',
-    );
+    throw StateError('Element not found within $timeout. Finder: $finder');
   }
 }
 
-/// Result container for performance measurements
 class PerformanceResult<T> {
   final T result;
   final Duration duration;
@@ -198,7 +193,6 @@ class PerformanceResult<T> {
     required this.operationName,
   });
 
-  /// Check if performance is within acceptable limits
   bool isPerformant({
     Duration? maxDuration,
     int? maxMemoryDelta,
@@ -210,15 +204,11 @@ class PerformanceResult<T> {
 
   @override
   String toString() {
-    return 'PerformanceResult('
-        'operation: $operationName, '
-        'duration: ${duration.inMilliseconds}ms, '
-        'memory: ${memoryDelta}B'
-        ')';
+    return 'PerformanceResult(operation: $operationName, '
+        'duration: ${duration.inMilliseconds}ms, memory: ${memoryDelta}B)';
   }
 }
 
-/// Exception thrown when operations timeout
 class TimeoutException implements Exception {
   final String message;
   final Duration timeout;

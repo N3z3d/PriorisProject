@@ -1,11 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
 import 'package:prioris/presentation/pages/habits/services/habit_category_service.dart';
 import 'package:prioris/presentation/pages/habits/widgets/components/export.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/widgets/common/forms/common_text_field.dart';
+import 'package:prioris/l10n/app_localizations.dart';
+import 'package:uuid/uuid.dart';
 
 class HabitFormWidget extends StatefulWidget {
   const HabitFormWidget({
@@ -109,9 +110,9 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
         const SizedBox(height: 16),
         _buildIntro(context),
         const SizedBox(height: 24),
-        _buildNameField(),
+        _buildNameField(context),
         const SizedBox(height: 16),
-        _buildCategoryDropdown(),
+        _buildCategoryDropdown(context),
         const SizedBox(height: 20),
         _buildPlanningCard(context),
         const SizedBox(height: 24),
@@ -135,9 +136,9 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(child: _buildNameField()),
+            Expanded(child: _buildNameField(context)),
             const SizedBox(width: 20),
-            Expanded(child: _buildCategoryDropdown()),
+            Expanded(child: _buildCategoryDropdown(context)),
           ],
         ),
         const SizedBox(height: 20),
@@ -153,8 +154,9 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
 
   Widget _buildIntro(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Text(
-      'Donnez un nom clair, associez une catégorie et choisissez comment suivre votre progression.',
+      l10n.habitFormIntro,
       style: theme.textTheme.bodyMedium?.copyWith(
         color: AppTheme.textSecondary.withValues(alpha: 0.85),
         height: 1.45,
@@ -209,24 +211,25 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
           ),
           if (_selectedType == HabitType.quantitative) ...[
             const SizedBox(height: 20),
-            _buildQuantitativeSection(),
+            _buildQuantitativeSection(context),
           ],
         ],
       ),
     );
   }
 
-  Widget _buildNameField() {
+  Widget _buildNameField(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return CommonTextField(
       fieldKey: const ValueKey('habit-name-field'),
       controller: _nameController,
-      label: 'Nom de l\'habitude',
-      hint: 'Ex : Boire 8 verres d\'eau',
+      label: l10n.habitFormNameLabel,
+      hint: l10n.habitFormNameHint,
       prefix: const Icon(Icons.edit),
     );
   }
 
-  Widget _buildCategoryDropdown() {
+  Widget _buildCategoryDropdown(BuildContext context) {
     return HabitCategoryDropdown(
       selectedValue: _selectedCategory,
       categories: _categorySuggestions,
@@ -236,7 +239,7 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
     );
   }
 
-  Widget _buildQuantitativeSection() {
+  Widget _buildQuantitativeSection(BuildContext context) {
     return HabitQuantitativeSection(
       targetController: _targetController,
       unitController: _unitController,
@@ -325,7 +328,9 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
   void _submitForm() {
     final name = _nameController.text.trim();
     if (name.isEmpty) {
-      _showValidationError('Veuillez saisir un nom pour l\'habitude');
+      _showValidationError(
+        AppLocalizations.of(context)!.habitFormValidationNameRequired,
+      );
       return;
     }
 

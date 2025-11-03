@@ -222,7 +222,7 @@ class AccessibilityDebugPanel extends StatelessWidget {
         const SizedBox(width: 8),
         const Expanded(
           child: Text(
-            'Violations d'accessibilite detectees',
+            "Violations d'accessibilité détectées",
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.red,

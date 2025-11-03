@@ -102,8 +102,13 @@ class MockAdaptivePersistenceService extends _i1.Mock
       ) as _i4.PersistenceMode);
 
   @override
-  _i5.Future<void> initialize({required bool? isAuthenticated}) =>
-      (super.noSuchMethod(
+  bool get isAuthenticated => (super.noSuchMethod(
+        Invocation.getter(#isAuthenticated),
+        returnValue: false,
+      ) as bool);
+
+  @override
+  _i5.Future<void> initialize({bool? isAuthenticated}) => (super.noSuchMethod(
         Invocation.method(
           #initialize,
           [],
@@ -177,6 +182,48 @@ class MockAdaptivePersistenceService extends _i1.Mock
         Invocation.method(
           #deleteItem,
           [itemId],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<void> updateAuthenticationState(
+          {required bool? isAuthenticated}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateAuthenticationState,
+          [],
+          {#isAuthenticated: isAuthenticated},
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<List<_i6.CustomList>> getLists() => (super.noSuchMethod(
+        Invocation.method(
+          #getLists,
+          [],
+        ),
+        returnValue: _i5.Future<List<_i6.CustomList>>.value(<_i6.CustomList>[]),
+      ) as _i5.Future<List<_i6.CustomList>>);
+
+  @override
+  _i5.Future<List<_i7.ListItem>> getListItems(String? listId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getListItems,
+          [listId],
+        ),
+        returnValue: _i5.Future<List<_i7.ListItem>>.value(<_i7.ListItem>[]),
+      ) as _i5.Future<List<_i7.ListItem>>);
+
+  @override
+  _i5.Future<void> dispose() => (super.noSuchMethod(
+        Invocation.method(
+          #dispose,
+          [],
         ),
         returnValue: _i5.Future<void>.value(),
         returnValueForMissingStub: _i5.Future<void>.value(),

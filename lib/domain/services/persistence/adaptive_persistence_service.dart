@@ -21,6 +21,7 @@ class AdaptivePersistenceService {
 
   PersistenceMode _currentMode = PersistenceMode.localFirst;
   bool _isInitialized = false;
+  bool _isAuthenticated = false;
 
   AdaptivePersistenceService({
     required this.localRepository,
@@ -30,10 +31,18 @@ class AdaptivePersistenceService {
   });
 
   PersistenceMode get currentMode => _currentMode;
+  bool get isAuthenticated => _isAuthenticated;
 
-  Future<void> initialize({required bool isAuthenticated}) async {
-    _currentMode =
-        isAuthenticated ? PersistenceMode.cloudFirst : PersistenceMode.localFirst;
+  Future<void> initialize({bool? isAuthenticated}) async {
+    final auth = isAuthenticated ?? false;
+    _currentMode = auth ? PersistenceMode.cloudFirst : PersistenceMode.localFirst;
+    _isAuthenticated = auth;
+    _isInitialized = true;
+  }
+
+  Future<void> updateAuthenticationState({required bool isAuthenticated}) async {
+    _isAuthenticated = isAuthenticated;
+    _currentMode = isAuthenticated ? PersistenceMode.cloudFirst : PersistenceMode.localFirst;
     _isInitialized = true;
   }
 
@@ -46,6 +55,8 @@ class AdaptivePersistenceService {
     final cloudLists = await cloudRepository.getAllLists();
     return _mergeLists(localLists, cloudLists);
   }
+
+  Future<List<CustomList>> getLists() => getAllLists();
 
   Future<void> saveList(CustomList list) async {
     await localRepository.saveList(list);
@@ -83,6 +94,8 @@ class AdaptivePersistenceService {
     return _mergeItems(localItems, cloudItems);
   }
 
+  Future<List<ListItem>> getListItems(String listId) => getItemsByListId(listId);
+
   Future<void> saveItem(ListItem item) async {
     await localItemRepository.add(item);
 
@@ -93,7 +106,6 @@ class AdaptivePersistenceService {
         if (_isDuplicateError(error)) {
           await cloudItemRepository.update(item);
         } else if (_isPermissionError(error)) {
-          // Ignore and keep local-only copy.
           return;
         } else {
           rethrow;
@@ -110,7 +122,6 @@ class AdaptivePersistenceService {
         await cloudItemRepository.update(item);
       } catch (error) {
         if (_isPermissionError(error)) {
-          // Soft fallback: try to re-create item locally only.
           await _ensureLocalItemExists(item);
         } else {
           rethrow;
@@ -133,6 +144,8 @@ class AdaptivePersistenceService {
     await localItemRepository.delete(itemId);
   }
 
+  Future<void> dispose() async {}
+
   bool _shouldUseCloud() =>
       _isInitialized && _currentMode == PersistenceMode.cloudFirst;
 
@@ -146,7 +159,6 @@ class AdaptivePersistenceService {
     }
 
     if (_isPermissionError(error)) {
-      // Ignore and keep local-only version.
       return;
     }
 
@@ -197,7 +209,6 @@ class AdaptivePersistenceService {
     if (a.updatedAt.isAfter(b.updatedAt)) {
       return a;
     }
-    // Fall back to cloud entry when timestamps are identical.
     return b;
   }
 
@@ -229,3 +240,4 @@ class AdaptivePersistenceService {
     return b;
   }
 }
+

@@ -1,27 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_test/hive_test.dart';
 import 'package:prioris/domain/services/core/language_service.dart';
 
 void main() {
   group('LanguageService', () {
     late LanguageService languageService;
-    late Box mockBox;
 
     setUp(() async {
-      // Initialiser Hive pour les tests
-      await Hive.initFlutter();
-      await Hive.openBox('test_language_settings');
-      mockBox = Hive.box('test_language_settings');
-      
+      await setUpTestHive();
       languageService = LanguageService();
       await languageService.initialize();
     });
 
     tearDown(() async {
-      await mockBox.clear();
-      await mockBox.close();
-      await Hive.close();
+      await languageService.dispose();
+      await tearDownTestHive();
     });
 
     group('Initialisation', () {

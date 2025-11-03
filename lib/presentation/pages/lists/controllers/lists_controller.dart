@@ -21,6 +21,7 @@ import 'package:prioris/presentation/pages/lists/models/lists_state.dart'
     show ListsState, SortOption;
 
 export 'refactored/lists_controller_slim.dart';
+export '../models/lists_state.dart' show ListsState, SortOption;
 
 /// Legacy façade that preserves the historical `ListsController` API while
 /// delegating the behaviour to `ListsControllerSlim`.
@@ -82,6 +83,15 @@ class ListsController extends ListsControllerSlim {
       syncService: syncService,
       logger: logger,
     );
+  }
+
+  /// Legacy helper kept for backwards compatibility with architecture tests.
+  /// Clears any local state and disposes the controller safely.
+  Future<void> cleanup() async {
+    if (!controllerDisposed) {
+      state = stateManager.clearAll();
+      dispose();
+    }
   }
 }
 

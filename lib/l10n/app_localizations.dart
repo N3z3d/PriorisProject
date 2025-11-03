@@ -132,6 +132,198 @@ abstract class AppLocalizations {
   /// **'Lists'**
   String get lists;
 
+  /// No description provided for @habitFormTitleNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New habit'**
+  String get habitFormTitleNew;
+
+  /// No description provided for @habitFormTitleEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit habit'**
+  String get habitFormTitleEdit;
+
+  /// No description provided for @habitFormIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Give this habit a clear name, assign a category, and choose how you’ll track your progress.'**
+  String get habitFormIntro;
+
+  /// No description provided for @habitFormNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Habit name'**
+  String get habitFormNameLabel;
+
+  /// No description provided for @habitFormNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'E.g. Drink 8 glasses of water'**
+  String get habitFormNameHint;
+
+  /// No description provided for @habitFormCategoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Category (optional)'**
+  String get habitFormCategoryLabel;
+
+  /// No description provided for @habitFormCategoryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a category'**
+  String get habitFormCategoryHint;
+
+  /// No description provided for @habitFormCategoryNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No category'**
+  String get habitFormCategoryNone;
+
+  /// No description provided for @habitFormCategoryCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Create a new category…'**
+  String get habitFormCategoryCreate;
+
+  /// No description provided for @habitFormQuantTargetLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal'**
+  String get habitFormQuantTargetLabel;
+
+  /// No description provided for @habitFormQuantTargetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'8'**
+  String get habitFormQuantTargetHint;
+
+  /// No description provided for @habitFormQuantUnitLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit'**
+  String get habitFormQuantUnitLabel;
+
+  /// No description provided for @habitFormQuantUnitHint.
+  ///
+  /// In en, this message translates to:
+  /// **'glasses'**
+  String get habitFormQuantUnitHint;
+
+  /// No description provided for @habitFormTypePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'I want to track this habit by'**
+  String get habitFormTypePrompt;
+
+  /// No description provided for @habitFormTypeBinaryOption.
+  ///
+  /// In en, this message translates to:
+  /// **'checking it off when it’s done'**
+  String get habitFormTypeBinaryOption;
+
+  /// No description provided for @habitFormTypeQuantOption.
+  ///
+  /// In en, this message translates to:
+  /// **'recording how much I complete'**
+  String get habitFormTypeQuantOption;
+
+  /// No description provided for @habitFormTypeBinaryDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Perfect for yes/no habits: tick it every time you complete it.'**
+  String get habitFormTypeBinaryDescription;
+
+  /// No description provided for @habitFormTypeQuantDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Track a measurable amount with a numeric goal and custom unit.'**
+  String get habitFormTypeQuantDescription;
+
+  /// No description provided for @habitRecurrenceDaily.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily'**
+  String get habitRecurrenceDaily;
+
+  /// No description provided for @habitRecurrenceWeekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get habitRecurrenceWeekly;
+
+  /// No description provided for @habitRecurrenceMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get habitRecurrenceMonthly;
+
+  /// No description provided for @habitRecurrenceTimesPerWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Several times per week'**
+  String get habitRecurrenceTimesPerWeek;
+
+  /// No description provided for @habitRecurrenceTimesPerDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Several times per day'**
+  String get habitRecurrenceTimesPerDay;
+
+  /// No description provided for @habitRecurrenceMonthlyDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Specific day of the month'**
+  String get habitRecurrenceMonthlyDay;
+
+  /// No description provided for @habitRecurrenceQuarterly.
+  ///
+  /// In en, this message translates to:
+  /// **'Quarterly'**
+  String get habitRecurrenceQuarterly;
+
+  /// No description provided for @habitRecurrenceYearly.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly'**
+  String get habitRecurrenceYearly;
+
+  /// No description provided for @habitRecurrenceHourlyInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'Every X hours'**
+  String get habitRecurrenceHourlyInterval;
+
+  /// No description provided for @habitRecurrenceTimesPerHour.
+  ///
+  /// In en, this message translates to:
+  /// **'Several times per hour'**
+  String get habitRecurrenceTimesPerHour;
+
+  /// No description provided for @habitRecurrenceWeekends.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekends'**
+  String get habitRecurrenceWeekends;
+
+  /// No description provided for @habitRecurrenceWeekdays.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekdays'**
+  String get habitRecurrenceWeekdays;
+
+  /// No description provided for @habitFormSubmitCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create habit'**
+  String get habitFormSubmitCreate;
+
+  /// No description provided for @habitFormValidationNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a name for the habit'**
+  String get habitFormValidationNameRequired;
+
   /// Statistics page title
   ///
   /// In en, this message translates to:

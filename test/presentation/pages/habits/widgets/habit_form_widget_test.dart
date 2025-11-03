@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
 import 'package:prioris/presentation/pages/habits/services/habit_category_service.dart';
 import 'package:prioris/presentation/pages/habits/widgets/habit_form_widget.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 
 import '../../../../test_utils/habit_test_doubles.dart';
 
@@ -14,24 +15,28 @@ void main() {
       expect(find.text('Catégorie (facultatif)'), findsOneWidget);
     });
 
-    testWidgets('affiche une phrase guide pour le type d\'habitude', (tester) async {
+    testWidgets('affiche une phrase narrative pour le mode de suivi', (tester) async {
       await tester.pumpWidget(_buildForm());
 
-      expect(find.text('Je veux'), findsOneWidget);
-      expect(find.text('Cocher quand c\'est fait'), findsOneWidget);
-      expect(find.text('Mesurer une quantité'), findsOneWidget);
-      expect(find.byType(ChoiceChip), findsNWidgets(2));
+      expect(find.text('Je veux suivre cette habitude en'), findsOneWidget);
+
+      final dropdown = find.byKey(const ValueKey('habit-type-dropdown'));
+      expect(dropdown, findsOneWidget);
+      expect(find.text('cochant quand c\'est fait'), findsOneWidget);
 
       final description = tester.widget<Text>(
         find.byKey(const ValueKey('habit-type-description')),
       );
-      expect(description.data, contains('coch'));
+      expect(description.data, contains('oui/non'));
     });
 
-    testWidgets('met à jour la description quand le type quantitatif est sélectionné', (tester) async {
+    testWidgets('met à jour la description quand le mode quantitatif est choisi', (tester) async {
       await tester.pumpWidget(_buildForm());
 
-      await tester.tap(find.text('Mesurer une quantité'));
+      await tester.tap(find.byKey(const ValueKey('habit-type-dropdown')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('notant une quantité accomplie').last);
       await tester.pumpAndSettle();
 
       final description = tester.widget<Text>(
@@ -66,7 +71,10 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('Mesurer une quantité'));
+      await tester.tap(find.byKey(const ValueKey('habit-type-dropdown')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('notant une quantité accomplie').last);
       await tester.pumpAndSettle();
 
       await tester.enterText(find.byKey(const ValueKey('habit-target-field')), '3,5');
@@ -110,6 +118,9 @@ Widget _buildForm({
   HabitCategoryService? categoryService,
 }) {
   return MaterialApp(
+    locale: const Locale('fr'),
+    supportedLocales: AppLocalizations.supportedLocales,
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
     home: Scaffold(
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

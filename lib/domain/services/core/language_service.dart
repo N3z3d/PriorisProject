@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive/hive.dart';
 
 /// Service de gestion des langues pour l'internationalisation
 class LanguageService {
@@ -20,7 +20,7 @@ class LanguageService {
   static const Locale defaultLocale = Locale('fr', 'FR');
 
   /// Box Hive pour la persistance
-  late Box _box;
+  Box? _box;
 
   /// Initialise le service
   Future<void> initialize() async {
@@ -29,28 +29,26 @@ class LanguageService {
 
   /// Obtient la langue actuelle
   Locale getCurrentLocale() {
-    try {
-      final languageCode =
-          _box.get(_languageCodeKey, defaultValue: defaultLocale.languageCode);
-      final countryCode =
-          _box.get(_countryCodeKey, defaultValue: defaultLocale.countryCode);
-      return Locale(languageCode, countryCode);
-    } catch (e) {
-      // Fallback pour les tests ou si Hive n'est pas initialisé
+    final box = _box;
+    if (box == null || !box.isOpen) {
       return defaultLocale;
     }
+    final languageCode =
+        box.get(_languageCodeKey, defaultValue: defaultLocale.languageCode);
+    final countryCode =
+        box.get(_countryCodeKey, defaultValue: defaultLocale.countryCode);
+    return Locale(languageCode, countryCode);
   }
 
   /// Définit la langue
   Future<void> setLocale(Locale locale) async {
-    try {
-      await _box.put(_languageCodeKey, locale.languageCode);
-      await _box.put(_countryCodeKey, locale.countryCode);
-      await _box.put(
-          _languageKey, '${locale.languageCode}_${locale.countryCode}');
-    } catch (e) {
-      // Ignorer les erreurs dans les tests
+    final box = _box;
+    if (box == null || !box.isOpen) {
+      return;
     }
+    await box.put(_languageCodeKey, locale.languageCode);
+    await box.put(_countryCodeKey, locale.countryCode);
+    await box.put(_languageKey, '${locale.languageCode}_${locale.countryCode}');
   }
 
   /// Obtient le nom de la langue pour l'affichage
@@ -65,7 +63,7 @@ class LanguageService {
       case 'de':
         return 'Deutsch';
       default:
-        return 'Français';
+        return 'English';
     }
   }
 
@@ -81,7 +79,7 @@ class LanguageService {
       case 'de':
         return '🇩🇪';
       default:
-        return '🇫🇷';
+        return '🇺🇸';
     }
   }
 
@@ -122,7 +120,11 @@ class LanguageService {
 
   /// Ferme le service
   Future<void> dispose() async {
-    await _box.close();
+    final box = _box;
+    if (box != null && box.isOpen) {
+      await box.close();
+    }
+    _box = null;
   }
 }
 

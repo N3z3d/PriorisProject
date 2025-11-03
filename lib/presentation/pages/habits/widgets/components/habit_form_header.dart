@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 
 class HabitFormHeader extends StatelessWidget {
   const HabitFormHeader({super.key, required this.isEditing});
@@ -8,7 +9,9 @@ class HabitFormHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = isEditing ? 'Modifier l\'habitude' : 'Nouvelle habitude';
+    final l10n = AppLocalizations.of(context)!;
+    final title =
+        isEditing ? l10n.habitFormTitleEdit : l10n.habitFormTitleNew;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,

@@ -6,6 +6,8 @@ import 'package:prioris/domain/services/persistence/adaptive_persistence_service
 import 'package:prioris/infrastructure/services/logger_service.dart';
 import '../interfaces/lists_controller_interfaces.dart';
 
+typedef _ClearSummary = ({int listCount, int itemCount});
+
 /// Service responsable de toutes les opérations de persistance des listes
 ///
 /// Respecte le principe Single Responsibility en centralisant
@@ -367,13 +369,11 @@ class ListsRepositoryService implements IListsRepositoryService {
   }
 
 void _logClearSuccess(_ClearSummary summary) {
-    LoggerService.instance.info(
-      'Toutes les donnees effacees avec succes: ${summary.listCount} listes et ${summary.itemCount} elements',
-      context: 'ListsRepositoryService',
-    );
+  LoggerService.instance.info(
+    'Toutes les donnees effacees avec succes: ${summary.listCount} listes et ${summary.itemCount} elements',
+    context: 'ListsRepositoryService',
+  );
 }
-
-typedef _ClearSummary = ({int listCount, int itemCount});
 
   @override
   Future<List<CustomList>> forceReloadFromPersistence() async {

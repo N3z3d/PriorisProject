@@ -94,30 +94,28 @@ class DuelTwoCardsLayout extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        child: IntrinsicHeight(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Flexible(
-                flex: 1,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 380),
-                  child: _buildCard(tasks[0]),
-                ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Flexible(
+              flex: 1,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 380),
+                child: _buildCard(tasks[0]),
               ),
-              const SizedBox(width: 40),
-              const Center(child: PriorityVsBadge()),
-              const SizedBox(width: 40),
-              Flexible(
-                flex: 1,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 380),
-                  child: _buildCard(tasks[1]),
-                ),
+            ),
+            const SizedBox(width: 40),
+            const Center(child: PriorityVsBadge()),
+            const SizedBox(width: 40),
+            Flexible(
+              flex: 1,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 380),
+                child: _buildCard(tasks[1]),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
