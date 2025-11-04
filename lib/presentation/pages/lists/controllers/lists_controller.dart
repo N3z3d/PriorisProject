@@ -4,6 +4,7 @@ import 'package:prioris/data/repositories/list_item_repository.dart'
     show ListItemRepository, InMemoryListItemRepository;
 import 'package:prioris/domain/core/interfaces/logger_interface.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
+import 'package:prioris/domain/models/core/entities/list_item.dart';
 import 'package:prioris/domain/services/core/lists_filter_service.dart' as domain;
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
 import 'package:prioris/domain/services/persistence/adaptive_persistence_service.dart';
@@ -92,6 +93,40 @@ class ListsController extends ListsControllerSlim {
       state = stateManager.clearAll();
       dispose();
     }
+  }
+
+  /// Legacy alias preserved for compatibility with historical tests.
+  Future<void> addItemToList(String listId, ListItem item) {
+    return addListItem(listId, item);
+  }
+
+  /// Legacy helper that accepts either `List<ListItem>` or `List<String>`.
+  Future<void> addMultipleItemsToList(String listId, List<dynamic> entries) {
+    final baseTimestamp = DateTime.now().microsecondsSinceEpoch;
+    final normalizedItems = <ListItem>[];
+
+    for (var index = 0; index < entries.length; index++) {
+      final entry = entries[index];
+      if (entry is ListItem) {
+        normalizedItems.add(entry);
+        continue;
+      }
+      if (entry is String) {
+        final createdAt = DateTime.now().add(Duration(microseconds: index));
+        normalizedItems.add(ListItem(
+          id: '${listId}_auto_${baseTimestamp + index}_${entry.hashCode}',
+          title: entry,
+          createdAt: createdAt,
+          listId: listId,
+        ));
+        continue;
+      }
+      throw ArgumentError(
+        'Unsupported entry type for addMultipleItemsToList: ${entry.runtimeType}',
+      );
+    }
+
+    return addMultipleItems(listId, normalizedItems);
   }
 }
 

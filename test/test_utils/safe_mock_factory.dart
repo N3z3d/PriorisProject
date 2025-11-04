@@ -11,7 +11,7 @@ import '../../lib/domain/services/persistence/adaptive_persistence_service.dart'
 
 export 'performance_test_utils.dart';
 
-/// Small façade used by the architecture tests to provision mocks in a safe
+/// Small facade used by the architecture tests to provision mocks in a safe
 /// and readable manner.
 class SafeMockFactory {
   SafeMockFactory._({

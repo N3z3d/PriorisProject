@@ -393,9 +393,31 @@ class MockAdaptivePersistenceService extends _i1.Mock
       ) as _i5.Future<void>);
 
   @override
+  _i5.Future<void> updateAuthenticationState(
+          {required bool? isAuthenticated}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateAuthenticationState,
+          [],
+          {#isAuthenticated: isAuthenticated},
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
   _i5.Future<List<_i6.CustomList>> getAllLists() => (super.noSuchMethod(
         Invocation.method(
           #getAllLists,
+          [],
+        ),
+        returnValue: _i5.Future<List<_i6.CustomList>>.value(<_i6.CustomList>[]),
+      ) as _i5.Future<List<_i6.CustomList>>);
+
+  @override
+  _i5.Future<List<_i6.CustomList>> getLists() => (super.noSuchMethod(
+        Invocation.method(
+          #getLists,
           [],
         ),
         returnValue: _i5.Future<List<_i6.CustomList>>.value(<_i6.CustomList>[]),
@@ -432,6 +454,16 @@ class MockAdaptivePersistenceService extends _i1.Mock
       ) as _i5.Future<List<_i2.ListItem>>);
 
   @override
+  _i5.Future<List<_i2.ListItem>> getListItems(String? listId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getListItems,
+          [listId],
+        ),
+        returnValue: _i5.Future<List<_i2.ListItem>>.value(<_i2.ListItem>[]),
+      ) as _i5.Future<List<_i2.ListItem>>);
+
+  @override
   _i5.Future<void> saveItem(_i2.ListItem? item) => (super.noSuchMethod(
         Invocation.method(
           #saveItem,
@@ -460,38 +492,6 @@ class MockAdaptivePersistenceService extends _i1.Mock
         returnValue: _i5.Future<void>.value(),
         returnValueForMissingStub: _i5.Future<void>.value(),
       ) as _i5.Future<void>);
-
-  @override
-  _i5.Future<void> updateAuthenticationState(
-          {required bool? isAuthenticated}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #updateAuthenticationState,
-          [],
-          {#isAuthenticated: isAuthenticated},
-        ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
-
-  @override
-  _i5.Future<List<_i6.CustomList>> getLists() => (super.noSuchMethod(
-        Invocation.method(
-          #getLists,
-          [],
-        ),
-        returnValue: _i5.Future<List<_i6.CustomList>>.value(<_i6.CustomList>[]),
-      ) as _i5.Future<List<_i6.CustomList>>);
-
-  @override
-  _i5.Future<List<_i2.ListItem>> getListItems(String? listId) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getListItems,
-          [listId],
-        ),
-        returnValue: _i5.Future<List<_i2.ListItem>>.value(<_i2.ListItem>[]),
-      ) as _i5.Future<List<_i2.ListItem>>);
 
   @override
   _i5.Future<void> dispose() => (super.noSuchMethod(

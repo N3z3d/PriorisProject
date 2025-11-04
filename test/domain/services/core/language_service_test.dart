@@ -111,10 +111,26 @@ void main() {
     });
 
     group('getSystemLocale', () {
-      test('should return supported locale when system locale is supported', () {
-        // Simuler un système en anglais
-        final systemLocale = languageService.getSystemLocale();
-        expect(LanguageService.supportedLocales, contains(systemLocale));
+      test('should return injected system locale when it is supported', () async {
+        final injectedService = LanguageService(
+          systemLocaleProvider: () => const Locale('en', 'US'),
+        );
+        await injectedService.initialize();
+
+        expect(injectedService.getSystemLocale(), equals(const Locale('en', 'US')));
+
+        await injectedService.dispose();
+      });
+
+      test('should fall back to default locale when injected system locale is unsupported', () async {
+        final injectedService = LanguageService(
+          systemLocaleProvider: () => const Locale('it', 'IT'),
+        );
+        await injectedService.initialize();
+
+        expect(injectedService.getSystemLocale(), equals(LanguageService.defaultLocale));
+
+        await injectedService.dispose();
       });
     });
 

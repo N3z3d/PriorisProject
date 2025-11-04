@@ -3,6 +3,7 @@ import 'package:prioris/domain/models/core/entities/list_item.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
 import 'package:prioris/domain/core/interfaces/logger_interface.dart';
 import '../../models/lists_state.dart';
+import '../../models/lists_filter_patch.dart';
 import '../../interfaces/lists_managers_interfaces.dart';
 import '../state/lists_state_manager.dart';
 
@@ -32,88 +33,100 @@ class ListsCrudOperations {
     );
   }
 
-  Future<ListsState> clearAllData(ListsState current) async {
-    await persistence.clearAllData();
-    return stateManager.clearAll();
+  Future<ListsState> clearAllData(ListsState current) {
+    return _executeMutation(
+      current,
+      persist: () => persistence.clearAllData(),
+      updateState: (_) => stateManager.clearAll(),
+    );
   }
 
-  Future<ListsState> createList(ListsState current, CustomList list) async {
-    _ensureListValid(list);
-    await persistence.saveList(list);
-    await persistence.verifyListPersistence(list.id);
-    final updatedState = stateManager.addList(current, list);
-    return _applyFilters(updatedState);
+  Future<ListsState> createList(ListsState current, CustomList list) {
+    return _executeMutation(
+      current,
+      validate: () => _ensureListValid(list),
+      persist: () async {
+        await persistence.saveList(list);
+        await persistence.verifyListPersistence(list.id);
+      },
+      updateState: (state) => stateManager.addList(state, list),
+    );
   }
 
-  Future<ListsState> updateList(ListsState current, CustomList list) async {
-    _ensureListValid(list);
-    await persistence.updateList(list);
-    final updatedState = stateManager.updateList(current, list);
-    return _applyFilters(updatedState);
+  Future<ListsState> updateList(ListsState current, CustomList list) {
+    return _executeMutation(
+      current,
+      validate: () => _ensureListValid(list),
+      persist: () => persistence.updateList(list),
+      updateState: (state) => stateManager.updateList(state, list),
+    );
   }
 
-  Future<ListsState> deleteList(ListsState current, String listId) async {
-    await persistence.deleteList(listId);
-    final updatedState = stateManager.removeList(current, listId);
-    return _applyFilters(updatedState);
+  Future<ListsState> deleteList(ListsState current, String listId) {
+    return _executeMutation(
+      current,
+      persist: () => persistence.deleteList(listId),
+      updateState: (state) => stateManager.removeList(state, listId),
+    );
   }
 
-  Future<ListsState> addListItem(ListsState current, String listId, ListItem item) async {
-    _ensureItemValid(item);
-    await persistence.saveListItem(item);
-    await persistence.verifyItemPersistence(item.id);
-    final updatedState = stateManager.addItem(current, listId, item);
-    return _applyFilters(updatedState);
+  Future<ListsState> addListItem(ListsState current, String listId, ListItem item) {
+    return _executeMutation(
+      current,
+      validate: () => _ensureItemValid(item),
+      persist: () async {
+        await persistence.saveListItem(item);
+        await persistence.verifyItemPersistence(item.id);
+      },
+      updateState: (state) => stateManager.addItem(state, listId, item),
+    );
   }
 
   Future<ListsState> addMultipleItems(
     ListsState current,
     String listId,
     List<ListItem> items,
-  ) async {
-    for (final item in items) {
-      _ensureItemValid(item);
-    }
-    await persistence.saveMultipleItems(items);
-    final updatedState = stateManager.addItems(current, listId, items);
-    return _applyFilters(updatedState);
+  ) {
+    return _executeMutation(
+      current,
+      validate: () {
+        for (final item in items) {
+          _ensureItemValid(item);
+        }
+      },
+      persist: () => persistence.saveMultipleItems(items),
+      updateState: (state) => stateManager.addItems(state, listId, items),
+    );
   }
 
-  Future<ListsState> updateListItem(ListsState current, String listId, ListItem item) async {
-    _ensureItemValid(item);
-    await persistence.updateListItem(item);
-    final updatedState = stateManager.updateItem(current, listId, item);
-    return _applyFilters(updatedState);
+  Future<ListsState> updateListItem(ListsState current, String listId, ListItem item) {
+    return _executeMutation(
+      current,
+      validate: () => _ensureItemValid(item),
+      persist: () => persistence.updateListItem(item),
+      updateState: (state) => stateManager.updateItem(state, listId, item),
+    );
   }
 
-  Future<ListsState> removeListItem(ListsState current, String listId, String itemId) async {
-    await persistence.deleteListItem(itemId);
-    final updatedState = stateManager.removeItem(current, listId, itemId);
-    return _applyFilters(updatedState);
+  Future<ListsState> removeListItem(ListsState current, String listId, String itemId) {
+    return _executeMutation(
+      current,
+      persist: () => persistence.deleteListItem(itemId),
+      updateState: (state) => stateManager.removeItem(state, listId, itemId),
+    );
   }
 
-  Future<ListsState> changeSortOption(ListsState current, SortOption option) async {
-    final updated = stateManager.updateFilters(current, sortOption: option);
-    return _applyFilters(updated);
+  Future<ListsState> changeSortOption(ListsState current, SortOption option) {
+    final patch = ListsFilterPatch.sort(option);
+    final nextState = _applyFilterPatch(current, patch);
+    return Future.value(nextState);
   }
 
   ListsState updateFilters(
-    ListsState current, {
-    String? searchQuery,
-    ListType? selectedType,
-    bool? showCompleted,
-    bool? showInProgress,
-    String? selectedDateFilter,
-  }) {
-    final updated = stateManager.updateFilters(
-      current,
-      searchQuery: searchQuery,
-      selectedType: selectedType,
-      showCompleted: showCompleted,
-      showInProgress: showInProgress,
-      selectedDateFilter: selectedDateFilter,
-    );
-    return _applyFilters(updated);
+    ListsState current,
+    ListsFilterPatch patch,
+  ) {
+    return _applyFilterPatch(current, patch);
   }
 
   Future<ListsState> _loadAndFilter(
@@ -129,6 +142,33 @@ class ListsCrudOperations {
   ListsState _applyFilters(ListsState state) {
     final filtered = filterManager.applyFilters(state.lists, state);
     return stateManager.updateFilteredLists(state, filtered);
+  }
+
+  Future<ListsState> _executeMutation(
+    ListsState current, {
+    void Function()? validate,
+    required Future<void> Function() persist,
+    required ListsState Function(ListsState) updateState,
+  }) async {
+    validate?.call();
+    await persist();
+    final updatedState = updateState(current);
+    return _applyFilters(updatedState);
+  }
+
+  ListsState _applyFilterMutationSync(
+    ListsState current,
+    ListsState Function(ListsState) transform,
+  ) {
+    final updated = transform(current);
+    return _applyFilters(updated);
+  }
+
+  ListsState _applyFilterPatch(ListsState current, ListsFilterPatch patch) {
+    return _applyFilterMutationSync(
+      current,
+      (state) => stateManager.applyFilterPatch(state, patch),
+    );
   }
 
   void _ensureListValid(CustomList list) {

@@ -3,7 +3,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:prioris/core/mixins/state_management_mixin.dart';
 
 // Test classes that use the mixins
-class TestNotifier extends ChangeNotifier with LoadingStateMixin, ErrorHandlingMixin, DataStateMixin<String> {}
+class TestNotifier extends ChangeNotifier
+    with
+        LoadingStateMixin,
+        ErrorHandlingMixin,
+        DataStateMixin<String>,
+        CompleteStateMixin<String> {}
 
 class TestModel {
   final String id;

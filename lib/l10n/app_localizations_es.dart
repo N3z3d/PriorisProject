@@ -8,17 +8,13 @@ import 'app_localizations.dart';
 class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
-  @override
-  String get appTitle => 'Prioris';
+  @override String get appTitle => 'Prioris';
 
-  @override
-  String get home => 'Inicio';
+  @override String get home => 'Inicio';
 
-  @override
-  String get habits => 'Hábitos';
+  @override String get habits => 'Hábitos';
 
-  @override
-  String get tasks => 'Tareas';
+  @override String get tasks => 'Tareas';
 
   @override
   String get lists => 'Listas';

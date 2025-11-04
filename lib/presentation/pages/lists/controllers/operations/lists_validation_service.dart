@@ -15,37 +15,58 @@ class ListsValidationService implements IListsValidationService {
   int _validationErrorCount = 0;
   final Map<String, int> _errorTypeCount = {};
 
+  final ValidationRuleSet<CustomList> _listRuleSet = ValidationRuleSet([
+    (list) => list.id.isEmpty ? 'empty list id' : null,
+    (list) => list.name.trim().isEmpty ? 'empty list name' : null,
+    (list) => list.name.length > maxListNameLength
+        ? 'list name too long (max $maxListNameLength)'
+        : null,
+    (list) => list.description != null &&
+            list.description!.length > maxListDescriptionLength
+        ? 'description too long (max $maxListDescriptionLength)'
+        : null,
+    (list) =>
+        list.items.length > maxItemsPerList ? 'too many items (max $maxItemsPerList)' : null,
+  ]);
+
+  final ValidationRuleSet<ListItem> _itemRuleSet = ValidationRuleSet([
+    (item) => item.id.isEmpty ? 'empty item id' : null,
+    (item) => item.title.trim().isEmpty ? 'empty item title' : null,
+    (item) => item.title.length > maxItemTitleLength
+        ? 'item title too long (max $maxItemTitleLength)'
+        : null,
+    (item) => item.description != null &&
+            item.description!.length > maxItemDescriptionLength
+        ? 'item description too long (max $maxItemDescriptionLength)'
+        : null,
+    (item) => item.listId.isEmpty ? 'empty parent list id' : null,
+  ]);
+
   @override
   bool validateList(CustomList list) {
-    _validationCount++;
-    final errors = getListValidationErrors(list);
-    if (errors.isNotEmpty) {
-      _recordFailure(errors, 'list:${list.id}');
-      return false;
-    }
-    return true;
+    return _validate(
+      entity: list,
+      context: 'list:${list.id}',
+      errorProvider: getListValidationErrors,
+    );
   }
 
   @override
   bool validateListItem(ListItem item) {
-    _validationCount++;
-    final errors = getItemValidationErrors(item);
-    if (errors.isNotEmpty) {
-      _recordFailure(errors, 'item:${item.id}');
-      return false;
-    }
-    return true;
+    return _validate(
+      entity: item,
+      context: 'item:${item.id}',
+      errorProvider: getItemValidationErrors,
+    );
   }
 
   @override
   bool validateState(ListsState state) {
-    _validationCount++;
-    final errors = getStateValidationErrors(state);
-    if (errors.isNotEmpty) {
-      _recordFailure(errors, 'state');
-      return false;
-    }
-    return true;
+    return _validate(
+      entity: state,
+      context: 'state',
+      errorProvider: getStateValidationErrors,
+    );
   }
 
   @override
@@ -57,41 +78,12 @@ class ListsValidationService implements IListsValidationService {
   }
 
   @override
-  List<String> getListValidationErrors(CustomList list) {
-    final errors = <String>[];
-
-    if (list.id.isEmpty) errors.add('empty list id');
-    if (list.name.trim().isEmpty) errors.add('empty list name');
-    if (list.name.length > maxListNameLength) {
-      errors.add('list name too long (max $maxListNameLength)');
-    }
-    if (list.description != null && list.description!.length > maxListDescriptionLength) {
-      errors.add('description too long (max $maxListDescriptionLength)');
-    }
-    if (list.items.length > maxItemsPerList) {
-      errors.add('too many items (max $maxItemsPerList)');
-    }
-
-    return errors;
-  }
+  List<String> getListValidationErrors(CustomList list) =>
+      _listRuleSet.evaluate(list);
 
   @override
-  List<String> getItemValidationErrors(ListItem item) {
-    final errors = <String>[];
-
-    if (item.id.isEmpty) errors.add('empty item id');
-    if (item.title.trim().isEmpty) errors.add('empty item title');
-    if (item.title.length > maxItemTitleLength) {
-      errors.add('item title too long (max $maxItemTitleLength)');
-    }
-    final description = item.description;
-    if (description != null && description.length > maxItemDescriptionLength) {
-      errors.add('item description too long (max $maxItemDescriptionLength)');
-    }
-    if (item.listId.isEmpty) errors.add('empty parent list id');
-
-    return errors;
-  }
+  List<String> getItemValidationErrors(ListItem item) =>
+      _itemRuleSet.evaluate(item);
 
   @override
   List<String> getStateValidationErrors(ListsState state) {
@@ -108,9 +100,8 @@ class ListsValidationService implements IListsValidationService {
   }
 
   @override
-  List<CustomList> sanitizeLists(List<CustomList> lists) {
-    return lists.where(validateList).toList();
-  }
+  List<CustomList> sanitizeLists(List<CustomList> lists) =>
+      lists.where(validateList).toList();
 
   @override
   bool checkReferentialIntegrity(List<CustomList> lists) {
@@ -136,5 +127,37 @@ class ListsValidationService implements IListsValidationService {
       'Validation failed for $context: ${errors.join(', ')}',
       context: 'ListsValidationService',
     );
+  }
+
+  bool _validate<T>({
+    required T entity,
+    required String context,
+    required List<String> Function(T) errorProvider,
+  }) {
+    _validationCount++;
+    final errors = errorProvider(entity);
+    if (errors.isNotEmpty) {
+      _recordFailure(errors, context);
+      return false;
+    }
+    return true;
+  }
+
+}
+
+class ValidationRuleSet<T> {
+  ValidationRuleSet(this._rules);
+
+  final List<String? Function(T)> _rules;
+
+  List<String> evaluate(T entity) {
+    final errors = <String>[];
+    for (final rule in _rules) {
+      final result = rule(entity);
+      if (result != null) {
+        errors.add(result);
+      }
+    }
+    return errors;
   }
 }

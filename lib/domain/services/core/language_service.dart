@@ -7,6 +7,9 @@ class LanguageService {
   static const String _languageKey = 'selected_language';
   static const String _languageCodeKey = 'language_code';
   static const String _countryCodeKey = 'country_code';
+  static Locale _defaultSystemLocaleProvider() => PlatformDispatcher.instance.locale;
+
+  final Locale Function() _systemLocaleProvider;
 
   /// Langues supportées par l'application
   static const List<Locale> supportedLocales = [
@@ -21,6 +24,10 @@ class LanguageService {
 
   /// Box Hive pour la persistance
   Box? _box;
+
+  LanguageService({Locale Function()? systemLocaleProvider})
+      : _systemLocaleProvider =
+            systemLocaleProvider ?? _defaultSystemLocaleProvider;
 
   /// Initialise le service
   Future<void> initialize() async {
@@ -92,12 +99,10 @@ class LanguageService {
 
   /// Obtient la langue du système
   Locale getSystemLocale() {
-    final systemLocale = PlatformDispatcher.instance.locale;
-    if (!isSupported(systemLocale)) {
-      return defaultLocale;
+    final systemLocale = _systemLocaleProvider();
+    if (isSupported(systemLocale)) {
+      return systemLocale;
     }
-
-    // Garantir l'usage du français par défaut si aucune préférence explicite
     return defaultLocale;
   }
 

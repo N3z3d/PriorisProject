@@ -2,6 +2,9 @@ import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
 import '../../models/lists_state.dart';
+import '../../models/lists_filter_patch.dart';
+import 'item_transformations.dart';
+import 'item_transformations.dart';
 
 /// Lightweight helper dedicated to state transformations for lists.
 /// SRP: encapsulates state mutations to keep controllers slim.
@@ -55,26 +58,32 @@ class ListsStateManager {
     return _transformItems(
       state,
       listId,
-      (items) => [...items, item],
+      ItemTransformations.append(item),
     );
   }
 
   ListsState addItems(ListsState state, String listId, List<ListItem> items) {
     return _transformItems(
-        state, listId, (existing) => [...existing, ...items]);
+      state,
+      listId,
+      ItemTransformations.appendMany(items),
+    );
   }
 
   ListsState updateItem(ListsState state, String listId, ListItem item) {
-    return _transformItems(state, listId, (items) {
-      return items
-          .map((current) => current.id == item.id ? item : current)
-          .toList();
-    });
+    return _transformItems(
+      state,
+      listId,
+      ItemTransformations.replace(item),
+    );
   }
 
   ListsState removeItem(ListsState state, String listId, String itemId) {
-    return _transformItems(state, listId,
-        (items) => items.where((item) => item.id != itemId).toList());
+    return _transformItems(
+      state,
+      listId,
+      ItemTransformations.remove(itemId),
+    );
   }
 
   ListsState updateFilters(
@@ -86,13 +95,25 @@ class ListsStateManager {
     String? selectedDateFilter,
     SortOption? sortOption,
   }) {
+    final patch = ListsFilterPatch(
+      searchQuery: searchQuery,
+      selectedType: selectedType,
+      showCompleted: showCompleted,
+      showInProgress: showInProgress,
+      selectedDateFilter: selectedDateFilter,
+      sortOption: sortOption,
+    );
+    return applyFilterPatch(state, patch);
+  }
+
+  ListsState applyFilterPatch(ListsState state, ListsFilterPatch patch) {
     return state.copyWith(
-      searchQuery: searchQuery ?? state.searchQuery,
-      selectedType: selectedType ?? state.selectedType,
-      showCompleted: showCompleted ?? state.showCompleted,
-      showInProgress: showInProgress ?? state.showInProgress,
-      selectedDateFilter: selectedDateFilter ?? state.selectedDateFilter,
-      sortOption: sortOption ?? state.sortOption,
+      searchQuery: patch.searchQuery ?? state.searchQuery,
+      selectedType: patch.selectedType ?? state.selectedType,
+      showCompleted: patch.showCompleted ?? state.showCompleted,
+      showInProgress: patch.showInProgress ?? state.showInProgress,
+      selectedDateFilter: patch.selectedDateFilter ?? state.selectedDateFilter,
+      sortOption: patch.sortOption ?? state.sortOption,
     );
   }
 
@@ -129,7 +150,7 @@ class ListsStateManager {
   ListsState _transformItems(
     ListsState state,
     String listId,
-    List<ListItem> Function(List<ListItem>) transform,
+      ItemTransformation transform,
   ) {
     final updated = state.lists.map((list) {
       if (list.id != listId) return list;

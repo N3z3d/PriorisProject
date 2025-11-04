@@ -10,6 +10,8 @@ import 'package:prioris/domain/models/core/enums/list_enums.dart';
 
 import 'lists_controller_adaptive_test.mocks.dart';
 
+void clearInvocations(Object mock) => reset(mock);
+
 @GenerateMocks([AdaptivePersistenceService, ListsFilterService])
 void main() {
   group('ListsController Adaptive - Tests Fonctionnels', () {
@@ -25,7 +27,24 @@ void main() {
     setUp(() {
       mockAdaptiveService = MockAdaptivePersistenceService();
       mockFilterService = MockListsFilterService();
-      
+
+      when(mockAdaptiveService.currentMode)
+          .thenReturn(PersistenceMode.localFirst);
+      when(mockAdaptiveService.isAuthenticated).thenReturn(false);
+      when(mockAdaptiveService.initialize(isAuthenticated: anyNamed('isAuthenticated')))
+          .thenAnswer((_) async {});
+      when(mockAdaptiveService.updateAuthenticationState(
+              isAuthenticated: anyNamed('isAuthenticated')))
+          .thenAnswer((_) async {});
+      when(mockAdaptiveService.getAllLists())
+          .thenAnswer((_) async => <CustomList>[]);
+      when(mockAdaptiveService.getItemsByListId(any))
+          .thenAnswer((_) async => <ListItem>[]);
+      when(mockAdaptiveService.getLists())
+          .thenAnswer((_) async => <CustomList>[]);
+      when(mockAdaptiveService.getListItems(any))
+          .thenAnswer((_) async => <ListItem>[]);
+
       controller = ListsController.adaptive(
         mockAdaptiveService,
         mockFilterService,

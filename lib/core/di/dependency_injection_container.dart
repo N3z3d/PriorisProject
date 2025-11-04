@@ -94,7 +94,7 @@ class DIContainer {
     _ensureNotDisposed();
     final key = _ServiceKey(T, name);
     _registrations[key] = _Registration(
-      factory: () => factory(),
+      factory: () => factory() as Object,
       lifetime: _ServiceLifetime.factory,
     );
     _singletonCache.remove(key);
@@ -108,7 +108,7 @@ class DIContainer {
     _ensureNotDisposed();
     final key = _ServiceKey(T, name);
     _registrations[key] = _Registration(
-      factory: () => factory(),
+      factory: () => factory() as Object,
       lifetime: _ServiceLifetime.singleton,
     );
     _singletonCache.remove(key);
@@ -122,7 +122,7 @@ class DIContainer {
   }) {
     _ensureNotDisposed();
     final key = _ServiceKey(T, name);
-    _asyncFactories[key] = future.then<Object>((value) => value);
+    _asyncFactories[key] = future.then<Object>((value) => value as Object);
     _asyncResolved.remove(key);
   }
 
@@ -250,7 +250,7 @@ class DIContainer {
     }
   }
 
-  void _trackDisposable(Object instance) {
+  void _trackDisposable(Object? instance) {
     if (instance is Disposable) {
       // keep reference in singleton cache or async resolved maps
       // disposal is handled when clearing/dispose.

@@ -8,46 +8,28 @@ import 'app_localizations.dart';
 class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
-  @override
-  String get appTitle => 'Prioris';
-
-  @override
-  String get home => 'Accueil';
-
-  @override
-  String get habits => 'Habitudes';
-
-  @override
-  String get tasks => 'Tâches';
-
-  @override
-  String get lists => 'Listes';
-
-  @override
-  String get habitFormTitleNew => 'Nouvelle habitude';
-
+  @override String get appTitle => 'Prioris';
+  @override String get home => 'Accueil';
+  @override String get habits => 'Habitudes';
+  @override String get tasks => 'Tâches';
+  @override String get lists => 'Listes';
+  @override String get habitFormTitleNew => 'Nouvelle habitude';
   @override
   String get habitFormTitleEdit => 'Modifier l\'habitude';
-
   @override
   String get habitFormIntro =>
       'Donnez un nom clair, associez une catégorie et choisissez comment suivre votre progression.';
 
   @override
   String get habitFormNameLabel => 'Nom de l\'habitude';
-
   @override
   String get habitFormNameHint => 'Ex : Boire 8 verres d\'eau';
-
   @override
   String get habitFormCategoryLabel => 'Catégorie (facultatif)';
-
   @override
   String get habitFormCategoryHint => 'Sélectionner une catégorie';
-
   @override
   String get habitFormCategoryNone => 'Aucune catégorie';
-
   @override
   String get habitFormCategoryCreate => '+ Créer une nouvelle catégorie…';
 

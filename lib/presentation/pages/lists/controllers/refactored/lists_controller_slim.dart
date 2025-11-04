@@ -4,6 +4,7 @@ import 'package:prioris/domain/models/core/entities/list_item.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
 import 'package:prioris/domain/core/interfaces/logger_interface.dart';
 import '../../models/lists_state.dart';
+import '../../models/lists_filter_patch.dart';
 import '../../interfaces/lists_managers_interfaces.dart';
 import '../helpers/lists_controller_executor.dart';
 import '../operations/lists_crud_operations.dart';
@@ -138,31 +139,26 @@ class ListsControllerSlim extends StateNotifier<ListsState>
         showLoading: false,
       );
 
-  void updateSearchQuery(String query) => runSync(
-        'updateSearchQuery',
-        () => state = crudOperations.updateFilters(state, searchQuery: query),
-      );
+  void updateSearchQuery(String query) =>
+      _applyFilterPatch('updateSearchQuery', ListsFilterPatch.search(query));
 
-  void updateTypeFilter(ListType? type) => runSync(
-        'updateTypeFilter',
-        () => state = crudOperations.updateFilters(state, selectedType: type),
-      );
+  void updateTypeFilter(ListType? type) =>
+      _applyFilterPatch('updateTypeFilter', ListsFilterPatch.type(type));
 
-  void updateShowCompleted(bool show) => runSync(
-        'updateShowCompleted',
-        () => state = crudOperations.updateFilters(state, showCompleted: show),
-      );
+  void updateShowCompleted(bool show) =>
+      _applyFilterPatch('updateShowCompleted', ListsFilterPatch.showCompleted(show));
 
-  void updateShowInProgress(bool show) => runSync(
-        'updateShowInProgress',
-        () => state = crudOperations.updateFilters(state, showInProgress: show),
-      );
+  void updateShowInProgress(bool show) =>
+      _applyFilterPatch('updateShowInProgress', ListsFilterPatch.showInProgress(show));
 
-  void updateDateFilter(String? filter) => runSync(
-        'updateDateFilter',
-        () => state =
-            crudOperations.updateFilters(state, selectedDateFilter: filter),
-      );
+  void updateDateFilter(String? filter) =>
+      _applyFilterPatch('updateDateFilter', ListsFilterPatch.dateFilter(filter));
+
+  void _applyFilterPatch(String operation, ListsFilterPatch patch) {
+    runSync(operation, () {
+      state = crudOperations.updateFilters(state, patch);
+    });
+  }
 
   void clearError() {
     if (_isDisposed) return;

@@ -315,7 +315,7 @@ class ListsRepositoryService implements IListsRepositoryService {
       _logClearSuccess(summary);
     } catch (e, stack) {
       LoggerService.instance.error(
-        'Erreur lors de l'effacement des donnees',
+        "Erreur lors de l'effacement des donnees",
         context: 'ListsRepositoryService',
         error: e,
         stackTrace: stack,
@@ -326,7 +326,7 @@ class ListsRepositoryService implements IListsRepositoryService {
 
   void _logClearStart() {
     LoggerService.instance.info(
-      'Debut de l'effacement de toutes les donnees...',
+      "Debut de l'effacement de toutes les donnees...",
       context: 'ListsRepositoryService',
     );
   }
