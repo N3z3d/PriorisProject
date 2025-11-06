@@ -1,7 +1,8 @@
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
-import 'package:prioris/infrastructure/services/supabase_service.dart';
 import 'package:prioris/infrastructure/services/auth_service.dart';
+import 'package:prioris/infrastructure/services/supabase_service.dart';
+import 'package:prioris/infrastructure/services/supabase_table_adapter.dart';
 
 import '../custom_list_repository.dart';
 
@@ -10,15 +11,18 @@ import '../custom_list_repository.dart';
 class SupabaseCustomListRepository implements CustomListRepository {
   final SupabaseService _supabase;
   final AuthService _auth;
+  final SupabaseTableAdapterFactory _tableFactory;
 
   static const String _tableName = 'custom_lists';
 
   /// Constructor with dependency injection
-  const SupabaseCustomListRepository({
-    required SupabaseService supabaseService,
-    required AuthService authService,
-  }) : _supabase = supabaseService,
-       _auth = authService;
+  SupabaseCustomListRepository({
+    SupabaseService? supabaseService,
+    AuthService? authService,
+    SupabaseTableAdapterFactory? tableFactory,
+  })  : _supabase = supabaseService ?? SupabaseService.instance,
+        _auth = authService ?? AuthService.instance,
+        _tableFactory = tableFactory ?? defaultSupabaseTableFactory;
 
   /// Factory constructor for legacy compatibility (deprecated)
   @Deprecated('Use constructor with DI instead')
@@ -48,12 +52,12 @@ class SupabaseCustomListRepository implements CustomListRepository {
     try {
       if (!_auth.isSignedIn) throw Exception('User not authenticated');
 
-      final response = await _supabase.client
-          .from(_tableName)
-          .select()
-          .eq('user_id', _auth.currentUser!.id)
-          .eq('is_deleted', false)
-          .order('created_at', ascending: false);
+      final response = await _table().select(
+        builder: (query) => query
+            .eq('user_id', _auth.currentUser!.id)
+            .eq('is_deleted', false)
+            .order('created_at', ascending: false),
+      );
 
       return response.map<CustomList>((json) => CustomList.fromJson(json)).toList();
     } catch (e) {
@@ -66,13 +70,12 @@ class SupabaseCustomListRepository implements CustomListRepository {
     try {
       if (!_auth.isSignedIn) throw Exception('User not authenticated');
 
-      final response = await _supabase.client
-          .from(_tableName)
-          .select()
-          .eq('id', id)
-          .eq('user_id', _auth.currentUser!.id)
-          .eq('is_deleted', false)
-          .maybeSingle();
+      final response = await _table().selectSingle(
+        builder: (query) => query
+            .eq('id', id)
+            .eq('user_id', _auth.currentUser!.id)
+            .eq('is_deleted', false),
+      );
 
       return response != null ? CustomList.fromJson(response) : null;
     } catch (e) {
@@ -91,9 +94,7 @@ class SupabaseCustomListRepository implements CustomListRepository {
       // Remove items from JSON as they're stored separately in list_items table
       listData.remove('items');
       
-      await _supabase.client
-          .from(_tableName)
-          .insert(listData);
+      await _table().insert(listData);
     } catch (e) {
       throw Exception('Failed to create list: $e');
     }
@@ -108,11 +109,12 @@ class SupabaseCustomListRepository implements CustomListRepository {
       // Remove items from JSON as they're stored separately in list_items table
       listData.remove('items');
       
-      await _supabase.client
-          .from(_tableName)
-          .update(listData)
-          .eq('id', list.id)
-          .eq('user_id', _auth.currentUser!.id);
+      await _table().update(
+        values: listData,
+        builder: (query) => query
+            .eq('id', list.id)
+            .eq('user_id', _auth.currentUser!.id),
+      );
     } catch (e) {
       throw Exception('Failed to update list: $e');
     }
@@ -124,13 +126,14 @@ class SupabaseCustomListRepository implements CustomListRepository {
       if (!_auth.isSignedIn) throw Exception('User not authenticated');
 
       // Soft delete
-      await _supabase.client
-          .from(_tableName)
-          .update({
-            'is_deleted': true,
-          })
-          .eq('id', id)
-          .eq('user_id', _auth.currentUser!.id);
+      await _table().update(
+        values: {
+          'is_deleted': true,
+        },
+        builder: (query) => query
+            .eq('id', id)
+            .eq('user_id', _auth.currentUser!.id),
+      );
     } catch (e) {
       throw Exception('Failed to delete list: $e');
     }
@@ -143,13 +146,13 @@ class SupabaseCustomListRepository implements CustomListRepository {
     try {
       if (!_auth.isSignedIn) throw Exception('User not authenticated');
 
-      final response = await _supabase.client
-          .from(_tableName)
-          .select()
-          .eq('user_id', _auth.currentUser!.id)
-          .eq('list_type', type.name)
-          .eq('is_deleted', false)
-          .order('created_at', ascending: false);
+      final response = await _table().select(
+        builder: (query) => query
+            .eq('user_id', _auth.currentUser!.id)
+            .eq('list_type', type.name)
+            .eq('is_deleted', false)
+            .order('created_at', ascending: false),
+      );
 
       return response.map<CustomList>((json) => CustomList.fromJson(json)).toList();
     } catch (e) {
@@ -165,13 +168,13 @@ class SupabaseCustomListRepository implements CustomListRepository {
       // Sanitize query to prevent potential injection
       final sanitizedQuery = _sanitizeSearchQuery(query);
 
-      final response = await _supabase.client
-          .from(_tableName)
-          .select()
-          .eq('user_id', _auth.currentUser!.id)
-          .eq('is_deleted', false)
-          .ilike('name', '%$sanitizedQuery%')
-          .order('created_at', ascending: false);
+      final response = await _table().select(
+        builder: (query) => query
+            .eq('user_id', _auth.currentUser!.id)
+            .eq('is_deleted', false)
+            .ilike('name', '%$sanitizedQuery%')
+            .order('created_at', ascending: false),
+      );
 
       return response.map<CustomList>((json) => CustomList.fromJson(json)).toList();
     } catch (e) {
@@ -187,13 +190,13 @@ class SupabaseCustomListRepository implements CustomListRepository {
       // Sanitize query to prevent potential injection
       final sanitizedQuery = _sanitizeSearchQuery(query);
 
-      final response = await _supabase.client
-          .from(_tableName)
-          .select()
-          .eq('user_id', _auth.currentUser!.id)
-          .eq('is_deleted', false)
-          .ilike('description', '%$sanitizedQuery%')
-          .order('created_at', ascending: false);
+      final response = await _table().select(
+        builder: (query) => query
+            .eq('user_id', _auth.currentUser!.id)
+            .eq('is_deleted', false)
+            .ilike('description', '%$sanitizedQuery%')
+            .order('created_at', ascending: false),
+      );
 
       return response.map<CustomList>((json) => CustomList.fromJson(json)).toList();
     } catch (e) {
@@ -233,12 +236,12 @@ class SupabaseCustomListRepository implements CustomListRepository {
       if (!_auth.isSignedIn) throw Exception('User not authenticated');
 
       // Soft delete toutes les listes de l'utilisateur
-      await _supabase.client
-          .from(_tableName)
-          .update({
-            'is_deleted': true,
-          })
-          .eq('user_id', _auth.currentUser!.id);
+      await _table().update(
+        values: {
+          'is_deleted': true,
+        },
+        builder: (query) => query.eq('user_id', _auth.currentUser!.id),
+      );
     } catch (e) {
       throw Exception('Failed to clear all lists: $e');
     }
@@ -249,13 +252,13 @@ class SupabaseCustomListRepository implements CustomListRepository {
     try {
       if (!_auth.isSignedIn) throw Exception('User not authenticated');
 
-      final response = await _supabase.client
-          .from(_tableName)
-          .select()
-          .eq('user_id', _auth.currentUser!.id)
-          .eq('list_type', type)
-          .eq('is_deleted', false)
-          .order('created_at', ascending: false);
+      final response = await _table().select(
+        builder: (query) => query
+            .eq('user_id', _auth.currentUser!.id)
+            .eq('list_type', type)
+            .eq('is_deleted', false)
+            .order('created_at', ascending: false),
+      );
 
       return response.map<CustomList>((json) => CustomList.fromJson(json)).toList();
     } catch (e) {
@@ -276,15 +279,16 @@ class SupabaseCustomListRepository implements CustomListRepository {
       return Stream.error('User not authenticated');
     }
 
-    return _supabase.client
-        .from(_tableName)
-        .stream(primaryKey: ['id'])
-        .map((data) => data
-            .where((json) => 
-                json['user_id'] == _auth.currentUser!.id && 
-                json['is_deleted'] == false)
-            .map<CustomList>((json) => CustomList.fromJson(json))
-            .toList());
+    return _table()
+        .stream(
+          primaryKey: const ['id'],
+          builder: (query) => query
+              .eq('user_id', _auth.currentUser!.id)
+              .eq('is_deleted', false),
+        )
+        .map(
+          (data) => data.map<CustomList>((json) => CustomList.fromJson(json)).toList(),
+        );
   }
 
   /// Obtient les statistiques de l'utilisateur
@@ -292,11 +296,12 @@ class SupabaseCustomListRepository implements CustomListRepository {
     try {
       if (!_auth.isSignedIn) throw Exception('User not authenticated');
 
-      final response = await _supabase.client
-          .from(_tableName)
-          .select('list_type')
-          .eq('user_id', _auth.currentUser!.id)
-          .eq('is_deleted', false);
+      final response = await _table().select(
+        columns: 'list_type',
+        builder: (query) => query
+            .eq('user_id', _auth.currentUser!.id)
+            .eq('is_deleted', false),
+      );
 
       final stats = <String, int>{};
       for (final item in response) {
@@ -309,4 +314,6 @@ class SupabaseCustomListRepository implements CustomListRepository {
       throw Exception('Failed to get stats: $e');
     }
   }
+
+  SupabaseTableAdapter _table() => _tableFactory(_supabase, _tableName);
 }

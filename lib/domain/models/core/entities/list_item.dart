@@ -162,6 +162,7 @@ class ListItem extends HiveObject {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'name': title,
       'title': title,
       'description': description,
       'category': category,
@@ -177,20 +178,33 @@ class ListItem extends HiveObject {
 
   /// Crée un élément à partir d'une Map (désérialisation JSON)
   factory ListItem.fromJson(Map<String, dynamic> json) {
+    final rawTitle = json['title'] ?? json['name'];
+    if (rawTitle == null) {
+      throw ArgumentError('Le titre est requis pour ListItem.fromJson');
+    }
+    final rawCreatedAt = json['createdAt'] ?? json['created_at'];
+    if (rawCreatedAt == null) {
+      throw ArgumentError('createdAt est requis pour ListItem.fromJson');
+    }
+
+    final rawListId = json['listId'] ?? json['list_id'];
+
     return ListItem(
       id: json['id'] as String,
-      title: json['title'] as String,
+      title: rawTitle as String,
       description: json['description'] as String?,
       category: json['category'] as String?,
       eloScore: (json['eloScore'] as num?)?.toDouble() ?? 1200.0,
       isCompleted: json['isCompleted'] as bool? ?? false,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      completedAt: json['completedAt'] != null 
-          ? DateTime.parse(json['completedAt'] as String)
+      createdAt: DateTime.parse(rawCreatedAt as String),
+      completedAt: (json['completedAt'] ?? json['completed_at']) != null
+          ? DateTime.parse((json['completedAt'] ?? json['completed_at']) as String)
           : null,
-      dueDate: json['dueDate'] != null ? DateTime.parse(json['dueDate'] as String) : null,
+      dueDate: (json['dueDate'] ?? json['due_date']) != null
+          ? DateTime.parse((json['dueDate'] ?? json['due_date']) as String)
+          : null,
       notes: json['notes'] as String?,
-      listId: json['listId'] as String,
+      listId: (rawListId as String?) ?? 'default',
     );
   }
 

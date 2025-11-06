@@ -35,7 +35,7 @@ class TestRepositoryStateNotifier extends ChangeNotifier
     with CompleteStateMixin<List<TestModel>>, RepositoryStateMixin<TestModel> {
 
   @override
-  String _extractId(TestModel item) => item.id;
+  String extractId(TestModel item) => item.id;
 }
 
 void main() {

@@ -1,141 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:prioris/infrastructure/services/logger_service.dart';
 
+part 'state_management_controllers.dart';
+
 typedef _AsyncCallback<T> = Future<T> Function();
-
-// Internal controllers shared across mixins
-class _LoadingStateController {
-  _LoadingStateController(this._notify);
-
-  final VoidCallback _notify;
-  bool _isLoading = false;
-  String? _message;
-  final Set<String> _operationKeys = <String>{};
-
-  bool get isLoading => _isLoading;
-  String? get message => _message;
-
-  bool isOperationLoading(String key) => _operationKeys.contains(key);
-
-  void setLoading(bool value, String? message) {
-    if (value) {
-      final changed = !_isLoading || _message != message;
-      _isLoading = true;
-      _message = message;
-      if (changed) {
-        _notify();
-      }
-    } else {
-      if (!_isLoading && _message == null) {
-        return;
-      }
-      _isLoading = false;
-      _message = null;
-      _notify();
-    }
-  }
-
-  void setOperationLoading(String key, bool value) {
-    final changed = value ? _operationKeys.add(key) : _operationKeys.remove(key);
-    if (changed) {
-      _notify();
-    }
-  }
-
-  void clear() {
-    if (!_isLoading && _message == null && _operationKeys.isEmpty) return;
-    _isLoading = false;
-    _message = null;
-    if (_operationKeys.isNotEmpty) {
-      _operationKeys.clear();
-    }
-    _notify();
-  }
-}
-
-class _ErrorStateController {
-  _ErrorStateController(this._notify);
-
-  final VoidCallback _notify;
-  String? _lastError;
-  final Map<String, String> _operationErrors = {};
-
-  String? get lastError => _lastError;
-  bool get hasErrors => _lastError != null || _operationErrors.isNotEmpty;
-
-  String? getOperationError(String key) => _operationErrors[key];
-
-  void setError(String? message) {
-    if (_lastError == message) return;
-    _lastError = message;
-    _notify();
-  }
-
-  void setOperationError(String key, String? message) {
-    if (message == null) {
-      if (_operationErrors.remove(key) != null) {
-        _notify();
-      }
-    } else {
-      final previous = _operationErrors[key];
-      if (previous == message) return;
-      _operationErrors[key] = message;
-      _notify();
-    }
-  }
-
-  void clearAll() {
-    if (!hasErrors) return;
-    _lastError = null;
-    _operationErrors.clear();
-    _notify();
-  }
-}
-
-class _DataStateController<T> {
-  _DataStateController(this._notify);
-
-  final VoidCallback _notify;
-  T? _data;
-  bool _isInitialized = false;
-  bool _isEmpty = false;
-
-  T? get data => _data;
-  bool get isInitialized => _isInitialized;
-  bool get isEmpty => _isEmpty;
-  bool get hasData => _isInitialized && !_isEmpty;
-
-  void setData(T? value) {
-    final newEmpty = _computeEmpty(value);
-    final changed = !_isInitialized || _data != value || _isEmpty != newEmpty;
-    _data = value;
-    _isInitialized = true;
-    _isEmpty = newEmpty;
-    if (changed) {
-      _notify();
-    }
-  }
-
-  void updateData(T? Function(T? current) updater) {
-    setData(updater(_data));
-  }
-
-  void clear() {
-    if (_data == null && !_isInitialized && !_isEmpty) return;
-    _data = null;
-    _isInitialized = false;
-    _isEmpty = false;
-    _notify();
-  }
-
-  static bool _computeEmpty(Object? value) {
-    if (value == null) return true;
-    if (value is String) return value.isEmpty;
-    if (value is Iterable) return value.isEmpty;
-    if (value is Map) return value.isEmpty;
-    return false;
-  }
-}
 
 mixin LoadingStateMixin on ChangeNotifier {
   late final _LoadingStateController _loadingState =
@@ -345,7 +213,7 @@ mixin CompleteStateMixin<T> on ChangeNotifier
 
   Future<R?> executeOperation<R>(
     _AsyncCallback<R> operation, {
-    void Function(R result)? onSuccess,
+    void Function(dynamic result)? onSuccess,
     String? loadingMessage,
     String? operationKey,
     String? errorOperationKey,
@@ -368,7 +236,7 @@ mixin CompleteStateMixin<T> on ChangeNotifier
 
 mixin RepositoryStateMixin<T>
     on ChangeNotifier, CompleteStateMixin<List<T>> {
-  String _extractId(T item);
+  String extractId(T item);
 
   Future<void> loadAll(
     Future<List<T>> Function() loader, {
@@ -376,7 +244,7 @@ mixin RepositoryStateMixin<T>
   }) async {
     await executeOperation<List<T>>(
       loader,
-      onSuccess: setData,
+      onSuccess: (result) => setData(result as List<T>?),
       loadingMessage: loadingMessage,
       operationKey: 'loadAll',
       errorOperationKey: 'loadAll',
@@ -434,7 +302,7 @@ mixin RepositoryStateMixin<T>
       );
     } else {
       final updated = List<T>.from(data ?? <T>[]);
-      final index = updated.indexWhere((item) => _extractId(item) == id);
+      final index = updated.indexWhere((item) => extractId(item) == id);
       if (index != -1) {
         updated[index] = result;
         setData(updated);
@@ -469,7 +337,7 @@ mixin RepositoryStateMixin<T>
       );
     } else {
       final updated = List<T>.from(data ?? <T>[]);
-      updated.removeWhere((item) => _extractId(item) == id);
+      updated.removeWhere((item) => extractId(item) == id);
       setData(updated);
     }
     return true;
@@ -524,7 +392,7 @@ DataStateMixin<dynamic> _requireDataMixin(ChangeNotifier target) {
 Future<R?> _executeStateOperation<R>(
   ChangeNotifier target,
   Future<R> Function() operation, {
-  void Function(R result)? onSuccess,
+  void Function(dynamic result)? onSuccess,
   String? loadingMessage,
   String? operationKey,
   String? errorOperationKey,
@@ -572,7 +440,7 @@ extension CompleteStateOperations<T> on DataStateMixin<T> {
 
   Future<R?> executeOperation<R>(
     Future<R> Function() operation, {
-    void Function(R result)? onSuccess,
+    void Function(dynamic result)? onSuccess,
     String? loadingMessage,
     String? operationKey,
     String? errorOperationKey,

@@ -22,6 +22,8 @@ void main() {
       cloudItemRepository: cloudItems,
     );
 
+    when(local.deleteList(any)).thenAnswer((_) async {});
+    when(cloud.deleteList(any)).thenAnswer((_) async {});
     await service.initialize(isAuthenticated: true);
 
     await service.deleteList('abc');

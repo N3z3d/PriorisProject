@@ -14,6 +14,24 @@ abstract class CustomListRepository
       CustomListCleanRepositoryInterface {
   
   // Toutes les méthodes sont déjà définies dans les interfaces parentes
+
+  /// Fournit des statistiques de base sur les listes stockées.
+  /// Retourne au minimum le nombre de listes, de listes complétées
+  /// ainsi que le total d'items agrégés.
+  Future<Map<String, dynamic>> getStats() async {
+    final lists = await getAllLists();
+    final completed = lists.where((list) => list.isCompleted).length;
+    final itemCount = lists.fold<int>(
+      0,
+      (count, list) => count + list.items.length,
+    );
+
+    return {
+      'count': lists.length,
+      'completed': completed,
+      'items': itemCount,
+    };
+  }
 }
 
 /// Implémentation en mémoire pour les tests
@@ -50,6 +68,19 @@ class InMemoryCustomListRepository implements CustomListRepository {
   // Méthodes de CleanableRepositoryInterface
   @override
   Future<void> clearAll() async => clearAllLists();
+
+  @override
+  Future<Map<String, dynamic>> getStats() async {
+    final lists = _lists.values.toList();
+    final completed = lists.where((list) => list.isCompleted).length;
+    final itemCount =
+        lists.fold<int>(0, (count, list) => count + list.items.length);
+    return {
+      'count': lists.length,
+      'completed': completed,
+      'items': itemCount,
+    };
+  }
 
   @override
   Future<List<CustomList>> getAllLists() async {

@@ -21,6 +21,11 @@ void main() {
 
       await for (final entity in libDir.list(recursive: true)) {
         if (entity is File && entity.path.endsWith('.dart')) {
+          final relativePath = path.relative(entity.path, from: projectRoot);
+          if (_isGeneratedFile(relativePath)) {
+            continue;
+          }
+
           final lines = await entity.readAsLines();
           final codeLines = _countCodeLines(lines);
 
@@ -47,6 +52,11 @@ void main() {
 
       await for (final entity in libDir.list(recursive: true)) {
         if (entity is File && entity.path.endsWith('.dart')) {
+          final relativePath = path.relative(entity.path, from: projectRoot);
+          if (_isGeneratedFile(relativePath)) {
+            continue;
+          }
+
           final content = await entity.readAsString();
           final methodViolations = _findLongMethods(content, entity.path);
           violations.addAll(methodViolations);
@@ -180,6 +190,14 @@ void main() {
       print('✅ Architecture quality metrics meet requirements');
     });
   });
+}
+
+bool _isGeneratedFile(String relativePath) {
+  final normalized = relativePath.replaceAll('\\', '/');
+  if (normalized.startsWith('lib/l10n/')) {
+    return true;
+  }
+  return false;
 }
 
 /// Count actual code lines (exclude comments, empty lines, imports)

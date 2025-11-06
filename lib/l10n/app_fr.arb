@@ -35,6 +35,14 @@
   "habitRecurrenceTimesPerHour": "Plusieurs fois par heure",
   "habitRecurrenceWeekends": "Week-ends",
   "habitRecurrenceWeekdays": "Jours de semaine",
+  "habitRecurrenceEveryXDays": "Tous les X jours",
+  "@habitRecurrenceEveryXDays": {
+    "description": "Libellé pour l'option de récurrence : tous les X jours"
+  },
+  "habitRecurrenceSpecificWeekdays": "Certains jours de la semaine",
+  "@habitRecurrenceSpecificWeekdays": {
+    "description": "Libellé pour l'option de récurrence : jours spécifiques de la semaine"
+  },
   "habitFormSubmitCreate": "Créer l'habitude",
   "habitFormValidationNameRequired": "Veuillez saisir un nom pour l'habitude",
   "statistics": "Statistiques",

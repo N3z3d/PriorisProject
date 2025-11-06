@@ -346,9 +346,31 @@ final listsConfigProvider = Provider<ListsConfig>((ref) {
 // ALIASES DE COMPATIBILITÉ (pour la migration progressive)
 // ============================================================================
 
+final allCustomListsProvider = Provider<List<CustomList>>((ref) {
+  return ref.watch(consolidatedListsProvider).rawLists;
+});
 
+final customListsByTypeProvider = Provider.family<List<CustomList>, ListType>((ref, type) {
+  final lists = ref.watch(consolidatedListsProvider).rawLists;
+  return lists.where((list) => list.type == type).toList();
+});
 
+final customListsStatsProvider = Provider<Map<String, dynamic>>((ref) {
+  return ref.watch(consolidatedListsProvider).statistics;
+});
 
+final customListsSearchProvider = Provider.family<List<CustomList>, String>((ref, query) {
+  final lists = ref.watch(consolidatedListsProvider).rawLists;
+  final search = query.trim().toLowerCase();
+  if (search.isEmpty) {
+    return lists;
+  }
+  return lists.where((list) {
+    final nameMatch = list.name.toLowerCase().contains(search);
+    final descriptionMatch = list.description?.toLowerCase().contains(search) ?? false;
+    return nameMatch || descriptionMatch;
+  }).toList();
+});
 
 // ============================================================================
 // HELPERS POUR L'UTILISATION MODERNE

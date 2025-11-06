@@ -1,16 +1,12 @@
-import 'package:prioris/domain/models/core/entities/custom_list.dart';
-import 'package:prioris/domain/models/core/entities/list_item.dart';
-import 'package:prioris/domain/models/core/enums/list_enums.dart';
+import '../shared/lists_domain_dependencies.dart';
 import '../../models/lists_state.dart';
 import '../../models/lists_filter_patch.dart';
 import 'item_transformations.dart';
-import 'item_transformations.dart';
 
-/// Lightweight helper dedicated to state transformations for lists.
-/// SRP: encapsulates state mutations to keep controllers slim.
+/// Lightweight helper dedicated to state transformations for lists, keeping
+/// controllers slim by concentrating state mutations in one place.
 class ListsStateManager {
   const ListsStateManager();
-
   ListsState setLoading(ListsState state, {bool isLoading = true}) {
     return state.withLoading(loading: isLoading);
   }

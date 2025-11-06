@@ -368,12 +368,12 @@ class ListsRepositoryService implements IListsRepositoryService {
     return (listCount: lists.length, itemCount: items.length);
   }
 
-void _logClearSuccess(_ClearSummary summary) {
-  LoggerService.instance.info(
-    'Toutes les donnees effacees avec succes: ${summary.listCount} listes et ${summary.itemCount} elements',
-    context: 'ListsRepositoryService',
-  );
-}
+  void _logClearSuccess(_ClearSummary summary) {
+    LoggerService.instance.info(
+      'Toutes les donnees effacees avec succes: ${summary.listCount} listes et ${summary.itemCount} elements',
+      context: 'ListsRepositoryService',
+    );
+  }
 
   @override
   Future<List<CustomList>> forceReloadFromPersistence() async {

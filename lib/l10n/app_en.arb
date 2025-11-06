@@ -47,6 +47,14 @@
   "habitRecurrenceTimesPerHour": "Several times per hour",
   "habitRecurrenceWeekends": "Weekends",
   "habitRecurrenceWeekdays": "Weekdays",
+  "habitRecurrenceEveryXDays": "Every X days",
+  "@habitRecurrenceEveryXDays": {
+    "description": "Label for recurrence option: every X days"
+  },
+  "habitRecurrenceSpecificWeekdays": "Specific days of the week",
+  "@habitRecurrenceSpecificWeekdays": {
+    "description": "Label for recurrence option: select specific weekdays"
+  },
   "habitFormSubmitCreate": "Create habit",
   "habitFormValidationNameRequired": "Please enter a name for the habit",
   "@lists": {

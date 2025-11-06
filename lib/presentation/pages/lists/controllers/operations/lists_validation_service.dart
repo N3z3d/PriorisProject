@@ -1,6 +1,6 @@
-﻿import 'package:prioris/domain/models/core/entities/custom_list.dart';
-import 'package:prioris/domain/models/core/entities/list_item.dart';
+﻿import '../shared/lists_domain_dependencies.dart';
 import 'package:prioris/infrastructure/services/logger_service.dart';
+import '../shared/validation_rule_set.dart';
 import '../../models/lists_state.dart';
 import '../../interfaces/lists_managers_interfaces.dart';
 
@@ -145,19 +145,3 @@ class ListsValidationService implements IListsValidationService {
 
 }
 
-class ValidationRuleSet<T> {
-  ValidationRuleSet(this._rules);
-
-  final List<String? Function(T)> _rules;
-
-  List<String> evaluate(T entity) {
-    final errors = <String>[];
-    for (final rule in _rules) {
-      final result = rule(entity);
-      if (result != null) {
-        errors.add(result);
-      }
-    }
-    return errors;
-  }
-}

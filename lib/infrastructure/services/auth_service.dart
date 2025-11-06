@@ -13,6 +13,9 @@ class AuthService {
         supabaseService: SupabaseService.instance,
         logger: LoggerService.instance,
       );
+  static set instance(AuthService service) {
+    _instance = service;
+  }
 
   @visibleForTesting
   static void configureForTesting({

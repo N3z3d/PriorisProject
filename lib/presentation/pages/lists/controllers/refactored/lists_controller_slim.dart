@@ -1,8 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:prioris/domain/models/core/entities/custom_list.dart';
-import 'package:prioris/domain/models/core/entities/list_item.dart';
-import 'package:prioris/domain/models/core/enums/list_enums.dart';
-import 'package:prioris/domain/core/interfaces/logger_interface.dart';
+import '../shared/lists_domain_dependencies.dart';
 import '../../models/lists_state.dart';
 import '../../models/lists_filter_patch.dart';
 import '../../interfaces/lists_managers_interfaces.dart';
@@ -35,9 +32,8 @@ class ListsControllerSlim extends StateNotifier<ListsState>
   }
 
   bool get isInitialized => _isInitialized;
-
   @override
-  bool get controllerInitialized => _isInitialized;
+  bool get controllerInitialized => isInitialized;
 
   @override
   bool get controllerDisposed => _isDisposed;
@@ -161,8 +157,11 @@ class ListsControllerSlim extends StateNotifier<ListsState>
   }
 
   void clearError() {
-    if (_isDisposed) return;
-    state = stateManager.clearError(state);
+    if (_isDisposed) {
+      return;
+    }
+    final clearedState = stateManager.clearError(state);
+    state = clearedState;
   }
 
   @override

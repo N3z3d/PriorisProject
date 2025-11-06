@@ -8,11 +8,14 @@ import 'app_localizations.dart';
 class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
-  @override String get appTitle => 'Prioris';
+  @override
+  String get appTitle => 'Prioris';
 
-  @override String get home => 'Home';
+  @override
+  String get home => 'Home';
 
-  @override String get habits => 'Habits';
+  @override
+  String get habits => 'Habits';
 
   @override
   String get tasks => 'Tasks';
@@ -112,6 +115,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get habitRecurrenceWeekdays => 'Weekdays';
+
+  @override
+  String get habitRecurrenceEveryXDays => 'Every X days';
+
+  @override
+  String get habitRecurrenceSpecificWeekdays => 'Specific days of the week';
 
   @override
   String get habitFormSubmitCreate => 'Create habit';

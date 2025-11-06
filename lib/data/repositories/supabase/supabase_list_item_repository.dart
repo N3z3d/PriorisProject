@@ -1,23 +1,27 @@
-import 'package:prioris/domain/models/core/entities/list_item.dart';
-import 'package:prioris/data/repositories/list_item_repository.dart';
-import 'package:prioris/infrastructure/services/supabase_service.dart';
-import 'package:prioris/infrastructure/services/auth_service.dart';
 import 'package:prioris/core/exceptions/app_exception.dart';
+import 'package:prioris/data/repositories/list_item_repository.dart';
+import 'package:prioris/domain/models/core/entities/list_item.dart';
+import 'package:prioris/infrastructure/services/auth_service.dart';
+import 'package:prioris/infrastructure/services/supabase_service.dart';
+import 'package:prioris/infrastructure/services/supabase_table_adapter.dart';
 
 /// Repository Supabase pour les éléments de liste
 /// DI-friendly: Dependencies injected via constructor
 class SupabaseListItemRepository implements ListItemRepository {
   final SupabaseService _supabase;
   final AuthService _auth;
+  final SupabaseTableAdapterFactory _tableFactory;
 
   static const String _tableName = 'list_items';
 
   /// Constructor with dependency injection
-  const SupabaseListItemRepository({
-    required SupabaseService supabaseService,
-    required AuthService authService,
-  }) : _supabase = supabaseService,
-       _auth = authService;
+  SupabaseListItemRepository({
+    SupabaseService? supabaseService,
+    AuthService? authService,
+    SupabaseTableAdapterFactory? tableFactory,
+  })  : _supabase = supabaseService ?? SupabaseService.instance,
+        _auth = authService ?? AuthService.instance,
+        _tableFactory = tableFactory ?? defaultSupabaseTableFactory;
 
   /// Factory constructor for legacy compatibility (deprecated)
   @Deprecated('Use constructor with DI instead')
@@ -34,12 +38,12 @@ class SupabaseListItemRepository implements ListItemRepository {
         context: 'SupabaseListItemRepository',
       );
 
-      final response = await _supabase.client
-          .from(_tableName)
-          .select()
-          .eq('user_id', _auth.currentUser!.id)
-          .eq('is_deleted', false)
-          .order('created_at', ascending: false);
+      final response = await _table().select(
+        builder: (query) => query
+            .eq('user_id', _auth.currentUser!.id)
+            .eq('is_deleted', false)
+            .order('created_at', ascending: false),
+      );
 
       return response.map<ListItem>((json) => _fromSupabaseJson(json)).toList();
     } catch (e) {
@@ -55,13 +59,12 @@ class SupabaseListItemRepository implements ListItemRepository {
         context: 'SupabaseListItemRepository',
       );
 
-      final response = await _supabase.client
-          .from(_tableName)
-          .select()
-          .eq('id', id)
-          .eq('user_id', _auth.currentUser!.id)
-          .eq('is_deleted', false)
-          .maybeSingle();
+      final response = await _table().selectSingle(
+        builder: (query) => query
+            .eq('id', id)
+            .eq('user_id', _auth.currentUser!.id)
+            .eq('is_deleted', false),
+      );
 
       return response != null ? _fromSupabaseJson(response) : null;
     } catch (e) {
@@ -83,9 +86,7 @@ class SupabaseListItemRepository implements ListItemRepository {
       itemData['created_at'] = DateTime.now().toIso8601String();
       itemData['updated_at'] = DateTime.now().toIso8601String();
       
-      await _supabase.client
-          .from(_tableName)
-          .insert(itemData);
+      await _table().insert(itemData);
 
       return item;
     } catch (e) {
@@ -104,11 +105,12 @@ class SupabaseListItemRepository implements ListItemRepository {
       final itemData = _toSupabaseJson(item);
       itemData['updated_at'] = DateTime.now().toIso8601String();
       
-      await _supabase.client
-          .from(_tableName)
-          .update(itemData)
-          .eq('id', item.id)
-          .eq('user_id', _auth.currentUser!.id);
+      await _table().update(
+        values: itemData,
+        builder: (query) => query
+            .eq('id', item.id)
+            .eq('user_id', _auth.currentUser!.id),
+      );
 
       return item;
     } catch (e) {
@@ -125,14 +127,15 @@ class SupabaseListItemRepository implements ListItemRepository {
       );
 
       // Soft delete
-      await _supabase.client
-          .from(_tableName)
-          .update({
-            'is_deleted': true,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', id)
-          .eq('user_id', _auth.currentUser!.id);
+      await _table().update(
+        values: {
+          'is_deleted': true,
+          'updated_at': DateTime.now().toIso8601String(),
+        },
+        builder: (query) => query
+            .eq('id', id)
+            .eq('user_id', _auth.currentUser!.id),
+      );
     } catch (e) {
       throw Exception('Failed to delete list item: $e');
     }
@@ -146,13 +149,13 @@ class SupabaseListItemRepository implements ListItemRepository {
         context: 'SupabaseListItemRepository',
       );
 
-      final response = await _supabase.client
-          .from(_tableName)
-          .select()
-          .eq('user_id', _auth.currentUser!.id)
-          .eq('list_id', listId)
-          .eq('is_deleted', false)
-          .order('created_at', ascending: false);
+      final response = await _table().select(
+        builder: (query) => query
+            .eq('user_id', _auth.currentUser!.id)
+            .eq('list_id', listId)
+            .eq('is_deleted', false)
+            .order('created_at', ascending: false),
+      );
 
       return response.map<ListItem>((json) => _fromSupabaseJson(json)).toList();
     } catch (e) {
@@ -168,16 +171,19 @@ class SupabaseListItemRepository implements ListItemRepository {
       return Stream.error('User not authenticated');
     }
 
-    return _supabase.client
-        .from(_tableName)
-        .stream(primaryKey: ['id'])
-        .map((data) => data
-            .where((json) => 
-                json['user_id'] == _auth.currentUser!.id && 
-                json['list_id'] == listId &&
-                json['is_deleted'] == false)
-            .map<ListItem>((json) => _fromSupabaseJson(json))
-            .toList());
+    return _table()
+        .stream(
+          primaryKey: const ['id'],
+          builder: (query) => query
+              .eq('user_id', _auth.currentUser!.id)
+              .eq('list_id', listId)
+              .eq('is_deleted', false),
+        )
+        .map(
+          (data) => data
+              .map<ListItem>((json) => _fromSupabaseJson(json))
+              .toList(),
+        );
   }
 
   /// Obtient les statistiques des éléments d'une liste
@@ -188,12 +194,13 @@ class SupabaseListItemRepository implements ListItemRepository {
         context: 'SupabaseListItemRepository',
       );
 
-      final response = await _supabase.client
-          .from(_tableName)
-          .select('is_completed, elo_score')
-          .eq('user_id', _auth.currentUser!.id)
-          .eq('list_id', listId)
-          .eq('is_deleted', false);
+      final response = await _table().select(
+        columns: 'is_completed, elo_score',
+        builder: (query) => query
+            .eq('user_id', _auth.currentUser!.id)
+            .eq('list_id', listId)
+            .eq('is_deleted', false),
+      );
 
       int completed = 0;
       int total = response.length;
@@ -255,4 +262,6 @@ class SupabaseListItemRepository implements ListItemRepository {
       listId: json['list_id'] as String,
     );
   }
+
+  SupabaseTableAdapter _table() => _tableFactory(_supabase, _tableName);
 }

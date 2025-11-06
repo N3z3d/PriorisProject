@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
-import 'package:prioris/presentation/widgets/forms/components/recurrence_type_dropdown.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/widgets/forms/components/daily_interval_input.dart';
-import 'package:prioris/presentation/widgets/forms/components/weekdays_selector.dart';
+import 'package:prioris/presentation/widgets/forms/components/recurrence_type_dropdown.dart';
 import 'package:prioris/presentation/widgets/forms/components/times_target_input.dart';
+import 'package:prioris/presentation/widgets/forms/components/weekdays_selector.dart';
 
 /// Widget pour la récurrence d'une habitude (fréquence et options)
 ///
@@ -32,13 +33,16 @@ class HabitRecurrenceForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final frequencyLabel = l10n?.frequency ?? 'Fréquence';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 16),
-        const Text(
-          'Récurrence',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        Text(
+          frequencyLabel,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         RecurrenceTypeDropdown(
@@ -71,4 +75,4 @@ class HabitRecurrenceForm extends StatelessWidget {
       ],
     );
   }
-} 
+}

@@ -176,20 +176,22 @@ void main() {
         // Arrange
         await adaptiveService.initialize(isAuthenticated: false);
         
+        final now = DateTime.now();
+
         final duplicateList1 = CustomList(
           id: 'dedup-test',
           name: 'Version 1',
           type: ListType.CUSTOM,
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now().subtract(Duration(hours: 1)),
+          createdAt: now.subtract(const Duration(hours: 2)),
+          updatedAt: now.subtract(const Duration(hours: 1)),
         );
         
         final duplicateList2 = CustomList(
           id: 'dedup-test', // Same ID
           name: 'Version 2',
           type: ListType.CUSTOM,
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(), // More recent
+          createdAt: now.subtract(const Duration(hours: 2)),
+          updatedAt: now, // More recent
         );
         
         when(mockLocalRepo.getAllLists()).thenAnswer((_) async => 

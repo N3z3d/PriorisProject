@@ -312,6 +312,18 @@ abstract class AppLocalizations {
   /// **'Weekdays'**
   String get habitRecurrenceWeekdays;
 
+  /// Label for recurrence option: every X days
+  ///
+  /// In en, this message translates to:
+  /// **'Every X days'**
+  String get habitRecurrenceEveryXDays;
+
+  /// Label for recurrence option: select specific weekdays
+  ///
+  /// In en, this message translates to:
+  /// **'Specific days of the week'**
+  String get habitRecurrenceSpecificWeekdays;
+
   /// No description provided for @habitFormSubmitCreate.
   ///
   /// In en, this message translates to:

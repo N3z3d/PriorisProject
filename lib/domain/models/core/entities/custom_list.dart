@@ -231,14 +231,18 @@ class CustomList extends HiveObject {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'name': name,
       'title': name,           // Supabase uses 'title' column
       'list_type': type.name,  // Supabase uses 'list_type'
+      'type': type.name,
       'description': description,
       'color': 2196243,        // Valeur plus petite pour éviter l'overflow PostgreSQL (bleu)
       'icon': 58826,           // 0xe5ca en decimal
       'items': items.map((item) => item.toJson()).toList(),
       'created_at': createdAt.toIso8601String(),  // Supabase uses snake_case
       'updated_at': updatedAt.toIso8601String(),  // Supabase uses snake_case
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
     };
   }
 

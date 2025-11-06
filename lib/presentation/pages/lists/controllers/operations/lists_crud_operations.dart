@@ -1,7 +1,4 @@
-﻿import 'package:prioris/domain/models/core/entities/custom_list.dart';
-import 'package:prioris/domain/models/core/entities/list_item.dart';
-import 'package:prioris/domain/models/core/enums/list_enums.dart';
-import 'package:prioris/domain/core/interfaces/logger_interface.dart';
+﻿import '../shared/lists_domain_dependencies.dart';
 import '../../models/lists_state.dart';
 import '../../models/lists_filter_patch.dart';
 import '../../interfaces/lists_managers_interfaces.dart';
@@ -139,10 +136,11 @@ class ListsCrudOperations {
     return _applyFilters(baseState);
   }
 
-  ListsState _applyFilters(ListsState state) {
-    final filtered = filterManager.applyFilters(state.lists, state);
-    return stateManager.updateFilteredLists(state, filtered);
-  }
+  ListsState _applyFilters(ListsState state) =>
+      stateManager.updateFilteredLists(
+        state,
+        filterManager.applyFilters(state.lists, state),
+      );
 
   Future<ListsState> _executeMutation(
     ListsState current, {

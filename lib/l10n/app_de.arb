@@ -35,6 +35,14 @@
   "habitRecurrenceTimesPerHour": "Mehrmals pro Stunde",
   "habitRecurrenceWeekends": "Wochenenden",
   "habitRecurrenceWeekdays": "Werktage",
+  "habitRecurrenceEveryXDays": "Alle X Tage",
+  "@habitRecurrenceEveryXDays": {
+    "description": "Bezeichnung f\u00fcr die Wiederholungsoption: alle X Tage"
+  },
+  "habitRecurrenceSpecificWeekdays": "Bestimmte Wochentage",
+  "@habitRecurrenceSpecificWeekdays": {
+    "description": "Bezeichnung f\u00fcr die Wiederholungsoption: bestimmte Wochentage"
+  },
   "habitFormSubmitCreate": "Gewohnheit erstellen",
   "habitFormValidationNameRequired": "Bitte gib einen Namen f\u00fcr die Gewohnheit ein",
   "statistics": "Statistiken",

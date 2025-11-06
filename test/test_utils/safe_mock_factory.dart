@@ -28,6 +28,12 @@ class SafeMockFactory {
     final adaptive = _MockAdaptivePersistenceService();
     final listRepo = _MockCustomListRepository();
     final itemRepo = _MockListItemRepository();
+
+    when(listRepo.deleteList(any)).thenAnswer((_) async {});
+    when(adaptive.deleteList(any)).thenAnswer((_) async {});
+    when(listRepo.saveList(any)).thenAnswer((_) async {});
+    when(itemRepo.delete(any)).thenAnswer((_) async {});
+
     return SafeMockFactory._(
       adaptivePersistenceService: adaptive,
       customListRepository: listRepo,
