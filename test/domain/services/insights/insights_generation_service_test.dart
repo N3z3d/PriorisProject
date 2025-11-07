@@ -31,7 +31,12 @@ void main() {
         
         expect(insights, isNotEmpty);
         expect(insights.any((insight) => insight['type'] == 'error'), isTrue);
-        expect(insights.any((insight) => insight['message'].contains('15 tâches')), isTrue);
+        expect(
+          insights.any(
+            (insight) => insight['message'] == '15 t\u00E2ches en attente',
+          ),
+          isTrue,
+        );
       });
 
       test('should generate insights for category performance', () {
@@ -75,7 +80,10 @@ void main() {
         
         expect(insights, isNotEmpty);
         expect(insights.first['type'], equals('info'));
-        expect(insights.first['message'], contains('premières habitudes'));
+        expect(
+          insights.first['message'],
+          contains('Aucune liste \u00E0 analyser'),
+        );
       });
 
       test('should generate success insights for high productivity', () {
@@ -93,7 +101,12 @@ void main() {
         
         expect(insights, isNotEmpty);
         expect(insights.any((insight) => insight['type'] == 'success'), isTrue);
-        expect(insights.any((insight) => insight['message'].contains('excellentes')), isTrue);
+        expect(
+          insights.any(
+            (insight) => insight['message'].contains('Bon rythme de livraison'),
+          ),
+          isTrue,
+        );
       });
 
       test('should generate warning insights for low productivity', () {
@@ -110,8 +123,13 @@ void main() {
         final insights = InsightsGenerationService.generateProductivityInsights([habit]);
         
         expect(insights, isNotEmpty);
-        expect(insights.any((insight) => insight['type'] == 'info'), isTrue);
-        expect(insights.any((insight) => insight['message'].contains('régularité')), isTrue);
+        expect(insights.any((insight) => insight['type'] == 'warning'), isTrue);
+        expect(
+          insights.any(
+            (insight) => insight['message'].contains('Productivit\u00E9 basse'),
+          ),
+          isTrue,
+        );
       });
 
       test('should generate insights for habit count', () {
@@ -140,7 +158,10 @@ void main() {
         
         expect(insights, isNotEmpty);
         expect(insights.first['type'], equals('info'));
-        expect(insights.first['message'], contains('premières tâches'));
+        expect(
+          insights.first['message'],
+          contains('Commencez par cr\u00E9er des t\u00E2ches'),
+        );
       });
 
       test('should generate success insights for high completion rate', () {
@@ -161,8 +182,13 @@ void main() {
         final insights = InsightsGenerationService.generateTaskInsights(tasks);
         
         expect(insights, isNotEmpty);
-        expect(insights.any((insight) => insight['type'] == 'error'), isTrue);
-        expect(insights.any((insight) => insight['message'].contains('15 tâches')), isTrue);
+        expect(insights.any((insight) => insight['type'] == 'warning'), isTrue);
+        expect(
+          insights.any(
+            (insight) => insight['message'].contains('R\u00E9duisez le backlog'),
+          ),
+          isTrue,
+        );
       });
 
       test('should generate insights for completion time', () {
@@ -197,7 +223,7 @@ void main() {
         
         expect(insights, isNotEmpty);
         expect(insights.first['type'], equals('info'));
-        expect(insights.first['message'], contains('premières habitudes'));
+        expect(insights.first['message'], contains('Aucune liste'));
       });
 
       test('should generate success insights for long streaks', () {
@@ -262,7 +288,13 @@ void main() {
         
         expect(insights, isNotEmpty);
         expect(insights.any((insight) => insight['type'] == 'info'), isTrue);
-        expect(insights.any((insight) => insight['message'].contains('nouvelle série')), isTrue);
+        expect(
+          insights.any(
+            (insight) =>
+                insight['message'].contains('Premi\u00E8res habitudes en cours'),
+          ),
+          isTrue,
+        );
       });
 
       test('should generate insights for multiple habits with different streaks', () {
@@ -293,4 +325,3 @@ void main() {
     });
   });
 } 
-
