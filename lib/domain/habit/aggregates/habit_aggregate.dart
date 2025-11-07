@@ -2,10 +2,13 @@ import 'package:uuid/uuid.dart';
 import '../../core/aggregates/aggregate_root.dart';
 import '../../core/value_objects/export.dart';
 import '../../core/exceptions/domain_exceptions.dart';
+import '../../core/events/domain_event.dart';
 import '../events/habit_events.dart';
 import '../services/habit_completion_service.dart';
 import '../services/habit_streak_calculator.dart';
 import '../services/habit_progress_calculator.dart';
+
+typedef HabitEvent = DomainEvent;
 
 /// Types d'habitude
 enum HabitType { binary, quantitative }
@@ -258,6 +261,11 @@ class HabitAggregate extends AggregateRoot {
   /// Enregistre une completion pour une habitude binaire
   void markCompleted(bool completed, {DateTime? date}) {
     executeOperation(() {
+      if (_type == HabitType.quantitative) {
+        throw const InvalidHabitRecordException(
+          'Impossible de valider une habitude quantitative avec un boolen',
+        );
+      }
       final completionDate = date ?? DateTime.now();
       _updateCompletionMap(completed, completionDate);
 
@@ -461,5 +469,3 @@ class HabitAggregate extends AggregateRoot {
     }
   }
 }
-
-

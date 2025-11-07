@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:prioris/domain/core/exceptions/domain_exceptions.dart';
 import 'package:prioris/domain/habit/aggregates/habit_aggregate.dart';
 import 'package:prioris/domain/habit/services/habit_completion_service.dart';
 import 'package:prioris/domain/habit/services/habit_streak_calculator.dart';

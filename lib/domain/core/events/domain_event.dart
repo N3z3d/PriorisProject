@@ -59,6 +59,7 @@ mixin EventPublisher {
 
   /// Liste des événements non publiés
   List<DomainEvent> get uncommittedEvents => List.unmodifiable(_domainEvents);
+  List<DomainEvent> get domainEvents => List.unmodifiable(_domainEvents);
 
   /// Ajoute un événement à la liste des événements non publiés
   void addEvent(DomainEvent event) {
