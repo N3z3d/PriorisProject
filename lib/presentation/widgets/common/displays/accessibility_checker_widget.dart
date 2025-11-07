@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:prioris/domain/services/ui/accessibility_service.dart';
+import 'package:prioris/presentation/styles/ui_color_utils.dart';
 
 /// Widget qui vérifie automatiquement l'accessibilité de ses enfants
 class AccessibilityCheckerWidget extends StatefulWidget {
@@ -174,11 +175,13 @@ class AccessibilityViolation {
 class AccessibilityDebugPanel extends StatelessWidget {
   final List<AccessibilityViolation> violations;
   final VoidCallback? onDismiss;
+  final Color alertColor;
 
   const AccessibilityDebugPanel({
     super.key,
     required this.violations,
     this.onDismiss,
+    this.alertColor = Colors.red,
   });
 
   @override
@@ -199,7 +202,7 @@ class AccessibilityDebugPanel extends StatelessWidget {
     return Material(
       elevation: 8,
       borderRadius: BorderRadius.circular(8),
-      color: Colors.red.shade50,
+      color: tone(alertColor, level: 50),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -218,14 +221,14 @@ class AccessibilityDebugPanel extends StatelessWidget {
   Widget _buildHeader() {
     return Row(
       children: [
-        const Icon(Icons.accessibility_new, color: Colors.red),
+        Icon(Icons.accessibility_new, color: alertColor),
         const SizedBox(width: 8),
-        const Expanded(
+        Expanded(
           child: Text(
             "Violations d'accessibilité détectées",
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: Colors.red,
+              color: alertColor,
             ),
           ),
         ),

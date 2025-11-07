@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:prioris/presentation/styles/ui_color_utils.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 import 'package:prioris/presentation/widgets/buttons/premium_fab_exports.dart';
@@ -72,7 +73,7 @@ class _PremiumFABState extends State<PremiumFAB>
 
   Color get _foregroundColor {
     if (widget.onPressed == null) {
-      return Colors.grey.shade600;
+      return tone(Colors.grey, level: 600);
     }
     return widget.foregroundColor ?? Colors.white;
   }

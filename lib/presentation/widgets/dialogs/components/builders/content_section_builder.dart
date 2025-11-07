@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prioris/presentation/styles/ui_color_utils.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 
 /// Service spécialisé pour la construction des sections de contenu - SOLID COMPLIANT
@@ -178,7 +179,7 @@ class ContentSectionBuilder {
         children: [
           Icon(
             icon,
-            color: warningColor.shade600,
+            color: tone(warningColor, level: 600),
             size: 20,
           ),
           const SizedBox(width: 12),
@@ -190,7 +191,7 @@ class ContentSectionBuilder {
                   warningText,
                   style: TextStyle(
                     fontSize: _defaultSmallFontSize,
-                    color: warningColor.shade700,
+                    color: tone(warningColor, level: 700),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -200,7 +201,7 @@ class ContentSectionBuilder {
                     additionalText,
                     style: TextStyle(
                       fontSize: 12,
-                      color: warningColor.shade600,
+                      color: tone(warningColor, level: 600),
                     ),
                   ),
                 ],
@@ -224,7 +225,7 @@ class ContentSectionBuilder {
       ),
       child: Icon(
         icon,
-        color: primaryColor.shade600,
+        color: tone(primaryColor, level: 600),
         size: 24,
       ),
     );
@@ -240,7 +241,7 @@ class ContentSectionBuilder {
           style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
-            color: primaryColor.shade800,
+            color: tone(primaryColor, level: 800),
           ),
         ),
         const SizedBox(height: 4),

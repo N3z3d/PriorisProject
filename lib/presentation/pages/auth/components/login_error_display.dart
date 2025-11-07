@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:prioris/presentation/styles/ui_color_utils.dart';
 
 /// Widget d'affichage des erreurs de connexion
 ///
 /// **SRP** : Affiche uniquement le message d'erreur si présent
 class LoginErrorDisplay extends StatelessWidget {
   final String? errorMessage;
+  final Color errorColor;
 
   const LoginErrorDisplay({
     super.key,
     this.errorMessage,
+    this.errorColor = Colors.red,
   });
 
   @override
@@ -20,13 +23,13 @@ class LoginErrorDisplay extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.red.shade50,
+          color: tone(errorColor, level: 50),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.red.shade300),
+          border: Border.all(color: tone(errorColor, level: 300)),
         ),
         child: Text(
           errorMessage!,
-          style: TextStyle(color: Colors.red.shade700),
+          style: TextStyle(color: tone(errorColor, level: 700)),
           textAlign: TextAlign.center,
         ),
       ),

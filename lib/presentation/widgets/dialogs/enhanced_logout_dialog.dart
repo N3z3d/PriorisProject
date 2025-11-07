@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:prioris/data/providers/lists_controller_provider.dart';
+import 'package:prioris/presentation/styles/ui_color_utils.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
-import 'package:prioris/data/providers/lists_controller_provider.dart';
 
 /// Dialogue de déconnexion amélioré qui donne le choix à l'utilisateur
 /// sur ce qui arrive à ses données locales
 class EnhancedLogoutDialog extends ConsumerWidget {
-  const EnhancedLogoutDialog({super.key});
+  final Color neutralColor;
+
+  const EnhancedLogoutDialog({
+    super.key,
+    this.neutralColor = Colors.grey,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -85,7 +91,7 @@ class EnhancedLogoutDialog extends ConsumerWidget {
       icon: const Icon(Icons.cancel_outlined, size: 18),
       label: const Text('Annuler'),
       style: TextButton.styleFrom(
-        foregroundColor: Colors.grey.shade600,
+        foregroundColor: tone(neutralColor, level: 600),
       ),
     );
   }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:prioris/domain/services/ui/accessibility_service.dart';
+import 'package:prioris/presentation/styles/ui_color_utils.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
-import 'package:prioris/domain/services/ui/accessibility_service.dart';
 
 /// Widget TextField réutilisable pour toute l'application
 class CommonTextField extends StatelessWidget {
@@ -196,7 +197,7 @@ class CommonTextField extends StatelessWidget {
     if (isFocused && isEnabled) {
       return focusedBorderColor ?? AppTheme.primaryColor;
     }
-    return borderColor ?? Colors.grey.shade300;
+    return borderColor ?? tone(Colors.grey, level: 300);
   }
 
   /// Détermine la capitalisation du texte

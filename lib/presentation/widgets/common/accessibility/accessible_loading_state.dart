@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prioris/presentation/styles/ui_color_utils.dart';
 
 /// Widget wrapper pour rendre les états de chargement accessibles
 /// 
@@ -12,6 +13,7 @@ class AccessibleLoadingState extends StatelessWidget {
   final Widget child;
   final String? loadingMessage;
   final String? errorPrefix;
+  final Color errorColor;
 
   const AccessibleLoadingState({
     super.key,
@@ -20,6 +22,7 @@ class AccessibleLoadingState extends StatelessWidget {
     required this.child,
     this.loadingMessage,
     this.errorPrefix = 'Erreur',
+    this.errorColor = Colors.red,
   });
 
   @override
@@ -62,9 +65,9 @@ class AccessibleLoadingState extends StatelessWidget {
 
   BoxDecoration _buildErrorDecoration() {
     return BoxDecoration(
-      color: Colors.red.shade50,
+      color: tone(errorColor, level: 50),
       borderRadius: BorderRadius.circular(8),
-      border: Border.all(color: Colors.red.shade200),
+      border: Border.all(color: tone(errorColor, level: 200)),
     );
   }
 
@@ -73,7 +76,7 @@ class AccessibleLoadingState extends StatelessWidget {
       children: [
         Icon(
           Icons.error_outline,
-          color: Colors.red.shade600,
+          color: tone(errorColor, level: 600),
           size: 20,
           semanticLabel: 'Icône d\'erreur',
         ),
@@ -82,7 +85,7 @@ class AccessibleLoadingState extends StatelessWidget {
           child: Text(
             error!,
             style: TextStyle(
-              color: Colors.red.shade800,
+              color: tone(errorColor, level: 800),
               fontSize: 14,
             ),
           ),

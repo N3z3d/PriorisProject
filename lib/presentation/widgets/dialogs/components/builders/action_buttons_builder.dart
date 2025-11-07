@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 import 'package:prioris/presentation/animations/physics_animations.dart';
+import 'package:prioris/presentation/styles/ui_color_utils.dart';
+import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 
 /// Service spécialisé pour la construction des boutons d'action - SOLID COMPLIANT
 ///
@@ -185,19 +186,20 @@ class ActionButtonsBuilder {
     EdgeInsetsGeometry? padding,
     double fontSize = _defaultFontSize,
   }) {
+    final baseColor = color;
     return Container(
       padding: padding ?? const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            color.shade600,
-            color.shade700,
+            tone(baseColor, level: 600),
+            tone(baseColor, level: 700),
           ],
         ),
         borderRadius: BorderRadiusTokens.button,
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.4),
+            color: baseColor.withOpacity(0.4),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -226,13 +228,15 @@ class ActionButtonsBuilder {
     Color color = Colors.red,
     String? semanticHint,
   }) {
+    final baseColor = color;
+
     final content = Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
+        color: baseColor.withOpacity(0.05),
         borderRadius: BorderRadiusTokens.button,
         border: Border.all(
-          color: color.withOpacity(0.2),
+          color: baseColor.withOpacity(0.2),
           width: 1,
         ),
       ),
@@ -242,7 +246,7 @@ class ActionButtonsBuilder {
           Icon(
             icon,
             size: 16,
-            color: color.shade600,
+            color: tone(baseColor, level: 600),
           ),
           const SizedBox(width: 8),
           Flexible(
@@ -250,10 +254,10 @@ class ActionButtonsBuilder {
               text,
               style: TextStyle(
                 fontSize: 13,
-                color: color.shade700,
+                color: tone(baseColor, level: 700),
                 fontWeight: FontWeight.w600,
                 decoration: TextDecoration.underline,
-                decorationColor: color.shade400,
+                decorationColor: tone(baseColor, level: 400),
               ),
             ),
           ),

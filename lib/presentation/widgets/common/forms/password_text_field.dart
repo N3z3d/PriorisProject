@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prioris/presentation/styles/ui_color_utils.dart';
 import 'package:prioris/presentation/widgets/common/forms/common_text_field.dart';
 
 /// Widget TextField spécialisé pour les mots de passe avec bouton œil
@@ -33,6 +34,9 @@ class PasswordTextField extends StatefulWidget {
   /// Actions du clavier
   final TextInputAction? textInputAction;
 
+  /// Couleur de base pour l'icône d'affichage
+  final Color toggleColor;
+
   /// Constructeur
   const PasswordTextField({
     super.key,
@@ -46,6 +50,7 @@ class PasswordTextField extends StatefulWidget {
     this.errorText,
     this.focusNode,
     this.textInputAction,
+    this.toggleColor = Colors.grey,
   });
 
   @override
@@ -78,7 +83,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
       suffix: IconButton(
         icon: Icon(
           _obscureText ? Icons.visibility : Icons.visibility_off,
-          color: Colors.grey.shade600,
+          color: tone(widget.toggleColor, level: 600),
           semanticLabel: _obscureText ? 'Afficher le mot de passe' : 'Masquer le mot de passe',
         ),
         onPressed: _toggleVisibility,

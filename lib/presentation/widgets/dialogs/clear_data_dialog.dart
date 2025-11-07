@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/infrastructure/services/user_data_service.dart';
-import 'package:prioris/presentation/widgets/common/forms/common_button.dart';
+import 'package:prioris/presentation/styles/ui_color_utils.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
+import 'package:prioris/presentation/widgets/common/forms/common_button.dart';
 
 /// Dialog pour nettoyer les données utilisateur
 class ClearDataDialog extends ConsumerStatefulWidget {
-  const ClearDataDialog({super.key});
+  final Color dangerColor;
+  final Color warningColor;
+  final Color successColor;
+  final Color neutralColor;
+
+  const ClearDataDialog({
+    super.key,
+    this.dangerColor = Colors.red,
+    this.warningColor = Colors.orange,
+    this.successColor = Colors.green,
+    this.neutralColor = Colors.grey,
+  });
 
   @override
   ConsumerState<ClearDataDialog> createState() => _ClearDataDialogState();
@@ -21,6 +33,11 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
   String? _errorMessage;
   Map<String, int>? _stats;
   Map<String, dynamic>? _integrity;
+
+  Color _dangerTone(int level) => tone(widget.dangerColor, level: level);
+  Color _warningTone(int level) => tone(widget.warningColor, level: level);
+  Color _successTone(int level) => tone(widget.successColor, level: level);
+  Color _neutralTone(int level) => tone(widget.neutralColor, level: level);
 
   @override
   void initState() {
@@ -163,9 +180,9 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.orange.shade50,
+        color: _warningTone(50),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.orange.shade300),
+        border: Border.all(color: _warningTone(300)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,12 +202,12 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
   Widget _buildOrphanDataHeader() {
     return Row(
       children: [
-        Icon(Icons.warning, color: Colors.orange.shade600, size: 20),
+        Icon(Icons.warning, color: _warningTone(600), size: 20),
         const SizedBox(width: 8),
         Text(
           '${_integrity!['orphanItems']} données orphelines détectées',
           style: TextStyle(
-            color: Colors.orange.shade700,
+            color: _warningTone(700),
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -202,9 +219,9 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.red.shade50,
+        color: _dangerTone(50),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.red.shade300),
+        border: Border.all(color: _dangerTone(300)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -220,12 +237,12 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
   Widget _buildDangerZoneHeader() {
     return Row(
       children: [
-        Icon(Icons.warning, color: Colors.red.shade600),
+        Icon(Icons.warning, color: _dangerTone(600)),
         const SizedBox(width: 8),
         Text(
           'Zone de danger',
           style: TextStyle(
-            color: Colors.red.shade700,
+            color: _dangerTone(700),
             fontWeight: FontWeight.bold,
             fontSize: 16,
           ),
@@ -238,7 +255,7 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
     return Text(
       'Cette action supprimera TOUTES vos données (listes, éléments, habitudes). Cette action est irréversible.',
       style: TextStyle(
-        color: Colors.red.shade700,
+        color: _dangerTone(700),
         fontSize: 14,
       ),
     );
@@ -248,13 +265,13 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.red.shade50,
+        color: _dangerTone(50),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.red.shade300),
+        border: Border.all(color: _dangerTone(300)),
       ),
       child: Text(
         _errorMessage!,
-        style: TextStyle(color: Colors.red.shade700),
+        style: TextStyle(color: _dangerTone(700)),
         textAlign: TextAlign.center,
       ),
     );
@@ -265,9 +282,9 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: _neutralTone(50),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: _neutralTone(200)),
       ),
       child: Row(
         children: [
@@ -301,7 +318,7 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
         Icon(
           Icons.delete_sweep,
           size: 64,
-          color: Colors.green.shade600,
+          color: _successTone(600),
         ),
         const SizedBox(height: 16),
         const Text(
@@ -317,7 +334,7 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
           'Vous pouvez maintenant recommencer avec une ardoise vierge.',
           style: TextStyle(
             fontSize: 14,
-            color: Colors.grey.shade600,
+            color: _neutralTone(600),
           ),
           textAlign: TextAlign.center,
         ),
@@ -335,7 +352,7 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
         ElevatedButton(
           onPressed: _isLoading ? null : _handleClearData,
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red.shade600,
+            backgroundColor: _dangerTone(600),
             foregroundColor: Colors.white,
           ),
           child: _isLoading 

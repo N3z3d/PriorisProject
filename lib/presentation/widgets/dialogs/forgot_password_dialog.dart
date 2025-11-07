@@ -1,13 +1,23 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/data/providers/auth_providers.dart';
-import 'package:prioris/presentation/widgets/common/forms/common_text_field.dart';
-import 'package:prioris/presentation/widgets/common/forms/common_button.dart';
+import 'package:prioris/presentation/styles/ui_color_utils.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
+import 'package:prioris/presentation/widgets/common/forms/common_button.dart';
+import 'package:prioris/presentation/widgets/common/forms/common_text_field.dart';
 
 /// Dialog pour la réinitialisation de mot de passe
 class ForgotPasswordDialog extends ConsumerStatefulWidget {
-  const ForgotPasswordDialog({super.key});
+  final Color errorColor;
+  final Color successColor;
+  final Color neutralColor;
+
+  const ForgotPasswordDialog({
+    super.key,
+    this.errorColor = Colors.red,
+    this.successColor = Colors.green,
+    this.neutralColor = Colors.grey,
+  });
 
   @override
   ConsumerState<ForgotPasswordDialog> createState() => _ForgotPasswordDialogState();
@@ -20,6 +30,10 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
   bool _isLoading = false;
   bool _emailSent = false;
   String? _errorMessage;
+
+  Color _errorTone(int level) => tone(widget.errorColor, level: level);
+  Color _successTone(int level) => tone(widget.successColor, level: level);
+  Color _neutralTone(int level) => tone(widget.neutralColor, level: level);
 
   @override
   void dispose() {
@@ -119,13 +133,13 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
       Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.red.shade50,
+          color: _errorTone(50),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.red.shade300),
+          border: Border.all(color: _errorTone(300)),
         ),
         child: Text(
           _errorMessage!,
-          style: TextStyle(color: Colors.red.shade700),
+          style: TextStyle(color: _errorTone(700)),
           textAlign: TextAlign.center,
         ),
       ),
@@ -139,14 +153,14 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
         Icon(
           Icons.email_outlined,
           size: 64,
-          color: Colors.green.shade600,
+          color: _successTone(600),
         ),
         const SizedBox(height: 16),
         Text(
           'Un email de réinitialisation a été envoyé à :',
           style: TextStyle(
             fontSize: 14,
-            color: Colors.grey.shade600,
+            color: _neutralTone(600),
           ),
           textAlign: TextAlign.center,
         ),
@@ -165,7 +179,7 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
           'Vérifiez votre boîte de réception et suivez les instructions pour réinitialiser votre mot de passe.',
           style: TextStyle(
             fontSize: 14,
-            color: Colors.grey.shade600,
+            color: _neutralTone(600),
           ),
           textAlign: TextAlign.center,
         ),

@@ -1,11 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/pages/habits/services/habit_category_service.dart';
 import 'package:prioris/presentation/pages/habits/widgets/components/export.dart';
+import 'package:prioris/presentation/styles/ui_color_utils.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/widgets/common/forms/common_text_field.dart';
-import 'package:prioris/l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
 
 class HabitFormWidget extends StatefulWidget {
@@ -15,12 +16,14 @@ class HabitFormWidget extends StatefulWidget {
     required this.availableCategories,
     this.initialHabit,
     this.categoryService = const HabitCategoryService(),
+    this.validationErrorColor = Colors.red,
   });
 
   final Habit? initialHabit;
   final List<String> availableCategories;
   final void Function(Habit) onSubmit;
   final HabitCategoryService categoryService;
+  final Color validationErrorColor;
 
   @override
   State<HabitFormWidget> createState() => _HabitFormWidgetState();
@@ -41,6 +44,7 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
   String _selectedCategory = '';
 
   HabitCategoryService get _categoryService => widget.categoryService;
+  Color _errorTone(int level) => tone(widget.validationErrorColor, level: level);
 
   @override
   void initState() {
@@ -358,7 +362,7 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.red.shade700,
+        backgroundColor: _errorTone(700),
       ),
     );
   }

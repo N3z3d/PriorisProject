@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prioris/presentation/styles/ui_color_utils.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 
@@ -6,7 +7,12 @@ import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 ///
 /// Double confirmation pour action destructive (WCAG 3.2.5)
 class DataClearConfirmationDialog extends StatelessWidget {
-  const DataClearConfirmationDialog({super.key});
+  final Color warningColor;
+
+  const DataClearConfirmationDialog({
+    super.key,
+    this.warningColor = Colors.red,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +38,7 @@ class DataClearConfirmationDialog extends StatelessWidget {
         children: [
           Icon(
             Icons.warning_amber_rounded,
-            color: Colors.red.shade600,
+            color: tone(warningColor, level: 600),
             size: 24,
             semanticLabel: 'Avertissement - Action destructive',
           ),
@@ -102,7 +108,7 @@ class DataClearConfirmationDialog extends StatelessWidget {
           Navigator.of(context).pop('logout_clear_data'); // Résultat final
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.red,
+          backgroundColor: warningColor,
           foregroundColor: Colors.white,
           minimumSize: const Size(44, 44),
         ),
