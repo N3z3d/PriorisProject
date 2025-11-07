@@ -1,4 +1,4 @@
-import 'dart:collection';
+﻿import 'dart:collection';
 
 typedef TaskJson = Map<String, dynamic>;
 
@@ -11,7 +11,7 @@ abstract class TaskComponent {
   bool isCompleted();
   double getCompletionPercentage();
   void setCompleted(bool completed);
-  void accept(TaskVisitor visitor, int depth);
+  void accept(TaskVisitor visitor, [int depth = 0]);
   TaskComponent? findChildById(String id);
   TaskJson toJson();
 }
@@ -65,7 +65,7 @@ class TaskLeaf implements TaskComponent {
   }
 
   @override
-  void accept(TaskVisitor visitor, int depth) {
+  void accept(TaskVisitor visitor, [int depth = 0]) {
     visitor.visitTask(this, depth);
   }
 
@@ -159,7 +159,7 @@ class ProjectComposite implements TaskComponent {
   }
 
   @override
-  void accept(TaskVisitor visitor, int depth) {
+  void accept(TaskVisitor visitor, [int depth = 0]) {
     visitor.visitProject(this, depth);
     for (final child in _children) {
       child.accept(visitor, depth + 1);
@@ -229,8 +229,9 @@ class TaskStatisticsVisitor implements TaskVisitor {
 }
 
 class TaskTreeRenderVisitor implements TaskVisitor {
-  static const String _completedIcon = '�o"';
-  static const String _pendingIcon = '�-<';
+  static const String _projectIcon = '[Project]';
+  static const String _completedIcon = '\u2713';
+  static const String _pendingIcon = '\u2717';
 
   final StringBuffer _buffer = StringBuffer();
 
@@ -243,7 +244,7 @@ class TaskTreeRenderVisitor implements TaskVisitor {
 
   @override
   void visitProject(ProjectComposite project, int depth) {
-    _writeLine(depth, '📁 ${project.getName()}');
+    _writeLine(depth, '$_projectIcon ${project.getName()}');
   }
 
   @override
@@ -261,10 +262,14 @@ class TaskHierarchyManager {
         );
 
   final ProjectComposite _root;
+  static int _idCounter = 0;
+
+  static String _nextId() =>
+      'task-${DateTime.now().microsecondsSinceEpoch}-${_idCounter++}';
 
   ProjectComposite createProject({required String name, String? description}) {
     return ProjectComposite(
-      id: _generateId(),
+      id: _nextId(),
       name: name,
       description: description,
     );
@@ -277,7 +282,7 @@ class TaskHierarchyManager {
     bool isCompleted = false,
   }) {
     return TaskLeaf(
-      id: _generateId(),
+      id: _nextId(),
       name: name,
       description: description,
       eloScore: eloScore,
@@ -321,3 +326,6 @@ class TaskHierarchyManager {
 
   ProjectComposite get root => _root;
 }
+
+
+

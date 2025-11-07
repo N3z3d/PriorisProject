@@ -1,12 +1,12 @@
-import 'dart:collection';
-
 import 'package:prioris/domain/models/core/entities/list_item.dart';
 
 abstract class Prototype<T> {
   T clone();
 }
 
-String _generateId() => DateTime.now().microsecondsSinceEpoch.toString();
+int _prototypeIdCounter = 0;
+String _generateId() =>
+    'proto-${DateTime.now().microsecondsSinceEpoch}-${_prototypeIdCounter++}';
 
 class PrototypeListItem implements Prototype<PrototypeListItem> {
   PrototypeListItem({

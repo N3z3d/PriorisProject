@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:prioris/core/patterns/structural/composite.dart';
 
 void main() {
@@ -147,7 +147,7 @@ void main() {
       expect(treeString, contains('Task 1'));
       expect(treeString, contains('Task 2'));
       expect(treeString, contains('✓')); // Completed task
-      expect(treeString, contains('○')); // Incomplete task
+      expect(treeString, contains('✗')); // Incomplete task
     });
 
     test('should use hierarchy manager', () {
@@ -235,3 +235,4 @@ void main() {
     });
   });
 }
+

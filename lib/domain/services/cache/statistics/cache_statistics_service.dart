@@ -89,7 +89,7 @@ class CacheStatisticsService {
     );
   }
 
-  Map<String, Object?> getStatistics() => {
+  Map<String, dynamic> getStatistics() => {
         'totalAccesses': _totalAccesses,
         'hits': _hits,
         'misses': _misses,
@@ -105,7 +105,7 @@ class CacheStatisticsService {
         'performance': _buildPerformanceSection(),
       };
 
-  Map<String, Object?> _buildPerformanceSection() {
+  Map<String, dynamic> _buildPerformanceSection() {
     final accessFrequency = () {
       if (requestsPerSecond > 10) return 'High';
       if (requestsPerSecond > 2) return 'Medium';
@@ -122,7 +122,7 @@ class CacheStatisticsService {
     };
   }
 
-  Map<String, Object?> getPerformanceReport() {
+  Map<String, dynamic> getPerformanceReport() {
     final grade = () {
       if (effectivenessScore >= 85) return 'A+';
       if (effectivenessScore >= 70) return 'A';

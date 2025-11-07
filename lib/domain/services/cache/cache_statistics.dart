@@ -42,6 +42,8 @@ class CacheSystemStatistics {
     this.totalLatency = Duration.zero,
     this.hitCount = 0,
     this.missCount = 0,
+    this.writeCount = 0,
+    this.evictionCount = 0,
     this.prefetchAttempts = 0,
     this.totalCompressedItems = 0,
     this.totalCompressionSavings = 0,
@@ -55,6 +57,8 @@ class CacheSystemStatistics {
   Duration totalLatency;
   int hitCount;
   int missCount;
+  int writeCount;
+  int evictionCount;
   int prefetchAttempts;
   int totalCompressedItems;
   int totalCompressionSavings;
@@ -94,6 +98,8 @@ class CacheSystemStatistics {
         totalLatency: totalLatency,
         hitCount: hitCount,
         missCount: missCount,
+        writeCount: writeCount,
+        evictionCount: evictionCount,
         prefetchAttempts: prefetchAttempts,
         totalCompressedItems: totalCompressedItems,
         totalCompressionSavings: totalCompressionSavings,

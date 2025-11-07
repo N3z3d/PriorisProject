@@ -146,10 +146,10 @@ class CacheService {
   CacheStatisticsSnapshot createStatisticsSnapshot() =>
       _statistics.createSnapshot();
 
-  Map<String, Object?> get detailedStatistics =>
+  Map<String, dynamic> get detailedStatistics =>
       _statistics.getStatistics();
 
-  Map<String, Object?> get performanceReport =>
+  Map<String, dynamic> get performanceReport =>
       _statistics.getPerformanceReport();
 
   _CacheRecord _createRecord({

@@ -39,6 +39,96 @@ class AdvancedCacheSystem {
     int priority = 0,
     bool compress = false,
   }) async {
+    _setInternal(
+      key,
+      value,
+      ttl: ttl,
+      tags: tags,
+      priority: priority,
+      compress: compress,
+    );
+    await _evictIfNeeded(strategy: strategy, protectedKey: key);
+  }
+
+  void setSync(
+    String key,
+    dynamic value, {
+    Duration? ttl,
+    CacheStrategy? strategy,
+    List<String>? tags,
+    int priority = 0,
+    bool compress = false,
+  }) {
+    _setInternal(
+      key,
+      value,
+      ttl: ttl,
+      tags: tags,
+      priority: priority,
+      compress: compress,
+    );
+    unawaited(_evictIfNeeded(strategy: strategy, protectedKey: key));
+  }
+
+  Future<T?> get<T>(String key, {CacheStrategy? strategy}) async {
+    _ensureActive();
+    final stopwatch = Stopwatch()..start();
+    final record = _entries[key];
+    _stats.totalOperations += 1;
+
+    if (record == null) {
+      _stats.missCount += 1;
+      stopwatch.stop();
+      _stats.totalLatency += stopwatch.elapsed;
+      final restored = await _safeStorageGet<T>(key);
+      if (restored != null) {
+        await set(key, restored, strategy: strategy);
+      }
+      return restored;
+    }
+
+    if (record.entry.isExpired) {
+      await invalidate(key);
+      _stats.missCount += 1;
+      stopwatch.stop();
+      _stats.totalLatency += stopwatch.elapsed;
+      return null;
+    }
+
+    record.entry.incrementFrequency();
+    _stats.hitCount += 1;
+    stopwatch.stop();
+    _stats.totalLatency += stopwatch.elapsed;
+    return record.readValue<T>();
+  }
+
+  T? peek<T>(String key) {
+    _ensureActive();
+    _stats.totalOperations += 1;
+    final record = _entries[key];
+    if (record == null) {
+      _stats.missCount += 1;
+      return null;
+    }
+    if (record.entry.isExpired) {
+      _stats.missCount += 1;
+      invalidateSync(key);
+      return null;
+    }
+
+    record.entry.incrementFrequency();
+    _stats.hitCount += 1;
+    return record.readValue<T>();
+  }
+
+  void _setInternal(
+    String key,
+    dynamic value, {
+    Duration? ttl,
+    List<String>? tags,
+    int priority = 0,
+    bool compress = false,
+  }) {
     _ensureActive();
     final stopwatch = Stopwatch()..start();
     final effectiveTtl = ttl ?? _config.defaultTtl;
@@ -79,40 +169,77 @@ class AdvancedCacheSystem {
     stopwatch.stop();
     _stats.totalOperations += 1;
     _stats.totalLatency += stopwatch.elapsed;
-
-    await _evictIfNeeded(strategy: strategy, protectedKey: key);
+    _stats.writeCount += 1;
   }
 
-  Future<T?> get<T>(String key, {CacheStrategy? strategy}) async {
-    _ensureActive();
-    final stopwatch = Stopwatch()..start();
-    final record = _entries[key];
-    _stats.totalOperations += 1;
-
+  _CacheRecord? _invalidateInternal(String key) {
+    final record = _entries.remove(key);
     if (record == null) {
-      _stats.missCount += 1;
-      stopwatch.stop();
-      _stats.totalLatency += stopwatch.elapsed;
-      final restored = await _safeStorageGet<T>(key);
-      if (restored != null) {
-        await set(key, restored, strategy: strategy);
-      }
-      return restored;
-    }
-
-    if (record.entry.isExpired) {
-      await invalidate(key);
-      _stats.missCount += 1;
-      stopwatch.stop();
-      _stats.totalLatency += stopwatch.elapsed;
       return null;
     }
+    for (final tag in record.tags) {
+      final keys = _tagIndex[tag];
+      keys?.remove(key);
+      if (keys != null && keys.isEmpty) {
+        _tagIndex.remove(tag);
+      }
+    }
+    _stats.totalItems = _entries.length;
+    _stats.evictionCount += 1;
+    return record;
+  }
 
-    record.entry.incrementFrequency();
-    _stats.hitCount += 1;
-    stopwatch.stop();
-    _stats.totalLatency += stopwatch.elapsed;
-    return record.readValue<T>();
+  void invalidateSync(String key) {
+    final record = _invalidateInternal(key);
+    if (record == null || !_config.persistentCacheEnabled) {
+      return;
+    }
+    final future = _storage?.remove(key);
+    if (future != null) {
+      unawaited(future);
+    }
+  }
+
+  void _invalidatePatternInternal(String pattern) {
+    final regex = RegExp('^' + pattern.replaceAll('*', '.*') + r'$');
+    final keys = _entries.keys.where(regex.hasMatch).toList();
+    for (final key in keys) {
+      _invalidateInternal(key);
+    }
+  }
+
+  void invalidatePatternSync(String pattern) {
+    _invalidatePatternInternal(pattern);
+    if (_config.persistentCacheEnabled) {
+      unawaited(
+        _safeStorageKeys().then(
+          (keys) async {
+            final regex = RegExp('^' + pattern.replaceAll('*', '.*') + r'$');
+            for (final key in keys.where(regex.hasMatch)) {
+              await _storage?.remove(key);
+            }
+          },
+        ),
+      );
+    }
+  }
+
+  void _clearInternal() {
+    _entries.clear();
+    _tagIndex.clear();
+    _inFlightComputations.clear();
+    _resetStatistics();
+  }
+
+  void clearSync() {
+    _ensureActive();
+    _clearInternal();
+    if (_config.persistentCacheEnabled) {
+      final future = _storage?.clear();
+      if (future != null) {
+        unawaited(future);
+      }
+    }
   }
 
   Future<void> setWithTags(
@@ -141,16 +268,9 @@ class AdvancedCacheSystem {
   }
 
   Future<void> invalidate(String key) async {
-    final record = _entries.remove(key);
+    final record = _invalidateInternal(key);
     if (record == null) {
       return;
-    }
-    for (final tag in record.tags) {
-      final keys = _tagIndex[tag];
-      keys?.remove(key);
-      if (keys != null && keys.isEmpty) {
-        _tagIndex.remove(tag);
-      }
     }
     if (_config.persistentCacheEnabled) {
       await _storage?.remove(key);
@@ -158,10 +278,13 @@ class AdvancedCacheSystem {
   }
 
   Future<void> invalidatePattern(String pattern) async {
-    final regex = RegExp('^' + pattern.replaceAll('*', '.*') + r'$');
-    final keys = _entries.keys.where(regex.hasMatch).toList();
-    for (final key in keys) {
-      await invalidate(key);
+    _invalidatePatternInternal(pattern);
+    if (_config.persistentCacheEnabled) {
+      final regex = RegExp('^' + pattern.replaceAll('*', '.*') + r'$');
+      final keys = await _safeStorageKeys();
+      for (final key in keys.where(regex.hasMatch)) {
+        await _storage?.remove(key);
+      }
     }
   }
 
@@ -253,10 +376,19 @@ class AdvancedCacheSystem {
 
   List<String> keys() => List.unmodifiable(_entries.keys);
 
+  Future<void> clear() async {
+    _ensureActive();
+    _clearInternal();
+    if (_config.persistentCacheEnabled) {
+      await _storage?.clear();
+    }
+  }
+
   Future<void> dispose() async {
     _entries.clear();
     _tagIndex.clear();
     _inFlightComputations.clear();
+    _resetStatistics();
     _disposed = true;
   }
 
@@ -338,6 +470,24 @@ class AdvancedCacheSystem {
     if (_disposed) {
       throw CacheException('AdvancedCacheSystem disposed');
     }
+  }
+
+  void _resetStatistics() {
+    _stats
+      ..totalItems = _entries.length
+      ..memoryUsage = _entries.values.fold<int>(
+        0,
+        (total, record) => total + record.entry.sizeBytes,
+      )
+      ..totalOperations = 0
+      ..totalLatency = Duration.zero
+      ..hitCount = 0
+      ..missCount = 0
+      ..writeCount = 0
+      ..evictionCount = 0
+      ..prefetchAttempts = 0
+      ..totalCompressedItems = 0
+      ..totalCompressionSavings = 0;
   }
 
   Future<T?> _safeStorageGet<T>(String key) async {
@@ -442,17 +592,88 @@ class _CacheRecord {
       final decoded = utf8.decode(_zlibCodec.decode(compressedValue!));
       if (encodedAsJson) {
         final dynamic jsonValue = jsonDecode(decoded);
-        if (jsonValue is List && jsonValue.every((element) => element is String)) {
-          return jsonValue.cast<String>() as T?;
+        if (jsonValue is List) {
+          if (jsonValue.isEmpty) {
+            return <dynamic>[] as T;
+          }
+          if (jsonValue.every((element) => element is int)) {
+            return List<int>.from(jsonValue) as T;
+          }
+          if (jsonValue.every((element) => element is double)) {
+            return List<double>.from(jsonValue) as T;
+          }
+          if (jsonValue.every((element) => element is String)) {
+            return List<String>.from(jsonValue) as T;
+          }
+          return List<dynamic>.from(jsonValue) as T;
         }
-        if (jsonValue is Map<String, dynamic>) {
-          return jsonValue as T?;
+        if (jsonValue is Map) {
+          if (jsonValue.keys.every((element) => element is String)) {
+            final map = Map<String, dynamic>.from(jsonValue as Map);
+            if (map.values.every((element) => element is String)) {
+              return Map<String, String>.from(map) as T;
+            }
+            if (map.values.every((element) => element is int)) {
+              return Map<String, int>.from(map.map(
+                (key, value) => MapEntry(key, value as int),
+              )) as T;
+            }
+            if (map.values.every((element) => element is double)) {
+              return Map<String, double>.from(map.map(
+                (key, value) => MapEntry(key, value as double),
+              )) as T;
+            }
+            return map as T;
+          }
+          return Map<dynamic, dynamic>.from(jsonValue) as T;
         }
         return jsonValue as T?;
       }
       return decoded as T?;
     }
-    return rawValue as T?;
+    final value = rawValue;
+    if (value == null) {
+      return null;
+    }
+    if (value is T) {
+      return value;
+    }
+    if (value is List) {
+      if (value.isEmpty) {
+        return <dynamic>[] as T;
+      }
+      if (value.every((element) => element is int)) {
+        return List<int>.from(value) as T;
+      }
+      if (value.every((element) => element is double)) {
+        return List<double>.from(value) as T;
+      }
+      if (value.every((element) => element is String)) {
+        return List<String>.from(value) as T;
+      }
+      return List<dynamic>.from(value) as T;
+    }
+    if (value is Map) {
+      if (value.keys.every((element) => element is String)) {
+        final map = Map<String, dynamic>.from(value as Map);
+        if (map.values.every((element) => element is String)) {
+          return Map<String, String>.from(map) as T;
+        }
+        if (map.values.every((element) => element is int)) {
+          return Map<String, int>.from(map.map(
+            (key, value) => MapEntry(key, value as int),
+          )) as T;
+        }
+        if (map.values.every((element) => element is double)) {
+          return Map<String, double>.from(map.map(
+            (key, value) => MapEntry(key, value as double),
+          )) as T;
+        }
+        return map as T;
+      }
+      return Map<dynamic, dynamic>.from(value) as T;
+    }
+    return value as T?;
   }
 
   Map<String, Object?> serialize() => {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../advanced_cache_system.dart';
 import '../cache_policies.dart';
 import '../cache_statistics.dart';
@@ -11,6 +13,7 @@ class AdvancedCacheManager {
 
   final CacheConfiguration _configuration;
   final _systems = <CacheStrategy, AdvancedCacheSystem>{};
+  final _inFlightComputations = <String, Future<Object?>>{};
   CacheStrategy? _currentStrategy;
   bool _initialized = false;
 
@@ -40,6 +43,7 @@ class AdvancedCacheManager {
       await system.dispose();
     }
     _systems.clear();
+    _inFlightComputations.clear();
     _initialized = false;
   }
 
@@ -51,29 +55,124 @@ class AdvancedCacheManager {
     _currentStrategy = strategy;
   }
 
-  Future<void> set(
+  void set(
     String key,
     dynamic value, {
     CacheStrategy? strategy,
     Duration? ttl,
+  }) {
+    _ensureInitialized();
+    _systemFor(strategy).setSync(
+      key,
+      value,
+      ttl: ttl,
+      strategy: strategy,
+    );
+  }
+
+  T? get<T>(String key, {CacheStrategy? strategy}) {
+    _ensureInitialized();
+    return _systemFor(strategy).peek<T>(key);
+  }
+
+  Future<T> getOrCompute<T>(
+    String key,
+    Future<T> Function() loader, {
+    CacheStrategy? strategy,
+    Duration? ttl,
   }) async {
     _ensureInitialized();
-    await _systemFor(strategy).set(key, value, ttl: ttl, strategy: strategy);
-  }
+    final effectiveStrategy = strategy ?? _currentStrategy!;
+    final system = _systemFor(effectiveStrategy);
+    final cacheKey = '${effectiveStrategy.name}:$key';
 
-  Future<T?> get<T>(String key, {CacheStrategy? strategy}) async {
-    _ensureInitialized();
-    return _systemFor(strategy).get<T>(key, strategy: strategy);
-  }
+    final cached = await system.get<T>(key, strategy: effectiveStrategy);
+    if (cached != null) {
+      return cached;
+    }
 
-  Future<void> clear() async {
-    _ensureInitialized();
-    for (final system in _systems.values) {
-      final keys = system.keys().toList();
-      for (final key in keys) {
-        await system.invalidate(key);
+    if (_inFlightComputations.containsKey(cacheKey)) {
+      return await _inFlightComputations[cacheKey]! as T;
+    }
+
+    Future<Object?> compute() async {
+      try {
+        final value = await loader();
+        await system.set(
+          key,
+          value,
+          strategy: effectiveStrategy,
+          ttl: ttl,
+        );
+        return value;
+      } on CacheException {
+        rethrow;
+      } catch (error, stack) {
+        throw CacheException(
+          'Failed to compute value for key "$key": $error',
+          details: {
+            'strategy': effectiveStrategy.name,
+            'stackTrace': stack.toString(),
+          },
+        );
       }
     }
+
+    final future = compute();
+    _inFlightComputations[cacheKey] = future;
+    try {
+      final result = await future;
+      return result as T;
+    } finally {
+      _inFlightComputations.remove(cacheKey);
+    }
+  }
+
+  void invalidate(
+    String key, {
+    CacheStrategy? strategy,
+  }) {
+    _ensureInitialized();
+    if (strategy != null) {
+      _systemFor(strategy).invalidateSync(key);
+      return;
+    }
+    for (final system in _systems.values) {
+      system.invalidateSync(key);
+    }
+  }
+
+  void invalidatePattern(
+    String pattern, {
+    CacheStrategy? strategy,
+  }) {
+    _ensureInitialized();
+    final targets = strategy != null ? [_systemFor(strategy)] : _systems.values;
+    for (final system in targets) {
+      try {
+        system.invalidatePatternSync(pattern);
+      } on CacheException {
+        rethrow;
+      } on FormatException catch (error) {
+        throw CacheException(
+          'Invalid cache pattern: $pattern',
+          details: {'pattern': pattern, 'error': error.message},
+        );
+      } catch (error) {
+        throw CacheException(
+          'Failed to invalidate pattern "$pattern": $error',
+          details: {'pattern': pattern},
+        );
+      }
+    }
+  }
+
+  void clear() {
+    _ensureInitialized();
+    for (final system in _systems.values) {
+      system.clearSync();
+    }
+    _inFlightComputations.clear();
   }
 
   Future<void> optimize() async {
@@ -83,29 +182,78 @@ class AdvancedCacheManager {
     }
   }
 
-  Map<String, Object?> getStatistics() {
+  Map<String, dynamic> getStatistics() {
     _ensureInitialized();
-    final cacheStats = <String, Map<String, Object?>>{};
-    double aggregateHitRate = 0;
-    double aggregateMissRate = 0;
+    final cacheStats = <String, Map<String, dynamic>>{};
+    var aggregateHitRate = 0.0;
+    var aggregateMissRate = 0.0;
+    var totalOperations = 0;
+    var totalHits = 0;
+    var totalMisses = 0;
+    var totalWrites = 0;
+    var totalEvictions = 0;
+    var totalLatencyMicros = 0;
+    var totalItems = 0;
+    var totalMemoryBytes = 0;
+    var totalMemoryLimitBytes = 0;
+
     for (final entry in _systems.entries) {
       final stats = entry.value.getStatistics();
-      cacheStats[entry.key.name] = {
-        'hitRate': stats.hitRate,
-        'missRate': stats.missRate,
-        'memoryUsagePercentage': stats.memoryUsagePercentage,
-      };
       aggregateHitRate += stats.hitRate;
       aggregateMissRate += stats.missRate;
+      totalOperations += stats.totalOperations;
+      totalHits += stats.hitCount;
+      totalMisses += stats.missCount;
+      totalWrites += stats.writeCount;
+      totalEvictions += stats.evictionCount;
+      totalLatencyMicros += stats.totalLatency.inMicroseconds;
+      totalItems += stats.totalItems;
+      totalMemoryBytes += stats.memoryUsage;
+      totalMemoryLimitBytes += stats.memoryLimit;
+
+      cacheStats[entry.key.name] = {
+        'totalItems': stats.totalItems,
+        'totalOperations': stats.totalOperations,
+        'hits': stats.hitCount,
+        'misses': stats.missCount,
+        'writes': stats.writeCount,
+        'evictions': stats.evictionCount,
+        'hitRate': stats.hitRate,
+        'missRate': stats.missRate,
+        'memoryUsageBytes': stats.memoryUsage,
+        'memoryLimitBytes': stats.memoryLimit,
+        'memoryUsagePercentage': stats.memoryUsagePercentage,
+        'averageLatencyMicros': stats.averageOperationTime.inMicroseconds,
+        'compressedItems': stats.totalCompressedItems,
+        'compressionSavingsBytes': stats.totalCompressionSavings,
+        'totalSizeBytes': stats.memoryUsage,
+      };
     }
 
-    final globalStats = {
-      'totalSystems': _systems.length,
-      'strategiesActive': _systems.length,
+    final systemCount = _systems.length;
+    final totalAccesses = totalHits + totalMisses;
+    final averageLatencyMicros =
+        totalOperations == 0 ? 0 : totalLatencyMicros ~/ totalOperations;
+    final averageUtilization = totalMemoryLimitBytes == 0
+        ? 0.0
+        : (totalMemoryBytes / totalMemoryLimitBytes).clamp(0.0, 1.0);
+
+    final hasEntries = totalItems > 0;
+    final globalStats = <String, dynamic>{
+      'totalSystems': systemCount,
+      'strategiesActive': systemCount,
+      'totalAccesses': hasEntries ? totalAccesses : 0,
+      'hits': hasEntries ? totalHits : 0,
+      'misses': hasEntries ? totalMisses : 0,
+      'writes': totalWrites,
+      'evictions': totalEvictions,
       'averageHitRate':
-          _systems.isEmpty ? 0.0 : aggregateHitRate / _systems.length,
+          systemCount == 0 ? 0.0 : aggregateHitRate / systemCount,
       'averageMissRate':
-          _systems.isEmpty ? 0.0 : aggregateMissRate / _systems.length,
+          systemCount == 0 ? 0.0 : aggregateMissRate / systemCount,
+      'averageLatencyMicros': averageLatencyMicros,
+      'totalItems': totalItems,
+      'memoryUsageBytes': totalMemoryBytes,
     };
 
     return {
@@ -114,20 +262,54 @@ class AdvancedCacheManager {
       'globalStats': globalStats,
       'cacheSystemStats': cacheStats,
       'cleanupStats': const {'lastCleanup': null},
-      'performance': const {'averageLatencyMicros': 0},
-      'health': {'status': 'healthy', 'overallScore': 80},
+      'performance': {
+        'averageLatencyMicros': averageLatencyMicros,
+        'totalEntries': totalItems,
+        'totalSizeBytes': totalMemoryBytes,
+        'averageUtilization': averageUtilization,
+        'strategiesActive': systemCount,
+        'lastUpdated': DateTime.now().toIso8601String(),
+      },
+      'health': {
+        'status': () {
+          if (totalAccesses == 0) return 'healthy';
+          final hitRate = totalHits / totalAccesses;
+          if (hitRate < 0.3) return 'critical';
+          if (hitRate < 0.6) return 'warning';
+          return 'healthy';
+        }(),
+        'overallScore': totalAccesses == 0
+            ? 100
+            : (totalHits / totalAccesses * 100).clamp(0, 100).round(),
+        'issues': () {
+          final issues = <String>[];
+          if (totalAccesses > 0 &&
+              totalHits / totalAccesses < 0.3 &&
+              totalMisses > totalHits) {
+            issues.add('Low hit rate detected');
+          }
+          if (totalItems == 0) {
+            issues.add('Cache empty');
+          }
+          return issues;
+        }(),
+      },
     };
   }
 
-  Map<String, Object?> getCacheReport() {
+  Map<String, dynamic> getCacheReport() {
     _ensureInitialized();
+    final statistics = getStatistics();
+    final globalStats = statistics['globalStats'] as Map<String, dynamic>;
     return {
       'summary': {
         'strategy': _currentStrategy?.name ?? 'unknown',
-        'totalEntries': _systems.length,
+        'totalEntries': globalStats['totalItems'] ?? 0,
+        'totalAccesses': globalStats['totalAccesses'] ?? 0,
+        'hitRate': globalStats['averageHitRate'] ?? 0.0,
       },
       'configuration': _configuration.toMap(),
-      'detailedStats': getStatistics(),
+      'detailedStats': statistics,
       'recommendations': _buildRecommendations(),
       'diagnostics': {
         'writeTest': 'PASS',
@@ -141,7 +323,7 @@ class AdvancedCacheManager {
   CacheManagerSnapshot createSnapshot() {
     _ensureInitialized();
     final stats = getStatistics();
-    final systemSnapshots = <String, Object?>{};
+    final systemSnapshots = <String, Map<String, dynamic>>{};
     for (final entry in _systems.entries) {
       final stats = entry.value.getStatistics();
       systemSnapshots[entry.key.name] = {
@@ -149,6 +331,8 @@ class AdvancedCacheManager {
         'missRate': stats.missRate,
         'memoryUsagePercentage': stats.memoryUsagePercentage,
         'totalItems': stats.totalItems,
+        'writes': stats.writeCount,
+        'evictions': stats.evictionCount,
       };
     }
     return CacheManagerSnapshot(
@@ -176,8 +360,14 @@ class AdvancedCacheManager {
     return recommendations;
   }
 
-  AdvancedCacheSystem _systemFor(CacheStrategy? strategy) =>
-      _systems[strategy ?? _currentStrategy]!;
+  AdvancedCacheSystem _systemFor(CacheStrategy? strategy) {
+    final resolved = strategy ?? _currentStrategy ?? _configuration.defaultStrategy;
+    final system = _systems[resolved];
+    if (system == null) {
+      throw CacheException('Strategy $resolved not initialized');
+    }
+    return system;
+  }
 
   void _ensureInitialized() {
     if (!_initialized) {
@@ -198,8 +388,8 @@ class CacheManagerSnapshot {
   final DateTime timestamp;
   final CacheConfiguration configuration;
   final CacheStrategy currentStrategy;
-  final Map<String, Object?> statistics;
-  final Map<String, Object?> cacheSystemSnapshots;
+  final Map<String, dynamic> statistics;
+  final Map<String, Map<String, dynamic>> cacheSystemSnapshots;
 
   Map<String, Object?> toMap() => {
         'timestamp': timestamp.toIso8601String(),
