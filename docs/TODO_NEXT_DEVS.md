@@ -1,9 +1,9 @@
 ﻿# TODO priorisé — prochaine itération
 
 ## 1. Suites critiques restantes
-- `test/application/services/**` (P0 Auth, persistence managers).
+- `test/presentation/widgets/dialogs/list_form_dialog_test.dart` (bloqué par l'usage de `Color.shade600/700/800` dans les builders d'UI).
+- Tests widget/pages listes additionnels (`list_detail_page_*`, `lists_page_test`, etc.) pour couvrir les interactions hors toggle.
 - `test/architecture/controller_lifecycle_test.dart`, `duplicate_id_conflicts_test.dart`, `rls_permission_test.dart` (skips à retirer).
-- Tests widget/pages listes (ex. `test/presentation/pages/list_detail_page_*.dart`) pour valider la nouvelle i18n/dédup.
 
 ## 2. Campagne i18n Habits + dédup
 - Extraire les chaînes restantes (Habits modals/pages) vers `lib/l10n/app_fr.arb` et `app_en.arb`. Vérifier pluralisation.
