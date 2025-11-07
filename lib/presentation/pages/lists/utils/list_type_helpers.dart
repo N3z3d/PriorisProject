@@ -2,16 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 
-/// Utilitaires pour la gestion des types de listes
-///
-/// **Responsabilité** : Fournir des mappings icônes/couleurs pour les types
-/// **SRP Compliant** : Centralise toute la logique de présentation des types
-/// **OCP Compliant** : Facile d'étendre pour de nouveaux types
+/// Utilities that expose presentation metadata for [ListType].
 class ListTypeHelpers {
-  /// Empêche l'instanciation (classe utilitaire)
   ListTypeHelpers._();
 
-  /// Retourne l'icône associée à un type de liste
   static IconData getIconForType(ListType type) {
     switch (type) {
       case ListType.TRAVEL:
@@ -26,12 +20,15 @@ class ListTypeHelpers {
         return Icons.restaurant;
       case ListType.PROJECTS:
         return Icons.work;
+      case ListType.TODO:
+        return Icons.check_circle_outline;
+      case ListType.IDEAS:
+        return Icons.lightbulb_outline;
       case ListType.CUSTOM:
         return Icons.list;
     }
   }
 
-  /// Retourne la couleur associée à un type de liste
   static Color getColorForType(ListType type) {
     switch (type) {
       case ListType.TRAVEL:
@@ -46,28 +43,35 @@ class ListTypeHelpers {
         return AppTheme.warningColor;
       case ListType.PROJECTS:
         return AppTheme.primaryColor;
+      case ListType.TODO:
+        return AppTheme.accentColor;
+      case ListType.IDEAS:
+        return AppTheme.infoColor;
       case ListType.CUSTOM:
         return AppTheme.textSecondary;
     }
   }
 
-  /// Retourne une description lisible du type
   static String getDescriptionForType(ListType type) {
     switch (type) {
       case ListType.TRAVEL:
         return 'Destinations et voyages';
       case ListType.SHOPPING:
-        return 'Articles à acheter';
+        return 'Articles \u00E0 acheter';
       case ListType.MOVIES:
-        return 'Films à voir';
+        return 'Films \u00E0 voir';
       case ListType.BOOKS:
-        return 'Livres à lire';
+        return 'Livres \u00E0 lire';
       case ListType.RESTAURANTS:
-        return 'Restaurants à essayer';
+        return 'Restaurants \u00E0 essayer';
       case ListType.PROJECTS:
         return 'Projets en cours';
+      case ListType.TODO:
+        return 'T\u00E2ches quotidiennes';
+      case ListType.IDEAS:
+        return 'Id\u00E9es et inspirations';
       case ListType.CUSTOM:
-        return 'Liste personnalisée';
+        return 'Liste personnalis\u00E9e';
     }
   }
 }

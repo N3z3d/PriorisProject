@@ -2,13 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 
-/// Helpers pour les types de listes
-///
-/// **SRP** : Fournit uniquement les icônes et couleurs par type
+/// Lightweight presentation helpers used by the list-type dialogs.
 class ListTypeHelpers {
   ListTypeHelpers._();
 
-  /// Retourne l'icône pour un type de liste
   static IconData getIcon(ListType type) {
     switch (type) {
       case ListType.SHOPPING:
@@ -23,12 +20,15 @@ class ListTypeHelpers {
         return Icons.restaurant;
       case ListType.PROJECTS:
         return Icons.work;
+      case ListType.TODO:
+        return Icons.checklist;
+      case ListType.IDEAS:
+        return Icons.lightbulb_outline;
       case ListType.CUSTOM:
         return Icons.list;
     }
   }
 
-  /// Retourne la couleur pour un type de liste
   static Color getColor(ListType type) {
     switch (type) {
       case ListType.SHOPPING:
@@ -43,6 +43,10 @@ class ListTypeHelpers {
         return Colors.pink;
       case ListType.PROJECTS:
         return Colors.orange;
+      case ListType.TODO:
+        return Colors.indigo;
+      case ListType.IDEAS:
+        return Colors.teal;
       case ListType.CUSTOM:
         return AppTheme.primaryColor;
     }
