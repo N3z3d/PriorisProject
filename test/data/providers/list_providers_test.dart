@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/data/providers/list_providers.dart';
-import 'package:prioris/data/providers/repository_providers.dart';
+import 'package:prioris/data/providers/clean_repository_providers.dart';
 import 'package:prioris/data/repositories/custom_list_repository.dart' show CustomListRepository, InMemoryCustomListRepository;
 import 'package:prioris/data/repositories/list_item_repository.dart' show ListItemRepository, InMemoryListItemRepository;
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
@@ -10,10 +10,17 @@ import 'package:prioris/domain/models/core/enums/list_enums.dart';
 void main() {
   group('List Providers', () {
     late ProviderContainer container;
+    late InMemoryCustomListRepository customRepository;
+    late InMemoryListItemRepository listItemRepository;
     late DateTime now;
 
     setUp(() {
-      container = ProviderContainer();
+      customRepository = InMemoryCustomListRepository();
+      listItemRepository = InMemoryListItemRepository();
+      container = ProviderContainer(overrides: [
+        customListRepositoryProvider.overrideWithValue(customRepository),
+        listItemRepositoryProvider.overrideWithValue(listItemRepository),
+      ]);
       now = DateTime(2024, 1, 1, 12, 0, 0);
     });
 
@@ -24,14 +31,12 @@ void main() {
     group('Repository Providers', () {
       test('should provide CustomListRepository', () {
         final repository = container.read(customListRepositoryProvider);
-        expect(repository, isA<CustomListRepository>());
-        expect(repository, isA<InMemoryCustomListRepository>());
+        expect(repository, same(customRepository));
       });
 
       test('should provide ListItemRepository', () {
         final repository = container.read(listItemRepositoryProvider);
-        expect(repository, isA<ListItemRepository>());
-        expect(repository, isA<InMemoryListItemRepository>());
+        expect(repository, same(listItemRepository));
       });
     });
 

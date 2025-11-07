@@ -119,7 +119,24 @@ class ConsolidatedListsNotifier extends StateNotifier<ConsolidatedListsState> {
 
   ConsolidatedListsNotifier(this._ref)
       : _filterService = ListsFilterService(),
-        super(ConsolidatedListsState(lastUpdated: DateTime.now()));
+        super(
+          ConsolidatedListsState(
+            lastUpdated: DateTime.now(),
+            statistics: _initialStatistics(),
+          ),
+        );
+
+  static Map<String, dynamic> _initialStatistics() {
+    return {
+      'global': {
+        'totalLists': 0,
+        'totalItems': 0,
+        'completedItems': 0,
+        'averageProgress': 0.0,
+      },
+      'byType': <String, dynamic>{},
+    };
+  }
 
   /// Charge les listes depuis le repository
   Future<void> loadLists() async {
