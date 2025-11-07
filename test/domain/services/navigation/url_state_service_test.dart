@@ -5,6 +5,7 @@ import 'package:prioris/domain/services/navigation/url_state_service.dart';
 import 'package:prioris/domain/services/navigation/list_resolution_service.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
+import 'package:prioris/data/providers/lists_controller_provider.dart';
 import 'package:prioris/presentation/pages/lists/controllers/lists_controller.dart';
 
 import '../../../test_utils/test_providers.dart';
@@ -58,7 +59,7 @@ void main() {
         // Arrange
         await tester.pumpWidget(testApp);
         final context = tester.element(find.byType(TestWidget));
-        final manager = container.read(urlStateManagerProvider(context));
+        final manager = container.read(urlStateServiceProvider(context));
         
         // Act
         final url = manager.generateListDetailUrl('test-list-id');
@@ -73,7 +74,7 @@ void main() {
         // Arrange
         await tester.pumpWidget(testApp);
         final context = tester.element(find.byType(TestWidget));
-        final manager = container.read(urlStateManagerProvider(context));
+        final manager = container.read(urlStateServiceProvider(context));
         
         // Act & Assert
         expect(manager.isUrlConsistentWithState('list1', 'list1'), true);
@@ -83,7 +84,7 @@ void main() {
         // Arrange
         await tester.pumpWidget(testApp);
         final context = tester.element(find.byType(TestWidget));
-        final manager = container.read(urlStateManagerProvider(context));
+        final manager = container.read(urlStateServiceProvider(context));
         
         // Act & Assert
         expect(manager.isUrlConsistentWithState('list1', 'list2'), false);
@@ -93,7 +94,7 @@ void main() {
         // Arrange
         await tester.pumpWidget(testApp);
         final context = tester.element(find.byType(TestWidget));
-        final manager = container.read(urlStateManagerProvider(context));
+        final manager = container.read(urlStateServiceProvider(context));
         
         // Act & Assert
         expect(manager.isUrlConsistentWithState(null, null), true);
@@ -107,7 +108,7 @@ void main() {
         // Arrange
         await tester.pumpWidget(testApp);
         final context = tester.element(find.byType(TestWidget));
-        final manager = container.read(urlStateManagerProvider(context));
+        final manager = container.read(urlStateServiceProvider(context));
         
         // Act
         final result = manager.resolveAndUpdateUrlState('list2');
@@ -123,7 +124,7 @@ void main() {
         // Arrange
         await tester.pumpWidget(testApp);
         final context = tester.element(find.byType(TestWidget));
-        final manager = container.read(urlStateManagerProvider(context));
+        final manager = container.read(urlStateServiceProvider(context));
         
         // Act
         final result = manager.resolveAndUpdateUrlState('invalid-id');
@@ -139,7 +140,7 @@ void main() {
         // Arrange
         await tester.pumpWidget(testApp);
         final context = tester.element(find.byType(TestWidget));
-        final manager = container.read(urlStateManagerProvider(context));
+        final manager = container.read(urlStateServiceProvider(context));
         
         // Act
         final result = manager.resolveAndUpdateUrlState(null);
@@ -158,7 +159,7 @@ void main() {
         
         await tester.pumpWidget(testApp);
         final context = tester.element(find.byType(TestWidget));
-        final manager = container.read(urlStateManagerProvider(context));
+        final manager = container.read(urlStateServiceProvider(context));
         
         // Act
         final result = manager.resolveAndUpdateUrlState('any-id');
@@ -175,7 +176,7 @@ void main() {
         // Arrange
         await tester.pumpWidget(testApp);
         final context = tester.element(find.byType(TestWidget));
-        final manager = container.read(urlStateManagerProvider(context));
+        final manager = container.read(urlStateServiceProvider(context));
         
         // Act & Assert - Should not throw
         expect(() => manager.updateUrlToResolvedList('list1'), returnsNormally);
