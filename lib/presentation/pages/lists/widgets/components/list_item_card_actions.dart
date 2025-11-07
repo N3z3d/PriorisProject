@@ -1,4 +1,4 @@
-part of '../list_item_card.dart';
+﻿part of '../list_item_card.dart';
 
 class _ActionFooter extends StatelessWidget {
   const _ActionFooter({
@@ -68,7 +68,10 @@ class _ActionFooter extends StatelessWidget {
     return PremiumMicroInteractions.pressable(
       onPressed: onToggleCompletion!,
       enableHaptics: true,
-      child: Container(
+      child: AnimatedContainer(
+        key: ValueKey('list-item-toggle-${item.id}'),
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.15),
@@ -79,7 +82,7 @@ class _ActionFooter extends StatelessWidget {
             Icon(isCompleted ? Icons.undo : Icons.check, size: 16, color: color),
             const SizedBox(width: 8),
             Text(
-              isCompleted ? 'Rouvrir' : 'Compléter',
+              isCompleted ? 'Rouvrir' : 'Compl\u00E9ter',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 color: color,
@@ -283,7 +286,7 @@ class _ActionButtons extends StatelessWidget {
             ),
             PopupMenuItem(
               value: 'move',
-              child: Text('Déplacer...'),
+              child: Text('DÃ©placer...'),
             ),
             PopupMenuItem(
               value: 'duplicate',
@@ -343,3 +346,4 @@ Color _eloColor(double elo) {
   }
   return AppTheme.errorColor;
 }
+

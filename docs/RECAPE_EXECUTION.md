@@ -51,3 +51,12 @@
 ## Décisions tooling
 - **Option A (retenue)** : rester sur analyzer 6.x / toolchain legacy tant que Hive/build_runner n'ont pas d'alternative compatible.
 - **Option B (post-stabilisation)** : migration générateur/Hive (fork interne, changement de moteur, ou arrêt de la génération). À documenter via ADR une fois la base totalement verte.
+
+## Pass Application Services (22:25)
+- `flutter test test/application/services` relancé pour valider les managers critiques : `AuthenticationStateManager`, `ListsTransactionManager`, `ListsPersistenceService` restent verts avec les overrides mémoire.
+- Journaux complétés (`flutter_test_full.log`) pour consigner le run et garder une trace temporelle de la stabilité (restants estimés ~194).
+
+## Pass UI Listes — ListDetailPage (22:27)
+- Ajout d’une `ValueKey('list-item-toggle-\${item.id}')` sur le bouton de complétion (`_ActionFooter`), adaptation du test pour viser la clé plutôt qu’un `AnimatedContainer` ambigu.
+- Chaîne fallback "Non datée" corrigée (`'Non dat\u00E9e'`) afin de conserver l’ASCII+\uXXXX exigé par la campagne i18n.
+- Suite `flutter test test/presentation/pages/list_detail_page_test.dart` verte ; journal mis à jour (restants estimés ~193).

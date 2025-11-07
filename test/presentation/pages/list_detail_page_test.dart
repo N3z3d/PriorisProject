@@ -144,9 +144,8 @@ void main() {
 
       expect(controller.state.lists.first.items.first.isCompleted, isFalse);
 
-      final completionButton = find.descendant(
-        of: find.byType(ListItemCard).first,
-        matching: find.byType(AnimatedContainer),
+      final completionButton = find.byKey(
+        ValueKey('list-item-toggle-${testList.items.first.id}'),
       );
       await tester.tap(completionButton);
       await _settle(tester);

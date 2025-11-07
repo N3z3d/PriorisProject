@@ -27,27 +27,32 @@ class _ListItemCardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onCardTap,
-      onLongPress: onLongPress,
-      borderRadius: BorderRadius.circular(20),
-      child: Ink(
-        decoration: _cardDecoration(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(context),
-            _MetadataRow(item: item),
-            _ActionFooter(
-              item: item,
-              actionsAnimation: actionsAnimation,
-              onToggleCompletion: onToggleCompletion,
-              onEdit: onEdit,
-              onDelete: onDelete,
-              onMenuAction: onMenuAction,
-              onHideActions: onHideActions,
-            ),
-          ],
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeInOut,
+      decoration: _cardDecoration(),
+      child: InkWell(
+        onTap: onCardTap,
+        onLongPress: onLongPress,
+        borderRadius: BorderRadius.circular(20),
+        child: Ink(
+          decoration: const BoxDecoration(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(context),
+              _MetadataRow(item: item),
+              _ActionFooter(
+                item: item,
+                actionsAnimation: actionsAnimation,
+                onToggleCompletion: onToggleCompletion,
+                onEdit: onEdit,
+                onDelete: onDelete,
+                onMenuAction: onMenuAction,
+                onHideActions: onHideActions,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -162,7 +167,7 @@ class _MetadataRow extends StatelessWidget {
             icon: Icons.calendar_today,
             label: item.createdAt != null
                 ? '${item.createdAt!.day}/${item.createdAt!.month}/${item.createdAt!.year}'
-                : 'Non datée',
+                : 'Non dat\u00E9e',
           ),
         ],
       ),
@@ -238,3 +243,4 @@ class _MetadataChip extends StatelessWidget {
     );
   }
 }
+
