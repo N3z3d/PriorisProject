@@ -1,6 +1,7 @@
+import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:prioris/data/providers/lists_controller_provider.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
-import 'package:prioris/presentation/pages/lists/controllers/lists_controller.dart';
 
 /// Service responsible for intelligent list resolution with fallback strategies
 /// 
@@ -47,8 +48,7 @@ class ListResolutionService {
     // Try to find requested list if ID provided
     if (requestedListId != null && requestedListId.isNotEmpty) {
       final requestedList = availableLists
-          .where((list) => list.id == requestedListId)
-          .firstOrNull;
+          .firstWhereOrNull((list) => list.id == requestedListId);
           
       if (requestedList != null) {
         print('✅ ListResolutionService: Found requested list "${requestedList.name}"');

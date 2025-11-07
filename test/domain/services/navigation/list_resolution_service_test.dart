@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:prioris/data/providers/lists_controller_provider.dart';
 import 'package:prioris/domain/services/navigation/list_resolution_service.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
@@ -158,7 +159,7 @@ void main() {
     test('should correctly identify successful resolution', () {
       // Arrange
       final list = TestData.createTestList(id: 'test-id', name: 'Test List');
-      const result = ListResolutionResult(
+      final result = ListResolutionResult(
         resolvedList: list,
         resolvedListId: 'test-id',
         usedFallback: false,
@@ -171,7 +172,7 @@ void main() {
     
     test('should correctly identify no lists available state', () {
       // Arrange
-      const result = ListResolutionResult(
+      final result = ListResolutionResult(
         resolvedList: null,
         resolvedListId: null,
         usedFallback: false,
@@ -186,7 +187,7 @@ void main() {
     test('should correctly identify fallback usage', () {
       // Arrange
       final list = TestData.createTestList(id: 'fallback-id', name: 'Fallback List');
-      const result = ListResolutionResult(
+      final result = ListResolutionResult(
         resolvedList: list,
         resolvedListId: 'fallback-id',
         usedFallback: true,
@@ -202,7 +203,7 @@ void main() {
     test('toString should provide useful debug information', () {
       // Arrange
       final list = TestData.createTestList(id: 'test-id', name: 'Test List');
-      const result = ListResolutionResult(
+      final result = ListResolutionResult(
         resolvedList: list,
         resolvedListId: 'test-id',
         usedFallback: true,

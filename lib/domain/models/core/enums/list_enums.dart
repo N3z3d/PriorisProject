@@ -28,9 +28,17 @@ enum ListType {
   /// Liste de projets personnels
   @HiveField(5)
   PROJECTS,
+
+  /// Liste de taches quotidiennes
+  @HiveField(6)
+  TODO,
+
+  /// Liste d'idees/inspirations
+  @HiveField(7)
+  IDEAS,
   
   /// Liste personnalisée
-  @HiveField(6)
+  @HiveField(8)
   CUSTOM,
 }
 
@@ -51,6 +59,10 @@ extension ListTypeExtension on ListType {
         return 'Restaurants';
       case ListType.PROJECTS:
         return 'Projets';
+      case ListType.TODO:
+        return 'Tâches';
+      case ListType.IDEAS:
+        return 'Idées';
       case ListType.CUSTOM:
         return 'Personnalisée';
     }
@@ -71,6 +83,10 @@ extension ListTypeExtension on ListType {
         return 'restaurant';
       case ListType.PROJECTS:
         return 'work';
+      case ListType.TODO:
+        return 'check';
+      case ListType.IDEAS:
+        return 'lightbulb';
       case ListType.CUSTOM:
         return 'list';
     }
@@ -91,6 +107,10 @@ extension ListTypeExtension on ListType {
         return 0xFFE91E63; // Rose
       case ListType.PROJECTS:
         return 0xFF607D8B; // Gris-bleu
+      case ListType.TODO:
+        return 0xFF3F51B5; // Indigo
+      case ListType.IDEAS:
+        return 0xFFFFC107; // Ambre
       case ListType.CUSTOM:
         return 0xFF795548; // Marron
     }
@@ -111,6 +131,10 @@ extension ListTypeExtension on ListType {
         return 'Restaurants à tester et à recommander';
       case ListType.PROJECTS:
         return 'Projets personnels et professionnels';
+      case ListType.TODO:
+        return 'Tâches quotidiennes et priorités à suivre';
+      case ListType.IDEAS:
+        return 'Idées, inspirations et notes rapides';
       case ListType.CUSTOM:
         return 'Liste personnalisée selon vos besoins';
     }

@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:prioris/presentation/pages/lists/controllers/lists_controller.dart';
-import 'package:prioris/presentation/theme/app_theme.dart';
+import 'package:prioris/data/providers/lists_controller_provider.dart';
 import 'package:prioris/data/repositories/custom_list_repository.dart';
 import 'package:prioris/data/repositories/list_item_repository.dart';
-import 'package:prioris/domain/services/core/lists_filter_service.dart';
-
-/// Mock controller for testing - manual mock implementation
+import 'package:prioris/domain/services/core/lists_filter_service.dart' as domain;
+import 'package:prioris/domain/services/persistence/adaptive_persistence_service.dart';
+import 'package:prioris/presentation/pages/lists/controllers/lists_controller.dart';
+import 'package:prioris/presentation/theme/app_theme.dart';
+/// Mock controller for widget tests that need fine-grained verifications.
 class MockListsController extends Mock implements ListsController {
   @override
   bool get isLoading => super.noSuchMethod(
@@ -18,16 +19,16 @@ class MockListsController extends Mock implements ListsController {
   );
 
   @override
-  Future<void> addMultipleItemsToList(String? listId, List<String>? itemTitles) {
+  Future<void> addMultipleItemsToList(String listId, List<dynamic> entries) {
     return super.noSuchMethod(
-      Invocation.method(#addMultipleItemsToList, [listId, itemTitles]),
+      Invocation.method(#addMultipleItemsToList, [listId, entries]),
       returnValue: Future<void>.value(),
       returnValueForMissingStub: Future<void>.value(),
     );
   }
 
   @override
-  RemoveListener addListener(void Function(ListsState)? listener, {bool? fireImmediately = true}) {
+  RemoveListener addListener(void Function(ListsState state) listener, {bool fireImmediately = true}) {
     return super.noSuchMethod(
       Invocation.method(#addListener, [listener], {#fireImmediately: fireImmediately}),
       returnValue: () {},
@@ -36,7 +37,7 @@ class MockListsController extends Mock implements ListsController {
   }
 
   @override
-  void removeListener(void Function(ListsState)? listener) {
+  void removeListener(void Function(ListsState state) listener) {
     return super.noSuchMethod(
       Invocation.method(#removeListener, [listener]),
       returnValue: null,
@@ -80,16 +81,20 @@ Widget createTestWidget(Widget child, {List<Override>? overrides}) {
 ProviderContainer createTestProviderContainer() {
   return ProviderContainer(
     overrides: [
-      // Override repositories with in-memory versions for testing
       listsControllerProvider.overrideWith((ref) {
-        final mockController = MockListsController();
-        // Initialize with empty state
-        when(mockController.state).thenReturn(const ListsState(
-          lists: [],
-          filteredLists: [],
-          isLoading: false,
-        ));
-        return mockController;
+        final customRepository = InMemoryCustomListRepository();
+        final itemRepository = InMemoryListItemRepository();
+        final adaptiveService = AdaptivePersistenceService(
+          localRepository: customRepository,
+          cloudRepository: customRepository,
+          localItemRepository: itemRepository,
+          cloudItemRepository: itemRepository,
+        );
+        return ListsController.adaptive(
+          adaptiveService,
+          domain.ListsFilterService(),
+          itemRepository,
+        );
       }),
     ],
   );

@@ -26,6 +26,10 @@ class ListTypeAdapter extends TypeAdapter<ListType> {
       case 5:
         return ListType.PROJECTS;
       case 6:
+        return ListType.TODO;
+      case 7:
+        return ListType.IDEAS;
+      case 8:
         return ListType.CUSTOM;
       default:
         return ListType.TRAVEL;
@@ -53,8 +57,14 @@ class ListTypeAdapter extends TypeAdapter<ListType> {
       case ListType.PROJECTS:
         writer.writeByte(5);
         break;
-      case ListType.CUSTOM:
+      case ListType.TODO:
         writer.writeByte(6);
+        break;
+      case ListType.IDEAS:
+        writer.writeByte(7);
+        break;
+      case ListType.CUSTOM:
+        writer.writeByte(8);
         break;
     }
   }
