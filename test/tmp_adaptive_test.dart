@@ -4,7 +4,14 @@ import 'package:prioris/data/repositories/custom_list_repository.dart';
 import 'package:prioris/data/repositories/list_item_repository.dart';
 import 'package:prioris/domain/services/persistence/adaptive_persistence_service.dart';
 
-class MockListRepo extends Mock implements CustomListRepository {}
+class MockListRepo extends Mock implements CustomListRepository {
+  @override
+  Future<void> deleteList(String id) => super.noSuchMethod(
+        Invocation.method(#deleteList, [id]),
+        returnValue: Future.value(),
+        returnValueForMissingStub: Future.value(),
+      );
+}
 
 class MockItemRepo extends Mock implements ListItemRepository {}
 
@@ -22,8 +29,6 @@ void main() {
       cloudItemRepository: cloudItems,
     );
 
-    when(local.deleteList(any)).thenAnswer((_) async {});
-    when(cloud.deleteList(any)).thenAnswer((_) async {});
     await service.initialize(isAuthenticated: true);
 
     await service.deleteList('abc');
