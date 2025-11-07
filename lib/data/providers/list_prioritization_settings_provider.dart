@@ -55,6 +55,8 @@ class ListPrioritizationSettingsNotifier
     _initialization = _loadPersistedSettings();
   }
 
+  Future<void> get ready => _initialization;
+
   Future<void> _loadPersistedSettings() async {
     final stored = await _storage.load();
     if (stored != null) {

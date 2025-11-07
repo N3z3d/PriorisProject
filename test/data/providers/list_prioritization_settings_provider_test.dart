@@ -14,7 +14,9 @@ void main() {
       ]);
       addTearDown(container.dispose);
 
-      await Future<void>.delayed(const Duration(milliseconds: 10));
+      final notifier =
+          container.read(listPrioritizationSettingsProvider.notifier);
+      await notifier.ready;
 
       final settings = container.read(listPrioritizationSettingsProvider);
       expect(settings.enabledListIds, containsAll(['alpha', 'beta']));
@@ -29,6 +31,7 @@ void main() {
 
       final notifier =
           container.read(listPrioritizationSettingsProvider.notifier);
+      await notifier.ready;
       final updatedSettings =
           ListPrioritizationSettings(enabledListIds: {'list-1'});
 
