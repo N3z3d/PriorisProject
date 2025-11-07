@@ -1,10 +1,11 @@
 ﻿# TODO priorisé — prochaine itération
 
 ## 1. Suites critiques restantes
-- `test/presentation/widgets/dialogs/list_form_dialog_test.dart` (bloqué par l'usage de `Color.shade600/700/800` dans les builders d'UI).
+- `test/regression/rls_delete_regression_test.dart` (const `DateTime.now()` + mocks Supabase manquants).
+- `test/tmp_adaptive_test.dart` (signature `deleteList` doit recevoir un `String` non nul).
+- `test/solid_compliance/clean_code_constraints_test.dart` (classe `advanced_cache_system.dart` > 500 lignes).
 - Tests widget/pages listes additionnels (`list_detail_page_*`, `lists_page_test`, etc.) pour couvrir les interactions hors toggle.
 - `test/architecture/controller_lifecycle_test.dart`, `duplicate_id_conflicts_test.dart`, `rls_permission_test.dart` (skips à retirer).
-- `lib/presentation/pages/lists/utils/list_type_helpers.dart` et `lib/presentation/widgets/dialogs/components/list_type_helpers.dart` doivent gérer `ListType.TODO` pour débloquer le run global.
 
 ## 2. Campagne i18n Habits + dédup
 - Extraire les chaînes restantes (Habits modals/pages) vers `lib/l10n/app_fr.arb` et `app_en.arb`. Vérifier pluralisation.

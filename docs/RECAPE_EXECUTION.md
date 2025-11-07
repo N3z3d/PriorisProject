@@ -70,3 +70,8 @@
 - Tous les widgets qui utilisaient `Color.shadeXXX` deviennent configurables via une couleur de base (ex. `ForgotPasswordDialog`, `ClearDataDialog`, `PasswordTextField`, `LogoutDestructiveActionLink`, builders des popups, champs communs). Les nuances sont désormais dérivées localement via `tone(...)`.
 - `test/presentation/styles/ui_color_utils_test.dart` et `test/presentation/widgets/dialogs/list_form_dialog_test.dart` au vert ; journal mis à jour (22:45). Le run global suivant progresse jusqu'au prochain blocage : `list_type_helpers.dart` doit gérer `ListType.TODO` (voir entrée `[2025-11-07 22:48]`).
 
+## Pass ListType.TODO (22:55)
+- Helpers exhaustifs côté listes (`lib/presentation/pages/lists/utils/list_type_helpers.dart`) et dialogs (`lib/presentation/widgets/dialogs/components/list_type_helpers.dart`) couvrent désormais `ListType.TODO` et `ListType.IDEAS` (icônes, couleurs, descriptions).
+- Ajout des tests `test/presentation/pages/lists/utils/list_type_helpers_test.dart` pour sécuriser les mappings (pages + dialogs).
+- `flutter test test/presentation/pages/lists/utils/list_type_helpers_test.dart` vert (journal 22:55). Nouveau run global bloque plus loin sur `rls_delete_regression_test` (const manquant), `tmp_adaptive_test` (type String) et `clean_code_constraints` (advanced_cache_system > 500 lignes) — voir entrée `[2025-11-07 22:58]`.
+
