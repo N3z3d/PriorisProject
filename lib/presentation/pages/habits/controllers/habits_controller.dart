@@ -1,18 +1,25 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/data/providers/habits_state_provider.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
+import 'package:prioris/domain/services/core/language_service.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 
 class HabitsController extends StateNotifier<HabitsControllerState> {
   HabitsController(this._ref) : super(const HabitsControllerState());
 
   final Ref _ref;
 
+  AppLocalizations get _l10n {
+    final locale = _ref.read(currentLocaleProvider);
+    return lookupAppLocalizations(locale);
+  }
+
   Future<void> addHabit(Habit habit) async {
     try {
       await _ref.read(habitsStateProvider.notifier).addHabit(habit);
       state = state.copyWith(
         lastAction: HabitAction.added,
-        lastActionMessage: 'Habitude créée ✅',
+        lastActionMessage: _l10n.habitsActionCreateSuccess,
         actionResult: ActionResult.success,
       );
     } catch (error) {

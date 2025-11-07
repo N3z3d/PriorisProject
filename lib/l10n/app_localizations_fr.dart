@@ -756,4 +756,82 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get duelErrorMessage => 'Impossible de charger le duel. Réessayez.';
+
+  @override
+  String get habitsActionCreateSuccess => 'Habitude créée ✅';
+
+  @override
+  String habitsActionCreateError(String error) {
+    return 'Erreur lors de la création : $error';
+  }
+
+  @override
+  String habitsActionUpdateSuccess(String habitName) {
+    return 'Habitude \"$habitName\" mise à jour';
+  }
+
+  @override
+  String habitsActionUpdateError(String error) {
+    return 'Erreur lors de la mise à jour : $error';
+  }
+
+  @override
+  String habitsActionDeleteSuccess(String habitName) {
+    return 'Habitude \"$habitName\" supprimée';
+  }
+
+  @override
+  String habitsActionDeleteError(String error) {
+    return 'Impossible de supprimer l\'habitude : $error';
+  }
+
+  @override
+  String habitsActionRecordSuccess(String habitName) {
+    return 'Habitude \"$habitName\" enregistrée';
+  }
+
+  @override
+  String habitsActionRecordError(String error) {
+    return 'Erreur lors de l\'enregistrement : $error';
+  }
+
+  @override
+  String get habitsLoadingRecord => 'Enregistrement...';
+
+  @override
+  String get habitsLoadingDelete => 'Suppression...';
+
+  @override
+  String habitsActionUnsupported(String action) {
+    return 'Action non supportée : $action';
+  }
+
+  @override
+  String get habitsDialogDeleteTitle => 'Supprimer l\'habitude';
+
+  @override
+  String habitsDialogDeleteMessage(String habitName) {
+    return 'Supprimer \"$habitName\" ?\nCette action est irréversible et supprime aussi l\'historique.';
+  }
+
+  @override
+  String get habitsButtonCreate => 'Créer une habitude';
+
+  @override
+  String get habitsHeaderTitle => 'Mes habitudes';
+
+  @override
+  String get habitsHeaderSubtitle => 'Suivez vos progrès au quotidien';
+
+  @override
+  String get habitsHeroTitle => 'Mes Habitudes';
+
+  @override
+  String get habitsHeroSubtitle => 'Créez et suivez vos habitudes quotidiennes';
+
+  @override
+  String get habitsTabHabits => 'Habitudes';
+
+  @override
+  String get habitsTabAdd => 'Ajouter';
 }

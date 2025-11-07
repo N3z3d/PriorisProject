@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/data/providers/habits_state_provider.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/pages/habits/components/habits_body.dart';
 import 'package:prioris/presentation/pages/habits/components/habits_header.dart';
 import 'package:prioris/presentation/pages/habits/controllers/habits_controller.dart';
@@ -18,6 +19,7 @@ class HabitsPage extends ConsumerStatefulWidget {
 class _HabitsPageState extends ConsumerState<HabitsPage> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final habits = ref.watch(reactiveHabitsProvider);
     final isLoading = ref.watch(habitsLoadingProvider);
     final error = ref.watch(habitsErrorProvider);
@@ -37,7 +39,7 @@ class _HabitsPageState extends ConsumerState<HabitsPage> {
               child: ElevatedButton.icon(
                 onPressed: _showCreateHabitModal,
                 icon: const Icon(Icons.add),
-                label: const Text('Cr\u00e9er une habitude'),
+                label: Text(l10n.habitsButtonCreate),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.accentColor,
                   foregroundColor: Colors.white,
@@ -97,15 +99,16 @@ class _HabitsPageState extends ConsumerState<HabitsPage> {
   }
 
   void _showDeleteConfirmation(String habitId, String habitName) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Supprimer l\'habitude'),
-        content: Text('Supprimer "$habitName" ?'),
+        title: Text(l10n.habitsDialogDeleteTitle),
+        content: Text(l10n.habitsDialogDeleteMessage(habitName)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Annuler'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -115,9 +118,9 @@ class _HabitsPageState extends ConsumerState<HabitsPage> {
                     habitName,
                   );
             },
-            child: const Text(
-              'Supprimer',
-              style: TextStyle(color: Colors.red),
+            child: Text(
+              l10n.delete,
+              style: const TextStyle(color: Colors.red),
             ),
           ),
         ],

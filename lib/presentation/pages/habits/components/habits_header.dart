@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 
 class HabitsHeader extends StatelessWidget {
@@ -16,7 +17,7 @@ class HabitsHeader extends StatelessWidget {
             children: [
               _buildIcon(),
               const SizedBox(width: 16),
-              _buildTitleContent(),
+              _buildTitleContent(context),
             ],
           ),
         ),
@@ -46,13 +47,14 @@ class HabitsHeader extends StatelessWidget {
     );
   }
 
-  Widget _buildTitleContent() {
+  Widget _buildTitleContent(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Mes habitudes',
+            l10n.habitsHeaderTitle,
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w700,
@@ -62,7 +64,7 @@ class HabitsHeader extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           Text(
-            'Suivez vos progr\u00e8s au quotidien',
+            l10n.habitsHeaderSubtitle,
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,

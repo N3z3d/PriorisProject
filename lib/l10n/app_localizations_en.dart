@@ -755,4 +755,82 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get duelErrorMessage => 'Unable to load the duel. Try again.';
+
+  @override
+  String get habitsActionCreateSuccess => 'Habit created ✅';
+
+  @override
+  String habitsActionCreateError(String error) {
+    return 'Error while creating: $error';
+  }
+
+  @override
+  String habitsActionUpdateSuccess(String habitName) {
+    return 'Habit \"$habitName\" updated';
+  }
+
+  @override
+  String habitsActionUpdateError(String error) {
+    return 'Error while updating: $error';
+  }
+
+  @override
+  String habitsActionDeleteSuccess(String habitName) {
+    return 'Habit \"$habitName\" deleted';
+  }
+
+  @override
+  String habitsActionDeleteError(String error) {
+    return 'Unable to delete habit: $error';
+  }
+
+  @override
+  String habitsActionRecordSuccess(String habitName) {
+    return 'Habit \"$habitName\" recorded';
+  }
+
+  @override
+  String habitsActionRecordError(String error) {
+    return 'Error while recording: $error';
+  }
+
+  @override
+  String get habitsLoadingRecord => 'Recording...';
+
+  @override
+  String get habitsLoadingDelete => 'Deleting...';
+
+  @override
+  String habitsActionUnsupported(String action) {
+    return 'Unsupported action: $action';
+  }
+
+  @override
+  String get habitsDialogDeleteTitle => 'Delete habit';
+
+  @override
+  String habitsDialogDeleteMessage(String habitName) {
+    return 'Are you sure you want to delete \"$habitName\"?\nThis action is irreversible and removes historical data.';
+  }
+
+  @override
+  String get habitsButtonCreate => 'Create a habit';
+
+  @override
+  String get habitsHeaderTitle => 'My habits';
+
+  @override
+  String get habitsHeaderSubtitle => 'Track your progress every day';
+
+  @override
+  String get habitsHeroTitle => 'My Habits';
+
+  @override
+  String get habitsHeroSubtitle => 'Create and track your daily habits';
+
+  @override
+  String get habitsTabHabits => 'Habits';
+
+  @override
+  String get habitsTabAdd => 'Add';
 }

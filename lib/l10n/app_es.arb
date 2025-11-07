@@ -5,46 +5,46 @@
   "habits": "Hábitos",
   "tasks": "Tareas",
   "lists": "Listas",
-  "habitFormTitleNew": "Nuevo h\u00e1bito",
-  "habitFormTitleEdit": "Editar h\u00e1bito",
-  "habitFormIntro": "Ponle a este h\u00e1bito un nombre claro, asigna una categor\u00eda y elige c\u00f3mo seguir\u00e1s tu progreso.",
-  "habitFormNameLabel": "Nombre del h\u00e1bito",
+  "habitFormTitleNew": "Nuevo hábito",
+  "habitFormTitleEdit": "Editar hábito",
+  "habitFormIntro": "Ponle a este hábito un nombre claro, asigna una categoría y elige cómo seguirás tu progreso.",
+  "habitFormNameLabel": "Nombre del hábito",
   "habitFormNameHint": "Ej.: Beber 8 vasos de agua",
-  "habitFormCategoryLabel": "Categor\u00eda (opcional)",
-  "habitFormCategoryHint": "Seleccionar una categor\u00eda",
-  "habitFormCategoryNone": "Sin categor\u00eda",
-  "habitFormCategoryCreate": "+ Crear una nueva categor\u00eda\u2026",
+  "habitFormCategoryLabel": "Categoría (opcional)",
+  "habitFormCategoryHint": "Seleccionar una categoría",
+  "habitFormCategoryNone": "Sin categoría",
+  "habitFormCategoryCreate": "+ Crear una nueva categoría…",
   "habitFormQuantTargetLabel": "Objetivo",
   "habitFormQuantTargetHint": "8",
   "habitFormQuantUnitLabel": "Unidad",
   "habitFormQuantUnitHint": "vasos",
-  "habitFormTypePrompt": "Quiero seguir este h\u00e1bito",
-  "habitFormTypeBinaryOption": "marc\u00e1ndolo cuando est\u00e9 hecho",
+  "habitFormTypePrompt": "Quiero seguir este hábito",
+  "habitFormTypeBinaryOption": "marcándolo cuando esté hecho",
   "habitFormTypeQuantOption": "registrando la cantidad realizada",
-  "habitFormTypeBinaryDescription": "Perfecto para h\u00e1bitos de s\u00ed/no: m\u00e1rcalo cada vez que lo completes.",
-  "habitFormTypeQuantDescription": "Controla una cantidad medible con una meta num\u00e9rica y una unidad personalizada.",
+  "habitFormTypeBinaryDescription": "Perfecto para hábitos de sí/no: márcalo cada vez que lo completes.",
+  "habitFormTypeQuantDescription": "Controla una cantidad medible con una meta numérica y una unidad personalizada.",
   "habitRecurrenceDaily": "Diaria",
   "habitRecurrenceWeekly": "Semanal",
   "habitRecurrenceMonthly": "Mensual",
   "habitRecurrenceTimesPerWeek": "Varias veces por semana",
-  "habitRecurrenceTimesPerDay": "Varias veces al d\u00eda",
-  "habitRecurrenceMonthlyDay": "D\u00eda espec\u00edfico del mes",
+  "habitRecurrenceTimesPerDay": "Varias veces al día",
+  "habitRecurrenceMonthlyDay": "Día específico del mes",
   "habitRecurrenceQuarterly": "Trimestral",
   "habitRecurrenceYearly": "Anual",
   "habitRecurrenceHourlyInterval": "Cada X horas",
   "habitRecurrenceTimesPerHour": "Varias veces por hora",
   "habitRecurrenceWeekends": "Fines de semana",
-  "habitRecurrenceWeekdays": "D\u00edas laborables",
-  "habitRecurrenceEveryXDays": "Cada X d\u00edas",
+  "habitRecurrenceWeekdays": "Días laborables",
+  "habitRecurrenceEveryXDays": "Cada X días",
   "@habitRecurrenceEveryXDays": {
-    "description": "Etiqueta para la opci\u00f3n de recurrencia: cada X d\u00edas"
+    "description": "Etiqueta para la opción de recurrencia: cada X días"
   },
-  "habitRecurrenceSpecificWeekdays": "D\u00edas espec\u00edficos de la semana",
+  "habitRecurrenceSpecificWeekdays": "Días específicos de la semana",
   "@habitRecurrenceSpecificWeekdays": {
-    "description": "Etiqueta para la opci\u00f3n de recurrencia: d\u00edas concretos de la semana"
+    "description": "Etiqueta para la opción de recurrencia: días concretos de la semana"
   },
-  "habitFormSubmitCreate": "Crear h\u00e1bito",
-  "habitFormValidationNameRequired": "Introduce un nombre para el h\u00e1bito",
+  "habitFormSubmitCreate": "Crear hábito",
+  "habitFormValidationNameRequired": "Introduce un nombre para el hábito",
   "statistics": "Estadísticas",
   "prioritize": "Priorizar",
   "addHabit": "Agregar hábito",
@@ -292,5 +292,130 @@
   "duelNewDuel": "Nuevo duelo",
   "duelNotEnoughTasksTitle": "No hay suficientes tareas",
   "duelNotEnoughTasksMessage": "Añade al menos dos tareas para empezar a priorizar.",
-  "duelErrorMessage": "No se pudo cargar el duelo. Inténtalo de nuevo."
-} 
+  "duelErrorMessage": "No se pudo cargar el duelo. Inténtalo de nuevo.",
+  "habitsActionCreateSuccess": "Habit created ✅",
+  "@habitsActionCreateSuccess": {
+    "description": "Snackbar message when a habit is created successfully"
+  },
+  "habitsActionCreateError": "Error while creating: {error}",
+  "@habitsActionCreateError": {
+    "description": "Error message when creating a habit fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "habitsActionUpdateSuccess": "Habit \"{habitName}\" updated",
+  "@habitsActionUpdateSuccess": {
+    "description": "Snackbar message when a habit is updated",
+    "placeholders": {
+      "habitName": {
+        "type": "String"
+      }
+    }
+  },
+  "habitsActionUpdateError": "Error while updating: {error}",
+  "@habitsActionUpdateError": {
+    "description": "Error message when updating a habit fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "habitsActionDeleteSuccess": "Habit \"{habitName}\" deleted",
+  "@habitsActionDeleteSuccess": {
+    "description": "Snackbar when a habit is deleted",
+    "placeholders": {
+      "habitName": {
+        "type": "String"
+      }
+    }
+  },
+  "habitsActionDeleteError": "Unable to delete habit: {error}",
+  "@habitsActionDeleteError": {
+    "description": "Error message when deleting a habit fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "habitsActionRecordSuccess": "Habit \"{habitName}\" recorded",
+  "@habitsActionRecordSuccess": {
+    "description": "Snackbar when a habit is recorded",
+    "placeholders": {
+      "habitName": {
+        "type": "String"
+      }
+    }
+  },
+  "habitsActionRecordError": "Error while recording: {error}",
+  "@habitsActionRecordError": {
+    "description": "Error message when recording a habit fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "habitsLoadingRecord": "Recording...",
+  "@habitsLoadingRecord": {
+    "description": "Loading dialog text when recording a habit"
+  },
+  "habitsLoadingDelete": "Deleting...",
+  "@habitsLoadingDelete": {
+    "description": "Loading dialog text when deleting a habit"
+  },
+  "habitsActionUnsupported": "Unsupported action: {action}",
+  "@habitsActionUnsupported": {
+    "description": "Error shown when an unknown habit action is requested",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "habitsDialogDeleteTitle": "Delete habit",
+  "@habitsDialogDeleteTitle": {
+    "description": "Title of the delete habit confirmation dialog"
+  },
+  "habitsDialogDeleteMessage": "Are you sure you want to delete \"{habitName}\"?\nThis action is irreversible and removes historical data.",
+  "@habitsDialogDeleteMessage": {
+    "description": "Warning message in delete habit dialog",
+    "placeholders": {
+      "habitName": {
+        "type": "String"
+      }
+    }
+  },
+  "habitsButtonCreate": "Create a habit",
+  "@habitsButtonCreate": {
+    "description": "CTA button to create a habit"
+  },
+  "habitsHeaderTitle": "My habits",
+  "@habitsHeaderTitle": {
+    "description": "Header title for habits page"
+  },
+  "habitsHeaderSubtitle": "Track your progress every day",
+  "@habitsHeaderSubtitle": {
+    "description": "Header subtitle for habits page"
+  },
+  "habitsHeroTitle": "My Habits",
+  "@habitsHeroTitle": {
+    "description": "Hero title in premium header"
+  },
+  "habitsHeroSubtitle": "Create and track your daily habits",
+  "@habitsHeroSubtitle": {
+    "description": "Hero subtitle in premium header"
+  },
+  "habitsTabHabits": "Habits",
+  "@habitsTabHabits": {
+    "description": "Label for habits tab"
+  },
+  "habitsTabAdd": "Add",
+  "@habitsTabAdd": {
+    "description": "Label for add habit tab"
+  }
+}

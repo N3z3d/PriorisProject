@@ -3,7 +3,7 @@
   "appTitle": "Prioris",
   "home": "Accueil",
   "habits": "Habitudes",
-  "tasks": "T\u00e2ches",
+  "tasks": "Tâches",
   "lists": "Listes",
   "habitFormTitleNew": "Nouvelle habitude",
   "habitFormTitleEdit": "Modifier l'habitude",
@@ -48,47 +48,47 @@
   "statistics": "Statistiques",
   "prioritize": "Prioriser",
   "addHabit": "Ajouter une habitude",
-  "addTask": "Ajouter une t\u00e2che",
+  "addTask": "Ajouter une tâche",
   "addList": "Ajouter une liste",
   "name": "Nom",
   "description": "Description",
-  "category": "Cat\u00e9gorie",
-  "priority": "Priorit\u00e9",
-  "frequency": "Fr\u00e9quence",
+  "category": "Catégorie",
+  "priority": "Priorité",
+  "frequency": "Fréquence",
   "save": "Enregistrer",
   "cancel": "Annuler",
   "delete": "Supprimer",
   "edit": "Modifier",
-  "create": "Cr\u00e9er",
-  "completed": "Termin\u00e9",
+  "create": "Créer",
+  "completed": "Terminé",
   "incomplete": "Incomplet",
-  "hideCompleted": "Masquer termin\u00e9s",
-  "showCompleted": "Afficher termin\u00e9s",
+  "hideCompleted": "Masquer terminés",
+  "showCompleted": "Afficher terminés",
   "hideEloScores": "Masquer scores ELO",
   "showEloScores": "Afficher scores ELO",
   "overview": "Vue d'ensemble",
   "habitsTab": "Habitudes",
-  "tasksTab": "T\u00e2ches",
+  "tasksTab": "Tâches",
   "totalPoints": "Points totaux",
-  "successRate": "Taux de r\u00e9ussite",
-  "currentStreak": "S\u00e9rie actuelle",
-  "longestStreak": "Plus longue s\u00e9rie",
+  "successRate": "Taux de réussite",
+  "currentStreak": "Série actuelle",
+  "longestStreak": "Plus longue série",
   "language": "Langue",
-  "settings": "Param\u00e8tres",
-  "noData": "Aucune donn\u00e9e disponible",
+  "settings": "Paramètres",
+  "noData": "Aucune donnée disponible",
   "loading": "Chargement...",
   "error": "Erreur",
-  "success": "Succ\u00e8s",
+  "success": "Succès",
   "confirm": "Confirmer",
   "back": "Retour",
   "next": "Suivant",
-  "previous": "Pr\u00e9c\u00e9dent",
+  "previous": "Précédent",
   "search": "Rechercher",
   "filter": "Filtrer",
   "sort": "Trier",
   "clear": "Effacer",
   "apply": "Appliquer",
-  "reset": "R\u00e9initialiser",
+  "reset": "Réinitialiser",
   "close": "Fermer",
   "open": "Ouvrir",
   "refresh": "Actualiser",
@@ -99,30 +99,30 @@
   "paste": "Coller",
   "cut": "Couper",
   "undo": "Annuler",
-  "redo": "R\u00e9tablir",
-  "selectAll": "Tout s\u00e9lectionner",
-  "deselectAll": "Tout d\u00e9s\u00e9lectionner",
-  "select": "S\u00e9lectionner",
-  "deselect": "D\u00e9s\u00e9lectionner",
+  "redo": "Rétablir",
+  "selectAll": "Tout sélectionner",
+  "deselectAll": "Tout désélectionner",
+  "select": "Sélectionner",
+  "deselect": "Désélectionner",
   "all": "Tout",
   "none": "Aucun",
   "today": "Aujourd'hui",
   "yesterday": "Hier",
   "tomorrow": "Demain",
   "thisWeek": "Cette semaine",
-  "lastWeek": "Semaine derni\u00e8re",
+  "lastWeek": "Semaine dernière",
   "thisMonth": "Ce mois",
   "lastMonth": "Mois dernier",
-  "thisYear": "Cette ann\u00e9e",
-  "lastYear": "Ann\u00e9e derni\u00e8re",
+  "thisYear": "Cette année",
+  "lastYear": "Année dernière",
   "days": "jours",
   "hours": "heures",
   "minutes": "minutes",
   "seconds": "secondes",
   "points": "points",
-  "items": "\u00e9l\u00e9ments",
-  "tasksCompleted": "t\u00e2ches termin\u00e9es",
-  "habitsCompleted": "habitudes termin\u00e9es",
+  "items": "éléments",
+  "tasksCompleted": "tâches terminées",
+  "habitsCompleted": "habitudes terminées",
   "listsCompleted": "listes terminees",
   "listCompletionLabel": "{completed} sur {total} elements termines",
   "@listCompletionLabel": {
@@ -146,25 +146,25 @@
   "progress": "Progression",
   "performance": "Performance",
   "analytics": "Analyses",
-  "insights": "Aper\u00e7us",
+  "insights": "Aperçus",
   "recommendations": "Recommandations",
   "suggestions": "Suggestions",
   "tips": "Conseils",
   "help": "Aide",
-  "about": "\u00c0 propos",
+  "about": "À propos",
   "version": "Version",
-  "developer": "D\u00e9veloppeur",
+  "developer": "Développeur",
   "contact": "Contact",
   "feedback": "Retour",
   "reportBug": "Signaler un bug",
-  "requestFeature": "Demander une fonctionnalit\u00e9",
-  "privacyPolicy": "Politique de confidentialit\u00e9",
+  "requestFeature": "Demander une fonctionnalité",
+  "privacyPolicy": "Politique de confidentialité",
   "termsOfService": "Conditions d'utilisation",
   "license": "Licence",
-  "credits": "Cr\u00e9dits",
+  "credits": "Crédits",
   "changelog": "Journal des modifications",
-  "updateAvailable": "Mise \u00e0 jour disponible",
-  "updateNow": "Mettre \u00e0 jour maintenant",
+  "updateAvailable": "Mise à jour disponible",
+  "updateNow": "Mettre à jour maintenant",
   "later": "Plus tard",
   "never": "Jamais",
   "always": "Toujours",
@@ -175,54 +175,54 @@
   "weekly": "Hebdomadaire",
   "monthly": "Mensuel",
   "yearly": "Annuel",
-  "custom": "Personnalis\u00e9",
-  "defaultValue": "Par d\u00e9faut",
+  "custom": "Personnalisé",
+  "defaultValue": "Par défaut",
   "continueLabel": "Continuer",
   "automatic": "Automatique",
   "manual": "Manuel",
-  "enabled": "Activ\u00e9",
-  "disabled": "D\u00e9sactiv\u00e9",
+  "enabled": "Activé",
+  "disabled": "Désactivé",
   "active": "Actif",
   "inactive": "Inactif",
   "online": "En ligne",
   "offline": "Hors ligne",
-  "connected": "Connect\u00e9",
-  "disconnected": "D\u00e9connect\u00e9",
-  "synchronized": "Synchronis\u00e9",
-  "notSynchronized": "Non synchronis\u00e9",
+  "connected": "Connecté",
+  "disconnected": "Déconnecté",
+  "synchronized": "Synchronisé",
+  "notSynchronized": "Non synchronisé",
   "synchronizing": "Synchronisation...",
-  "syncFailed": "\u00c9chec de synchronisation",
-  "retry": "R\u00e9essayer",
+  "syncFailed": "Échec de synchronisation",
+  "retry": "Réessayer",
   "skip": "Passer",
   "finish": "Terminer",
-  "complete": "Compl\u00e9ter",
+  "complete": "Compléter",
   "pending": "En attente",
   "processing": "Traitement...",
   "waiting": "En attente...",
-  "ready": "Pr\u00eat",
-  "notReady": "Pas pr\u00eat",
+  "ready": "Prêt",
+  "notReady": "Pas prêt",
   "available": "Disponible",
   "unavailable": "Indisponible",
-  "busy": "Occup\u00e9",
+  "busy": "Occupé",
   "free": "Libre",
-  "occupied": "Occup\u00e9",
+  "occupied": "Occupé",
   "empty": "Vide",
   "full": "Plein",
   "partial": "Partiel",
   "exact": "Exact",
   "approximate": "Approximatif",
-  "estimated": "Estim\u00e9",
-  "actual": "R\u00e9el",
-  "planned": "Planifi\u00e9",
-  "unplanned": "Non planifi\u00e9",
-  "scheduled": "Programm\u00e9",
-  "unscheduled": "Non programm\u00e9",
+  "estimated": "Estimé",
+  "actual": "Réel",
+  "planned": "Planifié",
+  "unplanned": "Non planifié",
+  "scheduled": "Programmé",
+  "unscheduled": "Non programmé",
   "overdue": "En retard",
-  "onTime": "\u00c0 l'heure",
+  "onTime": "À l'heure",
   "early": "En avance",
   "late": "En retard",
   "urgent": "Urgent",
-  "high": "\u00c9lev\u00e9e",
+  "high": "Élevée",
   "medium": "Moyenne",
   "low": "Faible",
   "critical": "Critique",
@@ -232,9 +232,9 @@
   "trivial": "Trivial",
   "personal": "Personnel",
   "work": "Travail",
-  "health": "Sant\u00e9",
+  "health": "Santé",
   "fitness": "Fitness",
-  "education": "\u00c9ducation",
+  "education": "Éducation",
   "finance": "Finance",
   "social": "Social",
   "family": "Famille",
@@ -243,13 +243,13 @@
   "shopping": "Shopping",
   "entertainment": "Divertissement",
   "other": "Autre",
-  "duelPriorityTitle": "Prioris\u00e9",
-  "duelPrioritySubtitle": "Quelle t\u00e2che pr\u00e9f\u00e9rez-vous ?",
+  "duelPriorityTitle": "Priorisé",
+  "duelPrioritySubtitle": "Quelle tâche préférez-vous ?",
   "duelPriorityHint": "Touchez la carte que vous souhaitez prioriser.",
   "duelSkipAction": "Passer le duel",
-  "duelRandomAction": "R\u00e9sultat al\u00e9atoire",
-  "duelShowElo": "Afficher l\u2019\u00c9lo",
-  "duelHideElo": "Masquer l\u2019\u00c9lo",
+  "duelRandomAction": "Résultat aléatoire",
+  "duelShowElo": "Afficher l’Élo",
+  "duelHideElo": "Masquer l’Élo",
   "duelModeLabel": "Mode du duel",
   "duelModeWinner": "Vainqueur",
   "duelModeRanking": "Classement",
@@ -275,10 +275,10 @@
     }
   },
   "duelSubmitRanking": "Valider le classement",
-  "duelPreferenceSaved": "Pr\u00e9f\u00e9rence enregistr\u00e9e.",
-  "duelRemainingDuels": "{count} duels restants aujourd\u2019hui",
+  "duelPreferenceSaved": "Préférence enregistrée.",
+  "duelRemainingDuels": "{count} duels restants aujourd’hui",
   "@duelRemainingDuels": {
-    "description": "Nombre de duels restants pour la journ\u00e9e",
+    "description": "Nombre de duels restants pour la journée",
     "placeholders": {
       "count": {
         "type": "int"
@@ -288,9 +288,134 @@
   "duelConfigureLists": "Choisir les listes pour les duels",
   "duelNoAvailableLists": "Aucune liste disponible",
   "duelNoAvailableListsForPrioritization": "Aucune liste disponible pour la priorisation",
-  "duelListsUpdated": "Listes de priorisation mises \u00e0 jour",
+  "duelListsUpdated": "Listes de priorisation mises à jour",
   "duelNewDuel": "Nouveau duel",
-  "duelNotEnoughTasksTitle": "Pas assez de t\u00e2ches",
-  "duelNotEnoughTasksMessage": "Ajoutez au moins deux t\u00e2ches pour commencer \u00e0 prioriser.",
-  "duelErrorMessage": "Impossible de charger le duel. R\u00e9essayez."
+  "duelNotEnoughTasksTitle": "Pas assez de tâches",
+  "duelNotEnoughTasksMessage": "Ajoutez au moins deux tâches pour commencer à prioriser.",
+  "duelErrorMessage": "Impossible de charger le duel. Réessayez.",
+  "habitsActionCreateSuccess": "Habitude créée ✅",
+  "@habitsActionCreateSuccess": {
+    "description": "Snackbar message when a habit is created successfully"
+  },
+  "habitsActionCreateError": "Erreur lors de la création : {error}",
+  "@habitsActionCreateError": {
+    "description": "Error message when creating a habit fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "habitsActionUpdateSuccess": "Habitude \"{habitName}\" mise à jour",
+  "@habitsActionUpdateSuccess": {
+    "description": "Snackbar message when a habit is updated",
+    "placeholders": {
+      "habitName": {
+        "type": "String"
+      }
+    }
+  },
+  "habitsActionUpdateError": "Erreur lors de la mise à jour : {error}",
+  "@habitsActionUpdateError": {
+    "description": "Error message when updating a habit fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "habitsActionDeleteSuccess": "Habitude \"{habitName}\" supprimée",
+  "@habitsActionDeleteSuccess": {
+    "description": "Snackbar when a habit is deleted",
+    "placeholders": {
+      "habitName": {
+        "type": "String"
+      }
+    }
+  },
+  "habitsActionDeleteError": "Impossible de supprimer l'habitude : {error}",
+  "@habitsActionDeleteError": {
+    "description": "Error message when deleting a habit fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "habitsActionRecordSuccess": "Habitude \"{habitName}\" enregistrée",
+  "@habitsActionRecordSuccess": {
+    "description": "Snackbar when a habit is recorded",
+    "placeholders": {
+      "habitName": {
+        "type": "String"
+      }
+    }
+  },
+  "habitsActionRecordError": "Erreur lors de l'enregistrement : {error}",
+  "@habitsActionRecordError": {
+    "description": "Error message when recording a habit fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "habitsLoadingRecord": "Enregistrement...",
+  "@habitsLoadingRecord": {
+    "description": "Loading dialog text when recording a habit"
+  },
+  "habitsLoadingDelete": "Suppression...",
+  "@habitsLoadingDelete": {
+    "description": "Loading dialog text when deleting a habit"
+  },
+  "habitsActionUnsupported": "Action non supportée : {action}",
+  "@habitsActionUnsupported": {
+    "description": "Error shown when an unknown habit action is requested",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "habitsDialogDeleteTitle": "Supprimer l'habitude",
+  "@habitsDialogDeleteTitle": {
+    "description": "Title of the delete habit confirmation dialog"
+  },
+  "habitsDialogDeleteMessage": "Supprimer \"{habitName}\" ?\nCette action est irréversible et supprime aussi l'historique.",
+  "@habitsDialogDeleteMessage": {
+    "description": "Warning message in delete habit dialog",
+    "placeholders": {
+      "habitName": {
+        "type": "String"
+      }
+    }
+  },
+  "habitsButtonCreate": "Créer une habitude",
+  "@habitsButtonCreate": {
+    "description": "CTA button to create a habit"
+  },
+  "habitsHeaderTitle": "Mes habitudes",
+  "@habitsHeaderTitle": {
+    "description": "Header title for habits page"
+  },
+  "habitsHeaderSubtitle": "Suivez vos progrès au quotidien",
+  "@habitsHeaderSubtitle": {
+    "description": "Header subtitle for habits page"
+  },
+  "habitsHeroTitle": "Mes Habitudes",
+  "@habitsHeroTitle": {
+    "description": "Hero title in premium header"
+  },
+  "habitsHeroSubtitle": "Créez et suivez vos habitudes quotidiennes",
+  "@habitsHeroSubtitle": {
+    "description": "Hero subtitle in premium header"
+  },
+  "habitsTabHabits": "Habitudes",
+  "@habitsTabHabits": {
+    "description": "Label for habits tab"
+  },
+  "habitsTabAdd": "Ajouter",
+  "@habitsTabAdd": {
+    "description": "Label for add habit tab"
+  }
 }

@@ -1565,6 +1565,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unable to load the duel. Try again.'**
   String get duelErrorMessage;
+
+  /// Snackbar message when a habit is created successfully
+  ///
+  /// In en, this message translates to:
+  /// **'Habit created ✅'**
+  String get habitsActionCreateSuccess;
+
+  /// Error message when creating a habit fails
+  ///
+  /// In en, this message translates to:
+  /// **'Error while creating: {error}'**
+  String habitsActionCreateError(String error);
+
+  /// Snackbar message when a habit is updated
+  ///
+  /// In en, this message translates to:
+  /// **'Habit \"{habitName}\" updated'**
+  String habitsActionUpdateSuccess(String habitName);
+
+  /// Error message when updating a habit fails
+  ///
+  /// In en, this message translates to:
+  /// **'Error while updating: {error}'**
+  String habitsActionUpdateError(String error);
+
+  /// Snackbar when a habit is deleted
+  ///
+  /// In en, this message translates to:
+  /// **'Habit \"{habitName}\" deleted'**
+  String habitsActionDeleteSuccess(String habitName);
+
+  /// Error message when deleting a habit fails
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to delete habit: {error}'**
+  String habitsActionDeleteError(String error);
+
+  /// Snackbar when a habit is recorded
+  ///
+  /// In en, this message translates to:
+  /// **'Habit \"{habitName}\" recorded'**
+  String habitsActionRecordSuccess(String habitName);
+
+  /// Error message when recording a habit fails
+  ///
+  /// In en, this message translates to:
+  /// **'Error while recording: {error}'**
+  String habitsActionRecordError(String error);
+
+  /// Loading dialog text when recording a habit
+  ///
+  /// In en, this message translates to:
+  /// **'Recording...'**
+  String get habitsLoadingRecord;
+
+  /// Loading dialog text when deleting a habit
+  ///
+  /// In en, this message translates to:
+  /// **'Deleting...'**
+  String get habitsLoadingDelete;
+
+  /// Error shown when an unknown habit action is requested
+  ///
+  /// In en, this message translates to:
+  /// **'Unsupported action: {action}'**
+  String habitsActionUnsupported(String action);
+
+  /// Title of the delete habit confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Delete habit'**
+  String get habitsDialogDeleteTitle;
+
+  /// Warning message in delete habit dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete \"{habitName}\"?\nThis action is irreversible and removes historical data.'**
+  String habitsDialogDeleteMessage(String habitName);
+
+  /// CTA button to create a habit
+  ///
+  /// In en, this message translates to:
+  /// **'Create a habit'**
+  String get habitsButtonCreate;
+
+  /// Header title for habits page
+  ///
+  /// In en, this message translates to:
+  /// **'My habits'**
+  String get habitsHeaderTitle;
+
+  /// Header subtitle for habits page
+  ///
+  /// In en, this message translates to:
+  /// **'Track your progress every day'**
+  String get habitsHeaderSubtitle;
+
+  /// Hero title in premium header
+  ///
+  /// In en, this message translates to:
+  /// **'My Habits'**
+  String get habitsHeroTitle;
+
+  /// Hero subtitle in premium header
+  ///
+  /// In en, this message translates to:
+  /// **'Create and track your daily habits'**
+  String get habitsHeroSubtitle;
+
+  /// Label for habits tab
+  ///
+  /// In en, this message translates to:
+  /// **'Habits'**
+  String get habitsTabHabits;
+
+  /// Label for add habit tab
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get habitsTabAdd;
 }
 
 class _AppLocalizationsDelegate

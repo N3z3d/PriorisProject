@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/data/providers/habits_state_provider.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/pages/habits/services/habit_form_dialog_service.dart';
 import '../interfaces/habits_page_interfaces.dart';
 
@@ -15,6 +16,8 @@ class HabitActionHandler implements IHabitActionHandler {
 
   final BuildContext _context;
   final WidgetRef _ref;
+
+  AppLocalizations get _l10n => AppLocalizations.of(_context)!;
 
   @override
   void handleHabitAction(String action, Habit habit) {
@@ -32,24 +35,28 @@ class HabitActionHandler implements IHabitActionHandler {
         deleteHabit(habit);
         break;
       default:
-        _showActionError('Action non supportee: $action');
+        _showActionError(_l10n.habitsActionUnsupported(action));
     }
   }
 
   @override
   Future<void> recordHabit(Habit habit) async {
     try {
-      _showLoadingDialog('Enregistrement...');
+      _showLoadingDialog(_l10n.habitsLoadingRecord);
       await _ref.read(habitsStateProvider.notifier).updateHabit(habit);
       if (_context.mounted) {
         Navigator.of(_context).pop();
       }
-      _showSuccessSnackBar('Habitude "${habit.name}" enregistree !');
+      _showSuccessSnackBar(
+        _l10n.habitsActionRecordSuccess(habit.name),
+      );
     } catch (error) {
       if (_context.mounted) {
         Navigator.of(_context).pop();
       }
-      _showActionError('Erreur lors de l\'enregistrement: $error');
+      _showActionError(
+        _l10n.habitsActionRecordError(error.toString()),
+      );
     }
   }
 
@@ -59,7 +66,9 @@ class HabitActionHandler implements IHabitActionHandler {
       await HabitFormDialogService(context: _context, ref: _ref)
           .showHabitForm(initialHabit: habit);
     } catch (error) {
-      _showActionError('Erreur lors de la modification: $error');
+      _showActionError(
+        _l10n.habitsActionUpdateError(error.toString()),
+      );
     }
   }
 
@@ -69,17 +78,21 @@ class HabitActionHandler implements IHabitActionHandler {
       final confirmed = await _showDeleteConfirmationDialog(habit);
       if (!confirmed) return;
 
-      _showLoadingDialog('Suppression...');
+      _showLoadingDialog(_l10n.habitsLoadingDelete);
       await _ref.read(habitsStateProvider.notifier).deleteHabit(habit.id);
       if (_context.mounted) {
         Navigator.of(_context).pop();
       }
-      _showSuccessSnackBar('Habitude "${habit.name}" supprimee');
+      _showSuccessSnackBar(
+        _l10n.habitsActionDeleteSuccess(habit.name),
+      );
     } catch (error) {
       if (_context.mounted) {
         Navigator.of(_context).pop();
       }
-      _showActionError('Erreur lors de la suppression: $error');
+      _showActionError(
+        _l10n.habitsActionDeleteError(error.toString()),
+      );
     }
   }
 
@@ -88,7 +101,9 @@ class HabitActionHandler implements IHabitActionHandler {
     try {
       await HabitFormDialogService(context: _context, ref: _ref).showHabitForm();
     } catch (error) {
-      _showActionError('Erreur lors de la creation: $error');
+      _showActionError(
+        _l10n.habitsActionCreateError(error.toString()),
+      );
     }
   }
 
@@ -96,20 +111,19 @@ class HabitActionHandler implements IHabitActionHandler {
     return await showDialog<bool>(
           context: _context,
           builder: (context) => AlertDialog(
-            title: const Text('Supprimer l\'habitude'),
+            title: Text(_l10n.habitsDialogDeleteTitle),
             content: Text(
-              'Etes-vous sur de vouloir supprimer "${habit.name}" ?\n\n'
-              'Cette action est irreversible et supprimera egalement tout l\'historique associe.',
+              _l10n.habitsDialogDeleteMessage(habit.name),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Annuler'),
+                child: Text(_l10n.cancel),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
                 style: TextButton.styleFrom(foregroundColor: Colors.red),
-                child: const Text('Supprimer'),
+                child: Text(_l10n.delete),
               ),
             ],
             shape: RoundedRectangleBorder(
