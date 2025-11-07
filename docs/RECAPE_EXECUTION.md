@@ -16,6 +16,13 @@
    - `flutter_test_full.log` enrichi après chaque suite ciblée (horodatage + compteur estimé).
    - `docs/RECAPE_EXECUTION.md` et `docs/TODO_NEXT_DEVS.md` maintiennent la feuille de route active.
 
+
+## Pass URL State
+- Tests navigation (`test/domain/services/navigation/url_state_service_test.dart`) consomment désormais directement `urlStateServiceProvider` (plus de couche manager).
+- Overrides mémoire conservés (`createTestProviderContainer`), égalité/idempotence vérifiées via le service.
+- Suite verte : `flutter test test/domain/services/navigation/url_state_service_test.dart` (21:20), journal mis à jour.
+
+
 ## Pass Insights + Habit
 1. **Service Insights**
    - Chaînes moteur converties en ASCII + `\uXXXX`; helpers `_plural/_tasksCount/_daysCount` introduits pour éviter la duplication.

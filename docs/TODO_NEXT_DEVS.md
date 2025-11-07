@@ -1,30 +1,25 @@
 ﻿# TODO priorisé — prochaine itération
 
-## 1. Suites critiques restantes (ordre suggéré)
-1. `test/domain/services/navigation/url_state_service_test.dart`
-   - Rejouer les scénarios offline/online en s'appuyant sur le `ListsController` réel + overrides mémoire.
-   - Vérifier que les messages URL utilisent les nouvelles chaînes ASCII (`\uXXXX`).
-2. `test/domain/services/insights/*` hors `insights_generation_service_test.dart`
-   - Notamment `insights_aggregate_service_test.dart` et les agrégations statistiques.
-   - Profiter des helpers `_plural/_tasksCount/_daysCount` pour éviter toute régression de format.
-3. Suites applicatives P0 (`test/application/services/**`, `test/architecture/controller_lifecycle_test.dart`, etc.)
-   - Continuer à désamorcer les historiques rouges en lots <200 lignes, journal à jour après chaque run.
+## 1. Suites critiques restantes
+- `test/application/services/**` (P0 Auth, persistence managers).
+- `test/architecture/controller_lifecycle_test.dart`, `duplicate_id_conflicts_test.dart`, `rls_permission_test.dart` (skips à retirer).
+- Tests widget/pages listes (ex. `test/presentation/pages/list_detail_page_*.dart`) pour valider la nouvelle i18n/dédup.
 
-## 2. i18n Habits + dédup (à lancer dès que 1. est vert)
-- Extraire les chaînes restantes du formulaire Habits (`lib/presentation/pages/habits/**`) vers `lib/l10n/app_fr.arb` et `app_en.arb` (au moins FR/EN).
-- Refactoriser `lib/presentation/pages/lists/controllers/operations/lists_validation_service.dart` et `lib/presentation/pages/lists/controllers/lists_controller_slim.dart` pour supprimer les duplications signalées (<50 lignes/méthode).
-- Ajouter des tests widget/unitaires couvrant les clés traduites (FR/EN) et s'assurer que les helpers de validation sont factorisés.
+## 2. Campagne i18n Habits + dédup
+- Extraire les chaînes restantes (Habits modals/pages) vers `lib/l10n/app_fr.arb` et `app_en.arb`. Vérifier pluralisation.
+- Refactoriser `lib/presentation/pages/lists/controllers/operations/lists_validation_service.dart` et `lists_controller_slim.dart` (helpers privés, <50 lignes/méthode, zéro duplication).
+- Ajouter/adapter les tests widget/unitaires couvrant FR/EN.
 
 ## 3. Architecture
-- Une fois la duplication nettoyée, réactiver `test/architecture/fixed_architecture_validation_test.dart` (retirer `@Skip`).
-- Traiter également `test/architecture/duplicate_id_conflicts_test.dart` et `test/architecture/rls_permission_test.dart` si encore `@Skip`.
-- Objectif : retrouver la couverture initiale des checks Clean Code / SOLID.
+- Réactiver `test/architecture/fixed_architecture_validation_test.dart` après i18n/dédup.
+- Vérifier les dépendances de couches (providers → services → infra) et ajuster les modules interdits si nécessaire.
 
 ## 4. Tooling & dépendances
-- **Option A (retenue)** : rester sur analyzer 6.x / toolchain legacy tant que Hive/build_runner n'ont pas d'alternative stable.
-- **Option B (après stabilisation)** : préparer une ADR détaillant la migration (fork build_runner, changement de moteur de persistance ou arrêt de la génération Hive). Inclure l'impact CI/CD et les dépendances candidates (`flutter_riverpod`, `flutter_dotenv`, `logger`, `intl`, `lints`).
+- **Option A** maintenue : analyzer 6.x + toolchain legacy tant que Hive/build_runner n’ont pas d’alternative.
+- Préparer l’ADR Option B (migration générateur/Hive ou switch vers autre stockage) une fois la base 100% verte.
+- Dépendances candidates à l’upgrade après ADR : `flutter_riverpod`, `flutter_dotenv`, `logger`, `intl`, `lints`, packages `build_runner*`.
 
 ## 5. Rituels
-- Petits lots (<200 lignes) + commits atomiques `feat|fix|test|chore(scope): …`.
-- Toujours TDD : run ciblé avant/après correctif, mise à jour de `flutter_test_full.log` avec horodatage + compteur.
-- Rafraîchir `docs/RECAPE_EXECUTION.md` et ce fichier à la fin de chaque session pour briefer les prochains devs.
+- Lots <200 lignes + commits `feat|fix|refactor|test|chore(scope): …`.
+- TDD systématique, journal `flutter_test_full.log` à jour (horodatage + compteur).
+- Rafraîchir `docs/RECAPE_EXECUTION.md` et ce fichier à chaque session pour briefer les prochaines personnes.
