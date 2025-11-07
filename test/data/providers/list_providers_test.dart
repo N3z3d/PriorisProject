@@ -14,13 +14,20 @@ void main() {
     late InMemoryListItemRepository listItemRepository;
     late DateTime now;
 
-    setUp(() {
-      customRepository = InMemoryCustomListRepository();
-      listItemRepository = InMemoryListItemRepository();
-      container = ProviderContainer(overrides: [
+    ProviderContainer _createContainer({
+      InMemoryCustomListRepository? customRepo,
+      InMemoryListItemRepository? itemRepo,
+    }) {
+      customRepository = customRepo ?? InMemoryCustomListRepository();
+      listItemRepository = itemRepo ?? InMemoryListItemRepository();
+      return ProviderContainer(overrides: [
         customListRepositoryProvider.overrideWithValue(customRepository),
         listItemRepositoryProvider.overrideWithValue(listItemRepository),
       ]);
+    }
+
+    setUp(() {
+      container = _createContainer();
       now = DateTime(2024, 1, 1, 12, 0, 0);
     });
 
@@ -59,6 +66,20 @@ void main() {
         final stats = container.read(listsStatisticsProvider);
         expect(stats, isA<Map<String, dynamic>>());
         expect(stats['global'], isNotNull);
+      });
+
+      test('should expose stable default stats structure', () {
+        final stats = container.read(listsStatisticsProvider);
+        expect(stats, {
+          'global': {
+            'totalLists': 0,
+            'totalItems': 0,
+            'completedItems': 0,
+            'averageProgress': 0.0,
+            'trend': 'stable',
+          },
+          'byType': <String, dynamic>{},
+        });
       });
 
       test('should provide configuration', () {

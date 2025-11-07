@@ -133,6 +133,7 @@ class ConsolidatedListsNotifier extends StateNotifier<ConsolidatedListsState> {
         'totalItems': 0,
         'completedItems': 0,
         'averageProgress': 0.0,
+        'trend': 'stable',
       },
       'byType': <String, dynamic>{},
     };
