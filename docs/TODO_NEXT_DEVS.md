@@ -4,6 +4,7 @@
 - `test/presentation/widgets/dialogs/list_form_dialog_test.dart` (bloqué par l'usage de `Color.shade600/700/800` dans les builders d'UI).
 - Tests widget/pages listes additionnels (`list_detail_page_*`, `lists_page_test`, etc.) pour couvrir les interactions hors toggle.
 - `test/architecture/controller_lifecycle_test.dart`, `duplicate_id_conflicts_test.dart`, `rls_permission_test.dart` (skips à retirer).
+- `lib/presentation/pages/lists/utils/list_type_helpers.dart` et `lib/presentation/widgets/dialogs/components/list_type_helpers.dart` doivent gérer `ListType.TODO` pour débloquer le run global.
 
 ## 2. Campagne i18n Habits + dédup
 - Extraire les chaînes restantes (Habits modals/pages) vers `lib/l10n/app_fr.arb` et `app_en.arb`. Vérifier pluralisation.
@@ -18,6 +19,7 @@
 - **Option A** maintenue : analyzer 6.x + toolchain legacy tant que Hive/build_runner n’ont pas d’alternative.
 - Préparer l’ADR Option B (migration générateur/Hive ou switch vers autre stockage) une fois la base 100% verte.
 - Dépendances candidates à l’upgrade après ADR : `flutter_riverpod`, `flutter_dotenv`, `logger`, `intl`, `lints`, packages `build_runner*`.
+- **Rappel UI** : ne plus utiliser `Color.shadeXXX`; préférer les helpers `tone/lighten/darken` ou fournir une logique locale équivalente (voir `ui_color_utils.dart`).
 
 ## 5. Rituels
 - Lots <200 lignes + commits `feat|fix|refactor|test|chore(scope): …`.

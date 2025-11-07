@@ -65,3 +65,8 @@
 - `flutter test` complet relancé pour actualiser la baseline ; compilation interrompue par l'usage des getters `shade600/shade700/shade800` directement sur `Color` dans `action_buttons_builder.dart` et `content_section_builder.dart`.
 - Compteur global inchangé (~192 suites rouges). Entrée ajoutée dans `flutter_test_full.log` pour tracer le blocage compile.
 
+## Pass UI Colors (22:45)
+- Ajout du module `lib/presentation/styles/ui_color_utils.dart` (helpers `lighten/darken/tone` basés sur HSL + mapping 50→900), avec tests unitaires dédiés.
+- Tous les widgets qui utilisaient `Color.shadeXXX` deviennent configurables via une couleur de base (ex. `ForgotPasswordDialog`, `ClearDataDialog`, `PasswordTextField`, `LogoutDestructiveActionLink`, builders des popups, champs communs). Les nuances sont désormais dérivées localement via `tone(...)`.
+- `test/presentation/styles/ui_color_utils_test.dart` et `test/presentation/widgets/dialogs/list_form_dialog_test.dart` au vert ; journal mis à jour (22:45). Le run global suivant progresse jusqu'au prochain blocage : `list_type_helpers.dart` doit gérer `ListType.TODO` (voir entrée `[2025-11-07 22:48]`).
+
