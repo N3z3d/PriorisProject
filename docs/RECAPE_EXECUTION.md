@@ -79,3 +79,7 @@
 ## Pass Régression RLS (23:05)
 - rls_delete_regression_test.dart simplifié : harness SupabaseTableAdapter fake + import mocks, plus documentation non const (horodatage dynamique).
 - Suite verte consignée dans flutter_test_full.log (22:55 -> 23:05).
+
+## Pass Clean Code (23:18)
+- advanced_cache_system.dart découpé en lib/cache/advanced_cache_{core,policy,store}.dart avec façade dvanced_cache.dart + réexport legacy.
+- 	est/solid_compliance/clean_code_constraints_test.dart vert; journal mis à jour (~189 suites restantes).

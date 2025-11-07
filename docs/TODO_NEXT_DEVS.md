@@ -26,3 +26,7 @@
 - Lots <200 lignes + commits `feat|fix|refactor|test|chore(scope): …`.
 - TDD systématique, journal `flutter_test_full.log` à jour (horodatage + compteur).
 - Rafraîchir `docs/RECAPE_EXECUTION.md` et ce fichier à chaque session pour briefer les prochaines personnes.
+
+- Relancer flutter test global pour identifier les blocs restants (~189).
+- Enchaîner avec i18n Habits + dédup, puis réactiver fixed_architecture_validation_test.
+
