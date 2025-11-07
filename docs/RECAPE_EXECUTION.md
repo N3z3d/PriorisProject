@@ -75,3 +75,7 @@
 - Ajout des tests `test/presentation/pages/lists/utils/list_type_helpers_test.dart` pour sécuriser les mappings (pages + dialogs).
 - `flutter test test/presentation/pages/lists/utils/list_type_helpers_test.dart` vert (journal 22:55). Nouveau run global bloque plus loin sur `rls_delete_regression_test` (const manquant), `tmp_adaptive_test` (type String) et `clean_code_constraints` (advanced_cache_system > 500 lignes) — voir entrée `[2025-11-07 22:58]`.
 
+
+## Pass Régression RLS (23:05)
+- rls_delete_regression_test.dart simplifié : harness SupabaseTableAdapter fake + import mocks, plus documentation non const (horodatage dynamique).
+- Suite verte consignée dans flutter_test_full.log (22:55 -> 23:05).
