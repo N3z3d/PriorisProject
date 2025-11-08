@@ -107,12 +107,29 @@ void main() {
       testWidgets('should resolve valid list ID without fallback', (tester) async {
         // Arrange
         await tester.pumpWidget(testApp);
+
+        // Re-populate lists after widget initialization (which auto-loads from empty repository)
+        final testLists = [
+          TestData.createTestList(
+            id: 'list1',
+            name: 'First List',
+            type: ListType.TODO,
+          ),
+          TestData.createTestList(
+            id: 'list2',
+            name: 'Second List',
+            type: ListType.SHOPPING,
+          ),
+        ];
+        final controller = container.read(listsControllerProvider.notifier);
+        controller.state = controller.state.copyWith(lists: testLists);
+
         final context = tester.element(find.byType(TestWidget));
         final manager = container.read(urlStateServiceProvider(context));
-        
+
         // Act
         final result = manager.resolveAndUpdateUrlState('list2');
-        
+
         // Assert
         expect(result.isSuccessful, true);
         expect(result.resolvedList?.id, equals('list2'));
@@ -123,12 +140,29 @@ void main() {
       testWidgets('should use fallback for invalid list ID', (tester) async {
         // Arrange
         await tester.pumpWidget(testApp);
+
+        // Re-populate lists after widget initialization
+        final testLists = [
+          TestData.createTestList(
+            id: 'list1',
+            name: 'First List',
+            type: ListType.TODO,
+          ),
+          TestData.createTestList(
+            id: 'list2',
+            name: 'Second List',
+            type: ListType.SHOPPING,
+          ),
+        ];
+        final controller = container.read(listsControllerProvider.notifier);
+        controller.state = controller.state.copyWith(lists: testLists);
+
         final context = tester.element(find.byType(TestWidget));
         final manager = container.read(urlStateServiceProvider(context));
-        
+
         // Act
         final result = manager.resolveAndUpdateUrlState('invalid-id');
-        
+
         // Assert
         expect(result.isSuccessful, true);
         expect(result.resolvedList?.id, equals('list1')); // First available list
@@ -139,12 +173,29 @@ void main() {
       testWidgets('should use fallback for null list ID', (tester) async {
         // Arrange
         await tester.pumpWidget(testApp);
+
+        // Re-populate lists after widget initialization
+        final testLists = [
+          TestData.createTestList(
+            id: 'list1',
+            name: 'First List',
+            type: ListType.TODO,
+          ),
+          TestData.createTestList(
+            id: 'list2',
+            name: 'Second List',
+            type: ListType.SHOPPING,
+          ),
+        ];
+        final controller = container.read(listsControllerProvider.notifier);
+        controller.state = controller.state.copyWith(lists: testLists);
+
         final context = tester.element(find.byType(TestWidget));
         final manager = container.read(urlStateServiceProvider(context));
-        
+
         // Act
         final result = manager.resolveAndUpdateUrlState(null);
-        
+
         // Assert
         expect(result.isSuccessful, true);
         expect(result.resolvedList?.id, equals('list1')); // First available list
