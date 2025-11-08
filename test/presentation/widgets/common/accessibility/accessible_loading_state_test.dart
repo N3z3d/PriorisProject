@@ -115,7 +115,7 @@ void main() {
   group('AccessibleStatusAnnouncement', () {
     testWidgets('WCAG 4.1.3 - Should announce status changes', (tester) async {
       String? currentMessage;
-      
+
       // ACT - Widget initial sans message
       await tester.pumpWidget(
         MaterialApp(
@@ -126,6 +126,7 @@ void main() {
                   children: [
                     AccessibleStatusAnnouncement(
                       message: currentMessage,
+                      duration: const Duration(milliseconds: 50), // Short duration for tests
                     ),
                     ElevatedButton(
                       onPressed: () {
@@ -142,42 +143,72 @@ void main() {
           ),
         ),
       );
-      
+
       // ASSERT - Initialement pas d'annonce
       expect(find.text('Données sauvegardées avec succès'), findsNothing);
-      
+
       // ACT - Déclencher l'annonce
       await tester.tap(find.text('Déclencher annonce'));
       await tester.pump();
-      
+
       // ASSERT - L'annonce doit être présente (même si invisible visuellement)
       // La recherche trouve le texte même s'il est stylistiquement caché
       expect(find.text('Données sauvegardées avec succès'), findsOneWidget);
+
+      // ACT - Wait for timer to complete to avoid orphan timer error
+      await tester.pump(const Duration(milliseconds: 100));
+
+      // ASSERT - Message should have disappeared after duration
+      expect(find.text('Données sauvegardées avec succès'), findsNothing);
     });
 
     testWidgets('Should auto-hide announcement after duration', (tester) async {
       // ARRANGE
       const testDuration = Duration(milliseconds: 100);
-      
-      // ACT
+      String? message;
+
+      // ACT - Initial widget without message
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
           home: Scaffold(
-            body: AccessibleStatusAnnouncement(
-              message: 'Message temporaire',
-              duration: testDuration,
+            body: StatefulBuilder(
+              builder: (context, setState) {
+                return Column(
+                  children: [
+                    AccessibleStatusAnnouncement(
+                      message: message,
+                      duration: testDuration,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          message = 'Message temporaire';
+                        });
+                      },
+                      child: const Text('Show message'),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ),
       );
-      
-      // ASSERT - Message initialement présent
+
+      // ASSERT - Initially no message
+      expect(find.text('Message temporaire'), findsNothing);
+
+      // ACT - Trigger message display (didUpdateWidget will set _shouldAnnounce = true)
+      await tester.tap(find.text('Show message'));
+      await tester.pump();
+
+      // ASSERT - Message should now be present
       expect(find.text('Message temporaire'), findsOneWidget);
-      
-      // ACT - Attendre la durée + un peu plus
+
+      // ACT - Wait for duration + extra time
       await tester.pump(testDuration + const Duration(milliseconds: 50));
-      
-      // ASSERT - Message doit avoir disparu
+
+      // ASSERT - Message should have disappeared
       expect(find.text('Message temporaire'), findsNothing);
     });
   });
