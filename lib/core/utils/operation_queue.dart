@@ -93,7 +93,8 @@ class OperationQueue {
   void _startProcessingIfNeeded() {
     if (!_isProcessing && _queue.isNotEmpty) {
       _isProcessing = true;
-      _processQueue();
+      // Small delay to allow batching of operations before processing starts
+      Future.delayed(const Duration(milliseconds: 10), _processQueue);
     }
   }
   
