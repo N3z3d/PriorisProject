@@ -172,11 +172,40 @@ class OperationQueue {
     'isProcessing': _isProcessing,
   };
   
-  /// Clear completed and failed operations (cleanup)
-  void cleanup() {
+  /// Clear queue state. When [cancelPendingOperations] is true (default),
+  /// all queued/processing operations are cancelled to guarantee a clean slate.
+  void cleanup({bool cancelPendingOperations = true}) {
+    if (cancelPendingOperations) {
+      for (final op in _queue) {
+        if (!op.completer.isCompleted) {
+          op.completer.completeError(
+            Exception('Operation cancelled during cleanup'),
+          );
+        }
+      }
+      _queue.clear();
+
+      for (final op in _processing) {
+        if (!op.completer.isCompleted) {
+          op.completer.completeError(
+            Exception('Operation cancelled during cleanup'),
+          );
+        }
+      }
+      _processing.clear();
+      _isProcessing = false;
+    } else {
+      _queue.removeWhere((op) => op.isCompleted);
+      _processing.removeWhere((op) => op.isCompleted);
+    }
+
     _completed.clear();
     _failed.clear();
-    LoggerService.instance.debug('Queue cleaned up', context: 'OperationQueue');
+
+    LoggerService.instance.debug(
+      'Queue cleaned up (cancelPending=$cancelPendingOperations)',
+      context: 'OperationQueue',
+    );
   }
   
   /// Cancel all pending operations

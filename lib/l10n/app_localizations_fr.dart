@@ -834,4 +834,78 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get habitsTabAdd => 'Ajouter';
+
+  @override
+  String get habitCategoryDialogTitle => 'Nouvelle catégorie';
+
+  @override
+  String get habitCategoryDialogFieldHint => 'Nom de la catégorie';
+
+  @override
+  String get habitsEmptyTitle => 'Aucune habitude pour l\'instant';
+
+  @override
+  String get habitsEmptySubtitle =>
+      'Créez votre première habitude pour suivre vos progrès.';
+
+  @override
+  String get habitsErrorTitle => 'Erreur de chargement';
+
+  @override
+  String habitsErrorLoadFailure(Object error) {
+    return 'Impossible de charger les habitudes : $error';
+  }
+
+  @override
+  String get habitsMenuTooltip => 'Afficher le menu';
+
+  @override
+  String get habitsMenuRecord => 'Marquer comme fait';
+
+  @override
+  String get habitsMenuEdit => 'Modifier';
+
+  @override
+  String get habitsMenuDelete => 'Supprimer';
+
+  @override
+  String get habitsCategoryDefault => 'Général';
+
+  @override
+  String get habitProgressThisWeek => 'cette semaine';
+
+  @override
+  String habitProgressStreakDays(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count jours',
+      one: '$count jour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String habitProgressSuccessfulDays(Object successful, Object total) {
+    return '$successful/$total jours réussis';
+  }
+
+  @override
+  String get habitProgressCompletedToday => 'Fait aujourd\'hui';
+
+  @override
+  String get habitsErrorNetwork =>
+      'Problème de connexion réseau.\\nVérifiez votre connexion internet.';
+
+  @override
+  String get habitsErrorTimeout =>
+      'La requête a pris trop de temps.\\nVeuillez réessayer.';
+
+  @override
+  String get habitsErrorPermission =>
+      'Permissions insuffisantes.\\nVérifiez vos autorisations.';
+
+  @override
+  String get habitsErrorUnexpected =>
+      'Une erreur inattendue s\'est produite.\\nVeuillez réessayer plus tard.';
 }

@@ -834,4 +834,77 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get habitsTabAdd => 'Add';
+
+  @override
+  String get habitCategoryDialogTitle => 'New category';
+
+  @override
+  String get habitCategoryDialogFieldHint => 'Category name';
+
+  @override
+  String get habitsEmptyTitle => 'No habits yet';
+
+  @override
+  String get habitsEmptySubtitle =>
+      'Create your first habit to start tracking progress.';
+
+  @override
+  String get habitsErrorTitle => 'Unable to load habits';
+
+  @override
+  String habitsErrorLoadFailure(Object error) {
+    return 'Unable to load habits: $error';
+  }
+
+  @override
+  String get habitsMenuTooltip => 'Open habit menu';
+
+  @override
+  String get habitsMenuRecord => 'Mark as done';
+
+  @override
+  String get habitsMenuEdit => 'Edit';
+
+  @override
+  String get habitsMenuDelete => 'Delete';
+
+  @override
+  String get habitsCategoryDefault => 'General';
+
+  @override
+  String get habitProgressThisWeek => 'this week';
+
+  @override
+  String habitProgressStreakDays(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '$count day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String habitProgressSuccessfulDays(Object successful, Object total) {
+    return '$successful/$total days completed';
+  }
+
+  @override
+  String get habitProgressCompletedToday => 'Done today';
+
+  @override
+  String get habitsErrorNetwork => 'Network issue.\\nCheck your connection.';
+
+  @override
+  String get habitsErrorTimeout =>
+      'The request took too long.\\nPlease try again.';
+
+  @override
+  String get habitsErrorPermission =>
+      'Insufficient permissions.\\nCheck your access rights.';
+
+  @override
+  String get habitsErrorUnexpected =>
+      'Unexpected error.\\nPlease try again later.';
 }

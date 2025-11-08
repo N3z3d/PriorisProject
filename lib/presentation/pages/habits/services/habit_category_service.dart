@@ -1,37 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 
-/// Service responsable de la création et de la normalisation des catégories
+/// Service responsable de la crÃ©ation et de la normalisation des catÃ©gories
 /// d'habitudes.
 class HabitCategoryService {
   const HabitCategoryService();
 
-  /// Ouvre une boîte de dialogue permettant de créer une nouvelle catégorie.
+  /// Ouvre une boÃ®te de dialogue permettant de crÃ©er une nouvelle catÃ©gorie.
   Future<String?> promptCreateCategory(BuildContext context) async {
     final controller = TextEditingController();
 
     final created = await showDialog<String>(
       context: context,
       builder: (dialogContext) {
+        final l10n = AppLocalizations.of(dialogContext)!;
         return AlertDialog(
-          title: const Text('Nouvelle catégorie'),
+          title: Text(l10n.habitCategoryDialogTitle),
           content: TextField(
             controller: controller,
-            decoration: const InputDecoration(
-              hintText: 'Nom de la catégorie',
+            decoration: InputDecoration(
+              hintText: l10n.habitCategoryDialogFieldHint,
             ),
             autofocus: true,
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Annuler'),
+              child: Text(l10n.cancel),
             ),
             TextButton(
               onPressed: () {
                 final value = controller.text.trim();
                 Navigator.of(dialogContext).pop(value.isEmpty ? null : value);
               },
-              child: const Text('Valider'),
+              child: Text(l10n.confirm),
             ),
           ],
         );
@@ -44,7 +46,7 @@ class HabitCategoryService {
     return normalized == null || normalized.isEmpty ? null : normalized;
   }
 
-  /// Nettoie les catégories (trim + suppression doublons + tri insensible à la casse).
+  /// Nettoie les catÃ©gories (trim + suppression doublons + tri insensible Ã  la casse).
   List<String> normalizeCategories(Iterable<String> categories) {
     final normalized = categories
         .map((category) => category.trim())
@@ -55,7 +57,7 @@ class HabitCategoryService {
     return normalized;
   }
 
-  /// Ajoute une catégorie à la liste si absente (comparaison insensible à la casse).
+  /// Ajoute une catÃ©gorie Ã  la liste si absente (comparaison insensible Ã  la casse).
   List<String> addCategoryIfMissing(List<String> categories, String category) {
     final normalized = category.trim();
     if (normalized.isEmpty) {

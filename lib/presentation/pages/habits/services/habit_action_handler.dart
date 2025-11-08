@@ -194,27 +194,3 @@ class HabitActionHandler implements IHabitActionHandler {
   }
 }
 
-extension HabitActionHandlerExtensions on HabitActionHandler {
-  static bool isActionSupported(String action) {
-    const supportedActions = ['record', 'edit', 'delete', 'add'];
-    return supportedActions.contains(action.toLowerCase());
-  }
-
-  static Map<String, String> getActionDisplayNames() {
-    return {
-      'record': 'Marquer comme fait',
-      'edit': 'Modifier',
-      'delete': 'Supprimer',
-      'add': 'Ajouter',
-    };
-  }
-
-  static Map<String, IconData> getActionIcons() {
-    return {
-      'record': Icons.check_circle_rounded,
-      'edit': Icons.edit_rounded,
-      'delete': Icons.delete_rounded,
-      'add': Icons.add_circle_rounded,
-    };
-  }
-}

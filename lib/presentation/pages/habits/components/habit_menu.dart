@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 
 /// Menu component for habit actions following SRP
 class HabitMenu extends StatelessWidget {
@@ -15,13 +16,19 @@ class HabitMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return PopupMenuButton<String>(
-      tooltip: 'Afficher le menu',
+      tooltip: l10n.habitsMenuTooltip,
       onSelected: (value) => _handleAction(value),
       itemBuilder: (context) => [
-        _buildMenuItem('record', Icons.check_circle, 'Enregistrer'),
-        _buildMenuItem('edit', Icons.edit, 'Modifier'),
-        _buildMenuItem('delete', Icons.delete, 'Supprimer', isDestructive: true),
+        _buildMenuItem('record', Icons.check_circle, l10n.habitsMenuRecord),
+        _buildMenuItem('edit', Icons.edit, l10n.habitsMenuEdit),
+        _buildMenuItem(
+          'delete',
+          Icons.delete,
+          l10n.habitsMenuDelete,
+          isDestructive: true,
+        ),
       ],
     );
   }

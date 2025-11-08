@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/widgets/common/lists/virtualized_list.dart';
 import '../interfaces/habits_page_interfaces.dart';
 
@@ -41,25 +42,30 @@ class HabitsListView implements IHabitsListView {
 
   @override
   Widget buildEmptyState() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildEmptyStateIcon(),
-            const SizedBox(height: 24),
-            _buildEmptyStateText(),
-            const SizedBox(height: 32),
-            _buildEmptyStateButton(),
-          ],
-        ),
-      ),
+    return Builder(
+      builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildEmptyStateconst Icon(),
+                const SizedBox(height: 24),
+                _buildEmptyStateText(l10n),
+                const SizedBox(height: 32),
+                _buildEmptyStateButton(l10n),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
   /// Builds the empty state icon with gradient background
-  Widget _buildEmptyStateIcon() {
+  Widget _buildEmptyStateconst Icon() {
     return Container(
       width: 120,
       height: 120,
@@ -74,7 +80,7 @@ class HabitsListView implements IHabitsListView {
         ),
         borderRadius: BorderRadius.circular(60),
       ),
-      child: Icon(
+      child: const Icon(
         Icons.track_changes_outlined,
         size: 48,
         color: Colors.grey[400],
@@ -83,11 +89,11 @@ class HabitsListView implements IHabitsListView {
   }
 
   /// Builds the empty state text (title and description)
-  Widget _buildEmptyStateText() {
+  Widget _buildEmptyStateText(AppLocalizations l10n) {
     return Column(
       children: [
         Text(
-          'Aucune habitude créée',
+          l10n.habitsEmptyTitle,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -96,7 +102,7 @@ class HabitsListView implements IHabitsListView {
         ),
         const SizedBox(height: 8),
         Text(
-          'Commencez par créer votre première habitude\ndans l\'onglet "Ajouter"',
+          l10n.habitsEmptySubtitle,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 14,
@@ -109,7 +115,7 @@ class HabitsListView implements IHabitsListView {
   }
 
   /// Builds the call to action button for empty state
-  Widget _buildEmptyStateButton() {
+  Widget _buildEmptyStateButton(AppLocalizations l10n) {
     return Container(
       decoration: BoxDecoration(
         gradient: const LinearGradient(
@@ -134,20 +140,20 @@ class HabitsListView implements IHabitsListView {
           onTap: () {
             // This should be handled by the parent widget
           },
-          child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
+                const Icon(
                   Icons.add_circle_rounded,
                   color: Colors.white,
                   size: 20,
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(
-                  'Créer ma première habitude',
-                  style: TextStyle(
+                  l10n.habitsButtonCreate,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                   ),
@@ -159,28 +165,32 @@ class HabitsListView implements IHabitsListView {
       ),
     );
   }
-
   @override
   Widget buildErrorState(Object error) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildErrorStateIcon(),
-            const SizedBox(height: 24),
-            _buildErrorStateText(error),
-            const SizedBox(height: 32),
-            _buildErrorStateButton(),
-          ],
-        ),
-      ),
+    return Builder(
+      builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildErrorStateconst Icon(),
+                const SizedBox(height: 24),
+                _buildErrorStateText(l10n, error),
+                const SizedBox(height: 32),
+                _buildErrorStateButton(l10n),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
   /// Builds the error state icon with gradient background
-  Widget _buildErrorStateIcon() {
+  Widget _buildErrorStateconst Icon() {
     return Container(
       width: 120,
       height: 120,
@@ -195,7 +205,7 @@ class HabitsListView implements IHabitsListView {
         ),
         borderRadius: BorderRadius.circular(60),
       ),
-      child: Icon(
+      child: const Icon(
         Icons.error_outline_rounded,
         size: 48,
         color: Colors.red[400],
@@ -204,11 +214,11 @@ class HabitsListView implements IHabitsListView {
   }
 
   /// Builds the error state text (title and error message)
-  Widget _buildErrorStateText(Object error) {
+  Widget _buildErrorStateText(AppLocalizations l10n, Object error) {
     return Column(
       children: [
         Text(
-          'Erreur de chargement',
+          l10n.habitsErrorTitle,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -217,7 +227,7 @@ class HabitsListView implements IHabitsListView {
         ),
         const SizedBox(height: 8),
         Text(
-          _formatErrorMessage(error),
+          _formatErrorMessage(l10n, error),
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 14,
@@ -230,7 +240,7 @@ class HabitsListView implements IHabitsListView {
   }
 
   /// Builds the retry button for error state
-  Widget _buildErrorStateButton() {
+  Widget _buildErrorStateButton(AppLocalizations l10n) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.red[500],
@@ -250,20 +260,20 @@ class HabitsListView implements IHabitsListView {
           onTap: () {
             // This should be handled by the parent widget
           },
-          child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
+                const Icon(
                   Icons.refresh_rounded,
                   color: Colors.white,
                   size: 20,
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(
-                  'Réessayer',
-                  style: TextStyle(
+                  l10n.retry,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                   ),
@@ -277,19 +287,19 @@ class HabitsListView implements IHabitsListView {
   }
 
   /// Format error message for user display
-  String _formatErrorMessage(Object error) {
+  String _formatErrorMessage(AppLocalizations l10n, Object error) {
     if (error is Exception) {
       final message = error.toString();
       if (message.contains('network') || message.contains('connection')) {
-        return 'Problème de connexion réseau.\nVérifiez votre connexion internet.';
+        return l10n.habitsErrorNetwork;
       }
       if (message.contains('timeout')) {
-        return 'La requête a pris trop de temps.\nVeuillez réessayer.';
+        return l10n.habitsErrorTimeout;
       }
       if (message.contains('permission')) {
-        return 'Permissions insuffisantes.\nVérifiez vos autorisations.';
+        return l10n.habitsErrorPermission;
       }
-      return 'Une erreur inattendue s\'est produite.\nVeuillez réessayer plus tard.';
+      return l10n.habitsErrorUnexpected;
     }
 
     return error.toString().length > 100

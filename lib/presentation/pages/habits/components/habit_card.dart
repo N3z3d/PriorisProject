@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 import 'package:prioris/presentation/theme/premium_micro_interactions.dart';
@@ -38,7 +39,7 @@ class HabitCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildHeader(),
+                _buildHeader(context),
                 const SizedBox(height: 16),
                 HabitProgressDisplay(habit: habit),
               ],
@@ -49,7 +50,7 @@ class HabitCard extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
     return Row(
       children: [
         HabitAvatar(habit: habit),
@@ -60,7 +61,7 @@ class HabitCard extends StatelessWidget {
             children: [
               _buildTitle(),
               const SizedBox(height: 4),
-              _buildCategory(),
+              _buildCategory(context),
             ],
           ),
         ),
@@ -82,7 +83,12 @@ class HabitCard extends StatelessWidget {
     );
   }
 
-  Widget _buildCategory() {
+  Widget _buildCategory(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final normalizedCategory = habit.category?.trim();
+    final categoryText = (normalizedCategory == null || normalizedCategory.isEmpty)
+        ? l10n.habitsCategoryDefault
+        : normalizedCategory;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -94,7 +100,7 @@ class HabitCard extends StatelessWidget {
         ),
       ),
       child: Text(
-        habit.category ?? 'Général',
+        categoryText,
         style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w500,

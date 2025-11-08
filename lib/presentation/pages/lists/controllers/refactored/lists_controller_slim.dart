@@ -61,36 +61,36 @@ class ListsControllerSlim extends StateNotifier<ListsState>
     }
   }
 
-  Future<void> loadLists() => runAsync(
+  Future<void> loadLists() => _runCrudOperation(
         'loadLists',
-        () => crudOperations.loadLists(state),
+        crudOperations.loadLists,
         showLoading: true,
       );
 
-  Future<void> forceReload() => runAsync(
+  Future<void> forceReload() => _runCrudOperation(
         'forceReload',
-        () => crudOperations.forceReload(state),
+        crudOperations.forceReload,
         showLoading: true,
       );
 
   Future<void> forceReloadFromPersistence() => forceReload();
 
-  Future<void> clearAllData() => runAsync(
+  Future<void> clearAllData() => _runCrudOperation(
         'clearAllData',
-        () => crudOperations.clearAllData(state),
+        crudOperations.clearAllData,
         showLoading: true,
       );
 
   Future<void> createList(CustomList list) =>
-      runAsync('createList', () => crudOperations.createList(state, list));
+      _runCrudOperation('createList', (current) => crudOperations.createList(current, list));
 
   Future<void> updateList(CustomList list) =>
-      runAsync('updateList', () => crudOperations.updateList(state, list));
+      _runCrudOperation('updateList', (current) => crudOperations.updateList(current, list));
 
   Future<void> deleteList(String listId) =>
-      runAsync('deleteList', () => crudOperations.deleteList(state, listId));
+      _runCrudOperation('deleteList', (current) => crudOperations.deleteList(current, listId));
 
-  Future<void> addListItem(String listId, ListItem item) => runItemOperation(
+  Future<void> addListItem(String listId, ListItem item) => _runItemOperation(
         operation: 'addListItem',
         itemId: item.id,
         action: (current) => crudOperations.addListItem(current, listId, item),
@@ -99,7 +99,7 @@ class ListsControllerSlim extends StateNotifier<ListsState>
   Future<void> addMultipleItems(String listId, List<ListItem> items) async {
     if (items.isEmpty) return;
     final pendingIds = items.map((item) => item.id).toSet();
-    await runItemsOperation(
+    await _runItemsOperation(
       operation: 'addMultipleItems',
       itemIds: pendingIds,
       action: (currentState) =>
@@ -111,7 +111,7 @@ class ListsControllerSlim extends StateNotifier<ListsState>
       addMultipleItems(listId, items);
 
   Future<void> updateListItem(String listId, ListItem item) =>
-      runItemOperation(
+      _runItemOperation(
         operation: 'updateListItem',
         itemId: item.id,
         action: (current) =>
@@ -119,7 +119,7 @@ class ListsControllerSlim extends StateNotifier<ListsState>
       );
 
   Future<void> removeListItem(String listId, String itemId) =>
-      runItemOperation(
+      _runItemOperation(
         operation: 'removeListItem',
         itemId: itemId,
         action: (current) =>
@@ -129,9 +129,9 @@ class ListsControllerSlim extends StateNotifier<ListsState>
   Future<void> removeItemFromList(String listId, String itemId) =>
       removeListItem(listId, itemId);
 
-  Future<void> changeSortOption(SortOption option) => runAsync(
+  Future<void> changeSortOption(SortOption option) => _runCrudOperation(
         'changeSortOption',
-        () => crudOperations.changeSortOption(state, option),
+        (current) => crudOperations.changeSortOption(current, option),
         showLoading: false,
       );
 
@@ -171,6 +171,39 @@ class ListsControllerSlim extends StateNotifier<ListsState>
     performanceMonitor.resetStats();
     super.dispose();
   }
+
+  Future<void> _runCrudOperation(
+    String operation,
+    Future<ListsState> Function(ListsState current) action, {
+    bool showLoading = false,
+  }) =>
+      runAsync(
+        operation,
+        () => action(state),
+        showLoading: showLoading,
+      );
+
+  Future<void> _runItemOperation({
+    required String operation,
+    required String itemId,
+    required Future<ListsState> Function(ListsState current) action,
+  }) =>
+      runItemOperation(
+        operation: operation,
+        itemId: itemId,
+        action: action,
+      );
+
+  Future<void> _runItemsOperation({
+    required String operation,
+    required Set<String> itemIds,
+    required Future<ListsState> Function(ListsState current) action,
+  }) =>
+      runItemsOperation(
+        operation: operation,
+        itemIds: itemIds,
+        action: action,
+      );
 }
 
 typedef RefactoredListsController = ListsControllerSlim;

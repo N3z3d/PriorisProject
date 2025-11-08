@@ -83,3 +83,8 @@
 ## Pass Clean Code (23:18)
 - advanced_cache_system.dart découpé en lib/cache/advanced_cache_{core,policy,store}.dart avec façade dvanced_cache.dart + réexport legacy.
 - 	est/solid_compliance/clean_code_constraints_test.dart vert; journal mis à jour (~189 suites restantes).
+
+## Pass Habits i18n + Dédup (08 nov · 01:30)
+- Extraction des chaînes restantes Habits vers `app_{fr,en}.arb` (headers, menus, états vides/erreur, popups catégorie, progress widgets). Génération `flutter gen-l10n` + nouvelles clés (`habitCategoryDialog*`, `habitsEmpty*`, `habitsMenu*`, `habitProgress*`, `habitsError*`, `habitsCategoryDefault`), refactorisation des composants (`HabitsEmpty/Error/ListView`, `HabitMenu`, `HabitCard`, `HabitProgressDisplay`, `habits_page_header.dart`, services catégories/contrôleurs). Tests ciblés : `flutter test test/presentation/pages/habits/habits_localization_test.dart`.
+- Déduplication côté listes : `lists_validation_service.dart` factorisé via helpers `_requireValue/_limitLength/_limitOptionalLength/_limitCount`, `lists_controller_slim.dart` recentré sur `_runCrudOperation/_runItemOperation/_runItemsOperation` pour éviter les wrappers répétitifs. Test témoin : `flutter test test/presentation/pages/lists/controllers/lists_controller_create_list_test.dart`.
+- Run global `flutter test --machine` (01:25) archivé dans `flutter_test_full.log` : 15 tests échouent encore (`test/core/exceptions/app_exception_test.dart`, `application/services/{deduplication,lists_transaction_manager}_test.dart`, `presentation/widgets/common/accessibility/accessible_loading_state_test.dart`, etc.). Compteur estimé ≈189 suites rouges ; entrées horodatées ajoutées au journal pour servir de baseline.

@@ -200,6 +200,17 @@ class MockAdaptivePersistenceService extends _i1.Mock
       ) as _i5.Future<void>);
 
   @override
+  _i5.Future<void> saveMultipleItems(List<_i7.ListItem>? items) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #saveMultipleItems,
+          [items],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
   _i5.Future<void> updateItem(_i7.ListItem? item) => (super.noSuchMethod(
         Invocation.method(
           #updateItem,

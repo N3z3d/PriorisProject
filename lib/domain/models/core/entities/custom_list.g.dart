@@ -24,13 +24,19 @@ class CustomListAdapter extends TypeAdapter<CustomList> {
       items: (fields[4] as List).cast<ListItem>(),
       createdAt: fields[5] as DateTime,
       updatedAt: fields[6] as DateTime,
+      color: (fields[7] as int?) ?? CustomList._defaultColorValue,
+      iconCodePoint:
+          (fields[8] as int?) ?? CustomList._defaultIconCodePoint,
+      isDeleted: fields[9] as bool? ?? false,
+      userId: fields[10] as String?,
+      userEmail: fields[11] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, CustomList obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,7 +50,17 @@ class CustomListAdapter extends TypeAdapter<CustomList> {
       ..writeByte(5)
       ..write(obj.createdAt)
       ..writeByte(6)
-      ..write(obj.updatedAt);
+      ..write(obj.updatedAt)
+      ..writeByte(7)
+      ..write(obj.color)
+      ..writeByte(8)
+      ..write(obj.iconCodePoint)
+      ..writeByte(9)
+      ..write(obj.isDeleted)
+      ..writeByte(10)
+      ..write(obj.userId)
+      ..writeByte(11)
+      ..write(obj.userEmail);
   }
 
   @override

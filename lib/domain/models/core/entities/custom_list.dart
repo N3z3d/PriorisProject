@@ -10,6 +10,8 @@ part 'custom_list.g.dart';
 /// Représente une liste thématique (ex: "Liste de courses", "Films à regarder")
 @HiveType(typeId: 0)
 class CustomList extends HiveObject {
+  static const int _defaultColorValue = 2196243;
+  static const int _defaultIconCodePoint = 58826; // 0xe5ca
   /// Identifiant unique de la liste
   @HiveField(0)
   final String id;
@@ -38,6 +40,21 @@ class CustomList extends HiveObject {
   @HiveField(6)
   final DateTime updatedAt;
 
+  @HiveField(7)
+  final int color;
+
+  @HiveField(8)
+  final int iconCodePoint;
+
+  @HiveField(9)
+  final bool isDeleted;
+
+  @HiveField(10)
+  final String? userId;
+
+  @HiveField(11)
+  final String? userEmail;
+
   /// Constructeur avec paramètres nommés
   CustomList({
     required this.id,
@@ -47,6 +64,11 @@ class CustomList extends HiveObject {
     this.items = const [],
     required this.createdAt,
     required this.updatedAt,
+    this.color = _defaultColorValue,
+    this.iconCodePoint = _defaultIconCodePoint,
+    this.isDeleted = false,
+    this.userId,
+    this.userEmail,
   }) {
     _validate();
   }
@@ -78,6 +100,11 @@ class CustomList extends HiveObject {
     List<ListItem>? items,
     DateTime? createdAt,
     DateTime? updatedAt,
+    int? color,
+    int? iconCodePoint,
+    bool? isDeleted,
+    String? userId,
+    String? userEmail,
   }) {
     return CustomList(
       id: id ?? this.id,
@@ -87,6 +114,11 @@ class CustomList extends HiveObject {
       items: items ?? this.items,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      color: color ?? this.color,
+      iconCodePoint: iconCodePoint ?? this.iconCodePoint,
+      isDeleted: isDeleted ?? this.isDeleted,
+      userId: userId ?? this.userId,
+      userEmail: userEmail ?? this.userEmail,
     );
   }
 
@@ -229,21 +261,27 @@ class CustomList extends HiveObject {
 
   /// Convertit la liste en Map pour la sérialisation JSON (format Supabase)
   Map<String, dynamic> toJson() {
-    return {
+    final json = <String, dynamic>{
       'id': id,
-      'name': name,
-      'title': name,           // Supabase uses 'title' column
-      'list_type': type.name,  // Supabase uses 'list_type'
-      'type': type.name,
+      'title': name,
+      'list_type': type.name,
       'description': description,
-      'color': 2196243,        // Valeur plus petite pour éviter l'overflow PostgreSQL (bleu)
-      'icon': 58826,           // 0xe5ca en decimal
+      'color': color,
+      'icon': iconCodePoint,
+      'is_deleted': isDeleted,
       'items': items.map((item) => item.toJson()).toList(),
-      'created_at': createdAt.toIso8601String(),  // Supabase uses snake_case
-      'updated_at': updatedAt.toIso8601String(),  // Supabase uses snake_case
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
     };
+
+    if (userId != null && userId!.isNotEmpty) {
+      json['user_id'] = userId;
+    }
+    if (userEmail != null && userEmail!.isNotEmpty) {
+      json['user_email'] = userEmail;
+    }
+
+    return json;
   }
 
   /// Convertit la liste en Map pour compatibilité locale (Hive/tests)
@@ -256,27 +294,45 @@ class CustomList extends HiveObject {
       'items': items.map((item) => item.toJson()).toList(),
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
+      'color': color,
+      'icon': iconCodePoint,
+      'isDeleted': isDeleted,
+      'userId': userId,
+      'userEmail': userEmail,
     };
   }
 
   /// Crée une liste à partir d'une Map (désérialisation JSON)
   factory CustomList.fromJson(Map<String, dynamic> json) {
+    final rawTitle = json['title'] ?? json['name'];
+    if (rawTitle == null) {
+      throw ArgumentError('Le champ name/title est requis pour CustomList');
+    }
+    final rawCreatedAt = json['created_at'] ?? json['createdAt'];
+    final rawUpdatedAt = json['updated_at'] ?? json['updatedAt'];
+    if (rawCreatedAt == null || rawUpdatedAt == null) {
+      throw ArgumentError('Les champs createdAt/updatedAt sont requis');
+    }
+
     return CustomList(
       id: json['id'] as String,
-      // Support both 'title' (Supabase) and 'name' (backward compatibility)
-      name: (json['title'] ?? json['name']) as String,
+      name: rawTitle as String,
       type: ListType.values.firstWhere(
-        // Support both 'list_type' (Supabase) and 'type' (backward compatibility)
         (e) => e.name == (json['list_type'] ?? json['type']),
         orElse: () => ListType.CUSTOM,
       ),
       description: json['description'] as String?,
       items: (json['items'] as List<dynamic>?)
-          ?.map((itemJson) => ListItem.fromJson(itemJson as Map<String, dynamic>))
-          .toList() ?? [],
-      // Support both snake_case (Supabase) and camelCase (backward compatibility)
-      createdAt: DateTime.parse((json['created_at'] ?? json['createdAt']) as String),
-      updatedAt: DateTime.parse((json['updated_at'] ?? json['updatedAt']) as String),
+              ?.map((itemJson) => ListItem.fromJson(itemJson as Map<String, dynamic>))
+              .toList() ??
+          [],
+      createdAt: DateTime.parse(rawCreatedAt as String),
+      updatedAt: DateTime.parse(rawUpdatedAt as String),
+      color: (json['color'] as int?) ?? _defaultColorValue,
+      iconCodePoint: (json['icon'] as int?) ?? _defaultIconCodePoint,
+      isDeleted: (json['is_deleted'] ?? json['isDeleted']) as bool? ?? false,
+      userId: json['user_id'] as String? ?? json['userId'] as String?,
+      userEmail: json['user_email'] as String? ?? json['userEmail'] as String?,
     );
   }
 
@@ -291,7 +347,12 @@ class CustomList extends HiveObject {
         other.description == description &&
         listEquals(other.items, items) &&
         other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.updatedAt == updatedAt &&
+        other.color == color &&
+        other.iconCodePoint == iconCodePoint &&
+        other.isDeleted == isDeleted &&
+        other.userId == userId &&
+        other.userEmail == userEmail;
   }
 
   /// Génère le hash code de la liste
@@ -305,6 +366,11 @@ class CustomList extends HiveObject {
       Object.hashAll(items),
       createdAt,
       updatedAt,
+      color,
+      iconCodePoint,
+      isDeleted,
+      userId,
+      userEmail,
     );
   }
 

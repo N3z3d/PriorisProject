@@ -17,57 +17,98 @@ void main() {
       final now = DateTime.now();
       final today = DateTime(now.year, now.month, now.day);
       final yesterday = today.subtract(const Duration(days: 1));
+      final twoDaysAgo = today.subtract(const Duration(days: 2));
+
+      TaskAggregate buildTask({
+        required String id,
+        required String title,
+        String? description,
+        double eloScoreValue = 1200,
+        bool isCompleted = false,
+        DateTime? createdAt,
+        DateTime? completedAt,
+        String? category,
+        DateTime? dueDate,
+      }) {
+        return TaskAggregate.reconstitute(
+          id: id,
+          title: title,
+          description: description,
+          eloScore: eloScoreValue,
+          isCompleted: isCompleted,
+          createdAt: createdAt ?? now,
+          completedAt: completedAt,
+          category: category,
+          dueDate: dueDate,
+        );
+      }
       
-      completedTask = TaskAggregate.create(
+      completedTask = buildTask(
+        id: 'completed',
         title: 'Completed Task',
         description: 'A task that is completed',
         category: 'Work',
-        eloScore: EloScore.fromValue(1200),
+        eloScoreValue: 1200,
+        isCompleted: true,
+        createdAt: now.subtract(const Duration(hours: 6)),
+        completedAt: today.add(const Duration(hours: 2)),
       );
-      completedTask.complete();
 
-      incompleteTask = TaskAggregate.create(
+      incompleteTask = buildTask(
+        id: 'incomplete',
         title: 'Incomplete Task',
         description: 'A task that is not completed',
         category: 'Personal',
-        eloScore: EloScore.fromValue(1400),
+        eloScoreValue: 1400,
+        createdAt: now.subtract(const Duration(hours: 18)),
       );
 
-      overdueTask = TaskAggregate.create(
+      overdueTask = buildTask(
+        id: 'overdue',
         title: 'Overdue Task',
         description: 'A task that is overdue',
         category: 'Urgent',
-        eloScore: EloScore.fromValue(1100),
+        eloScoreValue: 1100,
+        createdAt: twoDaysAgo,
         dueDate: yesterday,
       );
 
-      dueTodayTask = TaskAggregate.create(
+      dueTodayTask = buildTask(
+        id: 'due-today',
         title: 'Due Today Task',
         description: 'A task due today',
         category: 'Work',
-        eloScore: EloScore.fromValue(1300),
+        eloScoreValue: 1300,
+        createdAt: now,
         dueDate: today.add(const Duration(hours: 12)),
       );
 
-      highPriorityTask = TaskAggregate.create(
+      highPriorityTask = buildTask(
+        id: 'high-priority',
         title: 'High Priority Task',
         description: 'A high priority task',
         category: 'Critical',
-        eloScore: EloScore.fromValue(1500),
+        eloScoreValue: 2200,
+        createdAt: now.subtract(const Duration(hours: 1)),
+        dueDate: now.add(const Duration(hours: 1)),
       );
 
-      expertTask = TaskAggregate.create(
+      expertTask = buildTask(
+        id: 'expert',
         title: 'Expert Task',
         description: 'A task for experts',
         category: 'Advanced',
-        eloScore: EloScore.fromValue(1800), // Expert level
+        eloScoreValue: 1800,
+        createdAt: today.subtract(const Duration(hours: 2)),
       );
 
-      noviceTask = TaskAggregate.create(
+      noviceTask = buildTask(
+        id: 'novice',
         title: 'Novice Task',
         description: 'A task for novices',
         category: 'Beginner',
-        eloScore: EloScore.fromValue(800), // Novice level
+        eloScoreValue: 800,
+        createdAt: today.subtract(const Duration(hours: 2)),
       );
     });
 
@@ -188,10 +229,17 @@ void main() {
       test('created in last days specification should match recent tasks', () {
         // Arrange
         final spec = TaskSpecifications.createdInLastDays(1);
+        final recentTask = TaskAggregate.reconstitute(
+          id: 'recent',
+          title: 'Recent Task',
+          eloScore: 1000,
+          createdAt: DateTime.now().subtract(const Duration(hours: 6)),
+        );
 
         // Act & Assert
         expect(spec.isSatisfiedBy(completedTask), isTrue);
         expect(spec.isSatisfiedBy(incompleteTask), isTrue);
+        expect(spec.isSatisfiedBy(recentTask), isTrue);
         expect(spec.isSatisfiedBy(overdueTask), isFalse);
       });
 
@@ -298,8 +346,8 @@ void main() {
         final spec = TaskSpecifications.isStagnant(daysSinceCreation: 1);
 
         // Act & Assert
-        expect(spec.isSatisfiedBy(incompleteTask), isTrue); // Created yesterday, incomplete
-        expect(spec.isSatisfiedBy(completedTask), isFalse); // Completed
+        expect(spec.isSatisfiedBy(overdueTask), isTrue);
+        expect(spec.isSatisfiedBy(completedTask), isFalse);
       });
 
       test('is duel candidate should match similar tasks', () {

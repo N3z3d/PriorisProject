@@ -378,9 +378,9 @@ void main() {
       });
     });
 
-    group('toJson', () {
+    group('toLocalJson', () {
       test('should convert CustomList to JSON with all properties', () {
-        final json = testList.toJson();
+        final json = testList.toLocalJson();
 
         expect(json['id'], 'test-list-id');
         expect(json['name'], 'Test List');
@@ -394,29 +394,69 @@ void main() {
 
       test('should convert empty list to JSON', () {
         final emptyList = testList.copyWith(items: []);
-        final json = emptyList.toJson();
+        final json = emptyList.toLocalJson();
 
         expect(json['items'], isEmpty);
       });
     });
 
+    group('toJson (Supabase)', () {
+      test('should surface supabase fields with defaults', () {
+        final json = testList.toJson();
+
+        expect(json['id'], 'test-list-id');
+        expect(json['title'], 'Test List');
+        expect(json['list_type'], 'SHOPPING');
+        expect(json['description'], 'Test Description');
+        expect(json['color'], greaterThan(0));
+        expect(json['icon'], greaterThan(0));
+        expect(json['is_deleted'], isFalse);
+        expect(json['created_at'], testDate.toIso8601String());
+        expect(json['updated_at'], testDate.toIso8601String());
+        expect(json.containsKey('user_id'), isFalse);
+        expect(json.containsKey('user_email'), isFalse);
+      });
+
+      test('should include optional metadata when provided', () {
+        final list = testList.copyWith(
+          isDeleted: true,
+          color: 123,
+          iconCodePoint: 456,
+          userId: 'user-1',
+          userEmail: 'user@example.com',
+        );
+
+        final json = list.toJson();
+        expect(json['color'], 123);
+        expect(json['icon'], 456);
+        expect(json['is_deleted'], isTrue);
+        expect(json['user_id'], 'user-1');
+        expect(json['user_email'], 'user@example.com');
+      });
+    });
+
     group('fromJson', () {
-      test('should create CustomList from JSON with all properties', () {
+      test('should create CustomList from Supabase JSON with all properties', () {
         final json = {
           'id': 'json-list-id',
-          'name': 'JSON List',
-          'type': 'TRAVEL',
+          'title': 'JSON List',
+          'list_type': 'TRAVEL',
           'description': 'JSON Description',
           'items': [
             {
               'id': 'json-item-1',
               'title': 'JSON Item 1',
               'eloScore': 1500.0,
-              'createdAt': testDate.toIso8601String(),
+              'created_at': testDate.toIso8601String(),
             }
           ],
-          'createdAt': testDate.toIso8601String(),
-          'updatedAt': testDate.toIso8601String(),
+          'color': 321,
+          'icon': 654,
+          'is_deleted': true,
+          'user_id': 'user-42',
+          'user_email': 'user@example.com',
+          'created_at': testDate.toIso8601String(),
+          'updated_at': testDate.toIso8601String(),
         };
 
         final list = CustomList.fromJson(json);
@@ -425,13 +465,18 @@ void main() {
         expect(list.name, 'JSON List');
         expect(list.type, ListType.TRAVEL);
         expect(list.description, 'JSON Description');
+        expect(list.isDeleted, isTrue);
+        expect(list.color, 321);
+        expect(list.iconCodePoint, 654);
+        expect(list.userId, 'user-42');
+        expect(list.userEmail, 'user@example.com');
         expect(list.items.length, 1);
         expect(list.items.first.title, 'JSON Item 1');
         expect(list.createdAt, testDate);
         expect(list.updatedAt, testDate);
       });
 
-      test('should create CustomList from JSON with minimal properties', () {
+      test('should create CustomList from legacy JSON with minimal properties', () {
         final json = {
           'id': 'minimal-json-id',
           'name': 'Minimal JSON List',
@@ -447,6 +492,7 @@ void main() {
         expect(list.type, ListType.CUSTOM);
         expect(list.description, null);
         expect(list.items, isEmpty);
+        expect(list.isDeleted, isFalse);
         expect(list.createdAt, testDate);
         expect(list.updatedAt, testDate);
       });
@@ -512,7 +558,7 @@ void main() {
   group('ListType', () {
     group('values', () {
       test('should have correct number of values', () {
-        expect(ListType.values.length, 7);
+        expect(ListType.values.length, 9);
       });
 
       test('should contain all expected values', () {
@@ -522,6 +568,8 @@ void main() {
         expect(ListType.values, contains(ListType.BOOKS));
         expect(ListType.values, contains(ListType.RESTAURANTS));
         expect(ListType.values, contains(ListType.PROJECTS));
+        expect(ListType.values, contains(ListType.TODO));
+        expect(ListType.values, contains(ListType.IDEAS));
         expect(ListType.values, contains(ListType.CUSTOM));
       });
     });
@@ -536,6 +584,8 @@ void main() {
         expect(ListType.BOOKS.displayName, 'Livres');
         expect(ListType.RESTAURANTS.displayName, 'Restaurants');
         expect(ListType.PROJECTS.displayName, 'Projets');
+        expect(ListType.TODO.displayName, 'Tâches');
+        expect(ListType.IDEAS.displayName, 'Idées');
         expect(ListType.CUSTOM.displayName, 'Personnalisée');
       });
     });
@@ -548,6 +598,8 @@ void main() {
         expect(ListType.BOOKS.iconName, 'book');
         expect(ListType.RESTAURANTS.iconName, 'restaurant');
         expect(ListType.PROJECTS.iconName, 'work');
+        expect(ListType.TODO.iconName, 'check');
+        expect(ListType.IDEAS.iconName, 'lightbulb');
         expect(ListType.CUSTOM.iconName, 'list');
       });
     });
@@ -560,6 +612,8 @@ void main() {
         expect(ListType.BOOKS.colorValue, 0xFFFF9800);
         expect(ListType.RESTAURANTS.colorValue, 0xFFE91E63);
         expect(ListType.PROJECTS.colorValue, 0xFF607D8B);
+        expect(ListType.TODO.colorValue, 0xFF3F51B5);
+        expect(ListType.IDEAS.colorValue, 0xFFFFC107);
         expect(ListType.CUSTOM.colorValue, 0xFF795548);
       });
     });
@@ -572,6 +626,8 @@ void main() {
         expect(ListType.BOOKS.description, 'Livres à lire et à découvrir');
         expect(ListType.RESTAURANTS.description, 'Restaurants à tester et à recommander');
         expect(ListType.PROJECTS.description, 'Projets personnels et professionnels');
+        expect(ListType.TODO.description, 'Tâches quotidiennes et priorités à suivre');
+        expect(ListType.IDEAS.description, 'Idées, inspirations et notes rapides');
         expect(ListType.CUSTOM.description, 'Liste personnalisée selon vos besoins');
       });
     });

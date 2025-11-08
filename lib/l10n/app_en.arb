@@ -1033,5 +1033,91 @@
   "habitsTabAdd": "Add",
   "@habitsTabAdd": {
     "description": "Label for add habit tab"
+  },
+  "habitCategoryDialogTitle": "New category",
+  "@habitCategoryDialogTitle": {
+    "description": "Title for the create category dialog"
+  },
+  "habitCategoryDialogFieldHint": "Category name",
+  "@habitCategoryDialogFieldHint": {
+    "description": "Placeholder for the category name input"
+  },
+  "habitsEmptyTitle": "No habits yet",
+  "@habitsEmptyTitle": {
+    "description": "Headline for the empty habits state"
+  },
+  "habitsEmptySubtitle": "Create your first habit to start tracking progress.",
+  "@habitsEmptySubtitle": {
+    "description": "Description for the empty habits state"
+  },
+  "habitsErrorTitle": "Unable to load habits",
+  "@habitsErrorTitle": {
+    "description": "Title displayed when habits fail to load"
+  },
+  "habitsErrorLoadFailure": "Unable to load habits: {error}",
+  "@habitsErrorLoadFailure": {
+    "description": "Error message including the thrown error",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "habitsMenuTooltip": "Open habit menu",
+  "@habitsMenuTooltip": {
+    "description": "Tooltip for the habit overflow menu button"
+  },
+  "habitsMenuRecord": "Mark as done",
+  "@habitsMenuRecord": {
+    "description": "Menu label to record a habit"
+  },
+  "habitsMenuEdit": "Edit",
+  "@habitsMenuEdit": {
+    "description": "Menu label to edit a habit"
+  },
+  "habitsMenuDelete": "Delete",
+  "@habitsMenuDelete": {
+    "description": "Menu label to delete a habit"
+  },
+  "habitsCategoryDefault": "General",
+  "@habitsCategoryDefault": {
+    "description": "Fallback category label when none is provided"
+  },
+  "habitProgressThisWeek": "this week",
+  "@habitProgressThisWeek": {
+    "description": "Caption under the weekly progress percentage"
+  },
+  "habitProgressStreakDays": "{count, plural, one {{count} day} other {{count} days}}",
+  "@habitProgressStreakDays": {
+    "description": "Label describing the current streak length",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "habitProgressSuccessfulDays": "{successful}/{total} days completed",
+  "@habitProgressSuccessfulDays": {
+    "description": "Label summarizing the number of successful days this week",
+    "placeholders": {
+      "successful": {},
+      "total": {}
+    }
+  },
+  "habitProgressCompletedToday": "Done today",
+  "@habitProgressCompletedToday": {
+    "description": "Badge text when the habit is done today"
+  },
+  "habitsErrorNetwork": "Network issue.\\nCheck your connection.",
+  "@habitsErrorNetwork": {
+    "description": "Error message shown when a network issue occurs"
+  },
+  "habitsErrorTimeout": "The request took too long.\\nPlease try again.",
+  "@habitsErrorTimeout": {
+    "description": "Error message for timeout issues"
+  },
+  "habitsErrorPermission": "Insufficient permissions.\\nCheck your access rights.",
+  "@habitsErrorPermission": {
+    "description": "Error message when permissions are missing"
+  },
+  "habitsErrorUnexpected": "Unexpected error.\\nPlease try again later.",
+  "@habitsErrorUnexpected": {
+    "description": "Fallback error message for unknown issues"
   }
 }

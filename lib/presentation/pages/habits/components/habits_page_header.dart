@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 import '../interfaces/habits_page_interfaces.dart';
@@ -48,12 +49,14 @@ class HabitsPageHeader implements IHabitsPageHeader {
 
   /// Build the premium header title section
   Widget _buildHeaderTitle() {
-    return Row(
-      children: [
-        _buildHeaderIconContainer(),
-        const SizedBox(width: 16),
-        _buildHeaderTextContent(),
-      ],
+    return Builder(
+      builder: (context) => Row(
+        children: [
+          _buildHeaderIconContainer(),
+          const SizedBox(width: 16),
+          _buildHeaderTextContent(context),
+        ],
+      ),
     );
   }
 
@@ -89,13 +92,14 @@ class HabitsPageHeader implements IHabitsPageHeader {
   }
 
   /// Build header text content with title and description
-  Widget _buildHeaderTextContent() {
+  Widget _buildHeaderTextContent(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Mes Habitudes',
+            l10n.habitsHeroTitle,
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.w700,
@@ -126,51 +130,56 @@ class HabitsPageHeader implements IHabitsPageHeader {
 
   /// Build the premium styled tab bar
   Widget _buildTabBar(TabController tabController) {
-    return Container(
-      height: 44,
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.2),
-          width: 1,
-        ),
-      ),
-      child: TabBar(
-        controller: tabController,
-        indicator: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+    return Builder(
+      builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
+        return Container(
+          height: 44,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.2),
+              width: 1,
             ),
-          ],
-        ),
-        indicatorPadding: const EdgeInsets.all(2),
-        labelColor: const Color(0xFF1e293b),
-        unselectedLabelColor: Colors.white.withOpacity(0.8),
-        labelStyle: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-        ),
-        unselectedLabelStyle: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-        ),
-        tabs: const [
-          Tab(
-            icon: Icon(Icons.list_rounded, size: 18),
-            text: 'Habitudes',
           ),
-          Tab(
-            icon: Icon(Icons.add_circle_rounded, size: 18),
-            text: 'Ajouter',
+          child: TabBar(
+            controller: tabController,
+            indicator: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            indicatorPadding: const EdgeInsets.all(2),
+            labelColor: const Color(0xFF1e293b),
+            unselectedLabelColor: Colors.white.withOpacity(0.8),
+            labelStyle: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+            unselectedLabelStyle: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+            tabs: [
+              Tab(
+                icon: const Icon(Icons.list_rounded, size: 18),
+                text: l10n.habitsTabHabits,
+              ),
+              Tab(
+                icon: const Icon(Icons.add_circle_rounded, size: 18),
+                text: l10n.habitsTabAdd,
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

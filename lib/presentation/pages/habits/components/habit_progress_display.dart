@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 
 /// Progress display component for habit following SRP
@@ -17,33 +18,34 @@ class HabitProgressDisplay extends StatelessWidget {
     final streak = habit.getCurrentStreak();
     final completedToday = habit.isCompletedToday();
     final successfulDays = (progress * 7).round();
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: _buildContainerDecoration(),
       child: Column(
         children: [
-          _buildStatsHeader(progress, streak),
+          _buildStatsHeader(progress, streak, l10n),
           const SizedBox(height: 12),
           _buildProgressBar(progress),
           const SizedBox(height: 8),
-          _buildProgressDetails(successfulDays, completedToday),
+          _buildProgressDetails(successfulDays, completedToday, l10n),
         ],
       ),
     );
   }
 
-  Widget _buildStatsHeader(double progress, int streak) {
+  Widget _buildStatsHeader(double progress, int streak, AppLocalizations l10n) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildProgressPercentage(progress),
-        if (streak > 0) _buildStreakBadge(streak),
+        _buildProgressPercentage(progress, l10n),
+        if (streak > 0) _buildStreakBadge(streak, l10n),
       ],
     );
   }
 
-  Widget _buildProgressPercentage(double progress) {
+  Widget _buildProgressPercentage(double progress, AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -56,7 +58,7 @@ class HabitProgressDisplay extends StatelessWidget {
           ),
         ),
         Text(
-          'cette semaine',
+          l10n.habitProgressThisWeek,
           style: TextStyle(
             fontSize: 12,
             color: AppTheme.textTertiary,
@@ -67,7 +69,7 @@ class HabitProgressDisplay extends StatelessWidget {
     );
   }
 
-  Widget _buildStreakBadge(int streak) {
+  Widget _buildStreakBadge(int streak, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -84,7 +86,7 @@ class HabitProgressDisplay extends StatelessWidget {
           const Text('🔥', style: TextStyle(fontSize: 12)),
           const SizedBox(width: 4),
           Text(
-            '$streak jour${streak > 1 ? 's' : ''}',
+            l10n.habitProgressStreakDays(streak),
             style: TextStyle(
               fontSize: 12,
               color: AppTheme.successColor,
@@ -130,33 +132,37 @@ class HabitProgressDisplay extends StatelessWidget {
     );
   }
 
-  Widget _buildProgressDetails(int successfulDays, bool completedToday) {
+  Widget _buildProgressDetails(
+    int successfulDays,
+    bool completedToday,
+    AppLocalizations l10n,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          '$successfulDays/7 jours réussis',
+          '$successfulDays/7 jours rÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©ussis',
           style: TextStyle(
             fontSize: 12,
             color: AppTheme.textTertiary,
             fontWeight: FontWeight.w500,
           ),
         ),
-        if (completedToday) _buildCompletedTodayBadge(),
+        if (completedToday) _buildCompletedTodayBadge(l10n),
       ],
     );
   }
 
-  Widget _buildCompletedTodayBadge() {
+  Widget _buildCompletedTodayBadge(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: AppTheme.successColor,
         borderRadius: BorderRadius.circular(10),
       ),
-      child: const Text(
-        'Fait aujourd\'hui',
-        style: TextStyle(
+      child: Text(
+        l10n.habitProgressCompletedToday,
+        style: const TextStyle(
           fontSize: 10,
           color: Colors.white,
           fontWeight: FontWeight.w600,

@@ -1,7 +1,5 @@
 part of 'advanced_cache.dart';
 
-final _zlibCodec = ZLibCodec();
-
 class _CacheRecord {
   _CacheRecord({
     required this.entry,

@@ -1,4 +1,5 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 
 class HabitsEmptyState extends StatelessWidget {
@@ -11,17 +12,18 @@ class HabitsEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _buildIllustration(),
           const SizedBox(height: 16),
-          _buildTitle(),
+          _buildTitle(l10n),
           const SizedBox(height: 8),
-          _buildSubtitle(),
+          _buildSubtitle(l10n),
           const SizedBox(height: 24),
-          _buildActionButton(),
+          _buildActionButton(l10n),
         ],
       ),
     );
@@ -35,9 +37,9 @@ class HabitsEmptyState extends StatelessWidget {
     );
   }
 
-  Widget _buildTitle() {
+  Widget _buildTitle(AppLocalizations l10n) {
     return Text(
-      'Aucune habitude pour l\'instant',
+      l10n.habitsEmptyTitle,
       style: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
@@ -46,9 +48,9 @@ class HabitsEmptyState extends StatelessWidget {
     );
   }
 
-  Widget _buildSubtitle() {
+  Widget _buildSubtitle(AppLocalizations l10n) {
     return Text(
-      'Créez votre première habitude pour suivre vos progrès.',
+      l10n.habitsEmptySubtitle,
       style: TextStyle(
         fontSize: 16,
         color: Colors.grey[500],
@@ -57,7 +59,7 @@ class HabitsEmptyState extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButton() {
+  Widget _buildActionButton(AppLocalizations l10n) {
     return SizedBox(
       width: 280,
       height: 48,
@@ -70,8 +72,8 @@ class HabitsEmptyState extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
           ),
         ),
-        child: const Text(
-          'Créer une habitude',
+        child: Text(
+          l10n.habitsButtonCreate,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,

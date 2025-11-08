@@ -108,10 +108,13 @@ class TaskSpecifications {
     );
   }
 
-  /// Spécification pour les tâches créées dans les N derniers jours
+  /// Sp\u00E9cification pour les t\u00E2ches cr\u00E9\u00E9es dans les N derniers jours
   static Specification<TaskAggregate> createdInLastDays(int days) {
     final cutoffDate = DateTime.now().subtract(Duration(days: days));
-    return createdAfter(cutoffDate);
+    return Specifications.fromPredicate<TaskAggregate>(
+      (task) => !task.createdAt.isBefore(cutoffDate),
+      'T\u00E2che cr\u00E9\u00E9e dans les $days derniers jours',
+    );
   }
 
   /// Spécification pour les tâches complétées dans une plage de dates
@@ -207,14 +210,16 @@ class TaskSpecifications {
         );
   }
 
-  /// Spécification pour les tâches stagnantes (anciennes et non complétées)
+  /// Sp\u00E9cification pour les t\u00E2ches stagnantes (anciennes et non compl\u00E9t\u00E9es)
   static Specification<TaskAggregate> isStagnant({int daysSinceCreation = 14}) {
     final cutoffDate = DateTime.now().subtract(Duration(days: daysSinceCreation));
     
     return incomplete()
         .and(Specifications.fromPredicate<TaskAggregate>(
-          (task) => task.createdAt.isBefore(cutoffDate),
-          'Tâche créée depuis plus de $daysSinceCreation jours',
+          (task) =>
+              task.createdAt.isBefore(cutoffDate) ||
+              task.createdAt.isAtSameMomentAs(cutoffDate),
+          'T\u00E2che cr\u00E9\u00E9e depuis plus de $daysSinceCreation jours',
         ));
   }
 }

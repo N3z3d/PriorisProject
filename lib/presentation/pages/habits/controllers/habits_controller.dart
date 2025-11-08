@@ -25,7 +25,7 @@ class HabitsController extends StateNotifier<HabitsControllerState> {
     } catch (error) {
       state = state.copyWith(
         lastAction: HabitAction.added,
-        lastActionMessage: 'Erreur lors de la création : $error',
+        lastActionMessage: _l10n.habitsActionCreateError(error.toString()),
         actionResult: ActionResult.error,
       );
     }
@@ -36,13 +36,13 @@ class HabitsController extends StateNotifier<HabitsControllerState> {
       await _ref.read(habitsStateProvider.notifier).updateHabit(habit);
       state = state.copyWith(
         lastAction: HabitAction.edited,
-        lastActionMessage: 'Habitude "${habit.name}" mise à jour',
+        lastActionMessage: _l10n.habitsActionUpdateSuccess(habit.name),
         actionResult: ActionResult.success,
       );
     } catch (error) {
       state = state.copyWith(
         lastAction: HabitAction.edited,
-        lastActionMessage: 'Erreur lors de la mise à jour : $error',
+        lastActionMessage: _l10n.habitsActionUpdateError(error.toString()),
         actionResult: ActionResult.error,
       );
     }
@@ -53,13 +53,13 @@ class HabitsController extends StateNotifier<HabitsControllerState> {
       await _ref.read(habitsStateProvider.notifier).deleteHabit(habitId);
       state = state.copyWith(
         lastAction: HabitAction.deleted,
-        lastActionMessage: 'Habitude "$habitName" supprimée',
+        lastActionMessage: _l10n.habitsActionDeleteSuccess(habitName),
         actionResult: ActionResult.success,
       );
     } catch (error) {
       state = state.copyWith(
         lastAction: HabitAction.deleted,
-        lastActionMessage: 'Impossible de supprimer l\'habitude : $error',
+        lastActionMessage: _l10n.habitsActionDeleteError(error.toString()),
         actionResult: ActionResult.error,
       );
     }
@@ -68,7 +68,7 @@ class HabitsController extends StateNotifier<HabitsControllerState> {
   void recordHabit(Habit habit) {
     state = state.copyWith(
       lastAction: HabitAction.recorded,
-      lastActionMessage: 'Habitude "${habit.name}" enregistrée',
+      lastActionMessage: _l10n.habitsActionRecordSuccess(habit.name),
       actionResult: ActionResult.success,
     );
   }

@@ -1685,6 +1685,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add'**
   String get habitsTabAdd;
+
+  /// Title for the create category dialog
+  ///
+  /// In en, this message translates to:
+  /// **'New category'**
+  String get habitCategoryDialogTitle;
+
+  /// Placeholder for the category name input
+  ///
+  /// In en, this message translates to:
+  /// **'Category name'**
+  String get habitCategoryDialogFieldHint;
+
+  /// Headline for the empty habits state
+  ///
+  /// In en, this message translates to:
+  /// **'No habits yet'**
+  String get habitsEmptyTitle;
+
+  /// Description for the empty habits state
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first habit to start tracking progress.'**
+  String get habitsEmptySubtitle;
+
+  /// Title displayed when habits fail to load
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load habits'**
+  String get habitsErrorTitle;
+
+  /// Error message including the thrown error
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load habits: {error}'**
+  String habitsErrorLoadFailure(Object error);
+
+  /// Tooltip for the habit overflow menu button
+  ///
+  /// In en, this message translates to:
+  /// **'Open habit menu'**
+  String get habitsMenuTooltip;
+
+  /// Menu label to record a habit
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as done'**
+  String get habitsMenuRecord;
+
+  /// Menu label to edit a habit
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get habitsMenuEdit;
+
+  /// Menu label to delete a habit
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get habitsMenuDelete;
+
+  /// Fallback category label when none is provided
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get habitsCategoryDefault;
+
+  /// Caption under the weekly progress percentage
+  ///
+  /// In en, this message translates to:
+  /// **'this week'**
+  String get habitProgressThisWeek;
+
+  /// Label describing the current streak length
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one {{count} day} other {{count} days}}'**
+  String habitProgressStreakDays(num count);
+
+  /// Label summarizing the number of successful days this week
+  ///
+  /// In en, this message translates to:
+  /// **'{successful}/{total} days completed'**
+  String habitProgressSuccessfulDays(Object successful, Object total);
+
+  /// Badge text when the habit is done today
+  ///
+  /// In en, this message translates to:
+  /// **'Done today'**
+  String get habitProgressCompletedToday;
+
+  /// Error message shown when a network issue occurs
+  ///
+  /// In en, this message translates to:
+  /// **'Network issue.\\nCheck your connection.'**
+  String get habitsErrorNetwork;
+
+  /// Error message for timeout issues
+  ///
+  /// In en, this message translates to:
+  /// **'The request took too long.\\nPlease try again.'**
+  String get habitsErrorTimeout;
+
+  /// Error message when permissions are missing
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient permissions.\\nCheck your access rights.'**
+  String get habitsErrorPermission;
+
+  /// Fallback error message for unknown issues
+  ///
+  /// In en, this message translates to:
+  /// **'Unexpected error.\\nPlease try again later.'**
+  String get habitsErrorUnexpected;
 }
 
 class _AppLocalizationsDelegate

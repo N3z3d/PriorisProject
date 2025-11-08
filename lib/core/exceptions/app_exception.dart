@@ -174,7 +174,8 @@ class AppException implements Exception {
   /// Full error description for logging
   String get fullDescription {
     final buffer = StringBuffer();
-    buffer.writeln('[$type] $message');
+    final typeLabel = type.name;
+    buffer.writeln('[$typeLabel] $message');
     if (context != null) buffer.writeln('Context: $context');
     if (originalError != null) buffer.writeln('Original: $originalError');
     if (metadata != null && metadata!.isNotEmpty) {

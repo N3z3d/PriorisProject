@@ -48,9 +48,11 @@ class ListDetailHeader extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context, _ListProgressMetrics metrics) {
-    final localized = AppLocalizations.of(context)!;
-    final completionLabel =
-        localized.listCompletionLabel(metrics.completed, metrics.total);
+    final completionLabel = _completionLabel(
+      AppLocalizations.of(context),
+      metrics.completed,
+      metrics.total,
+    );
 
     return Row(
       children: [
@@ -106,10 +108,10 @@ class ListDetailHeader extends StatelessWidget {
   }
 
   Widget _buildProgressLabel(BuildContext context, double progress) {
-    final localized = AppLocalizations.of(context)!;
     final percentText = (progress * 100).toStringAsFixed(1);
+    final label = _progressLabel(AppLocalizations.of(context), percentText);
     return Text(
-      localized.listCompletionProgress(percentText),
+      label,
       style: TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.w500,
@@ -117,6 +119,24 @@ class ListDetailHeader extends StatelessWidget {
       ),
     );
   }
+}
+
+String _completionLabel(
+  AppLocalizations? localized,
+  int completed,
+  int total,
+) {
+  if (localized != null) {
+    return localized.listCompletionLabel(completed, total);
+  }
+  return '$completed/$total items termin\u00E9s';
+}
+
+String _progressLabel(AppLocalizations? localized, String percentText) {
+  if (localized != null) {
+    return localized.listCompletionProgress(percentText);
+  }
+  return 'Progress: $percentText%';
 }
 
 class _ListProgressMetrics {

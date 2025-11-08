@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 
 /// Error state component for habits following SRP
 class HabitsErrorState extends StatelessWidget {
@@ -13,17 +14,18 @@ class HabitsErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _buildIcon(),
           const SizedBox(height: 16),
-          _buildTitle(),
+          _buildTitle(l10n),
           const SizedBox(height: 8),
-          _buildErrorMessage(),
+          _buildErrorMessage(l10n),
           const SizedBox(height: 24),
-          _buildRetryButton(),
+          _buildRetryButton(l10n),
         ],
       ),
     );
@@ -37,9 +39,9 @@ class HabitsErrorState extends StatelessWidget {
     );
   }
 
-  Widget _buildTitle() {
+  Widget _buildTitle(AppLocalizations l10n) {
     return Text(
-      'Erreur de chargement',
+      l10n.habitsErrorTitle,
       style: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
@@ -48,9 +50,9 @@ class HabitsErrorState extends StatelessWidget {
     );
   }
 
-  Widget _buildErrorMessage() {
+  Widget _buildErrorMessage(AppLocalizations l10n) {
     return Text(
-      'Impossible de charger les habitudes: $error',
+      l10n.habitsErrorLoadFailure(error),
       style: TextStyle(
         fontSize: 16,
         color: Colors.red[500],
@@ -59,11 +61,11 @@ class HabitsErrorState extends StatelessWidget {
     );
   }
 
-  Widget _buildRetryButton() {
+  Widget _buildRetryButton(AppLocalizations l10n) {
     return ElevatedButton.icon(
       onPressed: onRetry,
       icon: const Icon(Icons.refresh),
-      label: const Text('Réessayer'),
+      label: Text(l10n.retry),
     );
   }
 }

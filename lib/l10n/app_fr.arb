@@ -417,5 +417,91 @@
   "habitsTabAdd": "Ajouter",
   "@habitsTabAdd": {
     "description": "Label for add habit tab"
+  },
+  "habitCategoryDialogTitle": "Nouvelle catégorie",
+  "@habitCategoryDialogTitle": {
+    "description": "Titre de la boîte de dialogue de création de catégorie"
+  },
+  "habitCategoryDialogFieldHint": "Nom de la catégorie",
+  "@habitCategoryDialogFieldHint": {
+    "description": "Placeholder pour la saisie du nom de catégorie"
+  },
+  "habitsEmptyTitle": "Aucune habitude pour l'instant",
+  "@habitsEmptyTitle": {
+    "description": "Titre de l'état vide des habitudes"
+  },
+  "habitsEmptySubtitle": "Créez votre première habitude pour suivre vos progrès.",
+  "@habitsEmptySubtitle": {
+    "description": "Description de l'état vide des habitudes"
+  },
+  "habitsErrorTitle": "Erreur de chargement",
+  "@habitsErrorTitle": {
+    "description": "Titre affiché lorsque le chargement échoue"
+  },
+  "habitsErrorLoadFailure": "Impossible de charger les habitudes : {error}",
+  "@habitsErrorLoadFailure": {
+    "description": "Message d'erreur incluant le détail de l'erreur",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "habitsMenuTooltip": "Afficher le menu",
+  "@habitsMenuTooltip": {
+    "description": "Info-bulle pour le menu des habitudes"
+  },
+  "habitsMenuRecord": "Marquer comme fait",
+  "@habitsMenuRecord": {
+    "description": "Libellé pour enregistrer une habitude"
+  },
+  "habitsMenuEdit": "Modifier",
+  "@habitsMenuEdit": {
+    "description": "Libellé pour modifier une habitude"
+  },
+  "habitsMenuDelete": "Supprimer",
+  "@habitsMenuDelete": {
+    "description": "Libellé pour supprimer une habitude"
+  },
+  "habitsCategoryDefault": "Général",
+  "@habitsCategoryDefault": {
+    "description": "Catégorie par défaut lorsqu'aucune n'est fournie"
+  },
+  "habitProgressThisWeek": "cette semaine",
+  "@habitProgressThisWeek": {
+    "description": "Légende sous le pourcentage hebdomadaire"
+  },
+  "habitProgressStreakDays": "{count, plural, one {{count} jour} other {{count} jours}}",
+  "@habitProgressStreakDays": {
+    "description": "Texte indiquant la longueur de la série",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "habitProgressSuccessfulDays": "{successful}/{total} jours réussis",
+  "@habitProgressSuccessfulDays": {
+    "description": "Texte résumant le nombre de jours réussis sur la période",
+    "placeholders": {
+      "successful": {},
+      "total": {}
+    }
+  },
+  "habitProgressCompletedToday": "Fait aujourd'hui",
+  "@habitProgressCompletedToday": {
+    "description": "Badge lorsque l'habitude est faite aujourd'hui"
+  },
+  "habitsErrorNetwork": "Problème de connexion réseau.\\nVérifiez votre connexion internet.",
+  "@habitsErrorNetwork": {
+    "description": "Message d'erreur pour un problème réseau"
+  },
+  "habitsErrorTimeout": "La requête a pris trop de temps.\\nVeuillez réessayer.",
+  "@habitsErrorTimeout": {
+    "description": "Message d'erreur pour un dépassement de délai"
+  },
+  "habitsErrorPermission": "Permissions insuffisantes.\\nVérifiez vos autorisations.",
+  "@habitsErrorPermission": {
+    "description": "Message d'erreur lorsque les permissions manquent"
+  },
+  "habitsErrorUnexpected": "Une erreur inattendue s'est produite.\\nVeuillez réessayer plus tard.",
+  "@habitsErrorUnexpected": {
+    "description": "Message d'erreur générique"
   }
 }

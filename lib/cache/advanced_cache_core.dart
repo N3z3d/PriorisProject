@@ -422,3 +422,4 @@ class AdvancedCacheSystem {
       throw CacheException('AdvancedCacheSystem disposed');
     }
   }
+}

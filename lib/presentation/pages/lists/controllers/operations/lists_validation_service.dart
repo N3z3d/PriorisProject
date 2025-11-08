@@ -16,30 +16,39 @@ class ListsValidationService implements IListsValidationService {
   final Map<String, int> _errorTypeCount = {};
 
   final ValidationRuleSet<CustomList> _listRuleSet = ValidationRuleSet([
-    (list) => list.id.isEmpty ? 'empty list id' : null,
-    (list) => list.name.trim().isEmpty ? 'empty list name' : null,
-    (list) => list.name.length > maxListNameLength
-        ? 'list name too long (max $maxListNameLength)'
-        : null,
-    (list) => list.description != null &&
-            list.description!.length > maxListDescriptionLength
-        ? 'description too long (max $maxListDescriptionLength)'
-        : null,
-    (list) =>
-        list.items.length > maxItemsPerList ? 'too many items (max $maxItemsPerList)' : null,
+    (list) => _requireValue(list.id, 'empty list id'),
+    (list) => _requireValue(list.name, 'empty list name'),
+    (list) => _limitLength(
+          list.name,
+          maxListNameLength,
+          'list name too long (max $maxListNameLength)',
+        ),
+    (list) => _limitOptionalLength(
+          list.description,
+          maxListDescriptionLength,
+          'description too long (max $maxListDescriptionLength)',
+        ),
+    (list) => _limitCount(
+          list.items.length,
+          maxItemsPerList,
+          'too many items (max $maxItemsPerList)',
+        ),
   ]);
 
   final ValidationRuleSet<ListItem> _itemRuleSet = ValidationRuleSet([
-    (item) => item.id.isEmpty ? 'empty item id' : null,
-    (item) => item.title.trim().isEmpty ? 'empty item title' : null,
-    (item) => item.title.length > maxItemTitleLength
-        ? 'item title too long (max $maxItemTitleLength)'
-        : null,
-    (item) => item.description != null &&
-            item.description!.length > maxItemDescriptionLength
-        ? 'item description too long (max $maxItemDescriptionLength)'
-        : null,
-    (item) => item.listId.isEmpty ? 'empty parent list id' : null,
+    (item) => _requireValue(item.id, 'empty item id'),
+    (item) => _requireValue(item.title, 'empty item title'),
+    (item) => _limitLength(
+          item.title,
+          maxItemTitleLength,
+          'item title too long (max $maxItemTitleLength)',
+        ),
+    (item) => _limitOptionalLength(
+          item.description,
+          maxItemDescriptionLength,
+          'item description too long (max $maxItemDescriptionLength)',
+        ),
+    (item) => _requireValue(item.listId, 'empty parent list id'),
   ]);
 
   @override
@@ -143,5 +152,15 @@ class ListsValidationService implements IListsValidationService {
     return true;
   }
 
-}
+  static String? _requireValue(String value, String error) =>
+      value.trim().isEmpty ? error : null;
 
+  static String? _limitLength(String value, int max, String error) =>
+      value.length > max ? error : null;
+
+  static String? _limitOptionalLength(String? value, int max, String error) =>
+      value != null && value.length > max ? error : null;
+
+  static String? _limitCount(int count, int max, String error) =>
+      count > max ? error : null;
+}
