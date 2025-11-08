@@ -10,8 +10,6 @@ import 'package:prioris/domain/models/core/enums/list_enums.dart';
 
 import 'lists_controller_adaptive_test.mocks.dart';
 
-void clearInvocations(Object mock) => reset(mock);
-
 @GenerateMocks([AdaptivePersistenceService, ListsFilterService])
 void main() {
   group('ListsController Adaptive - Tests Fonctionnels', () {
@@ -44,6 +42,17 @@ void main() {
           .thenAnswer((_) async => <CustomList>[]);
       when(mockAdaptiveService.getListItems(any))
           .thenAnswer((_) async => <ListItem>[]);
+
+      // Default stub for applyFilters - returns input lists unchanged
+      when(mockFilterService.applyFilters(
+        any,
+        searchQuery: anyNamed('searchQuery'),
+        selectedType: anyNamed('selectedType'),
+        showCompleted: anyNamed('showCompleted'),
+        showInProgress: anyNamed('showInProgress'),
+        selectedDateFilter: anyNamed('selectedDateFilter'),
+        sortOption: anyNamed('sortOption'),
+      )).thenAnswer((invocation) => invocation.positionalArguments[0] as List<CustomList>);
 
       controller = ListsController.adaptive(
         mockAdaptiveService,
@@ -93,6 +102,9 @@ void main() {
     group('Chargement initial', () {
       test('Doit charger les listes via le service adaptatif', () async {
         // Arrange
+        clearInteractions(mockAdaptiveService);
+        clearInteractions(mockFilterService);
+
         when(mockAdaptiveService.getAllLists())
             .thenAnswer((_) async => [testList1, testList2]);
         when(mockAdaptiveService.getItemsByListId(testList1.id))
@@ -125,6 +137,8 @@ void main() {
 
       test('Doit gérer les erreurs de chargement', () async {
         // Arrange
+        clearInteractions(mockAdaptiveService);
+        clearInteractions(mockFilterService);
         when(mockAdaptiveService.getAllLists())
             .thenThrow(Exception('Erreur de connexion'));
 
@@ -141,6 +155,8 @@ void main() {
     group('Création de listes', () {
       test('Doit créer une liste via le service adaptatif', () async {
         // Arrange
+        clearInteractions(mockAdaptiveService);
+        clearInteractions(mockFilterService);
         when(mockAdaptiveService.saveList(testList1))
             .thenAnswer((_) async => {});
         when(mockAdaptiveService.getAllLists())
@@ -169,6 +185,8 @@ void main() {
 
       test('Doit gérer les erreurs de création', () async {
         // Arrange
+        clearInteractions(mockAdaptiveService);
+        clearInteractions(mockFilterService);
         when(mockAdaptiveService.saveList(testList1))
             .thenThrow(Exception('Erreur de sauvegarde'));
 
@@ -200,11 +218,13 @@ void main() {
         )).thenReturn([testList1]);
         
         await controller.loadLists();
-        clearInvocations(mockAdaptiveService);
+        clearInteractions(mockAdaptiveService);
       });
 
       test('Doit ajouter un item à une liste', () async {
         // Arrange
+        clearInteractions(mockAdaptiveService);
+        clearInteractions(mockFilterService);
         when(mockAdaptiveService.saveItem(testItem1))
             .thenAnswer((_) async => {});
         when(mockAdaptiveService.getAllLists())
@@ -227,6 +247,8 @@ void main() {
 
       test('Doit mettre à jour un item', () async {
         // Arrange - Ajouter d'abord un item
+        clearInteractions(mockAdaptiveService);
+        clearInteractions(mockFilterService);
         when(mockAdaptiveService.saveItem(testItem1))
             .thenAnswer((_) async => {});
         when(mockAdaptiveService.getAllLists())
@@ -255,6 +277,8 @@ void main() {
 
       test('Doit supprimer un item', () async {
         // Arrange - Ajouter d'abord un item
+        clearInteractions(mockAdaptiveService);
+        clearInteractions(mockFilterService);
         when(mockAdaptiveService.saveItem(testItem1))
             .thenAnswer((_) async => {});
         when(mockAdaptiveService.getAllLists())
@@ -265,6 +289,8 @@ void main() {
         await controller.addItemToList(testList1.id, testItem1);
         
         // Arrange - Préparer la suppression
+        clearInteractions(mockAdaptiveService);
+        clearInteractions(mockFilterService);
         when(mockAdaptiveService.deleteItem(testItem1.id))
             .thenAnswer((_) async => {});
 
@@ -299,11 +325,13 @@ void main() {
         )).thenReturn([testList1]);
         
         await controller.loadLists();
-        clearInvocations(mockAdaptiveService);
+        clearInteractions(mockAdaptiveService);
       });
 
       test('Doit ajouter plusieurs items d\'un coup', () async {
         // Arrange
+        clearInteractions(mockAdaptiveService);
+        clearInteractions(mockFilterService);
         final itemTitles = ['Item 1', 'Item 2', 'Item 3'];
         when(mockAdaptiveService.saveItem(any))
             .thenAnswer((_) async => {});
@@ -326,6 +354,8 @@ void main() {
 
       test('Doit faire un rollback en cas d\'erreur partielle', () async {
         // Arrange
+        clearInteractions(mockAdaptiveService);
+        clearInteractions(mockFilterService);
         final itemTitles = ['Item 1', 'Item 2', 'Item 3'];
         
         // Le deuxième item va échouer
@@ -355,6 +385,8 @@ void main() {
     group('Nettoyage complet', () {
       test('Doit effacer toutes les données', () async {
         // Arrange
+        clearInteractions(mockAdaptiveService);
+        clearInteractions(mockFilterService);
         when(mockAdaptiveService.getAllLists())
             .thenAnswer((_) async => [testList1, testList2]);
         when(mockAdaptiveService.getItemsByListId(testList1.id))
@@ -383,6 +415,8 @@ void main() {
     group('Rechargement forcé', () {
       test('Doit recharger depuis la persistance', () async {
         // Arrange
+        clearInteractions(mockAdaptiveService);
+        clearInteractions(mockFilterService);
         when(mockAdaptiveService.getAllLists())
             .thenAnswer((_) async => [testList1]);
         when(mockAdaptiveService.getItemsByListId(testList1.id))
@@ -412,6 +446,8 @@ void main() {
     group('États de chargement et d\'erreur', () {
       test('Doit gérer l\'état de chargement correctement', () async {
         // Arrange
+        clearInteractions(mockAdaptiveService);
+        clearInteractions(mockFilterService);
         when(mockAdaptiveService.getAllLists())
             .thenAnswer((_) async {
           // Simuler une opération lente
@@ -447,6 +483,8 @@ void main() {
 
       test('Doit pouvoir effacer les erreurs', () async {
         // Arrange - Provoquer une erreur
+        clearInteractions(mockAdaptiveService);
+        clearInteractions(mockFilterService);
         when(mockAdaptiveService.getAllLists())
             .thenThrow(Exception('Erreur test'));
         
