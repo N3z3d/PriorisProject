@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/widgets/common/forms/common_text_field.dart';
 
 void main() {
@@ -132,7 +133,7 @@ void main() {
         ),
       ));
       final labelText = tester.widget<Text>(find.text('Nom'));
-      expect(labelText.style?.color, const Color(0xFF0F172A)); // AppTheme.textPrimary
+      expect(labelText.style?.color, AppTheme.textPrimary);
     });
 
     testWidgets('affiche le SizedBox avec la bonne hauteur', (WidgetTester tester) async {

@@ -41,7 +41,7 @@ void main() {
       expect(find.byType(DropdownButtonFormField<HabitType>), findsOneWidget);
       expect(find.text('Nom *'), findsOneWidget);
       expect(find.text('Description'), findsOneWidget);
-      expect(find.text('Catégorie (optionnelle)'), findsOneWidget);
+      expect(find.text('Categorie (optionnelle)'), findsOneWidget); // No accent - matches source
       expect(find.text("Type d'habitude"), findsOneWidget);
 
       // Change type
