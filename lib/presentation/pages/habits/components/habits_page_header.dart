@@ -145,17 +145,7 @@ class HabitsPageHeader implements IHabitsPageHeader {
           ),
           child: TabBar(
             controller: tabController,
-            indicator: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
+            indicator: _buildTabIndicator(),
             indicatorPadding: const EdgeInsets.all(2),
             labelColor: const Color(0xFF1e293b),
             unselectedLabelColor: Colors.white.withOpacity(0.8),
@@ -180,6 +170,20 @@ class HabitsPageHeader implements IHabitsPageHeader {
           ),
         );
       },
+    );
+  }
+
+  BoxDecoration _buildTabIndicator() {
+    return BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(10),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          blurRadius: 8,
+          offset: const Offset(0, 2),
+        ),
+      ],
     );
   }
 }
