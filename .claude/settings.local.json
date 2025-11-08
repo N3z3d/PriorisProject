@@ -28,7 +28,8 @@
       "Bash(flutter gen-l10n:*)",
       "Bash(nc localhost 55879)",
       "Bash(grep:*)",
-      "Bash(powershell -Command:*)"
+      "Bash(powershell -Command:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []
