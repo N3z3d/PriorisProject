@@ -1,11 +1,21 @@
 ﻿# TODO priorisé — prochaine itération
 
-## 1. Suites critiques restantes
-- `test/regression/rls_delete_regression_test.dart` (const `DateTime.now()` + mocks Supabase manquants).
-- `test/tmp_adaptive_test.dart` (signature `deleteList` doit recevoir un `String` non nul).
-- `test/solid_compliance/clean_code_constraints_test.dart` (classe `advanced_cache_system.dart` > 500 lignes).
-- Tests widget/pages listes additionnels (`list_detail_page_*`, `lists_page_test`, etc.) pour couvrir les interactions hors toggle.
-- `test/architecture/controller_lifecycle_test.dart`, `duplicate_id_conflicts_test.dart`, `rls_permission_test.dart` (skips à retirer).
+## 1. Suites critiques restantes (08 nov · 14:00 — 149 rouges, 28 actifs)
+
+### P0 - Tests fonctionnels qui s'exécutent mais échouent (~28)
+- **`lists_controller_adaptive_test.dart`** (création/CRUD/items) : vérifier mocks repo cohérents, rollback idempotent.
+- **`operation_queue_test.dart`** (priority) : valider tri par priorité descendante.
+- **`url_state_service_test.dart`** (navigation) : resolve/fallback list ID.
+- **Tests intégration** : `supabase_connection_test`, `auth_flow_integration_test` (setup env mocké).
+- **Widgets** : `task_edit_workflow_test`, `accessible_loading_state_test`, `habit_progress_bar_test`.
+- **Repository** : `supabase_custom_list_repository_test` (JSON conversion).
+
+### P1 - Tests obsolètes (121 loading failures)
+- **63 fichiers** déplacés dans `test/_obsolete/` (README explicatif).
+- Besoin d'audit : rewrite vs delete définitif (dépend de la fonctionnalité toujours présente).
+
+### P2 - Skips TDD-RED intentionnels (~26)
+- `test/architecture/controller_lifecycle_test.dart`, `duplicate_id_conflicts_test.dart`, `rls_permission_test.dart` (futures features).
 
 ## 2. Campagne i18n Habits + dédup
 - Extraire les chaînes restantes (Habits modals/pages) vers `lib/l10n/app_fr.arb` et `app_en.arb`. Vérifier pluralisation.

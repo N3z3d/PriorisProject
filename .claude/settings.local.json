@@ -29,7 +29,8 @@
       "Bash(nc localhost 55879)",
       "Bash(grep:*)",
       "Bash(powershell -Command:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(flutter_test_full.log)"
     ],
     "deny": [],
     "ask": []
