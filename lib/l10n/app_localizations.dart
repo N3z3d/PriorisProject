@@ -1799,6 +1799,372 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unexpected error.\\nPlease try again later.'**
   String get habitsErrorUnexpected;
+
+  /// Title for the frequency selector section
+  ///
+  /// In en, this message translates to:
+  /// **'Frequency'**
+  String get habitFrequencySelectorTitle;
+
+  /// Title for Model A (n times per period)
+  ///
+  /// In en, this message translates to:
+  /// **'Set times per period'**
+  String get habitFrequencyModelATitle;
+
+  /// Description for Model A
+  ///
+  /// In en, this message translates to:
+  /// **'Example: 3 times per day, 5 times per week'**
+  String get habitFrequencyModelADescription;
+
+  /// Title for Model B (every X units)
+  ///
+  /// In en, this message translates to:
+  /// **'Set interval'**
+  String get habitFrequencyModelBTitle;
+
+  /// Description for Model B
+  ///
+  /// In en, this message translates to:
+  /// **'Example: every 2 days, every month'**
+  String get habitFrequencyModelBDescription;
+
+  /// Label for Model A parameter fields
+  ///
+  /// In en, this message translates to:
+  /// **'How many times?'**
+  String get habitFrequencyModelAFieldsLabel;
+
+  /// Label for Model B parameter fields
+  ///
+  /// In en, this message translates to:
+  /// **'How often?'**
+  String get habitFrequencyModelBFieldsLabel;
+
+  /// Label for number of times field
+  ///
+  /// In en, this message translates to:
+  /// **'Times'**
+  String get habitFrequencyTimesLabel;
+
+  /// Label for interval field
+  ///
+  /// In en, this message translates to:
+  /// **'Every'**
+  String get habitFrequencyIntervalLabel;
+
+  /// Label for period dropdown
+  ///
+  /// In en, this message translates to:
+  /// **'Period'**
+  String get habitFrequencyPeriodLabel;
+
+  /// Label for unit dropdown
+  ///
+  /// In en, this message translates to:
+  /// **'Unit'**
+  String get habitFrequencyUnitLabel;
+
+  /// Period option: hour
+  ///
+  /// In en, this message translates to:
+  /// **'hour'**
+  String get habitFrequencyPeriodHour;
+
+  /// Period option: day
+  ///
+  /// In en, this message translates to:
+  /// **'day'**
+  String get habitFrequencyPeriodDay;
+
+  /// Period option: week
+  ///
+  /// In en, this message translates to:
+  /// **'week'**
+  String get habitFrequencyPeriodWeek;
+
+  /// Period option: month
+  ///
+  /// In en, this message translates to:
+  /// **'month'**
+  String get habitFrequencyPeriodMonth;
+
+  /// Period option: year
+  ///
+  /// In en, this message translates to:
+  /// **'year'**
+  String get habitFrequencyPeriodYear;
+
+  /// Unit option: hours
+  ///
+  /// In en, this message translates to:
+  /// **'hours'**
+  String get habitFrequencyUnitHours;
+
+  /// Unit option: days
+  ///
+  /// In en, this message translates to:
+  /// **'days'**
+  String get habitFrequencyUnitDays;
+
+  /// Unit option: weeks
+  ///
+  /// In en, this message translates to:
+  /// **'weeks'**
+  String get habitFrequencyUnitWeeks;
+
+  /// Unit option: months
+  ///
+  /// In en, this message translates to:
+  /// **'months'**
+  String get habitFrequencyUnitMonths;
+
+  /// Unit option: quarters
+  ///
+  /// In en, this message translates to:
+  /// **'quarters'**
+  String get habitFrequencyUnitQuarters;
+
+  /// Unit option: years
+  ///
+  /// In en, this message translates to:
+  /// **'years'**
+  String get habitFrequencyUnitYears;
+
+  /// Label for day filter section
+  ///
+  /// In en, this message translates to:
+  /// **'Day filter (optional)'**
+  String get habitFrequencyDayFilterLabel;
+
+  /// Day filter option: all days
+  ///
+  /// In en, this message translates to:
+  /// **'All days'**
+  String get habitFrequencyDayFilterAllDays;
+
+  /// Day filter option: weekdays
+  ///
+  /// In en, this message translates to:
+  /// **'Weekdays only'**
+  String get habitFrequencyDayFilterWeekdays;
+
+  /// Day filter option: weekends
+  ///
+  /// In en, this message translates to:
+  /// **'Weekends only'**
+  String get habitFrequencyDayFilterWeekends;
+
+  /// Summary for times per hour
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one {{count} time per hour} other {{count} times per hour}}'**
+  String habitFrequencyTimesPerHour(num count);
+
+  /// Summary for times per day
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one {{count} time per day} other {{count} times per day}}'**
+  String habitFrequencyTimesPerDay(num count);
+
+  /// Summary for times per week
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one {{count} time per week} other {{count} times per week}}'**
+  String habitFrequencyTimesPerWeek(num count);
+
+  /// Summary for times per month
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one {{count} time per month} other {{count} times per month}}'**
+  String habitFrequencyTimesPerMonth(num count);
+
+  /// Summary for times per year
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one {{count} time per year} other {{count} times per year}}'**
+  String habitFrequencyTimesPerYear(num count);
+
+  /// Summary for every X hours
+  ///
+  /// In en, this message translates to:
+  /// **'{interval, plural, one {every hour} other {every {interval} hours}}'**
+  String habitFrequencyEveryHours(num interval);
+
+  /// Summary for every X days
+  ///
+  /// In en, this message translates to:
+  /// **'{interval, plural, one {daily} other {every {interval} days}}'**
+  String habitFrequencyEveryDays(num interval);
+
+  /// Summary for every X weeks
+  ///
+  /// In en, this message translates to:
+  /// **'{interval, plural, one {weekly} other {every {interval} weeks}}'**
+  String habitFrequencyEveryWeeks(num interval);
+
+  /// Summary for every X months
+  ///
+  /// In en, this message translates to:
+  /// **'{interval, plural, one {monthly} other {every {interval} months}}'**
+  String habitFrequencyEveryMonths(num interval);
+
+  /// Summary for every X quarters
+  ///
+  /// In en, this message translates to:
+  /// **'{interval, plural, one {quarterly} other {every {interval} quarters}}'**
+  String habitFrequencyEveryQuarters(num interval);
+
+  /// Summary for every X years
+  ///
+  /// In en, this message translates to:
+  /// **'{interval, plural, one {yearly} other {every {interval} years}}'**
+  String habitFrequencyEveryYears(num interval);
+
+  /// Summary for weekdays filter
+  ///
+  /// In en, this message translates to:
+  /// **'Weekdays only (Mon-Fri)'**
+  String get habitFrequencyWeekdaysOnly;
+
+  /// Summary for weekends filter
+  ///
+  /// In en, this message translates to:
+  /// **'Weekends only (Sat-Sun)'**
+  String get habitFrequencyWeekendsOnly;
+
+  /// Summary for specific weekdays
+  ///
+  /// In en, this message translates to:
+  /// **'On: {days}'**
+  String habitFrequencySpecificDays(Object days);
+
+  /// Summary for monthly on specific day
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly on day {day}'**
+  String habitFrequencyMonthlyOnDay(Object day);
+
+  /// Summary for yearly on specific date
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly on {month} {day}'**
+  String habitFrequencyYearlyOnDate(Object day, Object month);
+
+  /// Abbreviated Monday
+  ///
+  /// In en, this message translates to:
+  /// **'Mon'**
+  String get habitWeekdayMonday;
+
+  /// Abbreviated Tuesday
+  ///
+  /// In en, this message translates to:
+  /// **'Tue'**
+  String get habitWeekdayTuesday;
+
+  /// Abbreviated Wednesday
+  ///
+  /// In en, this message translates to:
+  /// **'Wed'**
+  String get habitWeekdayWednesday;
+
+  /// Abbreviated Thursday
+  ///
+  /// In en, this message translates to:
+  /// **'Thu'**
+  String get habitWeekdayThursday;
+
+  /// Abbreviated Friday
+  ///
+  /// In en, this message translates to:
+  /// **'Fri'**
+  String get habitWeekdayFriday;
+
+  /// Abbreviated Saturday
+  ///
+  /// In en, this message translates to:
+  /// **'Sat'**
+  String get habitWeekdaySaturday;
+
+  /// Abbreviated Sunday
+  ///
+  /// In en, this message translates to:
+  /// **'Sun'**
+  String get habitWeekdaySunday;
+
+  /// Month name: January
+  ///
+  /// In en, this message translates to:
+  /// **'January'**
+  String get habitMonthJanuary;
+
+  /// Month name: February
+  ///
+  /// In en, this message translates to:
+  /// **'February'**
+  String get habitMonthFebruary;
+
+  /// Month name: March
+  ///
+  /// In en, this message translates to:
+  /// **'March'**
+  String get habitMonthMarch;
+
+  /// Month name: April
+  ///
+  /// In en, this message translates to:
+  /// **'April'**
+  String get habitMonthApril;
+
+  /// Month name: May
+  ///
+  /// In en, this message translates to:
+  /// **'May'**
+  String get habitMonthMay;
+
+  /// Month name: June
+  ///
+  /// In en, this message translates to:
+  /// **'June'**
+  String get habitMonthJune;
+
+  /// Month name: July
+  ///
+  /// In en, this message translates to:
+  /// **'July'**
+  String get habitMonthJuly;
+
+  /// Month name: August
+  ///
+  /// In en, this message translates to:
+  /// **'August'**
+  String get habitMonthAugust;
+
+  /// Month name: September
+  ///
+  /// In en, this message translates to:
+  /// **'September'**
+  String get habitMonthSeptember;
+
+  /// Month name: October
+  ///
+  /// In en, this message translates to:
+  /// **'October'**
+  String get habitMonthOctober;
+
+  /// Month name: November
+  ///
+  /// In en, this message translates to:
+  /// **'November'**
+  String get habitMonthNovember;
+
+  /// Month name: December
+  ///
+  /// In en, this message translates to:
+  /// **'December'**
+  String get habitMonthDecember;
 }
 
 class _AppLocalizationsDelegate

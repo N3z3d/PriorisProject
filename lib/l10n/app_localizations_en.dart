@@ -906,4 +906,283 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get habitsErrorUnexpected =>
       'Unexpected error.\\nPlease try again later.';
+
+  @override
+  String get habitFrequencySelectorTitle => 'Frequency';
+
+  @override
+  String get habitFrequencyModelATitle => 'Set times per period';
+
+  @override
+  String get habitFrequencyModelADescription =>
+      'Example: 3 times per day, 5 times per week';
+
+  @override
+  String get habitFrequencyModelBTitle => 'Set interval';
+
+  @override
+  String get habitFrequencyModelBDescription =>
+      'Example: every 2 days, every month';
+
+  @override
+  String get habitFrequencyModelAFieldsLabel => 'How many times?';
+
+  @override
+  String get habitFrequencyModelBFieldsLabel => 'How often?';
+
+  @override
+  String get habitFrequencyTimesLabel => 'Times';
+
+  @override
+  String get habitFrequencyIntervalLabel => 'Every';
+
+  @override
+  String get habitFrequencyPeriodLabel => 'Period';
+
+  @override
+  String get habitFrequencyUnitLabel => 'Unit';
+
+  @override
+  String get habitFrequencyPeriodHour => 'hour';
+
+  @override
+  String get habitFrequencyPeriodDay => 'day';
+
+  @override
+  String get habitFrequencyPeriodWeek => 'week';
+
+  @override
+  String get habitFrequencyPeriodMonth => 'month';
+
+  @override
+  String get habitFrequencyPeriodYear => 'year';
+
+  @override
+  String get habitFrequencyUnitHours => 'hours';
+
+  @override
+  String get habitFrequencyUnitDays => 'days';
+
+  @override
+  String get habitFrequencyUnitWeeks => 'weeks';
+
+  @override
+  String get habitFrequencyUnitMonths => 'months';
+
+  @override
+  String get habitFrequencyUnitQuarters => 'quarters';
+
+  @override
+  String get habitFrequencyUnitYears => 'years';
+
+  @override
+  String get habitFrequencyDayFilterLabel => 'Day filter (optional)';
+
+  @override
+  String get habitFrequencyDayFilterAllDays => 'All days';
+
+  @override
+  String get habitFrequencyDayFilterWeekdays => 'Weekdays only';
+
+  @override
+  String get habitFrequencyDayFilterWeekends => 'Weekends only';
+
+  @override
+  String habitFrequencyTimesPerHour(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count times per hour',
+      one: '$count time per hour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String habitFrequencyTimesPerDay(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count times per day',
+      one: '$count time per day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String habitFrequencyTimesPerWeek(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count times per week',
+      one: '$count time per week',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String habitFrequencyTimesPerMonth(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count times per month',
+      one: '$count time per month',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String habitFrequencyTimesPerYear(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count times per year',
+      one: '$count time per year',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String habitFrequencyEveryHours(num interval) {
+    String _temp0 = intl.Intl.pluralLogic(
+      interval,
+      locale: localeName,
+      other: 'every $interval hours',
+      one: 'every hour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String habitFrequencyEveryDays(num interval) {
+    String _temp0 = intl.Intl.pluralLogic(
+      interval,
+      locale: localeName,
+      other: 'every $interval days',
+      one: 'daily',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String habitFrequencyEveryWeeks(num interval) {
+    String _temp0 = intl.Intl.pluralLogic(
+      interval,
+      locale: localeName,
+      other: 'every $interval weeks',
+      one: 'weekly',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String habitFrequencyEveryMonths(num interval) {
+    String _temp0 = intl.Intl.pluralLogic(
+      interval,
+      locale: localeName,
+      other: 'every $interval months',
+      one: 'monthly',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String habitFrequencyEveryQuarters(num interval) {
+    String _temp0 = intl.Intl.pluralLogic(
+      interval,
+      locale: localeName,
+      other: 'every $interval quarters',
+      one: 'quarterly',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String habitFrequencyEveryYears(num interval) {
+    String _temp0 = intl.Intl.pluralLogic(
+      interval,
+      locale: localeName,
+      other: 'every $interval years',
+      one: 'yearly',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get habitFrequencyWeekdaysOnly => 'Weekdays only (Mon-Fri)';
+
+  @override
+  String get habitFrequencyWeekendsOnly => 'Weekends only (Sat-Sun)';
+
+  @override
+  String habitFrequencySpecificDays(Object days) {
+    return 'On: $days';
+  }
+
+  @override
+  String habitFrequencyMonthlyOnDay(Object day) {
+    return 'Monthly on day $day';
+  }
+
+  @override
+  String habitFrequencyYearlyOnDate(Object day, Object month) {
+    return 'Yearly on $month $day';
+  }
+
+  @override
+  String get habitWeekdayMonday => 'Mon';
+
+  @override
+  String get habitWeekdayTuesday => 'Tue';
+
+  @override
+  String get habitWeekdayWednesday => 'Wed';
+
+  @override
+  String get habitWeekdayThursday => 'Thu';
+
+  @override
+  String get habitWeekdayFriday => 'Fri';
+
+  @override
+  String get habitWeekdaySaturday => 'Sat';
+
+  @override
+  String get habitWeekdaySunday => 'Sun';
+
+  @override
+  String get habitMonthJanuary => 'January';
+
+  @override
+  String get habitMonthFebruary => 'February';
+
+  @override
+  String get habitMonthMarch => 'March';
+
+  @override
+  String get habitMonthApril => 'April';
+
+  @override
+  String get habitMonthMay => 'May';
+
+  @override
+  String get habitMonthJune => 'June';
+
+  @override
+  String get habitMonthJuly => 'July';
+
+  @override
+  String get habitMonthAugust => 'August';
+
+  @override
+  String get habitMonthSeptember => 'September';
+
+  @override
+  String get habitMonthOctober => 'October';
+
+  @override
+  String get habitMonthNovember => 'November';
+
+  @override
+  String get habitMonthDecember => 'December';
 }

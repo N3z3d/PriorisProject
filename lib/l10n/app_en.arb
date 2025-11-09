@@ -1119,5 +1119,292 @@
   "habitsErrorUnexpected": "Unexpected error.\\nPlease try again later.",
   "@habitsErrorUnexpected": {
     "description": "Fallback error message for unknown issues"
+  },
+  "habitFrequencySelectorTitle": "Frequency",
+  "@habitFrequencySelectorTitle": {
+    "description": "Title for the frequency selector section"
+  },
+  "habitFrequencyModelATitle": "Set times per period",
+  "@habitFrequencyModelATitle": {
+    "description": "Title for Model A (n times per period)"
+  },
+  "habitFrequencyModelADescription": "Example: 3 times per day, 5 times per week",
+  "@habitFrequencyModelADescription": {
+    "description": "Description for Model A"
+  },
+  "habitFrequencyModelBTitle": "Set interval",
+  "@habitFrequencyModelBTitle": {
+    "description": "Title for Model B (every X units)"
+  },
+  "habitFrequencyModelBDescription": "Example: every 2 days, every month",
+  "@habitFrequencyModelBDescription": {
+    "description": "Description for Model B"
+  },
+  "habitFrequencyModelAFieldsLabel": "How many times?",
+  "@habitFrequencyModelAFieldsLabel": {
+    "description": "Label for Model A parameter fields"
+  },
+  "habitFrequencyModelBFieldsLabel": "How often?",
+  "@habitFrequencyModelBFieldsLabel": {
+    "description": "Label for Model B parameter fields"
+  },
+  "habitFrequencyTimesLabel": "Times",
+  "@habitFrequencyTimesLabel": {
+    "description": "Label for number of times field"
+  },
+  "habitFrequencyIntervalLabel": "Every",
+  "@habitFrequencyIntervalLabel": {
+    "description": "Label for interval field"
+  },
+  "habitFrequencyPeriodLabel": "Period",
+  "@habitFrequencyPeriodLabel": {
+    "description": "Label for period dropdown"
+  },
+  "habitFrequencyUnitLabel": "Unit",
+  "@habitFrequencyUnitLabel": {
+    "description": "Label for unit dropdown"
+  },
+  "habitFrequencyPeriodHour": "hour",
+  "@habitFrequencyPeriodHour": {
+    "description": "Period option: hour"
+  },
+  "habitFrequencyPeriodDay": "day",
+  "@habitFrequencyPeriodDay": {
+    "description": "Period option: day"
+  },
+  "habitFrequencyPeriodWeek": "week",
+  "@habitFrequencyPeriodWeek": {
+    "description": "Period option: week"
+  },
+  "habitFrequencyPeriodMonth": "month",
+  "@habitFrequencyPeriodMonth": {
+    "description": "Period option: month"
+  },
+  "habitFrequencyPeriodYear": "year",
+  "@habitFrequencyPeriodYear": {
+    "description": "Period option: year"
+  },
+  "habitFrequencyUnitHours": "hours",
+  "@habitFrequencyUnitHours": {
+    "description": "Unit option: hours"
+  },
+  "habitFrequencyUnitDays": "days",
+  "@habitFrequencyUnitDays": {
+    "description": "Unit option: days"
+  },
+  "habitFrequencyUnitWeeks": "weeks",
+  "@habitFrequencyUnitWeeks": {
+    "description": "Unit option: weeks"
+  },
+  "habitFrequencyUnitMonths": "months",
+  "@habitFrequencyUnitMonths": {
+    "description": "Unit option: months"
+  },
+  "habitFrequencyUnitQuarters": "quarters",
+  "@habitFrequencyUnitQuarters": {
+    "description": "Unit option: quarters"
+  },
+  "habitFrequencyUnitYears": "years",
+  "@habitFrequencyUnitYears": {
+    "description": "Unit option: years"
+  },
+  "habitFrequencyDayFilterLabel": "Day filter (optional)",
+  "@habitFrequencyDayFilterLabel": {
+    "description": "Label for day filter section"
+  },
+  "habitFrequencyDayFilterAllDays": "All days",
+  "@habitFrequencyDayFilterAllDays": {
+    "description": "Day filter option: all days"
+  },
+  "habitFrequencyDayFilterWeekdays": "Weekdays only",
+  "@habitFrequencyDayFilterWeekdays": {
+    "description": "Day filter option: weekdays"
+  },
+  "habitFrequencyDayFilterWeekends": "Weekends only",
+  "@habitFrequencyDayFilterWeekends": {
+    "description": "Day filter option: weekends"
+  },
+  "habitFrequencyTimesPerHour": "{count, plural, one {{count} time per hour} other {{count} times per hour}}",
+  "@habitFrequencyTimesPerHour": {
+    "description": "Summary for times per hour",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "habitFrequencyTimesPerDay": "{count, plural, one {{count} time per day} other {{count} times per day}}",
+  "@habitFrequencyTimesPerDay": {
+    "description": "Summary for times per day",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "habitFrequencyTimesPerWeek": "{count, plural, one {{count} time per week} other {{count} times per week}}",
+  "@habitFrequencyTimesPerWeek": {
+    "description": "Summary for times per week",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "habitFrequencyTimesPerMonth": "{count, plural, one {{count} time per month} other {{count} times per month}}",
+  "@habitFrequencyTimesPerMonth": {
+    "description": "Summary for times per month",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "habitFrequencyTimesPerYear": "{count, plural, one {{count} time per year} other {{count} times per year}}",
+  "@habitFrequencyTimesPerYear": {
+    "description": "Summary for times per year",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "habitFrequencyEveryHours": "{interval, plural, one {every hour} other {every {interval} hours}}",
+  "@habitFrequencyEveryHours": {
+    "description": "Summary for every X hours",
+    "placeholders": {
+      "interval": {}
+    }
+  },
+  "habitFrequencyEveryDays": "{interval, plural, one {daily} other {every {interval} days}}",
+  "@habitFrequencyEveryDays": {
+    "description": "Summary for every X days",
+    "placeholders": {
+      "interval": {}
+    }
+  },
+  "habitFrequencyEveryWeeks": "{interval, plural, one {weekly} other {every {interval} weeks}}",
+  "@habitFrequencyEveryWeeks": {
+    "description": "Summary for every X weeks",
+    "placeholders": {
+      "interval": {}
+    }
+  },
+  "habitFrequencyEveryMonths": "{interval, plural, one {monthly} other {every {interval} months}}",
+  "@habitFrequencyEveryMonths": {
+    "description": "Summary for every X months",
+    "placeholders": {
+      "interval": {}
+    }
+  },
+  "habitFrequencyEveryQuarters": "{interval, plural, one {quarterly} other {every {interval} quarters}}",
+  "@habitFrequencyEveryQuarters": {
+    "description": "Summary for every X quarters",
+    "placeholders": {
+      "interval": {}
+    }
+  },
+  "habitFrequencyEveryYears": "{interval, plural, one {yearly} other {every {interval} years}}",
+  "@habitFrequencyEveryYears": {
+    "description": "Summary for every X years",
+    "placeholders": {
+      "interval": {}
+    }
+  },
+  "habitFrequencyWeekdaysOnly": "Weekdays only (Mon-Fri)",
+  "@habitFrequencyWeekdaysOnly": {
+    "description": "Summary for weekdays filter"
+  },
+  "habitFrequencyWeekendsOnly": "Weekends only (Sat-Sun)",
+  "@habitFrequencyWeekendsOnly": {
+    "description": "Summary for weekends filter"
+  },
+  "habitFrequencySpecificDays": "On: {days}",
+  "@habitFrequencySpecificDays": {
+    "description": "Summary for specific weekdays",
+    "placeholders": {
+      "days": {}
+    }
+  },
+  "habitFrequencyMonthlyOnDay": "Monthly on day {day}",
+  "@habitFrequencyMonthlyOnDay": {
+    "description": "Summary for monthly on specific day",
+    "placeholders": {
+      "day": {}
+    }
+  },
+  "habitFrequencyYearlyOnDate": "Yearly on {month} {day}",
+  "@habitFrequencyYearlyOnDate": {
+    "description": "Summary for yearly on specific date",
+    "placeholders": {
+      "day": {},
+      "month": {}
+    }
+  },
+  "habitWeekdayMonday": "Mon",
+  "@habitWeekdayMonday": {
+    "description": "Abbreviated Monday"
+  },
+  "habitWeekdayTuesday": "Tue",
+  "@habitWeekdayTuesday": {
+    "description": "Abbreviated Tuesday"
+  },
+  "habitWeekdayWednesday": "Wed",
+  "@habitWeekdayWednesday": {
+    "description": "Abbreviated Wednesday"
+  },
+  "habitWeekdayThursday": "Thu",
+  "@habitWeekdayThursday": {
+    "description": "Abbreviated Thursday"
+  },
+  "habitWeekdayFriday": "Fri",
+  "@habitWeekdayFriday": {
+    "description": "Abbreviated Friday"
+  },
+  "habitWeekdaySaturday": "Sat",
+  "@habitWeekdaySaturday": {
+    "description": "Abbreviated Saturday"
+  },
+  "habitWeekdaySunday": "Sun",
+  "@habitWeekdaySunday": {
+    "description": "Abbreviated Sunday"
+  },
+  "habitMonthJanuary": "January",
+  "@habitMonthJanuary": {
+    "description": "Month name: January"
+  },
+  "habitMonthFebruary": "February",
+  "@habitMonthFebruary": {
+    "description": "Month name: February"
+  },
+  "habitMonthMarch": "March",
+  "@habitMonthMarch": {
+    "description": "Month name: March"
+  },
+  "habitMonthApril": "April",
+  "@habitMonthApril": {
+    "description": "Month name: April"
+  },
+  "habitMonthMay": "May",
+  "@habitMonthMay": {
+    "description": "Month name: May"
+  },
+  "habitMonthJune": "June",
+  "@habitMonthJune": {
+    "description": "Month name: June"
+  },
+  "habitMonthJuly": "July",
+  "@habitMonthJuly": {
+    "description": "Month name: July"
+  },
+  "habitMonthAugust": "August",
+  "@habitMonthAugust": {
+    "description": "Month name: August"
+  },
+  "habitMonthSeptember": "September",
+  "@habitMonthSeptember": {
+    "description": "Month name: September"
+  },
+  "habitMonthOctober": "October",
+  "@habitMonthOctober": {
+    "description": "Month name: October"
+  },
+  "habitMonthNovember": "November",
+  "@habitMonthNovember": {
+    "description": "Month name: November"
+  },
+  "habitMonthDecember": "December",
+  "@habitMonthDecember": {
+    "description": "Month name: December"
   }
 }
