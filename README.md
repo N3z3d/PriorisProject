@@ -4,8 +4,10 @@
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.22.0+-blue.svg)](https://flutter.dev/)
 [![Dart](https://img.shields.io/badge/Dart-3.4.0+-blue.svg)](https://dart.dev/)
+[![Version](https://img.shields.io/badge/Version-1.1.0-blue.svg)](CHANGELOG.md)
 [![Quality](https://img.shields.io/badge/Code%20Quality-9.8/10-brightgreen.svg)](https://dart.dev/tools/linter)
-[![Tests](https://img.shields.io/badge/Tests-427%20Passing-green.svg)](https://flutter.dev/docs/testing)
+[![Tests](https://img.shields.io/badge/Tests-1715/1801%20(95.2%25)-brightgreen.svg)](docs/STATUS_RELEASE.md)
+[![P0 Tests](https://img.shields.io/badge/P0%20Critical-194/194%20(100%25)-success.svg)](docs/STATUS_RELEASE.md)
 [![Clean Code](https://img.shields.io/badge/Clean%20Code-100%25-brightgreen.svg)](#clean-code-status)
 
 ## ✨ Fonctionnalités Principales
