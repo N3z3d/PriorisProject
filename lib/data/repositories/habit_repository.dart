@@ -1,5 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
+import 'package:prioris/data/repositories/supabase/supabase_habit_repository.dart';
+import 'package:prioris/infrastructure/services/auth_service.dart';
+import 'package:prioris/infrastructure/services/supabase_service.dart';
 
 /// Repository abstrait pour la gestion des habitudes
 abstract class HabitRepository {
@@ -71,8 +74,12 @@ class InMemoryHabitRepository implements HabitRepository {
 }
 
 /// Provider pour le repository des habitudes
+/// Now uses Supabase for cloud persistence with multi-user support
 final habitRepositoryProvider = Provider<HabitRepository>((ref) {
-  return InMemoryHabitRepository();
+  return SupabaseHabitRepository(
+    supabaseService: SupabaseService.instance,
+    authService: AuthService.instance,
+  );
 });
 
 /// Provider pour toutes les habitudes

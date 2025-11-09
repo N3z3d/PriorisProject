@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
+import 'package:prioris/infrastructure/services/auth_service.dart';
 import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/pages/habits/services/habit_category_service.dart';
 import 'package:prioris/presentation/pages/habits/widgets/components/export.dart';
@@ -16,6 +17,7 @@ class HabitFormWidget extends StatefulWidget {
     required this.availableCategories,
     this.initialHabit,
     this.categoryService = const HabitCategoryService(),
+    this.authService,
     this.validationErrorColor = Colors.red,
   });
 
@@ -23,6 +25,7 @@ class HabitFormWidget extends StatefulWidget {
   final List<String> availableCategories;
   final void Function(Habit) onSubmit;
   final HabitCategoryService categoryService;
+  final AuthService? authService;
   final Color validationErrorColor;
 
   @override
@@ -338,6 +341,10 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
       return;
     }
 
+    // Get current user info for multi-user support
+    final authService = widget.authService ?? AuthService.instance;
+    final currentUser = authService.currentUser;
+
     final habit = Habit(
       id: widget.initialHabit?.id ?? const Uuid().v4(),
       name: name,
@@ -349,6 +356,9 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
           ? _unit.trim()
           : null,
       createdAt: widget.initialHabit?.createdAt ?? DateTime.now(),
+      // Critical: Set user_id and user_email for multi-user persistence
+      userId: currentUser?.id ?? widget.initialHabit?.userId,
+      userEmail: currentUser?.email ?? widget.initialHabit?.userEmail,
     );
 
     widget.onSubmit(habit);

@@ -112,6 +112,13 @@ class Habit extends HiveObject {
   @HiveField(20)
   int? currentStreak; // Streak actuel calculé
 
+  // User association fields for multi-user support
+  @HiveField(21)
+  String? userId; // Supabase user ID
+
+  @HiveField(22)
+  String? userEmail; // User email for reference
+
   Habit({
     String? id,
     required this.name,
@@ -132,8 +139,10 @@ class Habit extends HiveObject {
     this.yearlyDay,
     this.hourlyInterval,
     this.color = 0xFF2196F3, // Bleu par défaut
-    this.icon = 0xe5ca, // Icons.check_circle par défaut  
+    this.icon = 0xe5ca, // Icons.check_circle par défaut
     this.currentStreak = 0, // Pas de streak initial
+    this.userId,
+    this.userEmail,
   }) : id = id ?? const Uuid().v4(),
        createdAt = createdAt ?? DateTime.now(),
        completions = completions ?? {};
@@ -248,6 +257,8 @@ class Habit extends HiveObject {
     int? color,
     int? icon,
     int? currentStreak,
+    String? userId,
+    String? userEmail,
   }) {
     return Habit(
       id: id,
@@ -271,6 +282,8 @@ class Habit extends HiveObject {
       color: color ?? this.color,
       icon: icon ?? this.icon,
       currentStreak: currentStreak ?? this.currentStreak,
+      userId: userId ?? this.userId,
+      userEmail: userEmail ?? this.userEmail,
     );
   }
 
@@ -279,8 +292,73 @@ class Habit extends HiveObject {
   IconData get habitIcon => icon != null ? const IconData(0xe5ca, fontFamily: 'MaterialIcons') : const IconData(0xe5ca, fontFamily: 'MaterialIcons');
   int get habitCurrentStreak => currentStreak ?? 0;
 
+  // JSON Serialization for Supabase
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'type': type.name,
+      'category': category,
+      'target_value': targetValue,
+      'unit': unit,
+      'created_at': createdAt.toIso8601String(),
+      'completions': completions,
+      'recurrence_type': recurrenceType?.name,
+      'interval_days': intervalDays,
+      'weekdays': weekdays,
+      'times_target': timesTarget,
+      'monthly_day': monthlyDay,
+      'quarter_month': quarterMonth,
+      'yearly_month': yearlyMonth,
+      'yearly_day': yearlyDay,
+      'hourly_interval': hourlyInterval,
+      'color': color,
+      'icon': icon,
+      'current_streak': currentStreak,
+      'user_id': userId,
+      'user_email': userEmail,
+    };
+  }
+
+  factory Habit.fromJson(Map<String, dynamic> json) {
+    return Habit(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      description: json['description'] as String?,
+      type: HabitType.values.firstWhere(
+        (e) => e.name == json['type'],
+        orElse: () => HabitType.binary,
+      ),
+      category: json['category'] as String?,
+      targetValue: json['target_value'] as double?,
+      unit: json['unit'] as String?,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      completions: Map<String, dynamic>.from(json['completions'] as Map? ?? {}),
+      recurrenceType: json['recurrence_type'] != null
+          ? RecurrenceType.values.firstWhere(
+              (e) => e.name == json['recurrence_type'],
+              orElse: () => RecurrenceType.dailyInterval,
+            )
+          : null,
+      intervalDays: json['interval_days'] as int?,
+      weekdays: (json['weekdays'] as List?)?.cast<int>(),
+      timesTarget: json['times_target'] as int?,
+      monthlyDay: json['monthly_day'] as int?,
+      quarterMonth: json['quarter_month'] as int?,
+      yearlyMonth: json['yearly_month'] as int?,
+      yearlyDay: json['yearly_day'] as int?,
+      hourlyInterval: json['hourly_interval'] as int?,
+      color: json['color'] as int?,
+      icon: json['icon'] as int?,
+      currentStreak: json['current_streak'] as int?,
+      userId: json['user_id'] as String?,
+      userEmail: json['user_email'] as String?,
+    );
+  }
+
   @override
   String toString() {
     return 'Habit(id: $id, name: $name, type: $type)';
   }
-} 
+}

@@ -51,7 +51,7 @@ class HabitsListView implements IHabitsListView {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildEmptyStateconst Icon(),
+                _buildEmptyStateIcon(),
                 const SizedBox(height: 24),
                 _buildEmptyStateText(l10n),
                 const SizedBox(height: 32),
@@ -65,7 +65,7 @@ class HabitsListView implements IHabitsListView {
   }
 
   /// Builds the empty state icon with gradient background
-  Widget _buildEmptyStateconst Icon() {
+  Widget _buildEmptyStateIcon() {
     return Container(
       width: 120,
       height: 120,
@@ -176,7 +176,7 @@ class HabitsListView implements IHabitsListView {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildErrorStateconst Icon(),
+                _buildErrorStateIcon(),
                 const SizedBox(height: 24),
                 _buildErrorStateText(l10n, error),
                 const SizedBox(height: 32),
@@ -190,7 +190,7 @@ class HabitsListView implements IHabitsListView {
   }
 
   /// Builds the error state icon with gradient background
-  Widget _buildErrorStateconst Icon() {
+  Widget _buildErrorStateIcon() {
     return Container(
       width: 120,
       height: 120,
