@@ -88,13 +88,14 @@ void main() {
         ),
       );
 
-      // Assert - tous les switches doivent être activés (mode par défaut)
-      final switches = find.byType(Switch);
-      expect(switches, findsNWidgets(2));
-      
+      // Assert - tous les checkboxes doivent être cochés (mode par défaut)
+      // Widget uses Checkbox now, not Switch
+      final checkboxes = find.byType(Checkbox);
+      expect(checkboxes, findsNWidgets(2));
+
       for (int i = 0; i < 2; i++) {
-        final switchWidget = tester.widget<Switch>(switches.at(i));
-        expect(switchWidget.value, isTrue);
+        final checkboxWidget = tester.widget<Checkbox>(checkboxes.at(i));
+        expect(checkboxWidget.value, isTrue);
       }
     });
 
@@ -121,15 +122,16 @@ void main() {
         ),
       );
 
-      // Trouver et taper sur un switch
-      final switches = find.byType(Switch);
-      expect(switches, findsAtLeastNWidgets(1));
-      
-      await tester.tap(switches.first);
+      // Trouver et taper sur un checkbox
+      // Widget uses Checkbox now, not Switch
+      final checkboxes = find.byType(Checkbox);
+      expect(checkboxes, findsAtLeastNWidgets(1));
+
+      await tester.tap(checkboxes.first);
       await tester.pumpAndSettle();
 
       // Assert - l'UI doit répondre sans erreur
-      expect(find.byType(Switch), findsAtLeastNWidgets(1));
+      expect(find.byType(Checkbox), findsAtLeastNWidgets(1));
     });
   });
 }

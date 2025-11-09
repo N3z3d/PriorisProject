@@ -163,11 +163,11 @@ void main() {
       expect(find.text('Item Existant'), findsOneWidget);
       expect(find.text('Description existante'), findsOneWidget);
       expect(find.text('Catégorie existante'), findsOneWidget);
-      expect(find.text('Enregistrer'), findsOneWidget);
+      expect(find.text('Modifier'), findsOneWidget); // Button text in edit mode
 
       // Act - Modifier le titre
       await tester.enterText(find.byType(TextFormField).at(0), 'Item Modifié');
-      await tester.tap(find.text('Enregistrer'));
+      await tester.tap(find.text('Modifier')); // Matches widget button text
       await tester.pumpAndSettle();
 
       // Assert
