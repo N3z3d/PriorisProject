@@ -30,7 +30,8 @@
       "Bash(grep:*)",
       "Bash(powershell -Command:*)",
       "Bash(cat:*)",
-      "Bash(flutter_test_full.log)"
+      "Bash(flutter_test_full.log)",
+      "Bash(timeout 120 flutter test:*)"
     ],
     "deny": [],
     "ask": []

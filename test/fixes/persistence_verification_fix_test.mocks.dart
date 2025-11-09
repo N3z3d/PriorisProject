@@ -70,6 +70,16 @@ class MockCustomListRepository extends _i1.Mock
   }
 
   @override
+  _i5.Future<Map<String, dynamic>> getStats() => (super.noSuchMethod(
+        Invocation.method(
+          #getStats,
+          [],
+        ),
+        returnValue:
+            _i5.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i5.Future<Map<String, dynamic>>);
+
+  @override
   _i5.Future<List<_i6.CustomList>> getAll() => (super.noSuchMethod(
         Invocation.method(
           #getAll,

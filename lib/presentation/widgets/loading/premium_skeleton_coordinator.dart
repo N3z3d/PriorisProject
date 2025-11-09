@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:prioris/presentation/widgets/loading/interfaces/skeleton_system_interface.dart';
+import 'package:prioris/presentation/widgets/loading/premium_skeleton_manager.dart';
 import 'package:prioris/presentation/widgets/loading/systems/card_skeleton_system.dart';
-import 'package:prioris/presentation/widgets/loading/systems/list_skeleton_system.dart';
+import 'package:prioris/presentation/widgets/loading/systems/complex_layout_skeleton_system.dart';
 import 'package:prioris/presentation/widgets/loading/systems/form_skeleton_system.dart';
 import 'package:prioris/presentation/widgets/loading/systems/grid_skeleton_system.dart';
-import 'package:prioris/presentation/widgets/loading/systems/complex_layout_skeleton_system.dart';
+import 'package:prioris/presentation/widgets/loading/systems/list_skeleton_system.dart';
 
 /// Premium skeleton coordinator - Main coordinator following SOLID principles
 /// Single Responsibility: Coordinate skeleton system selection and creation

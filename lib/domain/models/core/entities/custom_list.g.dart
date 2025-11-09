@@ -24,10 +24,9 @@ class CustomListAdapter extends TypeAdapter<CustomList> {
       items: (fields[4] as List).cast<ListItem>(),
       createdAt: fields[5] as DateTime,
       updatedAt: fields[6] as DateTime,
-      color: (fields[7] as int?) ?? CustomList._defaultColorValue,
-      iconCodePoint:
-          (fields[8] as int?) ?? CustomList._defaultIconCodePoint,
-      isDeleted: fields[9] as bool? ?? false,
+      color: fields[7] as int,
+      iconCodePoint: fields[8] as int,
+      isDeleted: fields[9] as bool,
       userId: fields[10] as String?,
       userEmail: fields[11] as String?,
     );

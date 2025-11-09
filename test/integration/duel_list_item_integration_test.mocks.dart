@@ -162,6 +162,18 @@ class MockTaskRepository extends _i1.Mock implements _i3.TaskRepository {
 class MockCustomListRepository extends _i1.Mock
     implements _i6.CustomListRepository {
   @override
+  _i4.Future<Map<String, dynamic>> getStats() => (super.noSuchMethod(
+        Invocation.method(
+          #getStats,
+          [],
+        ),
+        returnValue:
+            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+        returnValueForMissingStub:
+            _i4.Future<Map<String, dynamic>>.value(<String, dynamic>{}),
+      ) as _i4.Future<Map<String, dynamic>>);
+
+  @override
   _i4.Future<List<_i7.CustomList>> getAll() => (super.noSuchMethod(
         Invocation.method(
           #getAll,

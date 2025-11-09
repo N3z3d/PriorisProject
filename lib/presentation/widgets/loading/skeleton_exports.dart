@@ -8,6 +8,7 @@ library skeleton_exports;
 export 'package:prioris/presentation/widgets/loading/interfaces/skeleton_system_interface.dart';
 
 // Base components
+export 'package:prioris/presentation/widgets/loading/components/skeleton_blocks.dart';
 export 'package:prioris/presentation/widgets/loading/components/skeleton_components.dart';
 
 // Specialized skeleton systems
