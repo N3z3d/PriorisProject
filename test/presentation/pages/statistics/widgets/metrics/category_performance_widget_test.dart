@@ -15,7 +15,7 @@ void main() {
           home: CategoryPerformanceWidget(categories: categories),
         ),
       );
-      expect(find.text('📊 Performance par Catégorie'), findsOneWidget);
+      expect(find.text('Performance par categorie'), findsOneWidget); // No emoji, no accent - matches source
       expect(find.text('Bien-être'), findsOneWidget);
       expect(find.text('85%'), findsOneWidget);
       expect(find.text('Travail'), findsOneWidget);
@@ -40,7 +40,7 @@ void main() {
           home: CategoryPerformanceWidget(categories: const {}),
         ),
       );
-      expect(find.text('📊 Performance par Catégorie'), findsOneWidget);
+      expect(find.text('Performance par categorie'), findsOneWidget); // No emoji, no accent - matches source
     });
   });
 } 
