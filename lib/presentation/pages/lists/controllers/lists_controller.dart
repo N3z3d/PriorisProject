@@ -101,20 +101,25 @@ class ListsController extends ListsControllerSlim {
   }
 
   /// Legacy helper that accepts either `List<ListItem>` or `List<String>`.
+  ///
+  /// NOTE: When entries are Strings, IDs are generated client-side.
+  /// For ListItem entries, IDs should already be set by the caller.
   Future<void> addMultipleItemsToList(String listId, List<dynamic> entries) {
-    final baseTimestamp = DateTime.now().microsecondsSinceEpoch;
     final normalizedItems = <ListItem>[];
 
     for (var index = 0; index < entries.length; index++) {
       final entry = entries[index];
       if (entry is ListItem) {
+        // ListItem already has ID - use as-is
         normalizedItems.add(entry);
         continue;
       }
       if (entry is String) {
+        // String entry - caller didn't provide ListItem, so we generate ID
+        // This is legacy behavior - new code should create ListItem with ID
         final createdAt = DateTime.now().add(Duration(microseconds: index));
         normalizedItems.add(ListItem(
-          id: '${listId}_auto_${baseTimestamp + index}_${entry.hashCode}',
+          id: _generateLegacyId(listId, entry, index),
           title: entry,
           createdAt: createdAt,
           listId: listId,
@@ -127,6 +132,13 @@ class ListsController extends ListsControllerSlim {
     }
 
     return addMultipleItems(listId, normalizedItems);
+  }
+
+  /// Legacy ID generation for backward compatibility
+  /// New code should use IdGenerationService instead
+  String _generateLegacyId(String listId, String title, int index) {
+    final timestamp = DateTime.now().microsecondsSinceEpoch;
+    return '${listId}_auto_${timestamp + index}_${title.hashCode}';
   }
 }
 

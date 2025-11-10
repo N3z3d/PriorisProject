@@ -112,8 +112,8 @@ void main() {
       );
 
       // THEN
-      expect(find.text('Un élément'), findsOneWidget);
-      expect(find.text('Plusieurs éléments'), findsOneWidget);
+      expect(find.text('Single'), findsOneWidget);
+      expect(find.text('Multiple'), findsOneWidget);
     });
 
     testWidgets('should call onModeChanged when tab changes', (WidgetTester tester) async {
@@ -135,7 +135,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('Plusieurs éléments'));
+      await tester.tap(find.text('Multiple'));
       await tester.pumpAndSettle();
 
       // THEN

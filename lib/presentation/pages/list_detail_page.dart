@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/data/providers/lists_controller_provider.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
+import 'package:prioris/domain/services/id_generation_service.dart';
 import 'package:prioris/presentation/pages/lists/models/task_sort_field.dart';
 import 'package:prioris/presentation/pages/lists/widgets/list_detail_header.dart';
 import 'package:prioris/presentation/pages/lists/widgets/list_empty_state.dart';
@@ -220,15 +221,17 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
       context: context,
       builder: (context) => BulkAddDialog(
         onSubmit: (itemTitles) {
-          // Convertir les titres en ListItem avec IDs générés
-          final baseTimestamp = DateTime.now().microsecondsSinceEpoch;
+          // Generate unique IDs using centralized service
+          final idService = IdGenerationService();
+          final ids = idService.generateBatchIds(itemTitles.length);
+
           final items = itemTitles.asMap().entries.map((entry) {
             final index = entry.key;
             final title = entry.value;
             final createdAt = DateTime.now().add(Duration(microseconds: index));
 
             return ListItem(
-              id: '${widget.list.id}_${baseTimestamp}_${index}_${title.hashCode}',
+              id: ids[index],
               title: title,
               listId: widget.list.id,
               isCompleted: false,
