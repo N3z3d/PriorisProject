@@ -17,6 +17,20 @@ class HabitsPage extends ConsumerStatefulWidget {
 }
 
 class _HabitsPageState extends ConsumerState<HabitsPage> {
+  bool _hasInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // [HabitsUI] Load habits once in initState, NOT in build()
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_hasInitialized) {
+        _hasInitialized = true;
+        ref.read(habitsStateProvider.notifier).loadHabits();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -25,7 +39,6 @@ class _HabitsPageState extends ConsumerState<HabitsPage> {
     final error = ref.watch(habitsErrorProvider);
     final controllerState = ref.watch(habitsControllerProvider);
 
-    _autoLoadHabitsIfNeeded(habits, isLoading, error);
     _handleActionResults(context, controllerState);
 
     return Scaffold(
@@ -63,18 +76,6 @@ class _HabitsPageState extends ConsumerState<HabitsPage> {
         ),
       ),
     );
-  }
-
-  void _autoLoadHabitsIfNeeded(
-    List<Habit> habits,
-    bool isLoading,
-    String? error,
-  ) {
-    if (habits.isEmpty && !isLoading && error == null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(habitsStateProvider.notifier).loadHabits();
-      });
-    }
   }
 
   void _handleActionResults(

@@ -40,21 +40,29 @@ class HabitsNotifier extends StateNotifier<HabitsState> {
       : super(HabitsState(lastUpdated: DateTime.now()));
 
   /// Charge les habitudes depuis le repository
+  /// [HabitsProvider] Idempotent fetch with reentrancy guard
   Future<void> loadHabits() async {
-    if (state.isLoading) return;
+    // Reentrancy guard: don't fetch if already loading
+    if (state.isLoading) {
+      print('[HabitsProvider] D: loadHabits() blocked - already loading');
+      return;
+    }
 
+    print('[HabitsProvider] I: Starting loadHabits() fetch');
     state = state.copyWith(isLoading: true, error: null);
 
     try {
       final repository = _ref.read(habitRepositoryProvider);
       final habits = await repository.getAllHabits();
 
+      print('[HabitsProvider] I: Fetched ${habits.length} habits successfully');
       state = state.copyWith(
         habits: habits,
         isLoading: false,
         lastUpdated: DateTime.now(),
       );
     } catch (e) {
+      print('[HabitsProvider] E: Failed to load habits - ${e.toString()}');
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),
@@ -125,23 +133,27 @@ class HabitsNotifier extends StateNotifier<HabitsState> {
 // ============================================================================
 
 /// Provider principal : StateNotifier consolidé pour les habitudes
-final habitsStateProvider = StateNotifierProvider<HabitsNotifier, HabitsState>((ref) {
+/// Uses autoDispose to prevent memory leaks on navigation
+final habitsStateProvider = StateNotifierProvider.autoDispose<HabitsNotifier, HabitsState>((ref) {
   return HabitsNotifier(ref);
 });
 
 /// Provider pour les habitudes (réactif)
-final reactiveHabitsProvider = Provider<List<Habit>>((ref) {
-  return ref.watch(habitsStateProvider).habits;
+/// Uses .select() for memoization - only rebuilds when habits list changes
+final reactiveHabitsProvider = Provider.autoDispose<List<Habit>>((ref) {
+  return ref.watch(habitsStateProvider.select((state) => state.habits));
 });
 
 /// Provider pour l'état de chargement
-final habitsLoadingProvider = Provider<bool>((ref) {
-  return ref.watch(habitsStateProvider).isLoading;
+/// Uses .select() for memoization - only rebuilds when isLoading changes
+final habitsLoadingProvider = Provider.autoDispose<bool>((ref) {
+  return ref.watch(habitsStateProvider.select((state) => state.isLoading));
 });
 
 /// Provider pour les erreurs
-final habitsErrorProvider = Provider<String?>((ref) {
-  return ref.watch(habitsStateProvider).error;
+/// Uses .select() for memoization - only rebuilds when error changes
+final habitsErrorProvider = Provider.autoDispose<String?>((ref) {
+  return ref.watch(habitsStateProvider.select((state) => state.error));
 });
 
 // ============================================================================
@@ -166,11 +178,11 @@ extension HabitsProviderX on WidgetRef {
   }
 
   /// Charge les habitudes si pas encore fait
+  /// DEPRECATED: Empty list is a VALID state, not an error
+  /// Do NOT automatically retry when list is empty
+  @Deprecated('Use explicit loadHabits() in initState instead')
   void loadHabitsIfNeeded() {
-    final state = read(habitsStateProvider);
-    if (state.habits.isEmpty && !state.isLoading) {
-      read(habitsStateProvider.notifier).loadHabits();
-    }
+    // Removed auto-retry logic - empty list is valid
   }
 
   /// Efface l'erreur des habitudes
