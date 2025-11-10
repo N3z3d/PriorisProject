@@ -220,16 +220,21 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
       context: context,
       builder: (context) => BulkAddDialog(
         onSubmit: (itemTitles) {
-          // Convertir les titres en ListItem
-          final items = itemTitles
-              .map((title) => ListItem(
-                    id: '', // L'ID sera généré par le controller
-                    title: title,
-                    listId: widget.list.id,
-                    isCompleted: false,
-                    createdAt: DateTime.now(),
-                  ))
-              .toList();
+          // Convertir les titres en ListItem avec IDs générés
+          final baseTimestamp = DateTime.now().microsecondsSinceEpoch;
+          final items = itemTitles.asMap().entries.map((entry) {
+            final index = entry.key;
+            final title = entry.value;
+            final createdAt = DateTime.now().add(Duration(microseconds: index));
+
+            return ListItem(
+              id: '${widget.list.id}_${baseTimestamp}_${index}_${title.hashCode}',
+              title: title,
+              listId: widget.list.id,
+              isCompleted: false,
+              createdAt: createdAt,
+            );
+          }).toList();
 
           ref
               .read(listsControllerProvider.notifier)
