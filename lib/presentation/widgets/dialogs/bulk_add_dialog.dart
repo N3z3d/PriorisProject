@@ -44,6 +44,7 @@ class _BulkAddDialogState extends State<BulkAddDialog> with TickerProviderStateM
   bool _isValid = false;
   BulkAddMode _currentMode = BulkAddMode.single;
   bool _keepOpen = false;
+  bool _isSubmitting = false;
   late TabController _tabController;
 
   @override
@@ -77,7 +78,11 @@ class _BulkAddDialogState extends State<BulkAddDialog> with TickerProviderStateM
   }
 
   void _handleSubmit() {
-    if (!_isValid) return;
+    if (!_isValid || _isSubmitting) return;
+
+    setState(() {
+      _isSubmitting = true;
+    });
 
     final text = _controller.text.trim();
     final items = _currentMode == BulkAddMode.multiple
@@ -85,13 +90,25 @@ class _BulkAddDialogState extends State<BulkAddDialog> with TickerProviderStateM
         : [text];
 
     if (items.isEmpty) {
+      setState(() {
+        _isSubmitting = false;
+      });
       return;
     }
 
     widget.onSubmit(items);
+
     if (_keepOpen) {
       _controller.clear();
       _focusNode.requestFocus();
+      // Reset submitting flag after short delay to prevent rapid re-submissions
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) {
+          setState(() {
+            _isSubmitting = false;
+          });
+        }
+      });
     } else {
       Navigator.of(context).pop();
     }
