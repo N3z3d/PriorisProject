@@ -279,6 +279,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: BulkAddDialog(
+              title: 'Ajouter des elements',
               onSubmit: (_) {},
             ),
           ),
@@ -287,11 +288,16 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Check for semantic labels
+      // Check for semantic labels - the header wraps its content in Semantics
+      final semanticsWidgets = tester.widgetList<Semantics>(find.byType(Semantics));
+      final hasExpectedLabel = semanticsWidgets.any(
+        (widget) => widget.properties.label == 'Ajouter des elements',
+      );
+
       expect(
-        find.bySemanticsLabel('Ajouter des elements'),
-        findsOneWidget,
-        reason: 'Dialog should have accessible title',
+        hasExpectedLabel,
+        isTrue,
+        reason: 'Dialog should have accessible title in Semantics',
       );
     });
 

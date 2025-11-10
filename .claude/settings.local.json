@@ -31,7 +31,9 @@
       "Bash(powershell -Command:*)",
       "Bash(cat:*)",
       "Bash(flutter_test_full.log)",
-      "Bash(timeout 120 flutter test:*)"
+      "Bash(timeout 120 flutter test:*)",
+      "Bash(git tag:*)",
+      "Bash(timeout 60 flutter test:*)"
     ],
     "deny": [],
     "ask": []

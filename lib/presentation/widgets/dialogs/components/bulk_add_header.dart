@@ -17,25 +17,29 @@ class BulkAddHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            title,
-            style: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w600,
-              color: AppTheme.textPrimary,
+    return Semantics(
+      label: title,
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimary,
+              ),
             ),
           ),
-        ),
-        IconButton(
-          onPressed: onClose,
-          icon: const Icon(Icons.close, size: 20),
-          color: AppTheme.textSecondary,
-          splashRadius: 20,
-        ),
-      ],
+          IconButton(
+            onPressed: onClose,
+            icon: const Icon(Icons.close, size: 20),
+            color: AppTheme.textSecondary,
+            splashRadius: 20,
+            tooltip: 'Close dialog',
+          ),
+        ],
+      ),
     );
   }
 }

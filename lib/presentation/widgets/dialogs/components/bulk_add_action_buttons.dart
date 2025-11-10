@@ -43,6 +43,7 @@ class BulkAddActionButtons extends StatelessWidget {
         Expanded(
           flex: 2,
           child: ElevatedButton(
+            key: const ValueKey('bulk_add_submit_button'),
             onPressed: isValid ? onSubmit : null,
             style: ElevatedButton.styleFrom(
               backgroundColor: isValid ? AppTheme.primaryColor : AppTheme.textSecondary.withValues(alpha: 0.3),

@@ -33,12 +33,14 @@ class BulkAddModeTabs extends StatelessWidget {
         onTap: (index) => onModeChanged(BulkAddMode.values[index]),
         tabs: const [
           Tab(
+            key: ValueKey('single_mode_tab'),
             height: 36,
-            child: Text('Un élément', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+            child: Text('Single', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
           ),
           Tab(
+            key: ValueKey('multiple_mode_tab'),
             height: 36,
-            child: Text('Plusieurs éléments', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+            child: Text('Multiple', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
           ),
         ],
         labelColor: Colors.white,
