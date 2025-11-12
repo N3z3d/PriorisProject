@@ -226,6 +226,7 @@ class _PriorityDuelViewState extends State<PriorityDuelView> {
         child: PriorityDuelArena(
           mode: widget.mode,
           tasks: widget.mode == DuelMode.ranking ? _rankingOrder : widget.tasks,
+          cardsPerRound: widget.cardsPerRound,
           hideEloScores: widget.hideEloScores,
           onSelectTask: widget.onSelectTask,
           onReorderRanking: _handleRankingReorder,

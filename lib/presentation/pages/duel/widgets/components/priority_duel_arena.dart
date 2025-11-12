@@ -8,6 +8,7 @@ import 'package:prioris/presentation/theme/app_theme.dart';
 class PriorityDuelArena extends StatelessWidget {
   final DuelMode mode;
   final List<Task> tasks;
+  final int cardsPerRound;
   final bool hideEloScores;
   final Future<void> Function(Task winner, Task loser) onSelectTask;
   final void Function(int oldIndex, int newIndex) onReorderRanking;
@@ -16,6 +17,7 @@ class PriorityDuelArena extends StatelessWidget {
     super.key,
     required this.mode,
     required this.tasks,
+    required this.cardsPerRound,
     required this.hideEloScores,
     required this.onSelectTask,
     required this.onReorderRanking,
@@ -31,6 +33,7 @@ class PriorityDuelArena extends StatelessWidget {
           )
         : PriorityWinnerArena(
             tasks: tasks,
+            cardsPerRound: cardsPerRound,
             hideEloScores: hideEloScores,
             onSelectTask: onSelectTask,
           );
@@ -39,12 +42,14 @@ class PriorityDuelArena extends StatelessWidget {
 
 class PriorityWinnerArena extends StatelessWidget {
   final List<Task> tasks;
+  final int cardsPerRound;
   final bool hideEloScores;
   final Future<void> Function(Task winner, Task loser) onSelectTask;
 
   const PriorityWinnerArena({
     super.key,
     required this.tasks,
+    required this.cardsPerRound,
     required this.hideEloScores,
     required this.onSelectTask,
   }) : assert(tasks.length >= 2);
@@ -64,7 +69,12 @@ class PriorityWinnerArena extends StatelessWidget {
       }
     }
 
-    switch (tasks.length) {
+    // FIX: Use cardsPerRound (user's selection) as primary layout selector
+    // BUT fall back gracefully if not enough tasks are available
+    // This handles cases where task filters return fewer tasks than requested
+    final effectiveCardCount = tasks.length < cardsPerRound ? tasks.length : cardsPerRound;
+
+    switch (effectiveCardCount) {
       case 2:
         return DuelTwoCardsLayout(
           tasks: tasks,
