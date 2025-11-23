@@ -4,6 +4,7 @@ class _ListItemCardView extends StatelessWidget {
   const _ListItemCardView({
     required this.item,
     required this.isSyncing,
+    required this.isHovered,
     required this.actionsAnimation,
     required this.onToggleCompletion,
     required this.onEdit,
@@ -16,6 +17,7 @@ class _ListItemCardView extends StatelessWidget {
 
   final ListItem item;
   final bool isSyncing;
+  final bool isHovered;
   final Animation<double> actionsAnimation;
   final VoidCallback? onToggleCompletion;
   final VoidCallback? onEdit;
@@ -30,11 +32,12 @@ class _ListItemCardView extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeInOut,
+      margin: const EdgeInsets.symmetric(vertical: 2),
       decoration: _cardDecoration(),
       child: InkWell(
         onTap: onCardTap,
         onLongPress: onLongPress,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(12),
         child: Ink(
           decoration: const BoxDecoration(),
           child: Column(
@@ -60,20 +63,12 @@ class _ListItemCardView extends StatelessWidget {
 
   Widget _buildHeader(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PremiumStatusIndicator(
-            status: item.isCompleted ? StatusType.completed : StatusType.pending,
-            showLabel: false,
-            enableAnimation: false,
-            enableHaptics: false,
-            size: 24,
-          ),
-          const SizedBox(width: 16),
           Expanded(child: _HeaderSection(item: item, isSyncing: isSyncing)),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           _TrailingSection(
             item: item,
             isSyncing: isSyncing,
@@ -90,13 +85,21 @@ class _ListItemCardView extends StatelessWidget {
 
   BoxDecoration _cardDecoration() {
     return BoxDecoration(
-      color: AppTheme.surfaceColor,
-      borderRadius: BorderRadius.circular(20),
-      boxShadow: [
+      color: isHovered
+          ? AppTheme.surfaceColor.withValues(alpha: 0.97)
+          : AppTheme.surfaceColor,
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(
+        color: isHovered
+            ? AppTheme.dividerColor.withValues(alpha: 0.8)
+            : AppTheme.dividerColor.withValues(alpha: 0.6),
+        width: 1,
+      ),
+      boxShadow: const [
         BoxShadow(
-          color: Colors.black.withValues(alpha: 0.03),
-          blurRadius: 12,
-          offset: const Offset(0, 8),
+          color: Color(0x0A000000),
+          blurRadius: 6,
+          offset: Offset(0, 4),
         ),
       ],
     );
@@ -127,24 +130,24 @@ class _HeaderSection extends StatelessWidget {
           ),
         ),
         if (item.description?.isNotEmpty ?? false) ...[
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           Text(
             item.description!,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: AppTheme.textSecondary,
-              height: 1.4,
+              height: 1.35,
             ),
           ),
         ],
         if (item.category?.isNotEmpty ?? false) ...[
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           _CategoryBadge(
             category: item.category!,
             eloScore: item.eloScore,
           ),
         ],
         if (isSyncing) ...const [
-          SizedBox(height: 12),
+          SizedBox(height: 8),
           _SyncIndicator(),
         ],
       ],
@@ -160,15 +163,10 @@ class _MetadataRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       child: Row(
         children: [
-          _MetadataChip(
-            icon: Icons.calendar_today,
-            label: item.createdAt != null
-                ? '${item.createdAt!.day}/${item.createdAt!.month}/${item.createdAt!.year}'
-                : 'Non dat\u00E9e',
-          ),
+          _MetadataChip(item: item),
         ],
       ),
     );
@@ -187,12 +185,12 @@ class _CategoryBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: AppTheme.primaryColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
+        color: AppTheme.primaryColor.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: AppTheme.primaryColor.withValues(alpha: 0.3),
+          color: AppTheme.primaryColor.withValues(alpha: 0.25),
           width: 1,
         ),
       ),
@@ -209,26 +207,32 @@ class _CategoryBadge extends StatelessWidget {
 }
 
 class _MetadataChip extends StatelessWidget {
-  const _MetadataChip({
-    required this.icon,
-    required this.label,
-  });
+  const _MetadataChip({required this.item});
 
-  final IconData icon;
-  final String label;
+  final ListItem item;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final localeTag = Localizations.localeOf(context).toLanguageTag();
+    final created = item.createdAt;
+    final formattedDate =
+        created != null ? DateFormat.yMd(localeTag).format(created) : null;
+    final label = formattedDate != null
+        ? l10n?.listItemDateLabel(formattedDate) ?? 'Ajouté le $formattedDate'
+        : l10n?.listItemDateUnknown ?? 'Sans date';
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: AppTheme.grey100,
-        borderRadius: BorderRadius.circular(10),
+        color: AppTheme.grey50,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppTheme.dividerColor.withValues(alpha: 0.6)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: AppTheme.textSecondary),
+          const Icon(Icons.calendar_today, size: 14, color: AppTheme.textSecondary),
           const SizedBox(width: 6),
           Text(
             label,
@@ -243,4 +247,3 @@ class _MetadataChip extends StatelessWidget {
     );
   }
 }
-

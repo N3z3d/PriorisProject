@@ -5,53 +5,120 @@ import 'package:prioris/presentation/pages/duel/widgets/components/priority_duel
 
 export 'package:prioris/presentation/pages/duel/widgets/duel_task_card.dart' show DuelCardSize;
 
-typedef _WinnerSelection = Future<void> Function(Task winner, List<Task> losers);
+// --- Définitions & Constantes ---
 
-Widget _buildScrollableWinnerList({
-  required List<Task> tasks,
-  required double spacing,
-  required Widget Function(Task task) buildCard,
-}) {
-  return SingleChildScrollView(
-    padding: const EdgeInsets.all(16),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        for (var i = 0; i < tasks.length; i++) ...[
-          Center(child: buildCard(tasks[i])),
-          if (i < tasks.length - 1) SizedBox(height: spacing),
+typedef WinnerSelectionCallback = Future<void> Function(Task winner, List<Task> losers);
+
+const double _kMobileBreakpoint = 720.0;
+const double _kSpacing = 20.0;
+
+// --- Dispatcher Principal ---
+
+/// Sélectionne automatiquement le layout en fonction du nombre de tâches.
+class DuelLayoutDispatcher extends StatelessWidget {
+  final List<Task> tasks;
+  final bool hideEloScores;
+  final WinnerSelectionCallback onSelectWinner;
+
+  const DuelLayoutDispatcher({
+    super.key,
+    required this.tasks,
+    required this.hideEloScores,
+    required this.onSelectWinner,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return switch (tasks.length) {
+      2 => DuelTwoCardsLayout(tasks: tasks, hideEloScores: hideEloScores, onSelectWinner: onSelectWinner),
+      3 => DuelThreeCardsLayout(tasks: tasks, hideEloScores: hideEloScores, onSelectWinner: onSelectWinner),
+      4 => DuelFourCardsLayout(tasks: tasks, hideEloScores: hideEloScores, onSelectWinner: onSelectWinner),
+      _ => Center(child: Text('Nombre de tâches non supporté : ${tasks.length}')),
+    };
+  }
+}
+
+// --- Composants Partagés ---
+
+/// Wrapper qui gère la logique de sélection (clic) et les données du duel.
+class _DuelCardWrapper extends StatelessWidget {
+  final Task task;
+  final List<Task> allTasks;
+  final bool hideEloScores;
+  final DuelCardSize size;
+  final WinnerSelectionCallback onSelectWinner;
+
+  const _DuelCardWrapper({
+    required this.task,
+    required this.allTasks,
+    required this.hideEloScores,
+    required this.size,
+    required this.onSelectWinner,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DuelTaskCard(
+      key: ValueKey('duel-card-${task.id}'),
+      task: task,
+      hideElo: hideEloScores,
+      cardSize: size,
+      onTap: () {
+        final losers = allTasks.where((t) => t.id != task.id).toList();
+        onSelectWinner(task, losers);
+      },
+    );
+  }
+}
+
+/// Layout vertical standard pour mobile (liste déroulante).
+class _VerticalDuelList extends StatelessWidget {
+  final List<Task> tasks;
+  final bool hideEloScores;
+  final WinnerSelectionCallback onSelectWinner;
+  final DuelCardSize cardSize;
+
+  const _VerticalDuelList({
+    required this.tasks,
+    required this.hideEloScores,
+    required this.onSelectWinner,
+    this.cardSize = DuelCardSize.standard,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          for (var i = 0; i < tasks.length; i++) ...[
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 400), // évite l'étirement sur tablette portrait
+                child: _DuelCardWrapper(
+                  task: tasks[i],
+                  allTasks: tasks,
+                  hideEloScores: hideEloScores,
+                  size: cardSize,
+                  onSelectWinner: onSelectWinner,
+                ),
+              ),
+            ),
+            if (i < tasks.length - 1) const SizedBox(height: _kSpacing),
+          ],
         ],
-      ],
-    ),
-  );
+      ),
+    );
+  }
 }
 
-Widget _buildSelectableDuelCard({
-  required Task task,
-  required List<Task> allTasks,
-  required bool hideEloScores,
-  required _WinnerSelection onSelectWinner,
-  required DuelCardSize size,
-}) {
-  final losers = allTasks.where((candidate) => candidate.id != task.id).toList();
-  return DuelTaskCard(
-    key: ValueKey('duel-card-${task.id}'),
-    task: task,
-    hideElo: hideEloScores,
-    onTap: () => onSelectWinner(task, losers),
-    cardSize: size,
-  );
-}
+// --- Implémentations des Layouts ---
 
-/// Layout pour un duel a 2 cartes avec badge VS strictement centre.
-///
-/// Responsive:
-/// - Mobile (<720px): Vertical (1 carte par ligne), VS entre les cartes.
-/// - Desktop (>=720px): Horizontal avec badge VS parfaitement centre.
 class DuelTwoCardsLayout extends StatelessWidget {
   final List<Task> tasks;
   final bool hideEloScores;
-  final Future<void> Function(Task winner, List<Task> losers) onSelectWinner;
+  final WinnerSelectionCallback onSelectWinner;
 
   const DuelTwoCardsLayout({
     super.key,
@@ -62,17 +129,13 @@ class DuelTwoCardsLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth < 720) {
-          return _buildVerticalLayout();
-        }
-        return _buildHorizontalLayout();
-      },
-    );
+    final viewportWidth = MediaQuery.sizeOf(context).width;
+    if (viewportWidth < _kMobileBreakpoint) {
+      return _buildVerticalLayout();
+    }
+    return _buildHorizontalLayout();
   }
 
-  /// Layout vertical pour mobile (1 carte par ligne)
   Widget _buildVerticalLayout() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -89,27 +152,23 @@ class DuelTwoCardsLayout extends StatelessWidget {
     );
   }
 
-  /// Layout horizontal pour desktop avec badge VS parfaitement centre.
   Widget _buildHorizontalLayout() {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Flexible(
-              flex: 1,
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 380),
                 child: _buildCard(tasks[0]),
               ),
             ),
             const SizedBox(width: 40),
-            const Center(child: PriorityVsBadge()),
+            const PriorityVsBadge(),
             const SizedBox(width: 40),
             Flexible(
-              flex: 1,
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 380),
                 child: _buildCard(tasks[1]),
@@ -121,27 +180,19 @@ class DuelTwoCardsLayout extends StatelessWidget {
     );
   }
 
-  Widget _buildCard(Task task) {
-    return _buildSelectableDuelCard(
-      task: task,
-      allTasks: tasks,
-      hideEloScores: hideEloScores,
-      onSelectWinner: onSelectWinner,
-      size: DuelCardSize.standard,
-    );
-  }
+  Widget _buildCard(Task task) => _DuelCardWrapper(
+        task: task,
+        allTasks: tasks,
+        hideEloScores: hideEloScores,
+        size: DuelCardSize.standard,
+        onSelectWinner: onSelectWinner,
+      );
 }
 
-/// Layout pour un duel a 3 cartes (responsive).
-///
-/// Responsive:
-/// - Mobile (<720px): Vertical (1 carte/ligne)
-/// - Tablette (720-1024px): disposition horizontale wrap (2 puis 1).
-/// - Desktop (>=1024px): disposition horizontale (3 cartes).
 class DuelThreeCardsLayout extends StatelessWidget {
   final List<Task> tasks;
   final bool hideEloScores;
-  final Future<void> Function(Task winner, List<Task> losers) onSelectWinner;
+  final WinnerSelectionCallback onSelectWinner;
 
   const DuelThreeCardsLayout({
     super.key,
@@ -152,68 +203,35 @@ class DuelThreeCardsLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth < 720) {
-          // Mobile: 1 carte/ligne
-          return _buildVerticalLayout();
-        } else if (constraints.maxWidth < 1024) {
-          // Tablette: 2 cartes/ligne
-          return _buildTabletLayout();
-        } else {
-          // Desktop: 3 cartes/ligne
-          return _buildDesktopLayout();
-        }
-      },
-    );
-  }
+    final viewportWidth = MediaQuery.sizeOf(context).width;
+    if (viewportWidth < _kMobileBreakpoint) {
+      return _VerticalDuelList(
+        tasks: tasks,
+        hideEloScores: hideEloScores,
+        onSelectWinner: onSelectWinner,
+        cardSize: DuelCardSize.compact3,
+      );
+    }
 
-  Widget _buildVerticalLayout() {
-    return _buildScrollableWinnerList(
-      tasks: tasks,
-      spacing: 20,
-      buildCard: _buildCard,
-    );
-  }
-
-  Widget _buildTabletLayout() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Center(
-        child: Wrap(
-          spacing: 20,
-          runSpacing: 18,
-          alignment: WrapAlignment.center,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: tasks.map((task) {
-            return ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 280,
-                minWidth: 240,
-              ),
-              child: _buildCard(task),
-            );
-          }).toList(),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDesktopLayout() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1100),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Wrap(
+            spacing: 20,
+            runSpacing: 20,
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: tasks.map((task) {
-              return Flexible(
-                flex: 1,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: _buildCard(task),
+              return ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 300, minWidth: 240),
+                child: _DuelCardWrapper(
+                  task: task,
+                  allTasks: tasks,
+                  hideEloScores: hideEloScores,
+                  size: DuelCardSize.compact3,
+                  onSelectWinner: onSelectWinner,
                 ),
               );
             }).toList(),
@@ -222,28 +240,12 @@ class DuelThreeCardsLayout extends StatelessWidget {
       ),
     );
   }
-
-  Widget _buildCard(Task task) {
-    return _buildSelectableDuelCard(
-      task: task,
-      allTasks: tasks,
-      hideEloScores: hideEloScores,
-      onSelectWinner: onSelectWinner,
-      size: DuelCardSize.compact3,
-    );
-  }
 }
 
-/// Layout pour un duel a 4 cartes (grille responsive).
-///
-/// Responsive:
-/// - Mobile (<720px): vertical (1 carte par ligne).
-/// - Tablette (720-1024px): grille 2x2.
-/// - Desktop (>=1024px): grille 2x2 avec largeur limitee.
 class DuelFourCardsLayout extends StatelessWidget {
   final List<Task> tasks;
   final bool hideEloScores;
-  final Future<void> Function(Task winner, List<Task> losers) onSelectWinner;
+  final WinnerSelectionCallback onSelectWinner;
 
   const DuelFourCardsLayout({
     super.key,
@@ -256,76 +258,51 @@ class DuelFourCardsLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < 720) {
-          // Mobile: 1 carte/ligne
-          return _buildVerticalLayout();
-        } else {
-          // Tablette & Desktop: Grille 2A-2
-          return _buildGridLayout(constraints);
+        final viewportWidth = constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : MediaQuery.sizeOf(context).width;
+
+        if (viewportWidth < _kMobileBreakpoint) {
+          return _VerticalDuelList(
+            tasks: tasks,
+            hideEloScores: hideEloScores,
+            onSelectWinner: onSelectWinner,
+            cardSize: DuelCardSize.compact4,
+          );
         }
+
+        return Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 960),
+            child: _buildGrid(),
+          ),
+        );
       },
     );
   }
 
-  Widget _buildVerticalLayout() {
-    return _buildScrollableWinnerList(
-      tasks: tasks,
-      spacing: 20,
-      buildCard: _buildCard,
-    );
-  }
-
-  Widget _buildGridLayout(BoxConstraints constraints) {
-    final isUltraWide = constraints.maxWidth >= 1400;
-    final crossAxisCount = isUltraWide ? 4 : 2;
-    final maxWidth = isUltraWide ? 1400.0 : 960.0;
-    final cardMaxWidth = isUltraWide ? 260.0 : 280.0;
-
-    return Center(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: maxWidth),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          child: GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            primary: false,
-            itemCount: tasks.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: crossAxisCount,
-              mainAxisSpacing: 20,
-              crossAxisSpacing: 20,
-              childAspectRatio: 0.86,
-            ),
-            itemBuilder: (context, index) {
-              final task = tasks[index];
-              return Center(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minWidth: 220,
-                    maxWidth: cardMaxWidth,
-                  ),
-                  child: _buildCard(task),
-                ),
-              );
-            },
-          ),
-        ),
+  Widget _buildGrid() {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      primary: false,
+      itemCount: tasks.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: _kSpacing,
+        crossAxisSpacing: _kSpacing,
+        childAspectRatio: 1.2,
       ),
-    );
-  }
-
-  Widget _buildCard(Task task) {
-    return _buildSelectableDuelCard(
-      task: task,
-      allTasks: tasks,
-      hideEloScores: hideEloScores,
-      onSelectWinner: onSelectWinner,
-      size: DuelCardSize.compact4,
+      itemBuilder: (context, index) {
+        final task = tasks[index];
+        return _DuelCardWrapper(
+          task: task,
+          allTasks: tasks,
+          hideEloScores: hideEloScores,
+          size: DuelCardSize.compact4,
+          onSelectWinner: onSelectWinner,
+        );
+      },
     );
   }
 }
-
-
-
-

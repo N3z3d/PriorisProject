@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'components/bulk_add_header.dart';
 import 'components/bulk_add_mode_tabs.dart';
@@ -19,13 +20,13 @@ class BulkAddDialog extends StatefulWidget {
 
   const BulkAddDialog({
     super.key,
-    this.title = 'Ajouter des elements',
+    this.title = '',
     this.hintText = '',
     required this.onSubmit,
   });
 
   factory BulkAddDialog.create({
-    String title = 'Ajouter des elements',
+    String title = '',
     required Function(List<String>) onItemsAdded,
   }) {
     return BulkAddDialog(
@@ -140,10 +141,13 @@ class _BulkAddDialogState extends State<BulkAddDialog> with TickerProviderStateM
   }
 
   List<Widget> _buildDialogChildren(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final dialogTitle = widget.title.isEmpty ? l10n.bulkAddDefaultTitle : widget.title;
+
     return [
       BulkAddHeader(
-        title: widget.title,
-        onClose: () => Navigator.of(context).pop(),
+        title: dialogTitle,
+        onClose: _isSubmitting ? null : () => Navigator.of(context).pop(),
       ),
       const SizedBox(height: 20),
       BulkAddModeTabs(
@@ -155,44 +159,73 @@ class _BulkAddDialogState extends State<BulkAddDialog> with TickerProviderStateM
         controller: _controller,
         focusNode: _focusNode,
         mode: _currentMode,
-        hintText: _getHintText(),
+        hintText: _getHintText(context),
         onSubmitted: (_) => _handleSubmit(),
+        enabled: !_isSubmitting,
       ),
-      ..._buildHelpSection(),
+      ..._buildHelpSection(context),
       const SizedBox(height: 20),
+      if (_isSubmitting) ...[
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  l10n.bulkAddSubmitting,
+                  style: const TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
       BulkAddKeepOpenOption(
         value: _keepOpen,
-        onChanged: (value) => setState(() => _keepOpen = value ?? false),
+        onChanged: _isSubmitting ? null : (value) => setState(() => _keepOpen = value ?? false),
       ),
       const SizedBox(height: 20),
       BulkAddActionButtons(
-        isValid: _isValid,
-        onCancel: () => Navigator.of(context).pop(),
+        isValid: _isValid && !_isSubmitting,
+        isSubmitting: _isSubmitting,
+        onCancel: _isSubmitting ? null : () => Navigator.of(context).pop(),
         onSubmit: _handleSubmit,
       ),
     ];
   }
 
-  List<Widget> _buildHelpSection() {
+  List<Widget> _buildHelpSection(BuildContext context) {
     if (_currentMode != BulkAddMode.multiple) {
       return const [SizedBox.shrink()];
     }
-    return const [
-      SizedBox(height: 12),
-      BulkAddHelpMessage(message: 'Une nouvelle ligne = un nouvel element'),
+    final l10n = AppLocalizations.of(context)!;
+    return [
+      const SizedBox(height: 12),
+      BulkAddHelpMessage(message: l10n.bulkAddHelpText),
     ];
   }
 
-  String _getHintText() {
+  String _getHintText(BuildContext context) {
     if (widget.hintText.isNotEmpty) {
       return widget.hintText;
     }
 
+    final l10n = AppLocalizations.of(context)!;
     switch (_currentMode) {
       case BulkAddMode.single:
-        return 'Ajouter un element...';
+        return l10n.bulkAddSingleHint;
       case BulkAddMode.multiple:
-        return 'Ajouter plusieurs elements (un par ligne)...';
+        return l10n.bulkAddMultipleHint;
     }
   }
 }

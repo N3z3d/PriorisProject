@@ -64,6 +64,104 @@ class AppLocalizationsEs extends AppLocalizations {
   String get habitFormQuantUnitHint => 'vasos';
 
   @override
+  String get habitTrackingTitle => '¿Cómo quieres seguir este hábito?';
+
+  @override
+  String get habitTrackingTip =>
+      'Consejo: pon 1 si una vez por período es suficiente (equivale a \"hecho / no hecho\").';
+
+  @override
+  String get habitTrackingPrefix => 'Quiero hacer este hábito';
+
+  @override
+  String get habitTrackingTimesWord => 'veces';
+
+  @override
+  String get habitTrackingEveryWord => 'cada';
+
+  @override
+  String get habitTrackingBackToPeriod => 'Volver al modo \"por período\"';
+
+  @override
+  String get habitTrackingPeriodDay => 'al día';
+
+  @override
+  String get habitTrackingPeriodWeek => 'a la semana';
+
+  @override
+  String get habitTrackingPeriodMonth => 'al mes';
+
+  @override
+  String get habitTrackingPeriodYear => 'al año';
+
+  @override
+  String get habitTrackingCustomInterval => 'cada...';
+
+  @override
+  String get habitTrackingUnitHours => 'horas';
+
+  @override
+  String get habitTrackingUnitDays => 'días';
+
+  @override
+  String get habitTrackingUnitWeeks => 'semanas';
+
+  @override
+  String get habitTrackingUnitMonths => 'meses';
+
+  @override
+  String get habitSummaryTitle => 'Resumen';
+
+  @override
+  String get habitSummaryPlaceholder =>
+      'Completa el nombre y la frecuencia para ver el resumen.';
+
+  @override
+  String habitSummaryAction(Object name) {
+    return 'Quieres $name';
+  }
+
+  @override
+  String habitSummaryTimes(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count veces',
+      one: '$count vez',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String listItemDateLabel(String date) {
+    return 'Añadido el $date';
+  }
+
+  @override
+  String get listItemDateUnknown => 'Sin fecha';
+
+  @override
+  String get listItemActionComplete => 'Completar';
+
+  @override
+  String get listItemActionReopen => 'Reabrir';
+
+  @override
+  String get listEditTooltip => 'Editar lista';
+
+  @override
+  String get listDeleteTooltip => 'Eliminar lista';
+
+  @override
+  String get listEditDialogTitle => 'Editar lista';
+
+  @override
+  String get listEditNameLabel => 'Nombre de la lista';
+
+  @override
+  String get listEditSaved => 'Lista actualizada.';
+
+  @override
   String get habitFormTypePrompt => 'Quiero seguir este hábito';
 
   @override
@@ -836,165 +934,162 @@ class AppLocalizationsEs extends AppLocalizations {
   String get habitsTabAdd => 'Add';
 
   @override
-  String get habitCategoryDialogTitle => 'New category';
+  String get habitCategoryDialogTitle => 'Nueva categoría';
 
   @override
-  String get habitCategoryDialogFieldHint => 'Category name';
+  String get habitCategoryDialogFieldHint => 'Introduce un nombre de categoría';
 
   @override
-  String get habitsEmptyTitle => 'No habits yet';
+  String get habitsEmptyTitle => 'Aún no tienes hábitos';
 
   @override
   String get habitsEmptySubtitle =>
-      'Create your first habit to start tracking progress.';
+      'Crea tu primer hábito para empezar a hacer seguimiento.';
 
   @override
-  String get habitsErrorTitle => 'Unable to load habits';
+  String get habitsErrorTitle => 'Error';
 
   @override
   String habitsErrorLoadFailure(Object error) {
-    return 'Unable to load habits: $error';
+    return 'No se pudieron cargar los hábitos.';
   }
 
   @override
-  String get habitsMenuTooltip => 'Open habit menu';
+  String get habitsMenuTooltip => 'Acciones';
 
   @override
-  String get habitsMenuRecord => 'Mark as done';
+  String get habitsMenuRecord => 'Registrar';
 
   @override
-  String get habitsMenuEdit => 'Edit';
+  String get habitsMenuEdit => 'Editar';
 
   @override
-  String get habitsMenuDelete => 'Delete';
+  String get habitsMenuDelete => 'Eliminar';
 
   @override
   String get habitsCategoryDefault => 'General';
 
   @override
-  String get habitProgressThisWeek => 'this week';
+  String get habitProgressThisWeek => 'Esta semana';
 
   @override
   String habitProgressStreakDays(num count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count days',
-      one: '$count day',
+      other: '$count días de racha',
+      one: '$count día de racha',
     );
     return '$_temp0';
   }
 
   @override
   String habitProgressSuccessfulDays(Object successful, Object total) {
-    return '$successful/$total days completed';
+    return 'Días con éxito';
   }
 
   @override
-  String get habitProgressCompletedToday => 'Done today';
+  String get habitProgressCompletedToday => 'Completado hoy';
 
   @override
-  String get habitsErrorNetwork => 'Network issue.\\nCheck your connection.';
+  String get habitsErrorNetwork => 'Problema de red';
 
   @override
-  String get habitsErrorTimeout =>
-      'The request took too long.\\nPlease try again.';
+  String get habitsErrorTimeout => 'Tiempo de espera agotado';
 
   @override
-  String get habitsErrorPermission =>
-      'Insufficient permissions.\\nCheck your access rights.';
+  String get habitsErrorPermission => 'Permiso denegado';
 
   @override
-  String get habitsErrorUnexpected =>
-      'Unexpected error.\\nPlease try again later.';
+  String get habitsErrorUnexpected => 'Error inesperado';
 
   @override
-  String get habitFrequencySelectorTitle => 'Frequency';
+  String get habitFrequencySelectorTitle => 'Frecuencia';
 
   @override
-  String get habitFrequencyModelATitle => 'Set times per period';
+  String get habitFrequencyModelATitle => 'Veces por período';
 
   @override
   String get habitFrequencyModelADescription =>
-      'Example: 3 times per day, 5 times per week';
+      'Define cuántas veces quieres cumplir el hábito en cada período.';
 
   @override
-  String get habitFrequencyModelBTitle => 'Set interval';
+  String get habitFrequencyModelBTitle => 'Cada X unidades';
 
   @override
   String get habitFrequencyModelBDescription =>
-      'Example: every 2 days, every month';
+      'Define un intervalo fijo entre cada repetición.';
 
   @override
-  String get habitFrequencyModelAFieldsLabel => 'How many times?';
+  String get habitFrequencyModelAFieldsLabel => 'Objetivo por período';
 
   @override
-  String get habitFrequencyModelBFieldsLabel => 'How often?';
+  String get habitFrequencyModelBFieldsLabel => 'Intervalo';
 
   @override
-  String get habitFrequencyTimesLabel => 'Times';
+  String get habitFrequencyTimesLabel => 'Veces';
 
   @override
-  String get habitFrequencyIntervalLabel => 'Every';
+  String get habitFrequencyIntervalLabel => 'Intervalo';
 
   @override
-  String get habitFrequencyPeriodLabel => 'Period';
+  String get habitFrequencyPeriodLabel => 'Período';
 
   @override
-  String get habitFrequencyUnitLabel => 'Unit';
+  String get habitFrequencyUnitLabel => 'Unidad';
 
   @override
-  String get habitFrequencyPeriodHour => 'hour';
+  String get habitFrequencyPeriodHour => 'por hora';
 
   @override
-  String get habitFrequencyPeriodDay => 'day';
+  String get habitFrequencyPeriodDay => 'por día';
 
   @override
-  String get habitFrequencyPeriodWeek => 'week';
+  String get habitFrequencyPeriodWeek => 'por semana';
 
   @override
-  String get habitFrequencyPeriodMonth => 'month';
+  String get habitFrequencyPeriodMonth => 'por mes';
 
   @override
-  String get habitFrequencyPeriodYear => 'year';
+  String get habitFrequencyPeriodYear => 'por año';
 
   @override
-  String get habitFrequencyUnitHours => 'hours';
+  String get habitFrequencyUnitHours => 'horas';
 
   @override
-  String get habitFrequencyUnitDays => 'days';
+  String get habitFrequencyUnitDays => 'días';
 
   @override
-  String get habitFrequencyUnitWeeks => 'weeks';
+  String get habitFrequencyUnitWeeks => 'semanas';
 
   @override
-  String get habitFrequencyUnitMonths => 'months';
+  String get habitFrequencyUnitMonths => 'meses';
 
   @override
-  String get habitFrequencyUnitQuarters => 'quarters';
+  String get habitFrequencyUnitQuarters => 'trimestres';
 
   @override
-  String get habitFrequencyUnitYears => 'years';
+  String get habitFrequencyUnitYears => 'años';
 
   @override
-  String get habitFrequencyDayFilterLabel => 'Day filter (optional)';
+  String get habitFrequencyDayFilterLabel => 'Días';
 
   @override
-  String get habitFrequencyDayFilterAllDays => 'All days';
+  String get habitFrequencyDayFilterAllDays => 'Todos los días';
 
   @override
-  String get habitFrequencyDayFilterWeekdays => 'Weekdays only';
+  String get habitFrequencyDayFilterWeekdays => 'Entre semana';
 
   @override
-  String get habitFrequencyDayFilterWeekends => 'Weekends only';
+  String get habitFrequencyDayFilterWeekends => 'Fin de semana';
 
   @override
   String habitFrequencyTimesPerHour(num count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count times per hour',
-      one: '$count time per hour',
+      other: '$count veces por hora',
+      one: '$count vez por hora',
     );
     return '$_temp0';
   }
@@ -1004,8 +1099,8 @@ class AppLocalizationsEs extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count times per day',
-      one: '$count time per day',
+      other: '$count veces por día',
+      one: '$count vez por día',
     );
     return '$_temp0';
   }
@@ -1015,8 +1110,8 @@ class AppLocalizationsEs extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count times per week',
-      one: '$count time per week',
+      other: '$count veces por semana',
+      one: '$count vez por semana',
     );
     return '$_temp0';
   }
@@ -1026,8 +1121,8 @@ class AppLocalizationsEs extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count times per month',
-      one: '$count time per month',
+      other: '$count veces por mes',
+      one: '$count vez por mes',
     );
     return '$_temp0';
   }
@@ -1037,153 +1132,222 @@ class AppLocalizationsEs extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count times per year',
-      one: '$count time per year',
+      other: '$count veces por año',
+      one: '$count vez por año',
     );
     return '$_temp0';
   }
 
   @override
-  String habitFrequencyEveryHours(num interval) {
-    String _temp0 = intl.Intl.pluralLogic(
-      interval,
-      locale: localeName,
-      other: 'every $interval hours',
-      one: 'every hour',
-    );
-    return '$_temp0';
+  String habitFrequencyEveryHours(num interval, Object count) {
+    return 'Cada $count horas';
   }
 
   @override
-  String habitFrequencyEveryDays(num interval) {
-    String _temp0 = intl.Intl.pluralLogic(
-      interval,
-      locale: localeName,
-      other: 'every $interval days',
-      one: 'daily',
-    );
-    return '$_temp0';
+  String habitFrequencyEveryDays(num interval, Object count) {
+    return 'Cada $count días';
   }
 
   @override
-  String habitFrequencyEveryWeeks(num interval) {
-    String _temp0 = intl.Intl.pluralLogic(
-      interval,
-      locale: localeName,
-      other: 'every $interval weeks',
-      one: 'weekly',
-    );
-    return '$_temp0';
+  String habitFrequencyEveryWeeks(num interval, Object count) {
+    return 'Cada $count semanas';
   }
 
   @override
-  String habitFrequencyEveryMonths(num interval) {
-    String _temp0 = intl.Intl.pluralLogic(
-      interval,
-      locale: localeName,
-      other: 'every $interval months',
-      one: 'monthly',
-    );
-    return '$_temp0';
+  String habitFrequencyEveryMonths(num interval, Object count) {
+    return 'Cada $count meses';
   }
 
   @override
-  String habitFrequencyEveryQuarters(num interval) {
-    String _temp0 = intl.Intl.pluralLogic(
-      interval,
-      locale: localeName,
-      other: 'every $interval quarters',
-      one: 'quarterly',
-    );
-    return '$_temp0';
+  String habitFrequencyEveryQuarters(num interval, Object count) {
+    return 'Cada $count trimestres';
   }
 
   @override
-  String habitFrequencyEveryYears(num interval) {
-    String _temp0 = intl.Intl.pluralLogic(
-      interval,
-      locale: localeName,
-      other: 'every $interval years',
-      one: 'yearly',
-    );
-    return '$_temp0';
+  String habitFrequencyEveryYears(num interval, Object count) {
+    return 'Cada $count años';
   }
 
   @override
-  String get habitFrequencyWeekdaysOnly => 'Weekdays only (Mon-Fri)';
+  String get habitFrequencyWeekdaysOnly => 'Solo entre semana';
 
   @override
-  String get habitFrequencyWeekendsOnly => 'Weekends only (Sat-Sun)';
+  String get habitFrequencyWeekendsOnly => 'Solo fines de semana';
 
   @override
   String habitFrequencySpecificDays(Object days) {
-    return 'On: $days';
+    return 'Días específicos: $days';
   }
 
   @override
   String habitFrequencyMonthlyOnDay(Object day) {
-    return 'Monthly on day $day';
+    return 'Cada mes el día $day';
   }
 
   @override
   String habitFrequencyYearlyOnDate(Object day, Object month) {
-    return 'Yearly on $month $day';
+    return 'Cada año el $day de $month';
   }
 
   @override
-  String get habitWeekdayMonday => 'Mon';
+  String get habitWeekdayMonday => 'Lunes';
 
   @override
-  String get habitWeekdayTuesday => 'Tue';
+  String get habitWeekdayTuesday => 'Martes';
 
   @override
-  String get habitWeekdayWednesday => 'Wed';
+  String get habitWeekdayWednesday => 'Miércoles';
 
   @override
-  String get habitWeekdayThursday => 'Thu';
+  String get habitWeekdayThursday => 'Jueves';
 
   @override
-  String get habitWeekdayFriday => 'Fri';
+  String get habitWeekdayFriday => 'Viernes';
 
   @override
-  String get habitWeekdaySaturday => 'Sat';
+  String get habitWeekdaySaturday => 'Sábado';
 
   @override
-  String get habitWeekdaySunday => 'Sun';
+  String get habitWeekdaySunday => 'Domingo';
 
   @override
-  String get habitMonthJanuary => 'January';
+  String get habitMonthJanuary => 'enero';
 
   @override
-  String get habitMonthFebruary => 'February';
+  String get habitMonthFebruary => 'febrero';
 
   @override
-  String get habitMonthMarch => 'March';
+  String get habitMonthMarch => 'marzo';
 
   @override
-  String get habitMonthApril => 'April';
+  String get habitMonthApril => 'abril';
 
   @override
-  String get habitMonthMay => 'May';
+  String get habitMonthMay => 'mayo';
 
   @override
-  String get habitMonthJune => 'June';
+  String get habitMonthJune => 'junio';
 
   @override
-  String get habitMonthJuly => 'July';
+  String get habitMonthJuly => 'julio';
 
   @override
-  String get habitMonthAugust => 'August';
+  String get habitMonthAugust => 'agosto';
 
   @override
-  String get habitMonthSeptember => 'September';
+  String get habitMonthSeptember => 'septiembre';
 
   @override
-  String get habitMonthOctober => 'October';
+  String get habitMonthOctober => 'octubre';
 
   @override
-  String get habitMonthNovember => 'November';
+  String get habitMonthNovember => 'noviembre';
 
   @override
-  String get habitMonthDecember => 'December';
+  String get habitMonthDecember => 'diciembre';
+
+  @override
+  String get sortBy => 'Ordenar por';
+
+  @override
+  String get scoreElo => 'Puntuación ELO';
+
+  @override
+  String get random => 'Aleatorio';
+
+  @override
+  String get orderAscending => 'Ascendente';
+
+  @override
+  String get orderDescending => 'Descendente';
+
+  @override
+  String itemsCount(int count) {
+    return '$count elementos';
+  }
+
+  @override
+  String get add => 'Añadir';
+
+  @override
+  String get keepOpenAfterAdd => 'Mantener abierto tras añadir';
+
+  @override
+  String get bulkAddSingleHint => 'Escribe un elemento por línea.';
+
+  @override
+  String get bulkAddMultipleHint => 'Pega varios elementos, uno por línea.';
+
+  @override
+  String get bulkAddHelpText => 'Agrega varios elementos de una sola vez.';
+
+  @override
+  String get closeDialog => 'Cerrar';
+
+  @override
+  String get bulkAddDefaultTitle => 'Añadir varios elementos';
+
+  @override
+  String get bulkAddSubmitting => 'Añadiendo...';
+
+  @override
+  String get bulkAddModeSingle => 'Añadir uno';
+
+  @override
+  String get bulkAddModeMultiple => 'Añadir varios';
+
+  @override
+  String get listDeleteDialogTitle => 'Eliminar lista';
+
+  @override
+  String listDeleteDialogMessage(String listName) {
+    return '¿Seguro que quieres eliminar \"$listName\"?';
+  }
+
+  @override
+  String get listDeleteConfirm => 'Eliminar';
+
+  @override
+  String get listRenameDialogTitle => 'Renombrar elemento';
+
+  @override
+  String get listRenameDialogLabel => 'Nombre del elemento';
+
+  @override
+  String get listRenameSaved => 'Elemento renombrado.';
+
+  @override
+  String get listMoveDialogTitle => 'Mover elemento';
+
+  @override
+  String get listMoveDialogLabel => 'Lista de destino';
+
+  @override
+  String get listMoveNoOtherList => 'No hay otra lista disponible';
+
+  @override
+  String get listMoveSaved => 'Elemento movido.';
+
+  @override
+  String get listDuplicateSaved => 'Elemento duplicado.';
+
+  @override
+  String get listConfirmDeleteItemTitle => 'Eliminar elemento';
+
+  @override
+  String listConfirmDeleteItemMessage(String itemTitle) {
+    return '¿Seguro que quieres eliminar \"$itemTitle\"?';
+  }
+
+  @override
+  String get more => 'Más acciones';
+
+  @override
+  String get rename => 'Renombrar';
+
+  @override
+  String get move => 'Mover...';
+
+  @override
+  String get duplicate => 'Duplicar';
 }

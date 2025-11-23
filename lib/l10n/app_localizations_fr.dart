@@ -64,6 +64,105 @@ class AppLocalizationsFr extends AppLocalizations {
   String get habitFormQuantUnitHint => 'verres';
 
   @override
+  String get habitTrackingTitle =>
+      'Comment voulez-vous suivre cette habitude ?';
+
+  @override
+  String get habitTrackingTip =>
+      'Astuce : mettez 1 si une seule fois par période suffit (équivalent à \"fait / pas fait\").';
+
+  @override
+  String get habitTrackingPrefix => 'Je veux faire cette habitude';
+
+  @override
+  String get habitTrackingTimesWord => 'fois';
+
+  @override
+  String get habitTrackingEveryWord => 'toutes les';
+
+  @override
+  String get habitTrackingBackToPeriod => 'Revenir au mode \"par période\"';
+
+  @override
+  String get habitTrackingPeriodDay => 'par jour';
+
+  @override
+  String get habitTrackingPeriodWeek => 'par semaine';
+
+  @override
+  String get habitTrackingPeriodMonth => 'par mois';
+
+  @override
+  String get habitTrackingPeriodYear => 'par an';
+
+  @override
+  String get habitTrackingCustomInterval => 'tous les...';
+
+  @override
+  String get habitTrackingUnitHours => 'heures';
+
+  @override
+  String get habitTrackingUnitDays => 'jours';
+
+  @override
+  String get habitTrackingUnitWeeks => 'semaines';
+
+  @override
+  String get habitTrackingUnitMonths => 'mois';
+
+  @override
+  String get habitSummaryTitle => 'Résumé';
+
+  @override
+  String get habitSummaryPlaceholder =>
+      'Complétez le nom et la fréquence pour voir le résumé.';
+
+  @override
+  String habitSummaryAction(Object name) {
+    return 'Vous voulez $name';
+  }
+
+  @override
+  String habitSummaryTimes(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count fois',
+      one: '$count fois',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String listItemDateLabel(String date) {
+    return 'Ajouté le $date';
+  }
+
+  @override
+  String get listItemDateUnknown => 'Sans date';
+
+  @override
+  String get listItemActionComplete => 'Compléter';
+
+  @override
+  String get listItemActionReopen => 'Rouvrir';
+
+  @override
+  String get listEditTooltip => 'Modifier la liste';
+
+  @override
+  String get listDeleteTooltip => 'Supprimer la liste';
+
+  @override
+  String get listEditDialogTitle => 'Modifier la liste';
+
+  @override
+  String get listEditNameLabel => 'Nom de la liste';
+
+  @override
+  String get listEditSaved => 'Liste mise à jour.';
+
+  @override
   String get habitFormTypePrompt => 'Je veux suivre cette habitude en';
 
   @override
@@ -1046,7 +1145,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String habitFrequencyEveryHours(num interval) {
+  String habitFrequencyEveryHours(num interval, Object count) {
     String _temp0 = intl.Intl.pluralLogic(
       interval,
       locale: localeName,
@@ -1057,7 +1156,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String habitFrequencyEveryDays(num interval) {
+  String habitFrequencyEveryDays(num interval, Object count) {
     String _temp0 = intl.Intl.pluralLogic(
       interval,
       locale: localeName,
@@ -1068,7 +1167,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String habitFrequencyEveryWeeks(num interval) {
+  String habitFrequencyEveryWeeks(num interval, Object count) {
     String _temp0 = intl.Intl.pluralLogic(
       interval,
       locale: localeName,
@@ -1079,7 +1178,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String habitFrequencyEveryMonths(num interval) {
+  String habitFrequencyEveryMonths(num interval, Object count) {
     String _temp0 = intl.Intl.pluralLogic(
       interval,
       locale: localeName,
@@ -1090,7 +1189,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String habitFrequencyEveryQuarters(num interval) {
+  String habitFrequencyEveryQuarters(num interval, Object count) {
     String _temp0 = intl.Intl.pluralLogic(
       interval,
       locale: localeName,
@@ -1101,7 +1200,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String habitFrequencyEveryYears(num interval) {
+  String habitFrequencyEveryYears(num interval, Object count) {
     String _temp0 = intl.Intl.pluralLogic(
       interval,
       locale: localeName,
@@ -1189,4 +1288,110 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get habitMonthDecember => 'Décembre';
+
+  @override
+  String get sortBy => 'Trier par';
+
+  @override
+  String get scoreElo => 'Score Élo';
+
+  @override
+  String get random => 'Aléatoire';
+
+  @override
+  String get orderAscending => 'Ordre croissant';
+
+  @override
+  String get orderDescending => 'Ordre décroissant';
+
+  @override
+  String itemsCount(int count) {
+    return '$count éléments';
+  }
+
+  @override
+  String get add => 'Ajouter';
+
+  @override
+  String get keepOpenAfterAdd => 'Garder ouvert après ajout';
+
+  @override
+  String get bulkAddSingleHint => 'Ajouter un élément...';
+
+  @override
+  String get bulkAddMultipleHint =>
+      'Ajouter plusieurs éléments (un par ligne)...';
+
+  @override
+  String get bulkAddHelpText => 'Une nouvelle ligne = un nouvel élément';
+
+  @override
+  String get closeDialog => 'Fermer';
+
+  @override
+  String get bulkAddDefaultTitle => 'Ajouter des éléments';
+
+  @override
+  String get bulkAddSubmitting => 'Ajout des éléments...';
+
+  @override
+  String get bulkAddModeSingle => 'Simple';
+
+  @override
+  String get bulkAddModeMultiple => 'Multiple';
+
+  @override
+  String get listDeleteDialogTitle => 'Supprimer la liste';
+
+  @override
+  String listDeleteDialogMessage(String listName) {
+    return 'Êtes-vous sûr de vouloir supprimer \"$listName\" ?';
+  }
+
+  @override
+  String get listDeleteConfirm => 'Supprimer';
+
+  @override
+  String get listRenameDialogTitle => 'Renommer l\'élément';
+
+  @override
+  String get listRenameDialogLabel => 'Nom de l\'élément';
+
+  @override
+  String get listRenameSaved => 'Élément renommé.';
+
+  @override
+  String get listMoveDialogTitle => 'Déplacer l\'élément';
+
+  @override
+  String get listMoveDialogLabel => 'Liste de destination';
+
+  @override
+  String get listMoveNoOtherList => 'Aucune autre liste disponible';
+
+  @override
+  String get listMoveSaved => 'Élément déplacé.';
+
+  @override
+  String get listDuplicateSaved => 'Élément dupliqué.';
+
+  @override
+  String get listConfirmDeleteItemTitle => 'Supprimer l\'élément';
+
+  @override
+  String listConfirmDeleteItemMessage(String itemTitle) {
+    return 'Êtes-vous sûr de vouloir supprimer \"$itemTitle\" ?';
+  }
+
+  @override
+  String get more => 'Autres actions';
+
+  @override
+  String get rename => 'Renommer';
+
+  @override
+  String get move => 'Déplacer...';
+
+  @override
+  String get duplicate => 'Dupliquer';
 }

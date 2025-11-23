@@ -8,61 +8,108 @@ import 'package:prioris/l10n/app_localizations.dart';
 import '../../../../test_utils/habit_test_doubles.dart';
 
 void main() {
-  group('HabitFormWidget', () {
-    testWidgets('affiche le libellé de catégorie une seule fois', (tester) async {
+  group('HabitFormWidget — Nouvelle habitude', () {
+    testWidgets('affiche le bloc Nom/Categorie et la phrase de suivi par defaut', (tester) async {
       await tester.pumpWidget(_buildForm());
 
-      expect(find.text('Catégorie (facultatif)'), findsOneWidget);
+      expect(find.text('Nouvelle habitude'), findsOneWidget);
+      expect(find.byKey(const ValueKey('habit-name-field')), findsOneWidget);
+      expect(find.byKey(const ValueKey('habit-category-dropdown')), findsOneWidget);
+
+      expect(find.text('Je veux faire cette habitude'), findsOneWidget);
+      expect(find.byKey(const ValueKey('habit-tracking-times-field')), findsOneWidget);
+
+      await tester.tap(find.byKey(const ValueKey('habit-period-dropdown')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('par jour'), findsWidgets);
+      expect(find.text('par semaine'), findsOneWidget);
+      expect(find.text('par mois'), findsOneWidget);
+      expect(find.text('par an'), findsOneWidget);
+      expect(find.text('tous les...'), findsOneWidget);
     });
 
-    testWidgets('affiche une phrase narrative pour le mode de suivi', (tester) async {
+    testWidgets('bascule en mode intervalle et met a jour le resume', (tester) async {
       await tester.pumpWidget(_buildForm());
 
-      expect(find.text('Je veux suivre cette habitude en'), findsOneWidget);
+      await tester.enterText(find.byKey(const ValueKey('habit-name-field')), 'Boire de l eau');
 
-      final dropdown = find.byKey(const ValueKey('habit-type-dropdown'));
-      expect(dropdown, findsOneWidget);
-      expect(find.text('cochant quand c\'est fait'), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('habit-period-dropdown')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('tous les...').last);
+      await tester.pumpAndSettle();
 
-      final description = tester.widget<Text>(
-        find.byKey(const ValueKey('habit-type-description')),
+      expect(find.byKey(const ValueKey('habit-interval-count-field')), findsOneWidget);
+      expect(find.byKey(const ValueKey('habit-interval-every-field')), findsOneWidget);
+      expect(find.byKey(const ValueKey('habit-interval-unit-dropdown')), findsOneWidget);
+
+      await tester.enterText(
+        find.byKey(const ValueKey('habit-interval-every-field')),
+        '20',
       );
-      expect(description.data, contains('oui/non'));
+      await tester.tap(find.byKey(const ValueKey('habit-interval-unit-dropdown')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('heures').last);
+      await tester.pumpAndSettle();
+
+      final summary = tester.widget<Text>(
+        find.byKey(const ValueKey('habit-summary-text')),
+      );
+      expect(summary.data, contains('Boire de l eau 1 fois toutes les 20 heures'));
     });
 
-    testWidgets('met à jour la description quand le mode quantitatif est choisi', (tester) async {
+    testWidgets('met a jour le resume en temps reel sur la periode choisie', (tester) async {
       await tester.pumpWidget(_buildForm());
 
-      await tester.tap(find.byKey(const ValueKey('habit-type-dropdown')));
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('notant une quantité accomplie').last);
-      await tester.pumpAndSettle();
-
-      final description = tester.widget<Text>(
-        find.byKey(const ValueKey('habit-type-description')),
+      await tester.enterText(find.byKey(const ValueKey('habit-name-field')), 'Lire');
+      await tester.enterText(
+        find.byKey(const ValueKey('habit-tracking-times-field')),
+        '3',
       );
-      expect(description.data, contains('quantité'));
+      await tester.tap(find.byKey(const ValueKey('habit-period-dropdown')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('par semaine').last);
+      await tester.pumpAndSettle();
+
+      final summary = tester.widget<Text>(
+        find.byKey(const ValueKey('habit-summary-text')),
+      );
+      expect(summary.data, contains('Lire 3 fois par semaine'));
     });
 
-    testWidgets('crée une nouvelle catégorie via le service et la sélectionne', (tester) async {
-      final fakeService = HabitCategoryServiceSpy(createdValue: 'Business');
+    testWidgets('active le bouton Creer seulement quand le formulaire est valide', (tester) async {
+      await tester.pumpWidget(_buildForm());
 
-      await tester.pumpWidget(
-        _buildForm(categoryService: fakeService),
+      await tester.drag(find.byType(SingleChildScrollView), const Offset(0, -800));
+      await tester.pumpAndSettle();
+
+      final buttonFinder =
+          find.byWidgetPredicate((widget) => widget is ElevatedButton);
+
+      final nameField = tester.widget<EditableText>(
+        find.descendant(
+          of: find.byKey(const ValueKey('habit-name-field')),
+          matching: find.byType(EditableText),
+        ),
       );
+      expect(nameField.controller.text, isEmpty);
+      expect(buttonFinder, findsOneWidget);
 
-      await tester.tap(find.byKey(const ValueKey('habit-category-dropdown')));
-      await tester.pumpAndSettle();
+      ElevatedButton button() => tester.widget<ElevatedButton>(buttonFinder);
 
-      await tester.tap(find.byKey(const ValueKey('habit-category-create-item')));
-      await tester.pumpAndSettle();
+      expect(button().onPressed, isNull);
 
-      expect(fakeService.promptInvocationCount, 1);
-      expect(find.text('Business'), findsWidgets);
+      await tester.enterText(find.byKey(const ValueKey('habit-name-field')), 'Etudier');
+      await tester.enterText(find.byKey(const ValueKey('habit-tracking-times-field')), '0');
+      await tester.pump();
+      expect(button().onPressed, isNotNull);
+
+      await tester.enterText(find.byKey(const ValueKey('habit-tracking-times-field')), '2');
+      await tester.pump();
+      expect(button().onPressed, isNotNull);
     });
 
-    testWidgets('soumet une habitude quantitative avec objectif et unité', (tester) async {
+    testWidgets('soumet un Habit configure sur 3 fois par semaine', (tester) async {
       Habit? submitted;
 
       await tester.pumpWidget(
@@ -71,49 +118,32 @@ void main() {
         ),
       );
 
-      await tester.tap(find.byKey(const ValueKey('habit-type-dropdown')));
+      await tester.enterText(find.byKey(const ValueKey('habit-name-field')), 'Sport');
+      await tester.enterText(find.byKey(const ValueKey('habit-tracking-times-field')), '3');
+      await tester.tap(find.byKey(const ValueKey('habit-period-dropdown')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('par semaine').last);
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('notant une quantité accomplie').last);
+      final submitButton =
+          find.byWidgetPredicate((widget) => widget is ElevatedButton);
+
+      await tester.drag(find.byType(SingleChildScrollView), const Offset(0, -800));
       await tester.pumpAndSettle();
 
-      await tester.enterText(find.byKey(const ValueKey('habit-target-field')), '3,5');
-      await tester.enterText(find.byKey(const ValueKey('habit-unit-field')), 'km');
-      await tester.enterText(find.byKey(const ValueKey('habit-name-field')), 'Course');
-
-      await tester.drag(
-        find.byType(SingleChildScrollView),
-        const Offset(0, -400),
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Créer l\'habitude'));
+      await tester.tap(submitButton);
       await tester.pumpAndSettle();
 
       expect(submitted, isNotNull);
-      expect(submitted!.type, HabitType.quantitative);
-      expect(submitted!.targetValue, 3.5);
-      expect(submitted!.unit, 'km');
-    });
-
-    testWidgets('affiche un SnackBar si le nom est vide', (tester) async {
-      await tester.pumpWidget(_buildForm());
-
-      await tester.drag(
-        find.byType(SingleChildScrollView),
-        const Offset(0, -400),
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Créer l\'habitude'));
-      await tester.pump();
-
-      expect(find.text('Veuillez saisir un nom pour l\'habitude'), findsOneWidget);
+      expect(submitted!.timesTarget, 3);
+      expect(submitted!.recurrenceType, RecurrenceType.timesPerWeek);
     });
   });
 }
 
 Widget _buildForm({
   Habit? initialHabit,
-  List<String> categories = const ['Travail', 'Santé'],
+  List<String> categories = const ['Travail', 'Sante'],
   void Function(Habit)? onSubmit,
   HabitCategoryService? categoryService,
 }) {

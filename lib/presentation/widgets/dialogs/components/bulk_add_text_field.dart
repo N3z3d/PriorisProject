@@ -12,6 +12,7 @@ class BulkAddTextField extends StatelessWidget {
   final BulkAddMode mode;
   final String hintText;
   final Function(String) onSubmitted;
+  final bool enabled;
 
   const BulkAddTextField({
     super.key,
@@ -20,6 +21,7 @@ class BulkAddTextField extends StatelessWidget {
     required this.mode,
     required this.hintText,
     required this.onSubmitted,
+    this.enabled = true,
   });
 
   @override
@@ -38,9 +40,10 @@ class BulkAddTextField extends StatelessWidget {
       child: TextField(
         controller: controller,
         focusNode: focusNode,
+        enabled: enabled,
         maxLines: mode == BulkAddMode.multiple ? 5 : 1,
-        style: const TextStyle(
-          color: AppTheme.textPrimary,
+        style: TextStyle(
+          color: enabled ? AppTheme.textPrimary : AppTheme.textSecondary.withValues(alpha: 0.5),
           fontSize: 15,
           height: 1.4,
         ),

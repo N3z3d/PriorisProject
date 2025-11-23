@@ -9,7 +9,7 @@ enum DuelCardSize {
   standard,
   /// Compact size for 3-card duels (220-260px height)
   compact3,
-  /// Ultra-compact size for 4-card duels (200-240px height)
+  /// Ultra-compact size for 4-card duels (lighter height)
   compact4,
 }
 
@@ -199,18 +199,21 @@ class _DuelTaskCardState extends State<DuelTaskCard>
     switch (size) {
       case DuelCardSize.standard:
         return const BoxConstraints(
-          maxWidth: 320,
-          minHeight: 230,
+          maxWidth: 380,
+          minHeight: 260,
+          maxHeight: 320,
         );
       case DuelCardSize.compact3:
         return const BoxConstraints(
-          maxWidth: 240,
-          minHeight: 160,
+          maxWidth: 280,
+          minHeight: 200,
+          maxHeight: 280,
         );
       case DuelCardSize.compact4:
         return const BoxConstraints(
           maxWidth: 240,
-          minHeight: 130,
+          minHeight: 180,
+          maxHeight: 240,
         );
     }
   }
@@ -223,7 +226,7 @@ class _DuelTaskCardState extends State<DuelTaskCard>
       case DuelCardSize.compact3:
         return const EdgeInsets.symmetric(horizontal: 16, vertical: 16);
       case DuelCardSize.compact4:
-        return const EdgeInsets.symmetric(horizontal: 14, vertical: 14);
+        return const EdgeInsets.symmetric(horizontal: 10, vertical: 10);
     }
   }
 }
@@ -361,7 +364,7 @@ class _CardContent extends StatelessWidget {
       case DuelCardSize.compact3:
         return 14;
       case DuelCardSize.compact4:
-        return 13;
+        return 12;
     }
   }
 
@@ -382,7 +385,7 @@ class _CardContent extends StatelessWidget {
       case DuelCardSize.compact3:
         return 11.5;
       case DuelCardSize.compact4:
-        return 10.5;
+        return 9.5;
     }
   }
 
@@ -404,7 +407,7 @@ class _CardContent extends StatelessWidget {
       case DuelCardSize.compact3:
         return 5;
       case DuelCardSize.compact4:
-        return 4;
+        return 3;
     }
   }
 
@@ -415,7 +418,7 @@ class _CardContent extends StatelessWidget {
       case DuelCardSize.compact3:
         return 8;
       case DuelCardSize.compact4:
-        return 6;
+        return 3;
     }
   }
 }

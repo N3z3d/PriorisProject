@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 
 /// Action buttons component for BulkAddDialog
@@ -7,18 +8,22 @@ import 'package:prioris/presentation/theme/app_theme.dart';
 /// **Size**: < 50 lines (constraint respected)
 class BulkAddActionButtons extends StatelessWidget {
   final bool isValid;
-  final VoidCallback onCancel;
+  final bool isSubmitting;
+  final VoidCallback? onCancel;
   final VoidCallback onSubmit;
 
   const BulkAddActionButtons({
     super.key,
     required this.isValid,
+    this.isSubmitting = false,
     required this.onCancel,
     required this.onSubmit,
   });
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Row(
       children: [
         Expanded(
@@ -30,9 +35,9 @@ class BulkAddActionButtons extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: const Text(
-              'Annuler',
-              style: TextStyle(
+            child: Text(
+              l10n.cancel,
+              style: const TextStyle(
                 color: AppTheme.textSecondary,
                 fontWeight: FontWeight.w500,
               ),
@@ -55,9 +60,9 @@ class BulkAddActionButtons extends StatelessWidget {
               elevation: isValid ? 2 : 0,
               shadowColor: AppTheme.primaryColor.withValues(alpha: 0.3),
             ),
-            child: const Text(
-              'Ajouter',
-              style: TextStyle(
+            child: Text(
+              l10n.add,
+              style: const TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 15,
               ),

@@ -1,4 +1,4 @@
-﻿part of '../list_item_card.dart';
+part of '../list_item_card.dart';
 
 class _ActionFooter extends StatelessWidget {
   const _ActionFooter({
@@ -22,10 +22,10 @@ class _ActionFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+      padding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
       child: Row(
         children: [
-          _buildToggleButton(),
+          _buildToggleButton(context),
           const Spacer(),
           _buildAnimatedActions(),
         ],
@@ -57,13 +57,17 @@ class _ActionFooter extends StatelessWidget {
     );
   }
 
-  Widget _buildToggleButton() {
+  Widget _buildToggleButton(BuildContext context) {
     if (onToggleCompletion == null) {
       return const SizedBox.shrink();
     }
 
+    final l10n = AppLocalizations.of(context);
     final isCompleted = item.isCompleted;
     final color = isCompleted ? AppTheme.successColor : AppTheme.primaryColor;
+    final label = isCompleted
+        ? (l10n?.listItemActionReopen ?? 'Rouvrir')
+        : (l10n?.listItemActionComplete ?? 'Compléter');
 
     return PremiumMicroInteractions.pressable(
       onPressed: onToggleCompletion!,
@@ -72,17 +76,18 @@ class _ActionFooter extends StatelessWidget {
         key: ValueKey('list-item-toggle-${item.id}'),
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.15),
-          borderRadius: BorderRadius.circular(12),
+          color: color.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: color.withValues(alpha: 0.25)),
         ),
         child: Row(
           children: [
             Icon(isCompleted ? Icons.undo : Icons.check, size: 16, color: color),
-            const SizedBox(width: 8),
+            const SizedBox(width: 6),
             Text(
-              isCompleted ? 'Rouvrir' : 'Compl\u00E9ter',
+              label,
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 color: color,
@@ -120,8 +125,10 @@ class _TrailingSection extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        _buildStatusIndicator(),
-        const SizedBox(height: 6),
+        if (isSyncing) ...[
+          const _SyncIndicator(),
+          const SizedBox(height: 4),
+        ],
         _EloBadge(score: item.eloScore),
         const SizedBox(height: 6),
         AnimatedBuilder(
@@ -145,23 +152,6 @@ class _TrailingSection extends StatelessWidget {
       ],
     );
   }
-
-  Widget _buildStatusIndicator() {
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 150),
-      child: isSyncing
-          ? const _SyncIndicator()
-          : PremiumStatusIndicator(
-              key: ValueKey('status-${item.id}'),
-              status:
-                  item.isCompleted ? StatusType.completed : StatusType.pending,
-              showLabel: false,
-              size: 20,
-              enableAnimation: false,
-              enableHaptics: false,
-            ),
-    );
-  }
 }
 
 class _SyncIndicator extends StatelessWidget {
@@ -170,10 +160,10 @@ class _SyncIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const SizedBox(
-      width: 20,
-      height: 20,
+      width: 18,
+      height: 18,
       child: CircularProgressIndicator(
-        strokeWidth: 1.8,
+        strokeWidth: 1.6,
         valueColor: AlwaysStoppedAnimation<Color>(AppTheme.grey600),
       ),
     );
@@ -191,8 +181,9 @@ class _EloBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: AppTheme.primaryColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
+        color: AppTheme.primaryColor.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.25)),
       ),
       child: Text(
         score.round().toString(),
@@ -223,16 +214,17 @@ class _ActionButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
-      children: _buildButtons(),
+      children: _buildButtons(context),
     );
   }
 
-  List<Widget> _buildButtons() {
+  List<Widget> _buildButtons(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final widgets = <Widget>[];
 
     void addSpacing() {
       if (widgets.isNotEmpty) {
-        widgets.add(const SizedBox(width: 8));
+        widgets.add(const SizedBox(width: 6));
       }
     }
 
@@ -241,8 +233,9 @@ class _ActionButtons extends StatelessWidget {
         _IconActionButton(
           icon: Icons.edit,
           color: AppTheme.primaryColor,
-          background: AppTheme.primaryColor.withValues(alpha: 0.1),
-          borderColor: AppTheme.primaryColor.withValues(alpha: 0.3),
+          background: AppTheme.primaryColor.withValues(alpha: 0.08),
+          borderColor: AppTheme.primaryColor.withValues(alpha: 0.2),
+          tooltip: l10n?.listEditTooltip,
           onPressed: () {
             onHideActions();
             onEdit!.call();
@@ -257,8 +250,9 @@ class _ActionButtons extends StatelessWidget {
         _IconActionButton(
           icon: Icons.delete,
           color: AppTheme.errorColor,
-          background: AppTheme.errorColor.withValues(alpha: 0.1),
-          borderColor: AppTheme.errorColor.withValues(alpha: 0.3),
+          background: AppTheme.errorColor.withValues(alpha: 0.08),
+          borderColor: AppTheme.errorColor.withValues(alpha: 0.2),
+          tooltip: l10n?.listDeleteTooltip,
           onPressed: () {
             onHideActions();
             onDelete!.call();
@@ -273,24 +267,24 @@ class _ActionButtons extends StatelessWidget {
         PopupMenuButton<String>(
           onOpened: onHideActions,
           onSelected: onMenuAction!,
-          tooltip: 'Autres actions',
+          tooltip: l10n?.more ?? 'Autres actions',
           icon: const Icon(
             Icons.more_horiz,
             size: 20,
             color: AppTheme.textSecondary,
           ),
-          itemBuilder: (context) => const [
+          itemBuilder: (context) => [
             PopupMenuItem(
               value: 'rename',
-              child: Text('Renommer'),
+              child: Text(l10n?.rename ?? 'Renommer'),
             ),
             PopupMenuItem(
               value: 'move',
-              child: Text('DÃ©placer...'),
+              child: Text(l10n?.move ?? 'Déplacer...'),
             ),
             PopupMenuItem(
               value: 'duplicate',
-              child: Text('Dupliquer'),
+              child: Text(l10n?.duplicate ?? 'Dupliquer'),
             ),
           ],
         ),
@@ -308,6 +302,7 @@ class _IconActionButton extends StatelessWidget {
     required this.background,
     required this.borderColor,
     required this.onPressed,
+    this.tooltip,
   });
 
   final IconData icon;
@@ -315,10 +310,11 @@ class _IconActionButton extends StatelessWidget {
   final Color background;
   final Color borderColor;
   final VoidCallback onPressed;
+  final String? tooltip;
 
   @override
   Widget build(BuildContext context) {
-    return PremiumMicroInteractions.pressable(
+    final button = PremiumMicroInteractions.pressable(
       onPressed: onPressed,
       enableHaptics: true,
       enableScaleEffect: true,
@@ -334,6 +330,10 @@ class _IconActionButton extends StatelessWidget {
         child: Icon(icon, size: 16, color: color),
       ),
     );
+
+    return tooltip != null
+        ? Tooltip(message: tooltip!, child: button)
+        : button;
   }
 }
 
@@ -346,4 +346,3 @@ Color _eloColor(double elo) {
   }
   return AppTheme.errorColor;
 }
-

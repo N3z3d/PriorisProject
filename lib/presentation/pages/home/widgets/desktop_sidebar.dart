@@ -73,7 +73,7 @@ class DesktopSidebar extends ConsumerWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: const Icon(
-        Icons.track_changes_rounded,
+        Icons.checklist_rtl,
         color: Colors.white,
         size: 22,
       ),

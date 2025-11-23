@@ -30,6 +30,42 @@
   "habitFormQuantTargetHint": "8",
   "habitFormQuantUnitLabel": "Unit",
   "habitFormQuantUnitHint": "glasses",
+  "habitTrackingTitle": "How would you like to track this habit?",
+  "habitTrackingTip": "Tip: enter 1 if once per period is enough (same as done/not done).",
+  "habitTrackingPrefix": "I want to do this habit",
+  "habitTrackingTimesWord": "times",
+  "habitTrackingEveryWord": "every",
+  "habitTrackingBackToPeriod": "Back to \"per period\" mode",
+  "habitTrackingPeriodDay": "per day",
+  "habitTrackingPeriodWeek": "per week",
+  "habitTrackingPeriodMonth": "per month",
+  "habitTrackingPeriodYear": "per year",
+  "habitTrackingCustomInterval": "every...",
+  "habitTrackingUnitHours": "hours",
+  "habitTrackingUnitDays": "days",
+  "habitTrackingUnitWeeks": "weeks",
+  "habitTrackingUnitMonths": "months",
+  "habitSummaryTitle": "Summary",
+  "habitSummaryPlaceholder": "Fill in the name and frequency to see the summary.",
+  "habitSummaryAction": "You want to {name}",
+  "habitSummaryTimes": "{count, plural, one {{count} time} other {{count} times}}",
+  "listItemDateLabel": "Added on {date}",
+  "@listItemDateLabel": {
+    "description": "Label shown before the date on a list item card",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "listItemDateUnknown": "No date",
+  "listItemActionComplete": "Complete",
+  "listItemActionReopen": "Reopen",
+  "listEditTooltip": "Edit list",
+  "listDeleteTooltip": "Delete list",
+  "listEditDialogTitle": "Edit list",
+  "listEditNameLabel": "List name",
+  "listEditSaved": "List updated.",
   "habitFormTypePrompt": "I want to track this habit by",
   "habitFormTypeBinaryOption": "checking it off when it’s done",
   "habitFormTypeQuantOption": "recording how much I complete",
@@ -1406,5 +1442,152 @@
   "habitMonthDecember": "December",
   "@habitMonthDecember": {
     "description": "Month name: December"
+  },
+  "sortBy": "Sort by",
+  "@sortBy": {
+    "description": "Label for sort dropdown in list detail screen"
+  },
+  "scoreElo": "Elo Score",
+  "@scoreElo": {
+    "description": "Sort option: sort by Elo score"
+  },
+  "random": "Random",
+  "@random": {
+    "description": "Sort option: random order"
+  },
+  "orderAscending": "Ascending order",
+  "@orderAscending": {
+    "description": "Tooltip for ascending sort button"
+  },
+  "orderDescending": "Descending order",
+  "@orderDescending": {
+    "description": "Tooltip for descending sort button"
+  },
+  "itemsCount": "{count} items",
+  "@itemsCount": {
+    "description": "Display count of items in list",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "add": "Add",
+  "@add": {
+    "description": "Generic add action button"
+  },
+  "keepOpenAfterAdd": "Keep open after adding",
+  "@keepOpenAfterAdd": {
+    "description": "Checkbox label in bulk add dialog to keep dialog open after submission"
+  },
+  "bulkAddSingleHint": "Add an item...",
+  "@bulkAddSingleHint": {
+    "description": "Hint text for single item mode in bulk add dialog"
+  },
+  "bulkAddMultipleHint": "Add multiple items (one per line)...",
+  "@bulkAddMultipleHint": {
+    "description": "Hint text for multiple items mode in bulk add dialog"
+  },
+  "bulkAddHelpText": "New line = new item",
+  "@bulkAddHelpText": {
+    "description": "Help message explaining how to add multiple items"
+  },
+  "closeDialog": "Close",
+  "@closeDialog": {
+    "description": "Close button tooltip for dialogs"
+  },
+  "bulkAddDefaultTitle": "Add items",
+  "@bulkAddDefaultTitle": {
+    "description": "Default title for bulk add dialog"
+  },
+  "bulkAddSubmitting": "Adding items...",
+  "@bulkAddSubmitting": {
+    "description": "Loading message while adding multiple items"
+  },
+  "bulkAddModeSingle": "Single",
+  "@bulkAddModeSingle": {
+    "description": "Tab label for single item mode"
+  },
+  "bulkAddModeMultiple": "Multiple",
+  "@bulkAddModeMultiple": {
+    "description": "Tab label for multiple items mode"
+  },
+  "listDeleteDialogTitle": "Delete list",
+  "@listDeleteDialogTitle": {
+    "description": "Dialog title for deleting a list"
+  },
+  "listDeleteDialogMessage": "Are you sure you want to delete \"{listName}\"?",
+  "@listDeleteDialogMessage": {
+    "description": "Dialog message for deleting a list",
+    "placeholders": {
+      "listName": {
+        "type": "String"
+      }
+    }
+  },
+  "listDeleteConfirm": "Delete",
+  "@listDeleteConfirm": {
+    "description": "Confirm deletion button label"
+  },
+  "listRenameDialogTitle": "Rename item",
+  "@listRenameDialogTitle": {
+    "description": "Dialog title for renaming an item"
+  },
+  "listRenameDialogLabel": "Item name",
+  "@listRenameDialogLabel": {
+    "description": "Field label for item rename"
+  },
+  "listRenameSaved": "Item renamed.",
+  "@listRenameSaved": {
+    "description": "Snackbar when item renamed"
+  },
+  "listMoveDialogTitle": "Move item",
+  "@listMoveDialogTitle": {
+    "description": "Dialog title for moving an item"
+  },
+  "listMoveDialogLabel": "Destination list",
+  "@listMoveDialogLabel": {
+    "description": "Field label for destination list"
+  },
+  "listMoveNoOtherList": "No other list available",
+  "@listMoveNoOtherList": {
+    "description": "Snackbar when no other list exists"
+  },
+  "listMoveSaved": "Item moved.",
+  "@listMoveSaved": {
+    "description": "Snackbar when item moved"
+  },
+  "listDuplicateSaved": "Item duplicated.",
+  "@listDuplicateSaved": {
+    "description": "Snackbar when item duplicated"
+  },
+  "listConfirmDeleteItemTitle": "Delete item",
+  "@listConfirmDeleteItemTitle": {
+    "description": "Dialog title for deleting an item"
+  },
+  "listConfirmDeleteItemMessage": "Are you sure you want to delete \"{itemTitle}\"?",
+  "@listConfirmDeleteItemMessage": {
+    "description": "Dialog message for deleting an item",
+    "placeholders": {
+      "itemTitle": {
+        "type": "String"
+      }
+    }
+  },
+  "more": "More",
+  "@more": {
+    "description": "Tooltip for more actions"
+  },
+  "rename": "Rename",
+  "@rename": {
+    "description": "Menu label rename"
+  },
+  "move": "Move...",
+  "@move": {
+    "description": "Menu label move"
+  },
+  "duplicate": "Duplicate",
+  "@duplicate": {
+    "description": "Menu label duplicate"
   }
 }

@@ -214,9 +214,20 @@ class _PriorityDuelViewState extends State<PriorityDuelView> {
   }
 
   double _minimumContentHeight() {
-    final hasDenseLayout =
-        widget.mode == DuelMode.ranking || widget.tasks.length >= 3;
-    return hasDenseLayout ? 820.0 : 720.0;
+    // Ranking mode needs most space
+    if (widget.mode == DuelMode.ranking) {
+      return 820.0;
+    }
+    // Winner mode with 4 cards needs extra height for grid
+    if (widget.mode == DuelMode.winner && widget.cardsPerRound == 4) {
+      return 900.0;
+    }
+    // Winner mode with 3 cards
+    if (widget.mode == DuelMode.winner && widget.cardsPerRound == 3) {
+      return 800.0;
+    }
+    // Winner mode with 2 cards (default)
+    return 720.0;
   }
 
   Widget _buildArena() {

@@ -18,6 +18,42 @@
   "habitFormQuantTargetHint": "8",
   "habitFormQuantUnitLabel": "Unité",
   "habitFormQuantUnitHint": "verres",
+  "habitTrackingTitle": "Comment voulez-vous suivre cette habitude ?",
+  "habitTrackingTip": "Astuce : mettez 1 si une seule fois par période suffit (équivalent à \"fait / pas fait\").",
+  "habitTrackingPrefix": "Je veux faire cette habitude",
+  "habitTrackingTimesWord": "fois",
+  "habitTrackingEveryWord": "toutes les",
+  "habitTrackingBackToPeriod": "Revenir au mode \"par période\"",
+  "habitTrackingPeriodDay": "par jour",
+  "habitTrackingPeriodWeek": "par semaine",
+  "habitTrackingPeriodMonth": "par mois",
+  "habitTrackingPeriodYear": "par an",
+  "habitTrackingCustomInterval": "tous les...",
+  "habitTrackingUnitHours": "heures",
+  "habitTrackingUnitDays": "jours",
+  "habitTrackingUnitWeeks": "semaines",
+  "habitTrackingUnitMonths": "mois",
+  "habitSummaryTitle": "Résumé",
+  "habitSummaryPlaceholder": "Complétez le nom et la fréquence pour voir le résumé.",
+  "habitSummaryAction": "Vous voulez {name}",
+  "habitSummaryTimes": "{count, plural, one {{count} fois} other {{count} fois}}",
+  "listItemDateLabel": "Ajouté le {date}",
+  "@listItemDateLabel": {
+    "description": "Libellé affiché avant la date sur une carte d'élément",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "listItemDateUnknown": "Sans date",
+  "listItemActionComplete": "Compléter",
+  "listItemActionReopen": "Rouvrir",
+  "listEditTooltip": "Modifier la liste",
+  "listDeleteTooltip": "Supprimer la liste",
+  "listEditDialogTitle": "Modifier la liste",
+  "listEditNameLabel": "Nom de la liste",
+  "listEditSaved": "Liste mise à jour.",
   "habitFormTypePrompt": "Je veux suivre cette habitude en",
   "habitFormTypeBinaryOption": "cochant quand c'est fait",
   "habitFormTypeQuantOption": "notant une quantité accomplie",
@@ -564,5 +600,152 @@
   "habitMonthSeptember": "Septembre",
   "habitMonthOctober": "Octobre",
   "habitMonthNovember": "Novembre",
-  "habitMonthDecember": "Décembre"
+  "habitMonthDecember": "Décembre",
+  "sortBy": "Trier par",
+  "@sortBy": {
+    "description": "Label for sort dropdown in list detail screen"
+  },
+  "scoreElo": "Score Élo",
+  "@scoreElo": {
+    "description": "Sort option: sort by Elo score"
+  },
+  "random": "Aléatoire",
+  "@random": {
+    "description": "Sort option: random order"
+  },
+  "orderAscending": "Ordre croissant",
+  "@orderAscending": {
+    "description": "Tooltip for ascending sort button"
+  },
+  "orderDescending": "Ordre décroissant",
+  "@orderDescending": {
+    "description": "Tooltip for descending sort button"
+  },
+  "itemsCount": "{count} éléments",
+  "@itemsCount": {
+    "description": "Display count of items in list",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "add": "Ajouter",
+  "@add": {
+    "description": "Generic add action button"
+  },
+  "keepOpenAfterAdd": "Garder ouvert après ajout",
+  "@keepOpenAfterAdd": {
+    "description": "Checkbox label in bulk add dialog to keep dialog open after submission"
+  },
+  "bulkAddSingleHint": "Ajouter un élément...",
+  "@bulkAddSingleHint": {
+    "description": "Hint text for single item mode in bulk add dialog"
+  },
+  "bulkAddMultipleHint": "Ajouter plusieurs éléments (un par ligne)...",
+  "@bulkAddMultipleHint": {
+    "description": "Hint text for multiple items mode in bulk add dialog"
+  },
+  "bulkAddHelpText": "Une nouvelle ligne = un nouvel élément",
+  "@bulkAddHelpText": {
+    "description": "Help message explaining how to add multiple items"
+  },
+  "closeDialog": "Fermer",
+  "@closeDialog": {
+    "description": "Close button tooltip for dialogs"
+  },
+  "bulkAddDefaultTitle": "Ajouter des éléments",
+  "@bulkAddDefaultTitle": {
+    "description": "Default title for bulk add dialog"
+  },
+  "bulkAddSubmitting": "Ajout des éléments...",
+  "@bulkAddSubmitting": {
+    "description": "Loading message while adding multiple items"
+  },
+  "bulkAddModeSingle": "Simple",
+  "@bulkAddModeSingle": {
+    "description": "Tab label for single item mode"
+  },
+  "bulkAddModeMultiple": "Multiple",
+  "@bulkAddModeMultiple": {
+    "description": "Tab label for multiple items mode"
+  },
+  "listDeleteDialogTitle": "Supprimer la liste",
+  "@listDeleteDialogTitle": {
+    "description": "Titre du dialogue de suppression de liste"
+  },
+  "listDeleteDialogMessage": "Êtes-vous sûr de vouloir supprimer \"{listName}\" ?",
+  "@listDeleteDialogMessage": {
+    "description": "Message du dialogue de suppression de liste",
+    "placeholders": {
+      "listName": {
+        "type": "String"
+      }
+    }
+  },
+  "listDeleteConfirm": "Supprimer",
+  "@listDeleteConfirm": {
+    "description": "Bouton de confirmation de suppression"
+  },
+  "listRenameDialogTitle": "Renommer l'élément",
+  "@listRenameDialogTitle": {
+    "description": "Titre du dialogue de renommage d'élément"
+  },
+  "listRenameDialogLabel": "Nom de l'élément",
+  "@listRenameDialogLabel": {
+    "description": "Libellé du champ de renommage d'élément"
+  },
+  "listRenameSaved": "Élément renommé.",
+  "@listRenameSaved": {
+    "description": "Snackbar après renommage"
+  },
+  "listMoveDialogTitle": "Déplacer l'élément",
+  "@listMoveDialogTitle": {
+    "description": "Titre du dialogue de déplacement d'élément"
+  },
+  "listMoveDialogLabel": "Liste de destination",
+  "@listMoveDialogLabel": {
+    "description": "Libellé du champ destination"
+  },
+  "listMoveNoOtherList": "Aucune autre liste disponible",
+  "@listMoveNoOtherList": {
+    "description": "Snackbar quand aucune autre liste n'existe"
+  },
+  "listMoveSaved": "Élément déplacé.",
+  "@listMoveSaved": {
+    "description": "Snackbar après déplacement"
+  },
+  "listDuplicateSaved": "Élément dupliqué.",
+  "@listDuplicateSaved": {
+    "description": "Snackbar après duplication"
+  },
+  "listConfirmDeleteItemTitle": "Supprimer l'élément",
+  "@listConfirmDeleteItemTitle": {
+    "description": "Titre du dialogue de suppression d'élément"
+  },
+  "listConfirmDeleteItemMessage": "Êtes-vous sûr de vouloir supprimer \"{itemTitle}\" ?",
+  "@listConfirmDeleteItemMessage": {
+    "description": "Message du dialogue de suppression d'élément",
+    "placeholders": {
+      "itemTitle": {
+        "type": "String"
+      }
+    }
+  },
+  "more": "Autres actions",
+  "@more": {
+    "description": "Tooltip pour actions supplémentaires"
+  },
+  "rename": "Renommer",
+  "@rename": {
+    "description": "Libellé menu renommer"
+  },
+  "move": "Déplacer...",
+  "@move": {
+    "description": "Libellé menu déplacer"
+  },
+  "duplicate": "Dupliquer",
+  "@duplicate": {
+    "description": "Libellé menu dupliquer"
+  }
 }

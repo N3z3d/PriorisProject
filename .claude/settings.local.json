@@ -34,7 +34,12 @@
       "Bash(timeout 120 flutter test:*)",
       "Bash(git tag:*)",
       "Bash(timeout 60 flutter test:*)",
-      "Bash(flutter build:*)"
+      "Bash(flutter build:*)",
+      "Bash(findstr:*)",
+      "Bash(Select-String -Pattern \"(error|Error|ERROR|FAILED)\")",
+      "Bash(Select-Object -First 10)",
+      "Bash(python -m json.tool:*)",
+      "Bash(/dev/null)"
     ],
     "deny": [],
     "ask": []

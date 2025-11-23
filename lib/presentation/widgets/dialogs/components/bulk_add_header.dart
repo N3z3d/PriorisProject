@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 
 /// Header component for BulkAddDialog
@@ -7,7 +8,7 @@ import 'package:prioris/presentation/theme/app_theme.dart';
 /// **Size**: < 50 lines (constraint respected)
 class BulkAddHeader extends StatelessWidget {
   final String title;
-  final VoidCallback onClose;
+  final VoidCallback? onClose;
 
   const BulkAddHeader({
     super.key,
@@ -17,6 +18,8 @@ class BulkAddHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Semantics(
       label: title,
       child: Row(
@@ -36,7 +39,7 @@ class BulkAddHeader extends StatelessWidget {
             icon: const Icon(Icons.close, size: 20),
             color: AppTheme.textSecondary,
             splashRadius: 20,
-            tooltip: 'Close dialog',
+            tooltip: l10n.closeDialog,
           ),
         ],
       ),

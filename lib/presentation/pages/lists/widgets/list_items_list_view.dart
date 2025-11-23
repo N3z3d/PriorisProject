@@ -23,17 +23,20 @@ class ListItemsListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
-        return ListItemCard(
-          item: item,
-          isSyncing: syncingItems.contains(item.id),
-          onEdit: () => onEdit(item),
-          onDelete: () => onDelete(item),
-          onToggleCompletion: () => onToggleCompletion(item),
-          onMenuAction: (action) => onMenuAction(action, item),
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: ListItemCard(
+            item: item,
+            isSyncing: syncingItems.contains(item.id),
+            onEdit: () => onEdit(item),
+            onDelete: () => onDelete(item),
+            onToggleCompletion: () => onToggleCompletion(item),
+            onMenuAction: (action) => onMenuAction(action, item),
+          ),
         );
       },
     );

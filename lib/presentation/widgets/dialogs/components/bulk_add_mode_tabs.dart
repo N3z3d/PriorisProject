@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/widgets/dialogs/bulk_add_dialog.dart';
 
@@ -18,6 +19,8 @@ class BulkAddModeTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.surfaceColor.withValues(alpha: 0.2),
@@ -31,16 +34,16 @@ class BulkAddModeTabs extends StatelessWidget {
       child: TabBar(
         controller: controller,
         onTap: (index) => onModeChanged(BulkAddMode.values[index]),
-        tabs: const [
+        tabs: [
           Tab(
-            key: ValueKey('single_mode_tab'),
+            key: const ValueKey('single_mode_tab'),
             height: 36,
-            child: Text('Single', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+            child: Text(l10n.bulkAddModeSingle, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
           ),
           Tab(
-            key: ValueKey('multiple_mode_tab'),
+            key: const ValueKey('multiple_mode_tab'),
             height: 36,
-            child: Text('Multiple', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+            child: Text(l10n.bulkAddModeMultiple, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
           ),
         ],
         labelColor: Colors.white,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 
 /// Keep-open checkbox component for BulkAddDialog
@@ -7,7 +8,7 @@ import 'package:prioris/presentation/theme/app_theme.dart';
 /// **Size**: < 35 lines (constraint respected)
 class BulkAddKeepOpenOption extends StatelessWidget {
   final bool value;
-  final Function(bool?) onChanged;
+  final Function(bool?)? onChanged;
 
   const BulkAddKeepOpenOption({
     super.key,
@@ -17,6 +18,8 @@ class BulkAddKeepOpenOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Row(
       children: [
         Checkbox(
@@ -26,8 +29,8 @@ class BulkAddKeepOpenOption extends StatelessWidget {
         ),
         const SizedBox(width: 8),
         Text(
-          'Garder ouvert après ajout',
-          style: TextStyle(
+          l10n.keepOpenAfterAdd,
+          style: const TextStyle(
             color: AppTheme.textSecondary,
             fontSize: 14,
           ),

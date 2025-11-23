@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prioris/domain/core/value_objects/duel_settings.dart';
 import 'package:prioris/domain/models/core/entities/task.dart';
-import 'package:prioris/presentation/pages/duel/widgets/duel_task_card.dart';
 import 'package:prioris/presentation/pages/duel/widgets/components/priority_duel_layouts.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 
@@ -119,7 +118,6 @@ class PriorityRankingArena extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     return ReorderableListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       physics: const BouncingScrollPhysics(),

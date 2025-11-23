@@ -210,6 +210,174 @@ abstract class AppLocalizations {
   /// **'glasses'**
   String get habitFormQuantUnitHint;
 
+  /// No description provided for @habitTrackingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How would you like to track this habit?'**
+  String get habitTrackingTitle;
+
+  /// No description provided for @habitTrackingTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip: enter 1 if once per period is enough (same as done/not done).'**
+  String get habitTrackingTip;
+
+  /// No description provided for @habitTrackingPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'I want to do this habit'**
+  String get habitTrackingPrefix;
+
+  /// No description provided for @habitTrackingTimesWord.
+  ///
+  /// In en, this message translates to:
+  /// **'times'**
+  String get habitTrackingTimesWord;
+
+  /// No description provided for @habitTrackingEveryWord.
+  ///
+  /// In en, this message translates to:
+  /// **'every'**
+  String get habitTrackingEveryWord;
+
+  /// No description provided for @habitTrackingBackToPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to \"per period\" mode'**
+  String get habitTrackingBackToPeriod;
+
+  /// No description provided for @habitTrackingPeriodDay.
+  ///
+  /// In en, this message translates to:
+  /// **'per day'**
+  String get habitTrackingPeriodDay;
+
+  /// No description provided for @habitTrackingPeriodWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'per week'**
+  String get habitTrackingPeriodWeek;
+
+  /// No description provided for @habitTrackingPeriodMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'per month'**
+  String get habitTrackingPeriodMonth;
+
+  /// No description provided for @habitTrackingPeriodYear.
+  ///
+  /// In en, this message translates to:
+  /// **'per year'**
+  String get habitTrackingPeriodYear;
+
+  /// No description provided for @habitTrackingCustomInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'every...'**
+  String get habitTrackingCustomInterval;
+
+  /// No description provided for @habitTrackingUnitHours.
+  ///
+  /// In en, this message translates to:
+  /// **'hours'**
+  String get habitTrackingUnitHours;
+
+  /// No description provided for @habitTrackingUnitDays.
+  ///
+  /// In en, this message translates to:
+  /// **'days'**
+  String get habitTrackingUnitDays;
+
+  /// No description provided for @habitTrackingUnitWeeks.
+  ///
+  /// In en, this message translates to:
+  /// **'weeks'**
+  String get habitTrackingUnitWeeks;
+
+  /// No description provided for @habitTrackingUnitMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'months'**
+  String get habitTrackingUnitMonths;
+
+  /// No description provided for @habitSummaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Summary'**
+  String get habitSummaryTitle;
+
+  /// No description provided for @habitSummaryPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill in the name and frequency to see the summary.'**
+  String get habitSummaryPlaceholder;
+
+  /// No description provided for @habitSummaryAction.
+  ///
+  /// In en, this message translates to:
+  /// **'You want to {name}'**
+  String habitSummaryAction(Object name);
+
+  /// No description provided for @habitSummaryTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one {{count} time} other {{count} times}}'**
+  String habitSummaryTimes(num count);
+
+  /// Label shown before the date on a list item card
+  ///
+  /// In en, this message translates to:
+  /// **'Added on {date}'**
+  String listItemDateLabel(String date);
+
+  /// No description provided for @listItemDateUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'No date'**
+  String get listItemDateUnknown;
+
+  /// No description provided for @listItemActionComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete'**
+  String get listItemActionComplete;
+
+  /// No description provided for @listItemActionReopen.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen'**
+  String get listItemActionReopen;
+
+  /// No description provided for @listEditTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit list'**
+  String get listEditTooltip;
+
+  /// No description provided for @listDeleteTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete list'**
+  String get listDeleteTooltip;
+
+  /// No description provided for @listEditDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit list'**
+  String get listEditDialogTitle;
+
+  /// No description provided for @listEditNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'List name'**
+  String get listEditNameLabel;
+
+  /// No description provided for @listEditSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'List updated.'**
+  String get listEditSaved;
+
   /// No description provided for @habitFormTypePrompt.
   ///
   /// In en, this message translates to:
@@ -1990,37 +2158,37 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{interval, plural, one {every hour} other {every {interval} hours}}'**
-  String habitFrequencyEveryHours(num interval);
+  String habitFrequencyEveryHours(num interval, Object count);
 
   /// Summary for every X days
   ///
   /// In en, this message translates to:
   /// **'{interval, plural, one {daily} other {every {interval} days}}'**
-  String habitFrequencyEveryDays(num interval);
+  String habitFrequencyEveryDays(num interval, Object count);
 
   /// Summary for every X weeks
   ///
   /// In en, this message translates to:
   /// **'{interval, plural, one {weekly} other {every {interval} weeks}}'**
-  String habitFrequencyEveryWeeks(num interval);
+  String habitFrequencyEveryWeeks(num interval, Object count);
 
   /// Summary for every X months
   ///
   /// In en, this message translates to:
   /// **'{interval, plural, one {monthly} other {every {interval} months}}'**
-  String habitFrequencyEveryMonths(num interval);
+  String habitFrequencyEveryMonths(num interval, Object count);
 
   /// Summary for every X quarters
   ///
   /// In en, this message translates to:
   /// **'{interval, plural, one {quarterly} other {every {interval} quarters}}'**
-  String habitFrequencyEveryQuarters(num interval);
+  String habitFrequencyEveryQuarters(num interval, Object count);
 
   /// Summary for every X years
   ///
   /// In en, this message translates to:
   /// **'{interval, plural, one {yearly} other {every {interval} years}}'**
-  String habitFrequencyEveryYears(num interval);
+  String habitFrequencyEveryYears(num interval, Object count);
 
   /// Summary for weekdays filter
   ///
@@ -2165,6 +2333,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'December'**
   String get habitMonthDecember;
+
+  /// Label for sort dropdown in list detail screen
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get sortBy;
+
+  /// Sort option: sort by Elo score
+  ///
+  /// In en, this message translates to:
+  /// **'Elo Score'**
+  String get scoreElo;
+
+  /// Sort option: random order
+  ///
+  /// In en, this message translates to:
+  /// **'Random'**
+  String get random;
+
+  /// Tooltip for ascending sort button
+  ///
+  /// In en, this message translates to:
+  /// **'Ascending order'**
+  String get orderAscending;
+
+  /// Tooltip for descending sort button
+  ///
+  /// In en, this message translates to:
+  /// **'Descending order'**
+  String get orderDescending;
+
+  /// Display count of items in list
+  ///
+  /// In en, this message translates to:
+  /// **'{count} items'**
+  String itemsCount(int count);
+
+  /// Generic add action button
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get add;
+
+  /// Checkbox label in bulk add dialog to keep dialog open after submission
+  ///
+  /// In en, this message translates to:
+  /// **'Keep open after adding'**
+  String get keepOpenAfterAdd;
+
+  /// Hint text for single item mode in bulk add dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Add an item...'**
+  String get bulkAddSingleHint;
+
+  /// Hint text for multiple items mode in bulk add dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Add multiple items (one per line)...'**
+  String get bulkAddMultipleHint;
+
+  /// Help message explaining how to add multiple items
+  ///
+  /// In en, this message translates to:
+  /// **'New line = new item'**
+  String get bulkAddHelpText;
+
+  /// Close button tooltip for dialogs
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get closeDialog;
+
+  /// Default title for bulk add dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Add items'**
+  String get bulkAddDefaultTitle;
+
+  /// Loading message while adding multiple items
+  ///
+  /// In en, this message translates to:
+  /// **'Adding items...'**
+  String get bulkAddSubmitting;
+
+  /// Tab label for single item mode
+  ///
+  /// In en, this message translates to:
+  /// **'Single'**
+  String get bulkAddModeSingle;
+
+  /// Tab label for multiple items mode
+  ///
+  /// In en, this message translates to:
+  /// **'Multiple'**
+  String get bulkAddModeMultiple;
+
+  /// Dialog title for deleting a list
+  ///
+  /// In en, this message translates to:
+  /// **'Delete list'**
+  String get listDeleteDialogTitle;
+
+  /// Dialog message for deleting a list
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete \"{listName}\"?'**
+  String listDeleteDialogMessage(String listName);
+
+  /// Confirm deletion button label
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get listDeleteConfirm;
+
+  /// Dialog title for renaming an item
+  ///
+  /// In en, this message translates to:
+  /// **'Rename item'**
+  String get listRenameDialogTitle;
+
+  /// Field label for item rename
+  ///
+  /// In en, this message translates to:
+  /// **'Item name'**
+  String get listRenameDialogLabel;
+
+  /// Snackbar when item renamed
+  ///
+  /// In en, this message translates to:
+  /// **'Item renamed.'**
+  String get listRenameSaved;
+
+  /// Dialog title for moving an item
+  ///
+  /// In en, this message translates to:
+  /// **'Move item'**
+  String get listMoveDialogTitle;
+
+  /// Field label for destination list
+  ///
+  /// In en, this message translates to:
+  /// **'Destination list'**
+  String get listMoveDialogLabel;
+
+  /// Snackbar when no other list exists
+  ///
+  /// In en, this message translates to:
+  /// **'No other list available'**
+  String get listMoveNoOtherList;
+
+  /// Snackbar when item moved
+  ///
+  /// In en, this message translates to:
+  /// **'Item moved.'**
+  String get listMoveSaved;
+
+  /// Snackbar when item duplicated
+  ///
+  /// In en, this message translates to:
+  /// **'Item duplicated.'**
+  String get listDuplicateSaved;
+
+  /// Dialog title for deleting an item
+  ///
+  /// In en, this message translates to:
+  /// **'Delete item'**
+  String get listConfirmDeleteItemTitle;
+
+  /// Dialog message for deleting an item
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete \"{itemTitle}\"?'**
+  String listConfirmDeleteItemMessage(String itemTitle);
+
+  /// Tooltip for more actions
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get more;
+
+  /// Menu label rename
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get rename;
+
+  /// Menu label move
+  ///
+  /// In en, this message translates to:
+  /// **'Move...'**
+  String get move;
+
+  /// Menu label duplicate
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate'**
+  String get duplicate;
 }
 
 class _AppLocalizationsDelegate
