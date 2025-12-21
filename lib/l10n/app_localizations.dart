@@ -165,7 +165,7 @@ abstract class AppLocalizations {
   /// No description provided for @habitFormCategoryLabel.
   ///
   /// In en, this message translates to:
-  /// **'Category (optional)'**
+  /// **'Category'**
   String get habitFormCategoryLabel;
 
   /// No description provided for @habitFormCategoryHint.
@@ -185,6 +185,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'+ Create a new category…'**
   String get habitFormCategoryCreate;
+
+  /// No description provided for @habitCategoryHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended: choose a category for better statistics.'**
+  String get habitCategoryHelper;
+
+  /// No description provided for @habitCategoryWarningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No category selected'**
+  String get habitCategoryWarningTitle;
+
+  /// No description provided for @habitCategoryWarningMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t chosen a category. Continue anyway?'**
+  String get habitCategoryWarningMessage;
 
   /// No description provided for @habitFormQuantTargetLabel.
   ///
@@ -240,6 +258,66 @@ abstract class AppLocalizations {
   /// **'every'**
   String get habitTrackingEveryWord;
 
+  /// No description provided for @habitTrackingModeCycle.
+  ///
+  /// In en, this message translates to:
+  /// **'M days out of N'**
+  String get habitTrackingModeCycle;
+
+  /// No description provided for @habitTrackingModeWeekdays.
+  ///
+  /// In en, this message translates to:
+  /// **'Specific weekdays'**
+  String get habitTrackingModeWeekdays;
+
+  /// No description provided for @habitTrackingModeSpecificDate.
+  ///
+  /// In en, this message translates to:
+  /// **'On a specific date'**
+  String get habitTrackingModeSpecificDate;
+
+  /// No description provided for @habitTrackingCycleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle'**
+  String get habitTrackingCycleLabel;
+
+  /// No description provided for @habitTrackingCycleActiveDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Active days (M)'**
+  String get habitTrackingCycleActiveDays;
+
+  /// No description provided for @habitTrackingCycleLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle length (N)'**
+  String get habitTrackingCycleLength;
+
+  /// No description provided for @habitTrackingCycleStartDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Cycle start date'**
+  String get habitTrackingCycleStartDate;
+
+  /// No description provided for @habitTrackingWeekdaysLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Select weekdays'**
+  String get habitTrackingWeekdaysLabel;
+
+  /// No description provided for @habitTrackingSpecificDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get habitTrackingSpecificDateLabel;
+
+  /// No description provided for @habitTrackingRepeatEveryYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat every year'**
+  String get habitTrackingRepeatEveryYear;
+
   /// No description provided for @habitTrackingBackToPeriod.
   ///
   /// In en, this message translates to:
@@ -263,6 +341,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'per month'**
   String get habitTrackingPeriodMonth;
+
+  /// Quarterly period option
+  ///
+  /// In en, this message translates to:
+  /// **'per quarter'**
+  String get habitTrackingPeriodQuarter;
+
+  /// Semester (6 months) period option
+  ///
+  /// In en, this message translates to:
+  /// **'per semester'**
+  String get habitTrackingPeriodSemester;
 
   /// No description provided for @habitTrackingPeriodYear.
   ///
@@ -2148,6 +2238,18 @@ abstract class AppLocalizations {
   /// **'{count, plural, one {{count} time per month} other {{count} times per month}}'**
   String habitFrequencyTimesPerMonth(num count);
 
+  /// Summary for times per quarter
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one {{count} time per quarter} other {{count} times per quarter}}'**
+  String habitFrequencyTimesPerQuarter(num count);
+
+  /// Summary for times per semester
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one {{count} time per semester} other {{count} times per semester}}'**
+  String habitFrequencyTimesPerSemester(num count);
+
   /// Summary for times per year
   ///
   /// In en, this message translates to:
@@ -2182,13 +2284,31 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{interval, plural, one {quarterly} other {every {interval} quarters}}'**
-  String habitFrequencyEveryQuarters(num interval, Object count);
+  String habitFrequencyEveryQuarters(num interval);
+
+  /// Summary for M days out of N
+  ///
+  /// In en, this message translates to:
+  /// **'{daysActive} days out of {daysCycle}'**
+  String habitFrequencyDaysPerCycle(Object daysActive, Object daysCycle);
+
+  /// Summary for yearly specific date
+  ///
+  /// In en, this message translates to:
+  /// **'Every year on {date}'**
+  String habitFrequencySpecificDateAnnual(String date);
+
+  /// Summary for one-time specific date
+  ///
+  /// In en, this message translates to:
+  /// **'On {date}'**
+  String habitFrequencySpecificDateOnce(String date);
 
   /// Summary for every X years
   ///
   /// In en, this message translates to:
   /// **'{interval, plural, one {yearly} other {every {interval} years}}'**
-  String habitFrequencyEveryYears(num interval, Object count);
+  String habitFrequencyEveryYears(num interval);
 
   /// Summary for weekdays filter
   ///

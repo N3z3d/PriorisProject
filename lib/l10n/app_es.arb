@@ -6,15 +6,18 @@
   "tasks": "Tareas",
   "lists": "Listas",
   "habitFormTitleNew": "Nuevo hábito",
-  "habitFormTitleEdit": "Editar hábito",
-  "habitFormIntro": "Ponle a este hábito un nombre claro, asigna una categoría y elige cómo seguirás tu progreso.",
-  "habitFormNameLabel": "Nombre del hábito",
+  "habitFormTitleEdit": "Editar h?bito",
+  "habitFormIntro": "Ponle a este h?bito un nombre claro, asigna una categor?a y elige c?mo seguir?s tu progreso.",
+  "habitFormNameLabel": "Nombre del h?bito",
   "habitFormNameHint": "Ej.: Beber 8 vasos de agua",
-  "habitFormCategoryLabel": "Categoría (opcional)",
-  "habitFormCategoryHint": "Seleccionar una categoría",
-  "habitFormCategoryNone": "Sin categoría",
-  "habitFormCategoryCreate": "+ Crear una nueva categoría…",
+  "habitFormCategoryLabel": "Categor?a",
+  "habitFormCategoryHint": "Seleccionar una categor?a",
+  "habitFormCategoryNone": "Sin categor?a",
+  "habitFormCategoryCreate": "+ Crear una nueva categor?a?",
   "habitFormQuantTargetLabel": "Objetivo",
+  "habitCategoryHelper": "Recomendado: elige una categor?a para mejores estad?sticas.",
+  "habitCategoryWarningTitle": "Categor?a no elegida",
+  "habitCategoryWarningMessage": "No has elegido categor?a, ?continuar de todos modos?",
   "habitFormQuantTargetHint": "8",
   "habitFormQuantUnitLabel": "Unidad",
   "habitFormQuantUnitHint": "vasos",
@@ -23,10 +26,22 @@
   "habitTrackingPrefix": "Quiero hacer este hábito",
   "habitTrackingTimesWord": "veces",
   "habitTrackingEveryWord": "cada",
+  "habitTrackingModeCycle": "M días de N",
+  "habitTrackingModeWeekdays": "Días específicos",
+  "habitTrackingModeSpecificDate": "En una fecha precisa",
+  "habitTrackingCycleLabel": "Ciclo",
+  "habitTrackingCycleActiveDays": "Días activos (M)",
+  "habitTrackingCycleLength": "Longitud del ciclo (N)",
+  "habitTrackingCycleStartDate": "Fecha de inicio del ciclo",
+  "habitTrackingWeekdaysLabel": "Selecciona los días",
+  "habitTrackingSpecificDateLabel": "Fecha",
+  "habitTrackingRepeatEveryYear": "Repetir cada año",
   "habitTrackingBackToPeriod": "Volver al modo \"por período\"",
   "habitTrackingPeriodDay": "al día",
   "habitTrackingPeriodWeek": "a la semana",
   "habitTrackingPeriodMonth": "al mes",
+  "habitTrackingPeriodQuarter": "al trimestre",
+  "habitTrackingPeriodSemester": "al semestre",
   "habitTrackingPeriodYear": "al año",
   "habitTrackingCustomInterval": "cada...",
   "habitTrackingUnitHours": "horas",
@@ -453,8 +468,7 @@
   "habitsTabAdd": "Add",
   "@habitsTabAdd": {
     "description": "Label for add habit tab"
-  }
-,
+  },
   "habitCategoryDialogTitle": "Nueva categoría",
   "habitCategoryDialogFieldHint": "Introduce un nombre de categoría",
   "habitsEmptyTitle": "Aún no tienes hábitos",
@@ -501,16 +515,21 @@
   "habitFrequencyDayFilterWeekdays": "Entre semana",
   "habitFrequencyDayFilterWeekends": "Fin de semana",
   "habitFrequencyTimesPerHour": "{count, plural, one {{count} vez por hora} other {{count} veces por hora}}",
-  "habitFrequencyTimesPerDay": "{count, plural, one {{count} vez por día} other {{count} veces por día}}",
+  "habitFrequencyTimesPerDay": "{count, plural, one {{count} vez por ía} other {{count} veces por ía}}",
   "habitFrequencyTimesPerWeek": "{count, plural, one {{count} vez por semana} other {{count} veces por semana}}",
   "habitFrequencyTimesPerMonth": "{count, plural, one {{count} vez por mes} other {{count} veces por mes}}",
-  "habitFrequencyTimesPerYear": "{count, plural, one {{count} vez por año} other {{count} veces por año}}",
+  "habitFrequencyTimesPerQuarter": "{count, plural, one {{count} vez por trimestre} other {{count} veces por trimestre}}",
+  "habitFrequencyTimesPerSemester": "{count, plural, one {{count} vez por semestre} other {{count} veces por semestre}}",
+  "habitFrequencyTimesPerYear": "{count, plural, one {{count} vez por ño} other {{count} veces por ño}}",
   "habitFrequencyEveryHours": "Cada {count} horas",
   "habitFrequencyEveryDays": "Cada {count} días",
   "habitFrequencyEveryWeeks": "Cada {count} semanas",
   "habitFrequencyEveryMonths": "Cada {count} meses",
   "habitFrequencyEveryQuarters": "Cada {count} trimestres",
   "habitFrequencyEveryYears": "Cada {count} años",
+  "habitFrequencyDaysPerCycle": "{daysActive} días de {daysCycle}",
+  "habitFrequencySpecificDateAnnual": "Cada año el {date}",
+  "habitFrequencySpecificDateOnce": "El {date}",
   "habitFrequencyWeekdaysOnly": "Solo entre semana",
   "habitFrequencyWeekendsOnly": "Solo fines de semana",
   "habitFrequencySpecificDays": "Días específicos: {days}",
@@ -581,5 +600,65 @@
   "more": "Más acciones",
   "rename": "Renombrar",
   "move": "Mover...",
-  "duplicate": "Duplicar"
+  "duplicate": "Duplicar",
+  "@habitFrequencyTimesPerDay": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@habitFrequencyTimesPerWeek": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@habitFrequencyTimesPerMonth": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@habitFrequencyTimesPerQuarter": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@habitFrequencyTimesPerSemester": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@habitFrequencyTimesPerYear": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@habitFrequencyEveryQuarters": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@habitFrequencyEveryYears": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@habitFrequencyDaysPerCycle": {
+    "placeholders": {
+      "daysActive": {},
+      "daysCycle": {}
+    }
+  },
+  "@habitFrequencySpecificDateAnnual": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@habitFrequencySpecificDateOnce": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  }
 }

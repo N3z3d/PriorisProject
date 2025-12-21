@@ -119,6 +119,25 @@ class Habit extends HiveObject {
   @HiveField(22)
   String? userEmail; // User email for reference
 
+  // Fréquences avancées
+  @HiveField(23)
+  int? daysActive; // M sur N
+
+  @HiveField(24)
+  int? daysCycle; // N du cycle M/N
+
+  @HiveField(25)
+  DateTime? cycleStartDate; // date de début du cycle M/N
+
+  @HiveField(26)
+  List<int>? specificWeekdays; // jours spécifiques (0-6)
+
+  @HiveField(27)
+  DateTime? specificDate; // date unique ou première occurrence
+
+  @HiveField(28)
+  bool repeatEveryYear; // répétition annuelle
+
   Habit({
     String? id,
     required this.name,
@@ -143,6 +162,12 @@ class Habit extends HiveObject {
     this.currentStreak = 0, // Pas de streak initial
     this.userId,
     this.userEmail,
+    this.daysActive,
+    this.daysCycle,
+    this.cycleStartDate,
+    this.specificWeekdays,
+    this.specificDate,
+    this.repeatEveryYear = false,
   }) : id = id ?? const Uuid().v4(),
        createdAt = createdAt ?? DateTime.now(),
        completions = completions ?? {};

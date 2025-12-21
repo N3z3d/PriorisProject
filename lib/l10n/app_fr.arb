@@ -10,10 +10,13 @@
   "habitFormIntro": "Donnez un nom clair, associez une catégorie et choisissez comment suivre votre progression.",
   "habitFormNameLabel": "Nom de l'habitude",
   "habitFormNameHint": "Ex : Boire 8 verres d'eau",
-  "habitFormCategoryLabel": "Catégorie (facultatif)",
+  "habitFormCategoryLabel": "Catégorie",
   "habitFormCategoryHint": "Sélectionner une catégorie",
   "habitFormCategoryNone": "Aucune catégorie",
   "habitFormCategoryCreate": "+ Créer une nouvelle catégorie…",
+  "habitCategoryHelper": "Conseillé : choisissez une catégorie pour de meilleures statistiques.",
+  "habitCategoryWarningTitle": "Catégorie non choisie",
+  "habitCategoryWarningMessage": "Vous n'avez pas choisi de catégorie, continuer quand même ?",
   "habitFormQuantTargetLabel": "Objectif",
   "habitFormQuantTargetHint": "8",
   "habitFormQuantUnitLabel": "Unité",
@@ -23,10 +26,22 @@
   "habitTrackingPrefix": "Je veux faire cette habitude",
   "habitTrackingTimesWord": "fois",
   "habitTrackingEveryWord": "toutes les",
+  "habitTrackingModeCycle": "M jours sur N",
+  "habitTrackingModeWeekdays": "Jours spécifiques",
+  "habitTrackingModeSpecificDate": "À une date précise",
+  "habitTrackingCycleLabel": "Cycle",
+  "habitTrackingCycleActiveDays": "Jours actifs (M)",
+  "habitTrackingCycleLength": "Longueur du cycle (N)",
+  "habitTrackingCycleStartDate": "Date de début du cycle",
+  "habitTrackingWeekdaysLabel": "Sélectionnez les jours",
+  "habitTrackingSpecificDateLabel": "Date",
+  "habitTrackingRepeatEveryYear": "Répéter chaque année",
   "habitTrackingBackToPeriod": "Revenir au mode \"par période\"",
   "habitTrackingPeriodDay": "par jour",
   "habitTrackingPeriodWeek": "par semaine",
   "habitTrackingPeriodMonth": "par mois",
+  "habitTrackingPeriodQuarter": "par trimestre",
+  "habitTrackingPeriodSemester": "par semestre",
   "habitTrackingPeriodYear": "par an",
   "habitTrackingCustomInterval": "tous les...",
   "habitTrackingUnitHours": "heures",
@@ -570,13 +585,68 @@
   "habitFrequencyTimesPerDay": "{count, plural, one {{count} fois par jour} other {{count} fois par jour}}",
   "habitFrequencyTimesPerWeek": "{count, plural, one {{count} fois par semaine} other {{count} fois par semaine}}",
   "habitFrequencyTimesPerMonth": "{count, plural, one {{count} fois par mois} other {{count} fois par mois}}",
+  "@habitFrequencyTimesPerMonth": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "habitFrequencyTimesPerQuarter": "{count, plural, one {{count} fois par trimestre} other {{count} fois par trimestre}}",
+  "@habitFrequencyTimesPerQuarter": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "habitFrequencyTimesPerSemester": "{count, plural, one {{count} fois par semestre} other {{count} fois par semestre}}",
+  "@habitFrequencyTimesPerSemester": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "habitFrequencyTimesPerYear": "{count, plural, one {{count} fois par an} other {{count} fois par an}}",
+  "@habitFrequencyTimesPerYear": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "habitFrequencyEveryHours": "{interval, plural, one {toutes les heures} other {toutes les {interval} heures}}",
   "habitFrequencyEveryDays": "{interval, plural, one {quotidien} other {tous les {interval} jours}}",
   "habitFrequencyEveryWeeks": "{interval, plural, one {hebdomadaire} other {toutes les {interval} semaines}}",
   "habitFrequencyEveryMonths": "{interval, plural, one {mensuel} other {tous les {interval} mois}}",
   "habitFrequencyEveryQuarters": "{interval, plural, one {trimestriel} other {tous les {interval} trimestres}}",
+  "@habitFrequencyEveryQuarters": {
+    "placeholders": {
+      "interval": {}
+    }
+  },
   "habitFrequencyEveryYears": "{interval, plural, one {annuel} other {tous les {interval} ans}}",
+  "@habitFrequencyEveryYears": {
+    "placeholders": {
+      "interval": {}
+    }
+  },
+  "habitFrequencyDaysPerCycle": "{daysActive} jours sur {daysCycle}",
+  "@habitFrequencyDaysPerCycle": {
+    "placeholders": {
+      "daysActive": {},
+      "daysCycle": {}
+    }
+  },
+  "habitFrequencySpecificDateAnnual": "Chaque année le {date}",
+  "@habitFrequencySpecificDateAnnual": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "habitFrequencySpecificDateOnce": "Le {date}",
+  "@habitFrequencySpecificDateOnce": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "habitFrequencyWeekdaysOnly": "Jours de semaine uniquement (Lun-Ven)",
   "habitFrequencyWeekendsOnly": "Week-ends uniquement (Sam-Dim)",
   "habitFrequencySpecificDays": "Le : {days}",

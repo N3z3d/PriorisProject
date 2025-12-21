@@ -40,7 +40,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get habitFormNameHint => 'Ex : Boire 8 verres d\'eau';
 
   @override
-  String get habitFormCategoryLabel => 'Catégorie (facultatif)';
+  String get habitFormCategoryLabel => 'Catégorie';
 
   @override
   String get habitFormCategoryHint => 'Sélectionner une catégorie';
@@ -50,6 +50,17 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get habitFormCategoryCreate => '+ Créer une nouvelle catégorie…';
+
+  @override
+  String get habitCategoryHelper =>
+      'Conseillé : choisissez une catégorie pour de meilleures statistiques.';
+
+  @override
+  String get habitCategoryWarningTitle => 'Catégorie non choisie';
+
+  @override
+  String get habitCategoryWarningMessage =>
+      'Vous n\'avez pas choisi de catégorie, continuer quand même ?';
 
   @override
   String get habitFormQuantTargetLabel => 'Objectif';
@@ -81,6 +92,36 @@ class AppLocalizationsFr extends AppLocalizations {
   String get habitTrackingEveryWord => 'toutes les';
 
   @override
+  String get habitTrackingModeCycle => 'M jours sur N';
+
+  @override
+  String get habitTrackingModeWeekdays => 'Jours spécifiques';
+
+  @override
+  String get habitTrackingModeSpecificDate => 'À une date précise';
+
+  @override
+  String get habitTrackingCycleLabel => 'Cycle';
+
+  @override
+  String get habitTrackingCycleActiveDays => 'Jours actifs (M)';
+
+  @override
+  String get habitTrackingCycleLength => 'Longueur du cycle (N)';
+
+  @override
+  String get habitTrackingCycleStartDate => 'Date de début du cycle';
+
+  @override
+  String get habitTrackingWeekdaysLabel => 'Sélectionnez les jours';
+
+  @override
+  String get habitTrackingSpecificDateLabel => 'Date';
+
+  @override
+  String get habitTrackingRepeatEveryYear => 'Répéter chaque année';
+
+  @override
   String get habitTrackingBackToPeriod => 'Revenir au mode \"par période\"';
 
   @override
@@ -91,6 +132,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get habitTrackingPeriodMonth => 'par mois';
+
+  @override
+  String get habitTrackingPeriodQuarter => 'par trimestre';
+
+  @override
+  String get habitTrackingPeriodSemester => 'par semestre';
 
   @override
   String get habitTrackingPeriodYear => 'par an';
@@ -1134,6 +1181,28 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String habitFrequencyTimesPerQuarter(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count fois par trimestre',
+      one: '$count fois par trimestre',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String habitFrequencyTimesPerSemester(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count fois par semestre',
+      one: '$count fois par semestre',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String habitFrequencyTimesPerYear(num count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -1189,7 +1258,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String habitFrequencyEveryQuarters(num interval, Object count) {
+  String habitFrequencyEveryQuarters(num interval) {
     String _temp0 = intl.Intl.pluralLogic(
       interval,
       locale: localeName,
@@ -1200,7 +1269,22 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String habitFrequencyEveryYears(num interval, Object count) {
+  String habitFrequencyDaysPerCycle(Object daysActive, Object daysCycle) {
+    return '$daysActive jours sur $daysCycle';
+  }
+
+  @override
+  String habitFrequencySpecificDateAnnual(String date) {
+    return 'Chaque année le $date';
+  }
+
+  @override
+  String habitFrequencySpecificDateOnce(String date) {
+    return 'Le $date';
+  }
+
+  @override
+  String habitFrequencyEveryYears(num interval) {
     String _temp0 = intl.Intl.pluralLogic(
       interval,
       locale: localeName,

@@ -27,29 +27,40 @@ class AppLocalizationsEs extends AppLocalizations {
   String get habitFormTitleNew => 'Nuevo hábito';
 
   @override
-  String get habitFormTitleEdit => 'Editar hábito';
+  String get habitFormTitleEdit => 'Editar h?bito';
 
   @override
   String get habitFormIntro =>
-      'Ponle a este hábito un nombre claro, asigna una categoría y elige cómo seguirás tu progreso.';
+      'Ponle a este h?bito un nombre claro, asigna una categor?a y elige c?mo seguir?s tu progreso.';
 
   @override
-  String get habitFormNameLabel => 'Nombre del hábito';
+  String get habitFormNameLabel => 'Nombre del h?bito';
 
   @override
   String get habitFormNameHint => 'Ej.: Beber 8 vasos de agua';
 
   @override
-  String get habitFormCategoryLabel => 'Categoría (opcional)';
+  String get habitFormCategoryLabel => 'Categor?a';
 
   @override
-  String get habitFormCategoryHint => 'Seleccionar una categoría';
+  String get habitFormCategoryHint => 'Seleccionar una categor?a';
 
   @override
-  String get habitFormCategoryNone => 'Sin categoría';
+  String get habitFormCategoryNone => 'Sin categor?a';
 
   @override
-  String get habitFormCategoryCreate => '+ Crear una nueva categoría…';
+  String get habitFormCategoryCreate => '+ Crear una nueva categor?a?';
+
+  @override
+  String get habitCategoryHelper =>
+      'Recomendado: elige una categor?a para mejores estad?sticas.';
+
+  @override
+  String get habitCategoryWarningTitle => 'Categor?a no elegida';
+
+  @override
+  String get habitCategoryWarningMessage =>
+      'No has elegido categor?a, ?continuar de todos modos?';
 
   @override
   String get habitFormQuantTargetLabel => 'Objetivo';
@@ -80,6 +91,36 @@ class AppLocalizationsEs extends AppLocalizations {
   String get habitTrackingEveryWord => 'cada';
 
   @override
+  String get habitTrackingModeCycle => 'M días de N';
+
+  @override
+  String get habitTrackingModeWeekdays => 'Días específicos';
+
+  @override
+  String get habitTrackingModeSpecificDate => 'En una fecha precisa';
+
+  @override
+  String get habitTrackingCycleLabel => 'Ciclo';
+
+  @override
+  String get habitTrackingCycleActiveDays => 'Días activos (M)';
+
+  @override
+  String get habitTrackingCycleLength => 'Longitud del ciclo (N)';
+
+  @override
+  String get habitTrackingCycleStartDate => 'Fecha de inicio del ciclo';
+
+  @override
+  String get habitTrackingWeekdaysLabel => 'Selecciona los días';
+
+  @override
+  String get habitTrackingSpecificDateLabel => 'Fecha';
+
+  @override
+  String get habitTrackingRepeatEveryYear => 'Repetir cada año';
+
+  @override
   String get habitTrackingBackToPeriod => 'Volver al modo \"por período\"';
 
   @override
@@ -90,6 +131,12 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get habitTrackingPeriodMonth => 'al mes';
+
+  @override
+  String get habitTrackingPeriodQuarter => 'al trimestre';
+
+  @override
+  String get habitTrackingPeriodSemester => 'al semestre';
 
   @override
   String get habitTrackingPeriodYear => 'al año';
@@ -1099,8 +1146,8 @@ class AppLocalizationsEs extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count veces por día',
-      one: '$count vez por día',
+      other: '$count veces por ía',
+      one: '$count vez por ía',
     );
     return '$_temp0';
   }
@@ -1128,12 +1175,34 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String habitFrequencyTimesPerQuarter(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count veces por trimestre',
+      one: '$count vez por trimestre',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String habitFrequencyTimesPerSemester(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count veces por semestre',
+      one: '$count vez por semestre',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String habitFrequencyTimesPerYear(num count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count veces por año',
-      one: '$count vez por año',
+      other: '$count veces por ño',
+      one: '$count vez por ño',
     );
     return '$_temp0';
   }
@@ -1159,12 +1228,27 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String habitFrequencyEveryQuarters(num interval, Object count) {
+  String habitFrequencyEveryQuarters(num interval) {
     return 'Cada $count trimestres';
   }
 
   @override
-  String habitFrequencyEveryYears(num interval, Object count) {
+  String habitFrequencyDaysPerCycle(Object daysActive, Object daysCycle) {
+    return '$daysActive días de $daysCycle';
+  }
+
+  @override
+  String habitFrequencySpecificDateAnnual(String date) {
+    return 'Cada año el $date';
+  }
+
+  @override
+  String habitFrequencySpecificDateOnce(String date) {
+    return 'El $date';
+  }
+
+  @override
+  String habitFrequencyEveryYears(num interval) {
     return 'Cada $count años';
   }
 

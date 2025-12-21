@@ -4,20 +4,24 @@ import 'package:prioris/domain/models/core/entities/habit.dart';
 import 'package:prioris/infrastructure/services/auth_service.dart';
 import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/pages/habits/services/habit_category_service.dart';
+import 'package:prioris/presentation/pages/habits/widgets/components/advanced_habit_tracking_section.dart';
 import 'package:prioris/presentation/pages/habits/widgets/components/habit_category_dropdown.dart';
 import 'package:prioris/presentation/pages/habits/widgets/components/habit_form_container.dart';
 import 'package:prioris/presentation/pages/habits/widgets/components/habit_form_header.dart';
 import 'package:prioris/presentation/pages/habits/widgets/components/habit_identity_section.dart';
 import 'package:prioris/presentation/pages/habits/widgets/components/habit_summary_section.dart';
-import 'package:prioris/presentation/pages/habits/widgets/components/habit_tracking_section.dart';
+import 'package:prioris/presentation/pages/habits/widgets/helpers/habit_form_state_mapper.dart';
 import 'package:prioris/presentation/styles/ui_color_utils.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/widgets/common/forms/common_text_field.dart';
 import 'package:uuid/uuid.dart';
 
-enum TrackingMode { period, interval }
-enum TrackingPeriodOption { day, week, month, year }
+enum TrackingMode { period, interval, cycle, weekdays, specificDate }
+
+enum TrackingPeriodOption { day, week, month, quarter, semester, year }
+
 enum TrackingIntervalUnit { hours, days, weeks, months }
+
 class HabitFormWidget extends StatefulWidget {
   const HabitFormWidget({
     super.key,
@@ -28,7 +32,6 @@ class HabitFormWidget extends StatefulWidget {
     this.authService,
     this.validationErrorColor = Colors.red,
   });
-
   final Habit? initialHabit;
   final List<String> availableCategories;
   final void Function(Habit) onSubmit;
@@ -38,28 +41,39 @@ class HabitFormWidget extends StatefulWidget {
   @override
   State<HabitFormWidget> createState() => _HabitFormWidgetState();
 }
+
 class _HabitFormWidgetState extends State<HabitFormWidget> {
   static const String _createCategoryValue = '__create_category__';
-
+  static const HabitFormStateMapper _mapper = HabitFormStateMapper();
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _timesController = TextEditingController(text: '1');
+  final TextEditingController _timesController =
+      TextEditingController(text: '1');
   final TextEditingController _intervalCountController =
       TextEditingController(text: '1');
   final TextEditingController _intervalEveryController =
       TextEditingController(text: '1');
-
+  final TextEditingController _cycleActiveController =
+      TextEditingController(text: '1');
+  final TextEditingController _cycleLengthController =
+      TextEditingController(text: '2');
   String _selectedCategory = '';
   List<String> _categorySuggestions = [];
-
   TrackingMode _trackingMode = TrackingMode.period;
   TrackingPeriodOption _period = TrackingPeriodOption.day;
   TrackingIntervalUnit _intervalUnit = TrackingIntervalUnit.hours;
   int _timesCount = 1;
   int _intervalCount = 1;
   int _intervalEvery = 1;
+  int _cycleActive = 1;
+  int _cycleLength = 2;
+  DateTime? _cycleStartDate;
+  List<int> _selectedWeekdays = [];
+  DateTime? _specificDate;
+  bool _repeatEveryYear = false;
   bool _hasValidName = false;
   HabitCategoryService get _categoryService => widget.categoryService;
-  Color _errorTone(int level) => tone(widget.validationErrorColor, level: level);
+  Color _errorTone(int level) =>
+      tone(widget.validationErrorColor, level: level);
   @override
   void initState() {
     super.initState();
@@ -72,10 +86,12 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
       _hasValidName = false;
     }
   }
+
   @override
   void didUpdateWidget(covariant HabitFormWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!listEquals(oldWidget.availableCategories, widget.availableCategories)) {
+    if (!listEquals(
+        oldWidget.availableCategories, widget.availableCategories)) {
       _syncCategoriesFromWidget(widget.availableCategories);
     }
     final newHabit = widget.initialHabit;
@@ -85,6 +101,7 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
       _resetForm(notifyListeners: false);
     }
   }
+
   @override
   void dispose() {
     _nameController.removeListener(_handleNameChange);
@@ -125,7 +142,8 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
               const SizedBox(height: 20),
               HabitSummarySection(
                 summaryText: _buildSummaryText(),
-                title: AppLocalizations.of(context)?.habitSummaryTitle ?? 'Résumé',
+                title:
+                    AppLocalizations.of(context)?.habitSummaryTitle ?? 'Résumé',
               ),
               const SizedBox(height: 24),
               _buildSubmitButton(isEditing),
@@ -135,6 +153,7 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
       },
     );
   }
+
   Widget _buildIntro(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final intro = l10n?.habitFormIntro ??
@@ -147,14 +166,18 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
           ),
     );
   }
+
   Widget _buildTrackingBlock(BuildContext context) {
-    return HabitTrackingSection(
+    return AdvancedHabitTrackingSection(
       trackingMode: _trackingMode,
       period: _period,
       intervalUnit: _intervalUnit,
+      onModeChanged: (mode) => setState(() => _trackingMode = mode),
       timesController: _timesController,
       intervalCountController: _intervalCountController,
       intervalEveryController: _intervalEveryController,
+      cycleActiveController: _cycleActiveController,
+      cycleLengthController: _cycleLengthController,
       onTimesChanged: (value) =>
           _updateTimesCount(value, isIntervalCount: false),
       onIntervalCountChanged: (value) =>
@@ -182,8 +205,17 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
           _period = TrackingPeriodOption.day;
         });
       },
+      cycleStartDate: _cycleStartDate,
+      onCycleStartDateChanged: (d) => setState(() => _cycleStartDate = d),
+      selectedWeekdays: _selectedWeekdays,
+      onWeekdaysChanged: (days) => setState(() => _selectedWeekdays = days),
+      specificDate: _specificDate,
+      onSpecificDateChanged: (d) => setState(() => _specificDate = d),
+      repeatEveryYear: _repeatEveryYear,
+      onRepeatEveryYearChanged: (v) => setState(() => _repeatEveryYear = v),
     );
   }
+
   Widget _buildSubmitButton(bool isEditing) {
     final l10n = AppLocalizations.of(context);
     final label = isEditing
@@ -206,6 +238,7 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
       ),
     );
   }
+
   String _buildSummaryText() {
     final l10n = AppLocalizations.of(context);
     final name = _nameController.text.trim();
@@ -213,9 +246,11 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
       return l10n?.habitSummaryPlaceholder ??
           'Compl\u00e9tez le nom et la fr\u00e9quence pour voir le r\u00e9sum\u00e9.';
     }
-    final timesText =
-        l10n?.habitSummaryTimes(_trackingMode == TrackingMode.period ? _timesCount : _intervalCount) ??
-            '${_trackingMode == TrackingMode.period ? _timesCount : _intervalCount}';
+    final timesText = l10n?.habitSummaryTimes(
+            _trackingMode == TrackingMode.period
+                ? _timesCount
+                : _intervalCount) ??
+        '${_trackingMode == TrackingMode.period ? _timesCount : _intervalCount}';
     if (_trackingMode == TrackingMode.period) {
       final periodLabel = switch (_period) {
         TrackingPeriodOption.day => l10n?.habitTrackingPeriodDay ?? 'par jour',
@@ -223,13 +258,15 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
           l10n?.habitTrackingPeriodWeek ?? 'par semaine',
         TrackingPeriodOption.month =>
           l10n?.habitTrackingPeriodMonth ?? 'par mois',
-        TrackingPeriodOption.year =>
-          l10n?.habitTrackingPeriodYear ?? 'par an',
+        TrackingPeriodOption.quarter =>
+          l10n?.habitTrackingPeriodQuarter ?? 'par trimestre',
+        TrackingPeriodOption.semester =>
+          l10n?.habitTrackingPeriodSemester ?? 'par semestre',
+        TrackingPeriodOption.year => l10n?.habitTrackingPeriodYear ?? 'par an',
       };
       final action = l10n?.habitSummaryAction(name) ?? 'Vous voulez $name';
       return '$action $timesText $periodLabel.';
     }
-
     final unitLabel = switch (_intervalUnit) {
       TrackingIntervalUnit.hours => l10n?.habitTrackingUnitHours ?? 'heures',
       TrackingIntervalUnit.days => l10n?.habitTrackingUnitDays ?? 'jours',
@@ -240,16 +277,17 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
     final every = l10n?.habitTrackingEveryWord ?? 'toutes les';
     return '$action $timesText $every $_intervalEvery $unitLabel.';
   }
+
   void _updateTimesCount(String rawValue, {required bool isIntervalCount}) {
     final sanitized = _sanitizePositiveInt(rawValue);
-    final controller = isIntervalCount ? _intervalCountController : _timesController;
+    final controller =
+        isIntervalCount ? _intervalCountController : _timesController;
     if (controller.text != sanitized.toString()) {
       controller.value = TextEditingValue(
         text: sanitized.toString(),
         selection: TextSelection.collapsed(offset: sanitized.toString().length),
       );
     }
-
     setState(() {
       if (isIntervalCount) {
         _intervalCount = sanitized;
@@ -291,7 +329,6 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
     if (!mounted || created == null || created.trim().isEmpty) {
       return null;
     }
-
     final normalized = created.trim();
     setState(() {
       _categorySuggestions = _categoryService.addCategoryIfMissing(
@@ -300,7 +337,6 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
       );
       _selectedCategory = normalized;
     });
-
     return normalized;
   }
 
@@ -326,21 +362,28 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
     _timesController.text = _timesCount.toString();
     _intervalCountController.text = _intervalCount.toString();
     _intervalEveryController.text = _intervalEvery.toString();
-
     _trackingMode = _deriveMode(habit);
     _period = _derivePeriod(habit.recurrenceType);
     _intervalUnit = _deriveIntervalUnit(habit);
   }
 
   TrackingMode _deriveMode(Habit habit) {
-    if (habit.recurrenceType == null) {
-      return TrackingMode.period;
+    if (habit.specificWeekdays != null && habit.specificWeekdays!.isNotEmpty) {
+      return TrackingMode.weekdays;
     }
+    if (habit.daysCycle != null && habit.daysActive != null) {
+      return TrackingMode.cycle;
+    }
+    if (habit.specificDate != null) {
+      return TrackingMode.specificDate;
+    }
+    if (habit.recurrenceType == null) return TrackingMode.period;
     final periodTypes = {
       RecurrenceType.timesPerDay,
       RecurrenceType.timesPerWeek,
       RecurrenceType.monthly,
       RecurrenceType.yearly,
+      RecurrenceType.quarterly,
     };
     return periodTypes.contains(habit.recurrenceType)
         ? TrackingMode.period
@@ -348,9 +391,11 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
   }
 
   TrackingPeriodOption _derivePeriod(RecurrenceType? recurrenceType) {
+    if (recurrenceType == null) return TrackingPeriodOption.day;
     return switch (recurrenceType) {
       RecurrenceType.timesPerWeek => TrackingPeriodOption.week,
       RecurrenceType.monthly => TrackingPeriodOption.month,
+      RecurrenceType.quarterly => TrackingPeriodOption.quarter,
       RecurrenceType.yearly => TrackingPeriodOption.year,
       _ => TrackingPeriodOption.day,
     };
@@ -369,13 +414,28 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
   bool get _isFormValid {
     final name = _nameController.text.trim();
     final hasName = _hasValidName && name.length <= 80;
-    final trackingValid = _trackingMode == TrackingMode.period
-        ? _timesCount >= 1
-        : _intervalEvery >= 1 && _intervalCount >= 1;
+    bool trackingValid;
+    switch (_trackingMode) {
+      case TrackingMode.period:
+        trackingValid = _timesCount >= 1;
+        break;
+      case TrackingMode.interval:
+        trackingValid = _intervalEvery >= 1 && _intervalCount >= 1;
+        break;
+      case TrackingMode.cycle:
+        trackingValid = _cycleActive >= 1 && _cycleLength >= _cycleActive;
+        break;
+      case TrackingMode.weekdays:
+        trackingValid = _selectedWeekdays.isNotEmpty;
+        break;
+      case TrackingMode.specificDate:
+        trackingValid = _specificDate != null;
+        break;
+    }
     return hasName && trackingValid;
   }
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
     final name = _nameController.text.trim();
     if (name.isEmpty || name.length > 80) {
       _showValidationError(
@@ -384,10 +444,33 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
       );
       return;
     }
-
+    if (_selectedCategory.isEmpty) {
+      final l10n = AppLocalizations.of(context);
+      final proceed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title:
+              Text(l10n?.habitCategoryWarningTitle ?? 'Catégorie non choisie'),
+          content: Text(
+            l10n?.habitCategoryWarningMessage ??
+                'Vous n\'avez pas choisi de catégorie, continuer quand même ?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(l10n?.cancel ?? 'Annuler'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(l10n?.continueLabel ?? 'Continuer'),
+            ),
+          ],
+        ),
+      );
+      if (proceed != true) return;
+    }
     final habit = _buildHabitFromState(name);
     widget.onSubmit(habit);
-
     if (widget.initialHabit == null) {
       _resetForm();
     }
@@ -395,9 +478,7 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
 
   Habit _buildHabitFromState(String name) {
     final currentUser = _safeCurrentUser();
-    final isBinary =
-        _trackingMode == TrackingMode.period && _timesCount == 1;
-
+    final isBinary = _trackingMode == TrackingMode.period && _timesCount == 1;
     return Habit(
       id: widget.initialHabit?.id ?? const Uuid().v4(),
       name: name,
@@ -407,34 +488,51 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
       unit: null,
       createdAt: widget.initialHabit?.createdAt ?? DateTime.now(),
       recurrenceType: _mapRecurrenceType(),
-      intervalDays: _trackingMode == TrackingMode.interval
-          ? _mapIntervalDays()
-          : null,
+      intervalDays:
+          _trackingMode == TrackingMode.interval ? _mapIntervalDays() : null,
       timesTarget:
           _trackingMode == TrackingMode.period ? _timesCount : _intervalCount,
       hourlyInterval: _trackingMode == TrackingMode.interval &&
               _intervalUnit == TrackingIntervalUnit.hours
           ? _intervalEvery
           : null,
+      daysActive: _trackingMode == TrackingMode.cycle ? _cycleActive : null,
+      daysCycle: _trackingMode == TrackingMode.cycle ? _cycleLength : null,
+      cycleStartDate:
+          _trackingMode == TrackingMode.cycle ? _cycleStartDate : null,
+      specificWeekdays:
+          _trackingMode == TrackingMode.weekdays ? _selectedWeekdays : null,
+      specificDate:
+          _trackingMode == TrackingMode.specificDate ? _specificDate : null,
+      repeatEveryYear:
+          _trackingMode == TrackingMode.specificDate ? _repeatEveryYear : false,
       userId: currentUser?.id ?? widget.initialHabit?.userId,
       userEmail: currentUser?.email ?? widget.initialHabit?.userEmail,
     );
   }
 
   RecurrenceType _mapRecurrenceType() {
-    if (_trackingMode == TrackingMode.period) {
-      return switch (_period) {
-        TrackingPeriodOption.day => RecurrenceType.timesPerDay,
-        TrackingPeriodOption.week => RecurrenceType.timesPerWeek,
-        TrackingPeriodOption.month => RecurrenceType.monthly,
-        TrackingPeriodOption.year => RecurrenceType.yearly,
-      };
+    switch (_trackingMode) {
+      case TrackingMode.period:
+        return switch (_period) {
+          TrackingPeriodOption.day => RecurrenceType.timesPerDay,
+          TrackingPeriodOption.week => RecurrenceType.timesPerWeek,
+          TrackingPeriodOption.month => RecurrenceType.monthly,
+          TrackingPeriodOption.quarter => RecurrenceType.quarterly,
+          TrackingPeriodOption.semester => RecurrenceType.yearly,
+          TrackingPeriodOption.year => RecurrenceType.yearly,
+        };
+      case TrackingMode.interval:
+        return _intervalUnit == TrackingIntervalUnit.hours
+            ? RecurrenceType.hourlyInterval
+            : RecurrenceType.dailyInterval;
+      case TrackingMode.weekdays:
+        return RecurrenceType.weeklyDays;
+      case TrackingMode.cycle:
+        return RecurrenceType.dailyInterval;
+      case TrackingMode.specificDate:
+        return RecurrenceType.yearly;
     }
-
-    if (_intervalUnit == TrackingIntervalUnit.hours) {
-      return RecurrenceType.hourlyInterval;
-    }
-    return RecurrenceType.dailyInterval;
   }
 
   int? _mapIntervalDays() {
@@ -478,7 +576,6 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
     _timesController.text = '1';
     _intervalCountController.text = '1';
     _intervalEveryController.text = '1';
-
     void applyReset() {
       _trackingMode = TrackingMode.period;
       _period = TrackingPeriodOption.day;

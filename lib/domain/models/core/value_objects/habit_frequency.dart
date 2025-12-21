@@ -7,32 +7,40 @@ enum FrequencyModel {
 
   /// Model B: "every X units" (hourly/daily/weekly/monthly/quarterly/yearly intervals)
   everyXUnits,
+
+  /// Model C: "M days out of N" with a cycle start date
+  daysPerCycle,
+
+  /// Model D: specific date (single or yearly)
+  specificDate,
 }
 
 /// Period for Model A (times per period)
 enum FrequencyPeriod {
-  hour,   // times per hour
-  day,    // times per day
-  week,   // times per week
-  month,  // times per month (NEW)
-  year,   // times per year (NEW)
+  hour, // times per hour
+  day, // times per day
+  week, // times per week
+  month, // times per month (NEW)
+  quarter, // times per quarter
+  semester, // times per semester
+  year, // times per year (NEW)
 }
 
 /// Unit for Model B (every X units)
 enum FrequencyUnit {
-  hours,      // every X hours
-  days,       // every X days
-  weeks,      // every X weeks (NEW)
-  months,     // every X months
-  quarters,   // every X quarters
-  years,      // every X years
+  hours, // every X hours
+  days, // every X days
+  weeks, // every X weeks (NEW)
+  months, // every X months
+  quarters, // every X quarters
+  years, // every X years
 }
 
 /// Day filter for Model B (optional)
 enum DayFilter {
-  none,       // all days
-  weekdays,   // Monday-Friday only
-  weekends,   // Saturday-Sunday only
+  none, // all days
+  weekdays, // Monday-Friday only
+  weekends, // Saturday-Sunday only
 }
 
 /// Parametric frequency configuration
@@ -40,21 +48,30 @@ class HabitFrequency {
   final FrequencyModel model;
 
   // Model A fields
-  final int? timesCount;          // "n times"
-  final FrequencyPeriod? period;  // "per period"
+  final int? timesCount; // "n times"
+  final FrequencyPeriod? period; // "per period"
 
   // Model B fields
-  final int? interval;            // "every X"
-  final FrequencyUnit? unit;      // "units"
-  final DayFilter dayFilter;      // optional day restriction
+  final int? interval; // "every X"
+  final FrequencyUnit? unit; // "units"
+  final DayFilter dayFilter; // optional day restriction
 
   // Model B - Weekly specific
   final List<int>? specificWeekdays; // [0-6] for weeklyDays pattern
 
   // Model B - Monthly/Yearly specific
-  final int? monthlyDay;    // 1-31
-  final int? yearlyMonth;   // 1-12
-  final int? yearlyDay;     // 1-31
+  final int? monthlyDay; // 1-31
+  final int? yearlyMonth; // 1-12
+  final int? yearlyDay; // 1-31
+
+  // Model C: M days on N
+  final int? daysActive; // M
+  final int? daysCycle; // N
+  final DateTime? cycleStartDate;
+
+  // Model D: specific date
+  final DateTime? specificDate;
+  final bool repeatEveryYear;
 
   const HabitFrequency({
     required this.model,
@@ -67,6 +84,11 @@ class HabitFrequency {
     this.monthlyDay,
     this.yearlyMonth,
     this.yearlyDay,
+    this.daysActive,
+    this.daysCycle,
+    this.cycleStartDate,
+    this.specificDate,
+    this.repeatEveryYear = false,
   });
 
   /// Detect frequency model from legacy RecurrenceType
@@ -137,9 +159,9 @@ class HabitFrequency {
 
       case RecurrenceType.quarterly:
         return HabitFrequency(
-          model: FrequencyModel.everyXUnits,
-          interval: 1,
-          unit: FrequencyUnit.quarters,
+          model: FrequencyModel.timesPerPeriod,
+          timesCount: timesTarget ?? 1,
+          period: FrequencyPeriod.quarter,
         );
 
       case RecurrenceType.yearly:
@@ -182,6 +204,10 @@ class HabitFrequency {
         case FrequencyPeriod.month:
           // Map to timesPerWeek as closest approximation
           return RecurrenceType.timesPerWeek;
+        case FrequencyPeriod.quarter:
+          return RecurrenceType.quarterly;
+        case FrequencyPeriod.semester:
+          return RecurrenceType.yearly;
         case FrequencyPeriod.year:
           // Map to yearly as closest approximation
           return RecurrenceType.yearly;
@@ -231,6 +257,11 @@ class HabitFrequency {
     int? monthlyDay,
     int? yearlyMonth,
     int? yearlyDay,
+    int? daysActive,
+    int? daysCycle,
+    DateTime? cycleStartDate,
+    DateTime? specificDate,
+    bool? repeatEveryYear,
   }) {
     return HabitFrequency(
       model: model ?? this.model,
@@ -243,6 +274,11 @@ class HabitFrequency {
       monthlyDay: monthlyDay ?? this.monthlyDay,
       yearlyMonth: yearlyMonth ?? this.yearlyMonth,
       yearlyDay: yearlyDay ?? this.yearlyDay,
+      daysActive: daysActive ?? this.daysActive,
+      daysCycle: daysCycle ?? this.daysCycle,
+      cycleStartDate: cycleStartDate ?? this.cycleStartDate,
+      specificDate: specificDate ?? this.specificDate,
+      repeatEveryYear: repeatEveryYear ?? this.repeatEveryYear,
     );
   }
 }

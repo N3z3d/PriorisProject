@@ -27,6 +27,7 @@ class HabitIdentitySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final children = <Widget>[
       Flexible(
         flex: 7,
@@ -45,15 +46,27 @@ class HabitIdentitySection extends StatelessWidget {
       ),
     ];
 
-    return isWide
-        ? Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: children,
-          )
-        : Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: children,
-          );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        isWide
+            ? Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: children,
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: children,
+              ),
+        const SizedBox(height: 8),
+        Text(
+          l10n.habitCategoryHelper,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Colors.grey[600],
+              ),
+        ),
+      ],
+    );
   }
 
   Widget _buildNameField(BuildContext context) {

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:prioris/l10n/app_localizations.dart';
-import 'package:prioris/presentation/theme/app_theme.dart';
+import 'package:prioris/presentation/pages/habits/widgets/habit_form_widget.dart';
 
-import '../habit_form_widget.dart';
-
-class HabitTrackingSection extends StatelessWidget {
-  const HabitTrackingSection({
+class AdvancedHabitTrackingSection extends StatelessWidget {
+  const AdvancedHabitTrackingSection({
     super.key,
     required this.trackingMode,
     required this.period,
@@ -41,7 +39,6 @@ class HabitTrackingSection extends StatelessWidget {
   final TextEditingController intervalEveryController;
   final TextEditingController cycleActiveController;
   final TextEditingController cycleLengthController;
-
   final ValueChanged<String> onTimesChanged;
   final ValueChanged<String> onIntervalCountChanged;
   final ValueChanged<String> onIntervalEveryChanged;
@@ -60,55 +57,26 @@ class HabitTrackingSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppTheme.surfaceColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.dividerColor.withValues(alpha: 0.6)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n.habitTrackingTitle,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: AppTheme.textPrimary,
-                ),
-          ),
-          const SizedBox(height: 16),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              _modeChip(l10n.habitTrackingPrefix, TrackingMode.period),
-              _modeChip(l10n.habitTrackingEveryWord, TrackingMode.interval),
-              _modeChip(l10n.habitTrackingModeCycle, TrackingMode.cycle),
-              _modeChip(l10n.habitTrackingModeWeekdays, TrackingMode.weekdays),
-              _modeChip(l10n.habitTrackingModeSpecificDate,
-                  TrackingMode.specificDate),
-            ],
-          ),
-          const SizedBox(height: 12),
-          _buildModeContent(l10n),
-          const SizedBox(height: 8),
-          Text(
-            l10n.habitTrackingTip,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppTheme.textSecondary.withValues(alpha: 0.9),
-                ),
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            _modeChip(l10n.habitTrackingPrefix, TrackingMode.period),
+            _modeChip(l10n.habitTrackingEveryWord, TrackingMode.interval),
+            _modeChip(l10n.habitTrackingModeCycle, TrackingMode.cycle),
+            _modeChip(l10n.habitTrackingModeWeekdays, TrackingMode.weekdays),
+            _modeChip(
+              l10n.habitTrackingModeSpecificDate,
+              TrackingMode.specificDate,
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _buildModeContent(context, l10n),
+      ],
     );
   }
 
@@ -121,18 +89,18 @@ class HabitTrackingSection extends StatelessWidget {
     );
   }
 
-  Widget _buildModeContent(AppLocalizations l10n) {
+  Widget _buildModeContent(BuildContext context, AppLocalizations l10n) {
     switch (trackingMode) {
       case TrackingMode.period:
         return _buildPeriodPhrase(l10n);
       case TrackingMode.interval:
         return _buildIntervalPhrase(l10n);
       case TrackingMode.cycle:
-        return _buildCycleFields(l10n);
+        return _buildCycleFields(context, l10n);
       case TrackingMode.weekdays:
         return _buildWeekdaysPicker(l10n);
       case TrackingMode.specificDate:
-        return _buildSpecificDatePicker(l10n);
+        return _buildSpecificDatePicker(context, l10n);
     }
   }
 
@@ -189,7 +157,7 @@ class HabitTrackingSection extends StatelessWidget {
     );
   }
 
-  Widget _buildCycleFields(AppLocalizations l10n) {
+  Widget _buildCycleFields(BuildContext context, AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -215,7 +183,7 @@ class HabitTrackingSection extends StatelessWidget {
         TextButton.icon(
           onPressed: () async {
             final picked = await showDatePicker(
-              context: timesController.context,
+              context: context,
               initialDate: cycleStartDate ?? DateTime.now(),
               firstDate: DateTime(2000),
               lastDate: DateTime(2100),
@@ -267,14 +235,14 @@ class HabitTrackingSection extends StatelessWidget {
     );
   }
 
-  Widget _buildSpecificDatePicker(AppLocalizations l10n) {
+  Widget _buildSpecificDatePicker(BuildContext context, AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TextButton.icon(
           onPressed: () async {
             final picked = await showDatePicker(
-              context: timesController.context,
+              context: context,
               initialDate: specificDate ?? DateTime.now(),
               firstDate: DateTime(2000),
               lastDate: DateTime(2100),
@@ -395,9 +363,6 @@ class HabitTrackingSection extends StatelessWidget {
               width: 1.5,
             ),
           ),
-        ),
-        style: const TextStyle(
-          fontWeight: FontWeight.w600,
         ),
       ),
     );

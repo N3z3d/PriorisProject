@@ -22,10 +22,13 @@
   "habitFormIntro": "Give this habit a clear name, assign a category, and choose how you’ll track your progress.",
   "habitFormNameLabel": "Habit name",
   "habitFormNameHint": "E.g. Drink 8 glasses of water",
-  "habitFormCategoryLabel": "Category (optional)",
+  "habitFormCategoryLabel": "Category",
   "habitFormCategoryHint": "Select a category",
   "habitFormCategoryNone": "No category",
   "habitFormCategoryCreate": "+ Create a new category…",
+  "habitCategoryHelper": "Recommended: choose a category for better statistics.",
+  "habitCategoryWarningTitle": "No category selected",
+  "habitCategoryWarningMessage": "You haven't chosen a category. Continue anyway?",
   "habitFormQuantTargetLabel": "Goal",
   "habitFormQuantTargetHint": "8",
   "habitFormQuantUnitLabel": "Unit",
@@ -35,10 +38,38 @@
   "habitTrackingPrefix": "I want to do this habit",
   "habitTrackingTimesWord": "times",
   "habitTrackingEveryWord": "every",
+  "habitTrackingModeCycle": "M days out of N",
+  "@habitTrackingModeCycle": {},
+  "habitTrackingModeWeekdays": "Specific weekdays",
+  "@habitTrackingModeWeekdays": {},
+  "habitTrackingModeSpecificDate": "On a specific date",
+  "@habitTrackingModeSpecificDate": {},
+  "habitTrackingCycleLabel": "Cycle",
+  "@habitTrackingCycleLabel": {},
+  "habitTrackingCycleActiveDays": "Active days (M)",
+  "@habitTrackingCycleActiveDays": {},
+  "habitTrackingCycleLength": "Cycle length (N)",
+  "@habitTrackingCycleLength": {},
+  "habitTrackingCycleStartDate": "Cycle start date",
+  "@habitTrackingCycleStartDate": {},
+  "habitTrackingWeekdaysLabel": "Select weekdays",
+  "@habitTrackingWeekdaysLabel": {},
+  "habitTrackingSpecificDateLabel": "Date",
+  "@habitTrackingSpecificDateLabel": {},
+  "habitTrackingRepeatEveryYear": "Repeat every year",
+  "@habitTrackingRepeatEveryYear": {},
   "habitTrackingBackToPeriod": "Back to \"per period\" mode",
   "habitTrackingPeriodDay": "per day",
   "habitTrackingPeriodWeek": "per week",
   "habitTrackingPeriodMonth": "per month",
+  "habitTrackingPeriodQuarter": "per quarter",
+  "@habitTrackingPeriodQuarter": {
+    "description": "Quarterly period option"
+  },
+  "habitTrackingPeriodSemester": "per semester",
+  "@habitTrackingPeriodSemester": {
+    "description": "Semester (6 months) period option"
+  },
   "habitTrackingPeriodYear": "per year",
   "habitTrackingCustomInterval": "every...",
   "habitTrackingUnitHours": "hours",
@@ -1288,6 +1319,20 @@
       "count": {}
     }
   },
+  "habitFrequencyTimesPerQuarter": "{count, plural, one {{count} time per quarter} other {{count} times per quarter}}",
+  "@habitFrequencyTimesPerQuarter": {
+    "description": "Summary for times per quarter",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "habitFrequencyTimesPerSemester": "{count, plural, one {{count} time per semester} other {{count} times per semester}}",
+  "@habitFrequencyTimesPerSemester": {
+    "description": "Summary for times per semester",
+    "placeholders": {
+      "count": {}
+    }
+  },
   "habitFrequencyTimesPerYear": "{count, plural, one {{count} time per year} other {{count} times per year}}",
   "@habitFrequencyTimesPerYear": {
     "description": "Summary for times per year",
@@ -1328,6 +1373,32 @@
     "description": "Summary for every X quarters",
     "placeholders": {
       "interval": {}
+    }
+  },
+  "habitFrequencyDaysPerCycle": "{daysActive} days out of {daysCycle}",
+  "@habitFrequencyDaysPerCycle": {
+    "description": "Summary for M days out of N",
+    "placeholders": {
+      "daysActive": {},
+      "daysCycle": {}
+    }
+  },
+  "habitFrequencySpecificDateAnnual": "Every year on {date}",
+  "@habitFrequencySpecificDateAnnual": {
+    "description": "Summary for yearly specific date",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "habitFrequencySpecificDateOnce": "On {date}",
+  "@habitFrequencySpecificDateOnce": {
+    "description": "Summary for one-time specific date",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
     }
   },
   "habitFrequencyEveryYears": "{interval, plural, one {yearly} other {every {interval} years}}",

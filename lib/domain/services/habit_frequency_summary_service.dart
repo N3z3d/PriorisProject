@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:prioris/domain/models/core/value_objects/habit_frequency.dart';
 import 'package:prioris/l10n/app_localizations.dart';
 
@@ -10,10 +11,15 @@ class HabitFrequencySummaryService {
   ) {
     final l10n = AppLocalizations.of(context)!;
 
-    if (frequency.model == FrequencyModel.timesPerPeriod) {
-      return _generateModelASummary(l10n, frequency);
-    } else {
-      return _generateModelBSummary(l10n, frequency);
+    switch (frequency.model) {
+      case FrequencyModel.timesPerPeriod:
+        return _generateModelASummary(l10n, frequency);
+      case FrequencyModel.everyXUnits:
+        return _generateModelBSummary(l10n, frequency);
+      case FrequencyModel.daysPerCycle:
+        return _generateDaysPerCycleSummary(l10n, frequency);
+      case FrequencyModel.specificDate:
+        return _generateSpecificDateSummary(l10n, frequency);
     }
   }
 
@@ -33,6 +39,10 @@ class HabitFrequencySummaryService {
         return l10n.habitFrequencyTimesPerWeek(count);
       case FrequencyPeriod.month:
         return l10n.habitFrequencyTimesPerMonth(count);
+      case FrequencyPeriod.quarter:
+        return l10n.habitFrequencyTimesPerQuarter(count);
+      case FrequencyPeriod.semester:
+        return l10n.habitFrequencyTimesPerSemester(count);
       case FrequencyPeriod.year:
         return l10n.habitFrequencyTimesPerYear(count);
       case null:
@@ -65,7 +75,8 @@ class HabitFrequencySummaryService {
     }
 
     // Handle monthly/yearly specifics
-    if (frequency.unit == FrequencyUnit.months && frequency.monthlyDay != null) {
+    if (frequency.unit == FrequencyUnit.months &&
+        frequency.monthlyDay != null) {
       return l10n.habitFrequencyMonthlyOnDay(frequency.monthlyDay!);
     }
 
@@ -77,26 +88,49 @@ class HabitFrequencySummaryService {
           monthName,
         );
       }
-      return l10n.habitFrequencyEveryYears(interval);
+      return l10n.habitFrequencyEveryYears(interval, interval);
     }
 
     // Standard interval patterns
     switch (frequency.unit) {
       case FrequencyUnit.hours:
-        return l10n.habitFrequencyEveryHours(interval);
+        return l10n.habitFrequencyEveryHours(interval, interval);
       case FrequencyUnit.days:
-        return l10n.habitFrequencyEveryDays(interval);
+        return l10n.habitFrequencyEveryDays(interval, interval);
       case FrequencyUnit.weeks:
-        return l10n.habitFrequencyEveryWeeks(interval);
+        return l10n.habitFrequencyEveryWeeks(interval, interval);
       case FrequencyUnit.months:
-        return l10n.habitFrequencyEveryMonths(interval);
+        return l10n.habitFrequencyEveryMonths(interval, interval);
       case FrequencyUnit.quarters:
-        return l10n.habitFrequencyEveryQuarters(interval);
+        return l10n.habitFrequencyEveryQuarters(interval, interval);
       case FrequencyUnit.years:
-        return l10n.habitFrequencyEveryYears(interval);
+        return l10n.habitFrequencyEveryYears(interval, interval);
       case null:
-        return l10n.habitFrequencyEveryDays(interval);
+        return l10n.habitFrequencyEveryDays(interval, interval);
     }
+  }
+
+  static String _generateDaysPerCycleSummary(
+    AppLocalizations l10n,
+    HabitFrequency frequency,
+  ) {
+    final daysActive = frequency.daysActive ?? 1;
+    final daysCycle = frequency.daysCycle ?? (frequency.daysActive ?? 1);
+    return l10n.habitFrequencyDaysPerCycle(daysActive, daysCycle);
+  }
+
+  static String _generateSpecificDateSummary(
+    AppLocalizations l10n,
+    HabitFrequency frequency,
+  ) {
+    final date = frequency.specificDate ?? DateTime.now();
+    final locale = l10n.localeName;
+    if (frequency.repeatEveryYear) {
+      final formatted = DateFormat.MMMMd(locale).format(date);
+      return l10n.habitFrequencySpecificDateAnnual(formatted);
+    }
+    final formatted = DateFormat.yMMMd(locale).format(date);
+    return l10n.habitFrequencySpecificDateOnce(formatted);
   }
 
   static String _weekdayName(AppLocalizations l10n, int weekday) {

@@ -10,10 +10,13 @@
   "habitFormIntro": "Gib der Gewohnheit einen klaren Namen, ordne eine Kategorie zu und lege fest, wie du deinen Fortschritt verfolgst.",
   "habitFormNameLabel": "Name der Gewohnheit",
   "habitFormNameHint": "Z. B. 8 Gläser Wasser trinken",
-  "habitFormCategoryLabel": "Kategorie (optional)",
+  "habitFormCategoryLabel": "Kategorie",
   "habitFormCategoryHint": "Kategorie auswählen",
   "habitFormCategoryNone": "Keine Kategorie",
   "habitFormCategoryCreate": "+ Neue Kategorie erstellen…",
+  "habitCategoryHelper": "Empfohlen: Wähle eine Kategorie für bessere Statistiken.",
+  "habitCategoryWarningTitle": "Keine Kategorie gewählt",
+  "habitCategoryWarningMessage": "Du hast keine Kategorie gewählt. Trotzdem fortfahren?",
   "habitFormQuantTargetLabel": "Ziel",
   "habitFormQuantTargetHint": "8",
   "habitFormQuantUnitLabel": "Einheit",
@@ -23,10 +26,22 @@
   "habitTrackingPrefix": "Ich möchte diese Gewohnheit",
   "habitTrackingTimesWord": "Mal",
   "habitTrackingEveryWord": "alle",
+  "habitTrackingModeCycle": "M Tage von N",
+  "habitTrackingModeWeekdays": "Bestimmte Wochentage",
+  "habitTrackingModeSpecificDate": "An einem bestimmten Datum",
+  "habitTrackingCycleLabel": "Zyklus",
+  "habitTrackingCycleActiveDays": "Aktive Tage (M)",
+  "habitTrackingCycleLength": "Zykluslänge (N)",
+  "habitTrackingCycleStartDate": "Startdatum des Zyklus",
+  "habitTrackingWeekdaysLabel": "Wochentage auswählen",
+  "habitTrackingSpecificDateLabel": "Datum",
+  "habitTrackingRepeatEveryYear": "Jedes Jahr wiederholen",
   "habitTrackingBackToPeriod": "Zurück zum Modus \"pro Zeitraum\"",
   "habitTrackingPeriodDay": "pro Tag",
   "habitTrackingPeriodWeek": "pro Woche",
   "habitTrackingPeriodMonth": "pro Monat",
+  "habitTrackingPeriodQuarter": "pro Quartal",
+  "habitTrackingPeriodSemester": "pro Semester",
   "habitTrackingPeriodYear": "pro Jahr",
   "habitTrackingCustomInterval": "alle...",
   "habitTrackingUnitHours": "Stunden",
@@ -459,8 +474,7 @@
   "habitsTabAdd": "Add",
   "@habitsTabAdd": {
     "description": "Label for add habit tab"
-  }
-,
+  },
   "habitCategoryDialogTitle": "Neue Kategorie",
   "habitCategoryDialogFieldHint": "Kategorienamen eingeben",
   "habitsEmptyTitle": "Noch keine Gewohnheiten",
@@ -510,13 +524,16 @@
   "habitFrequencyTimesPerDay": "{count, plural, one {{count} Mal pro Tag} other {{count} Mal pro Tag}}",
   "habitFrequencyTimesPerWeek": "{count, plural, one {{count} Mal pro Woche} other {{count} Mal pro Woche}}",
   "habitFrequencyTimesPerMonth": "{count, plural, one {{count} Mal pro Monat} other {{count} Mal pro Monat}}",
+  "habitFrequencyTimesPerQuarter": "{count, plural, one {{count} Mal pro Quartal} other {{count} Mal pro Quartal}}",
+  "habitFrequencyTimesPerSemester": "{count, plural, one {{count} Mal pro Semester} other {{count} Mal pro Semester}}",
   "habitFrequencyTimesPerYear": "{count, plural, one {{count} Mal pro Jahr} other {{count} Mal pro Jahr}}",
-  "habitFrequencyEveryHours": "Alle {count} Stunden",
-  "habitFrequencyEveryDays": "Alle {count} Tage",
   "habitFrequencyEveryWeeks": "Alle {count} Wochen",
   "habitFrequencyEveryMonths": "Alle {count} Monate",
   "habitFrequencyEveryQuarters": "Alle {count} Quartale",
   "habitFrequencyEveryYears": "Alle {count} Jahre",
+  "habitFrequencyDaysPerCycle": "{daysActive} Tage von {daysCycle}",
+  "habitFrequencySpecificDateAnnual": "Jedes Jahr am {date}",
+  "habitFrequencySpecificDateOnce": "Am {date}",
   "habitFrequencyWeekdaysOnly": "Nur werktags",
   "habitFrequencyWeekendsOnly": "Nur am Wochenende",
   "habitFrequencySpecificDays": "Bestimmte Tage: {days}",
@@ -587,5 +604,90 @@
   "more": "Weitere Aktionen",
   "rename": "Umbenennen",
   "move": "Verschieben...",
-  "duplicate": "Duplizieren"
+  "duplicate": "Duplizieren",
+  "@habitFrequencyTimesPerWeek": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@habitFrequencyTimesPerMonth": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@habitFrequencyTimesPerQuarter": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@habitFrequencyTimesPerSemester": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@habitFrequencyTimesPerYear": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@habitFrequencyTimesPerDay": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@habitFrequencyTimesPerHour": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@habitFrequencyEveryWeeks": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@habitFrequencyEveryMonths": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@habitFrequencyEveryQuarters": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@habitFrequencyEveryYears": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@habitFrequencyEveryDays": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@habitFrequencyEveryHours": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@habitFrequencyDaysPerCycle": {
+    "placeholders": {
+      "daysActive": {},
+      "daysCycle": {}
+    }
+  },
+  "@habitFrequencySpecificDateAnnual": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "@habitFrequencySpecificDateOnce": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  }
 }
