@@ -1,0 +1,87 @@
+name: Deploy Pilot Web to GitHub Pages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pilot-pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    name: Build and deploy pilot web
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    env:
+      FLUTTER_VERSION: '3.32.8'
+      BASE_HREF: /PriorisProject/
+      DEFAULT_PAGES_URL: https://${{ github.repository_owner }}.github.io/PriorisProject/
+      PILOT_SUPABASE_URL: ${{ vars.PRIORIS_PILOT_SUPABASE_URL }}
+      PILOT_SUPABASE_ANON_KEY: ${{ vars.PRIORIS_PILOT_SUPABASE_ANON_KEY }}
+      PILOT_INSTANCE_NAME: ${{ vars.PRIORIS_PILOT_INSTANCE_NAME }}
+      PILOT_SUPABASE_AUTH_REDIRECT_URL: ${{ vars.PRIORIS_PILOT_SUPABASE_AUTH_REDIRECT_URL }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+
+      - name: Validate pilot configuration
+        shell: bash
+        run: |
+          if [[ -z "${PILOT_SUPABASE_URL}" ]]; then
+            echo "::error::Missing repository variable PRIORIS_PILOT_SUPABASE_URL"
+            exit 1
+          fi
+
+          if [[ -z "${PILOT_SUPABASE_ANON_KEY}" ]]; then
+            echo "::error::Missing repository variable PRIORIS_PILOT_SUPABASE_ANON_KEY"
+            exit 1
+          fi
+
+      - name: Generate pilot build environment
+        shell: bash
+        run: |
+          INSTANCE_NAME="${PILOT_INSTANCE_NAME:-Prioris Pilot}"
+          REDIRECT_URL="${PILOT_SUPABASE_AUTH_REDIRECT_URL:-${DEFAULT_PAGES_URL}}"
+
+          cat > .env <<EOF
+          SUPABASE_URL=${PILOT_SUPABASE_URL}
+          SUPABASE_ANON_KEY=${PILOT_SUPABASE_ANON_KEY}
+          SUPABASE_AUTH_REDIRECT_URL=${REDIRECT_URL}
+          ENVIRONMENT=production
+          DEBUG_MODE=false
+          PRIORIS_INSTANCE_NAME=${INSTANCE_NAME}
+          PRIORIS_INSTANCE_ENTRY_URL=${DEFAULT_PAGES_URL}
+          EOF
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build release web for pilot pages
+        run: flutter build web --release --base-href=${{ env.BASE_HREF }} --dart-define=PRIORIS_APP_VERSION=pilot-pages-${{ github.run_number }}
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

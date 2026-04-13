@@ -1,0 +1,70 @@
+# generated: 2026-04-12T22:39:56.0084619+02:00
+# last_updated: 2026-04-13T17:18:57.2663020+02:00
+# project: PriorisProject
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: C:/Users/Thibaut/Desktop/PriorisProject/_bmad-output/implementation-artifacts
+#
+# DEFINITIONS DE STATUT:
+# ======================
+# Statut d'epic:
+#   - backlog: Epic non demarre
+#   - in-progress: Epic en cours
+#   - done: Toutes les stories de l'epic sont terminees
+#
+# Transitions de statut d'epic:
+#   - backlog -> in-progress: automatiquement quand la premiere story est creee
+#   - in-progress -> done: manuellement quand toutes les stories sont a 'done'
+#
+# Statut de story:
+#   - backlog: La story existe seulement dans le fichier d'epics
+#   - ready-for-dev: Le fichier de story existe dans le dossier d'implementation
+#   - in-progress: Developpement en cours
+#   - review: Pret pour revue de code
+#   - done: Story terminee
+#
+# Statut de retrospective:
+#   - optional: Peut etre realisee mais n'est pas obligatoire
+#   - done: Retrospective terminee
+#
+# NOTES DE WORKFLOW:
+# ==================
+# - Un epic passe a 'in-progress' automatiquement quand sa premiere story est creee
+# - Les stories peuvent etre traitees en parallele si la capacite le permet
+# - Le SM cree en general la story suivante apres la precedente a 'done' pour integrer les apprentissages
+# - Le developpeur passe la story a 'review', puis lance le workflow de code review
+
+generated: '2026-04-12T22:39:56.0084619+02:00'
+last_updated: '2026-04-13T17:18:57.2663020+02:00'
+project: 'PriorisProject'
+project_key: 'NOKEY'
+tracking_system: 'file-system'
+story_location: 'C:/Users/Thibaut/Desktop/PriorisProject/_bmad-output/implementation-artifacts'
+
+development_status:
+  epic-3: done
+  3-1-produire-le-verdict-architecture-et-technologies-pour-le-mvp-personnel: done
+  3-2-livrer-un-runtime-local-docker-first-avec-persistance-des-donnees-personnelles: done
+  3-3-rendre-lauthentification-et-la-continuite-de-session-dignes-de-confiance-dans-le-mvp-pilote: done
+  3-4-retablir-lintegrite-de-la-priorisation-a-travers-refresh-et-changement-dappareil: done
+  3-5-livrer-le-flux-habitudes-minimal-avec-frequences-utiles-et-validation: done
+  3-6-rendre-la-synchro-visible-et-prouver-le-flux-pilote-sur-pc-et-telephone: done
+  epic-3-retrospective: done
+
+  epic-4: done
+  4-1-identifier-de-maniere-fiable-ce-qui-merite-lattention-aujourdhui: done
+  4-2-afficher-une-vue-aujourdhui-courte-et-actionnable: done
+  4-3-permettre-depuis-aujourdhui-dagir-ou-darbitrer-rapidement: done
+  epic-4-retrospective: done
+
+  epic-5: done
+  5-1-rendre-lacces-au-produit-credible-pour-un-premier-utilisateur-externe: done
+  5-2-rendre-la-premiere-experience-exploitable-pour-un-utilisateur-qui-nest-pas-le-createur: done
+  5-3-ouvrir-prioris-progressivement-a-de-premiers-utilisateurs-externes: done
+  epic-5-retrospective: done
+
+  epic-6: in-progress
+  6-1-rendre-une-instance-pilote-externe-identifiable-et-atteignable: in-progress
+  6-2-remplacer-les-points-de-contact-placeholders-par-un-support-pilote-reel: backlog
+  6-3-documenter-le-gate-de-readiness-et-le-closeout-du-pilote: backlog
+  epic-6-retrospective: optional
