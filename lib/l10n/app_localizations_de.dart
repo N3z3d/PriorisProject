@@ -1244,7 +1244,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String habitFrequencyEveryQuarters(num interval) {
-    return 'Alle $count Quartale';
+    String _temp0 = intl.Intl.pluralLogic(
+      interval,
+      locale: localeName,
+      other: 'alle $interval Quartale',
+      one: 'vierteljährlich',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -1264,7 +1270,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String habitFrequencyEveryYears(num interval) {
-    return 'Alle $count Jahre';
+    String _temp0 = intl.Intl.pluralLogic(
+      interval,
+      locale: localeName,
+      other: 'alle $interval Jahre',
+      one: 'jährlich',
+    );
+    return '$_temp0';
   }
 
   @override

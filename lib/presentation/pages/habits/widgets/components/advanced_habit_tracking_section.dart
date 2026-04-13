@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/pages/habits/widgets/habit_form_widget.dart';
+import 'package:prioris/presentation/theme/app_theme.dart';
 
 class AdvancedHabitTrackingSection extends StatelessWidget {
   const AdvancedHabitTrackingSection({
@@ -358,7 +359,7 @@ class AdvancedHabitTrackingSection extends StatelessWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(
+            borderSide: const BorderSide(
               color: AppTheme.accentColor,
               width: 1.5,
             ),

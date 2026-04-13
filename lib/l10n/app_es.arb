@@ -525,8 +525,8 @@
   "habitFrequencyEveryDays": "Cada {count} días",
   "habitFrequencyEveryWeeks": "Cada {count} semanas",
   "habitFrequencyEveryMonths": "Cada {count} meses",
-  "habitFrequencyEveryQuarters": "Cada {count} trimestres",
-  "habitFrequencyEveryYears": "Cada {count} años",
+  "habitFrequencyEveryQuarters": "{interval, plural, one {trimestral} other {cada {interval} trimestres}}",
+  "habitFrequencyEveryYears": "{interval, plural, one {anual} other {cada {interval} años}}",
   "habitFrequencyDaysPerCycle": "{daysActive} días de {daysCycle}",
   "habitFrequencySpecificDateAnnual": "Cada año el {date}",
   "habitFrequencySpecificDateOnce": "El {date}",
@@ -633,12 +633,12 @@
   },
   "@habitFrequencyEveryQuarters": {
     "placeholders": {
-      "count": {}
+      "interval": {}
     }
   },
   "@habitFrequencyEveryYears": {
     "placeholders": {
-      "count": {}
+      "interval": {}
     }
   },
   "@habitFrequencyDaysPerCycle": {

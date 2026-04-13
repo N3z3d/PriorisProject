@@ -4064,3 +4064,26 @@ Prochaine etape:
 
 - Zone sensible assumee: ce lot touche CI/CD, mais via une workflow nouvelle et separee; ne pas destabiliser `.github/workflows/ci.yml`.
 - Limite connue avant implementation: meme avec la workflow en place, `6.1` ne pourra passer en `review` que si une URL publique reelle est effectivement activee et documentee.
+
+## BMAD Slice: dev_story_6_1_pages_build_unblock
+
+### Plan
+
+- [x] Reproduire et diagnostiquer localement les erreurs du workflow GitHub Pages (`l10n` et `AppTheme`)
+- [x] Corriger minimalement les sources canoniques touchees sans elargir le lot
+- [x] Regenerer les localisations et verifier l'etat compile cible pour GitHub Pages
+- [x] Mettre a jour les lecons et documenter le resultat concret de deblocage
+
+### Review
+
+- Cause racine confirmee sur `main`:
+- `lib/l10n/app_de.arb` et `lib/l10n/app_es.arb` utilisaient encore `{count}` au lieu de `{interval}` pour `habitFrequencyEveryQuarters` et `habitFrequencyEveryYears`
+- `lib/presentation/pages/habits/widgets/components/advanced_habit_tracking_section.dart` utilisait `AppTheme.accentColor` sans importer `app_theme.dart`
+- Correctif minimal applique:
+- source l10n corrigee dans `app_de.arb` et `app_es.arb`
+- fichiers generes `app_localizations_de.dart` et `app_localizations_es.dart` realignes
+- import `AppTheme` ajoute et `BorderSide` passe en `const`
+- Verification executee dans un worktree propre base sur `HEAD`:
+- build rouge reproduit avec `flutter build web --no-pub --release --base-href=/PriorisProject/ --dart-define=PRIORIS_APP_VERSION=pilot-pages-2`
+- `flutter analyze --no-pub lib/l10n/app_localizations_de.dart lib/l10n/app_localizations_es.dart lib/presentation/pages/habits/widgets/components/advanced_habit_tracking_section.dart` -> vert
+- `flutter build web --no-pub --release --base-href=/PriorisProject/ --dart-define=PRIORIS_APP_VERSION=pilot-pages-2` -> vert apres creation d'un `.env` local temporaire de validation
