@@ -1660,5 +1660,25 @@
   "duplicate": "Duplicate",
   "@duplicate": {
     "description": "Menu label duplicate"
+  },
+  "pilotIdentityBadge": "External pilot",
+  "@pilotIdentityBadge": {
+    "description": "Short badge that identifies the external pilot instance"
+  },
+  "settingsPilotStatusBody": "Limited external pilot. Prioris currently covers the shell, lists, prioritisation, and basic habits.",
+  "@settingsPilotStatusBody": {
+    "description": "Body text describing the current pilot coverage"
+  },
+  "settingsPilotLimitsBody": "No billing, no public support, no hosted help centre, and no promise beyond the current scope.",
+  "@settingsPilotLimitsBody": {
+    "description": "Body text describing the current pilot limits"
+  },
+  "authLoginTitle": "Sign in",
+  "@authLoginTitle": {
+    "description": "Title shown on the login screen in sign-in mode"
+  },
+  "authSignUpTitle": "Create an account",
+  "@authSignUpTitle": {
+    "description": "Title shown on the login screen in sign-up mode"
   }
 }

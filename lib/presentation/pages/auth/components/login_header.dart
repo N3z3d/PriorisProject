@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:prioris/core/config/app_config.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
+import 'package:prioris/presentation/widgets/pilot/pilot_instance_notice.dart';
 
-/// Widget d'en-tête de la page de connexion
+/// Widget d'en-tete de la page de connexion.
 ///
-/// **SRP** : Affiche uniquement le logo et le titre
+/// SRP: affiche uniquement le logo et le titre.
 class LoginHeader extends StatelessWidget {
-  final bool isSignUp;
-
   const LoginHeader({
     super.key,
     required this.isSignUp,
   });
 
+  final bool isSignUp;
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final config = AppConfig.instance;
+
     return Column(
       children: [
         Icon(
@@ -32,10 +38,16 @@ class LoginHeader extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          isSignUp ? 'Créer un compte' : 'Connectez-vous',
+          isSignUp
+              ? l10n?.authSignUpTitle ?? 'Creer un compte'
+              : l10n?.authLoginTitle ?? 'Connectez-vous',
           style: AppTheme.lightTheme.textTheme.titleLarge,
           textAlign: TextAlign.center,
         ),
+        if (config.hasExplicitPilotInstance) ...[
+          const SizedBox(height: 20),
+          const PilotInstanceNotice(),
+        ],
       ],
     );
   }

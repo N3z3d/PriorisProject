@@ -660,5 +660,25 @@
         "type": "String"
       }
     }
+  },
+  "pilotIdentityBadge": "Piloto externo",
+  "@pilotIdentityBadge": {
+    "description": "Insignia corta que identifica la instancia piloto externa"
+  },
+  "settingsPilotStatusBody": "Piloto externo limitado. Prioris cubre hoy el shell, las listas, la priorizacion y los habitos basicos.",
+  "@settingsPilotStatusBody": {
+    "description": "Texto que describe la cobertura actual del piloto"
+  },
+  "settingsPilotLimitsBody": "Sin facturacion, sin soporte publico, sin centro de ayuda alojado y sin promesas mas alla del alcance actual.",
+  "@settingsPilotLimitsBody": {
+    "description": "Texto que describe los limites actuales del piloto"
+  },
+  "authLoginTitle": "Inicia sesion",
+  "@authLoginTitle": {
+    "description": "Titulo mostrado en la pantalla de acceso en modo inicio de sesion"
+  },
+  "authSignUpTitle": "Crear una cuenta",
+  "@authSignUpTitle": {
+    "description": "Titulo mostrado en la pantalla de acceso en modo registro"
   }
 }

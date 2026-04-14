@@ -35,7 +35,7 @@
 # - Le developpeur passe la story a 'review', puis lance le workflow de code review
 
 generated: '2026-04-12T22:39:56.0084619+02:00'
-last_updated: '2026-04-13T17:18:57.2663020+02:00'
+last_updated: '2026-04-14T06:06:26.3372574+02:00'
 project: 'PriorisProject'
 project_key: 'NOKEY'
 tracking_system: 'file-system'
@@ -64,7 +64,7 @@ development_status:
   epic-5-retrospective: done
 
   epic-6: in-progress
-  6-1-rendre-une-instance-pilote-externe-identifiable-et-atteignable: in-progress
+  6-1-rendre-une-instance-pilote-externe-identifiable-et-atteignable: review
   6-2-remplacer-les-points-de-contact-placeholders-par-un-support-pilote-reel: backlog
   6-3-documenter-le-gate-de-readiness-et-le-closeout-du-pilote: backlog
   epic-6-retrospective: optional

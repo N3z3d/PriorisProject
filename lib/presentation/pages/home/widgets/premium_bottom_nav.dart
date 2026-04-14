@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/pages/home/models/navigation_item.dart';
 import 'package:prioris/presentation/pages/home/widgets/premium_nav_item.dart';
+import 'package:prioris/presentation/theme/app_theme.dart';
 
 /// Barre de navigation inférieure premium avec design moderne
 class PremiumBottomNav extends ConsumerWidget {
-  final int currentPage;
-  final List<NavigationItem> items;
-  final Function(int, NavigationItem) onNavigationTap;
-
   const PremiumBottomNav({
     super.key,
     required this.currentPage,
     required this.items,
     required this.onNavigationTap,
   });
+
+  final int currentPage;
+  final List<NavigationItem> items;
+  final Function(int, NavigationItem) onNavigationTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -51,9 +51,10 @@ class PremiumBottomNav extends ConsumerWidget {
 
   Widget _buildNavigationItemsRow() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: items.asMap().entries.map((entry) {
-        return _buildNavigationItem(entry.key, entry.value);
+        return Expanded(
+          child: _buildNavigationItem(entry.key, entry.value),
+        );
       }).toList(),
     );
   }

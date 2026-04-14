@@ -689,5 +689,25 @@
         "type": "String"
       }
     }
+  },
+  "pilotIdentityBadge": "Externer Pilot",
+  "@pilotIdentityBadge": {
+    "description": "Kurzes Badge zur Kennzeichnung der externen Pilotinstanz"
+  },
+  "settingsPilotStatusBody": "Begrenzter externer Pilot. Prioris deckt derzeit die Shell, Listen, Priorisierung und grundlegende Gewohnheiten ab.",
+  "@settingsPilotStatusBody": {
+    "description": "Text, der den aktuellen Umfang des Piloten beschreibt"
+  },
+  "settingsPilotLimitsBody": "Kein Billing, kein offentliches Support-Angebot, kein gehostetes Hilfezentrum und kein Versprechen uber den aktuellen Umfang hinaus.",
+  "@settingsPilotLimitsBody": {
+    "description": "Text, der die aktuellen Grenzen des Piloten beschreibt"
+  },
+  "authLoginTitle": "Anmelden",
+  "@authLoginTitle": {
+    "description": "Titel auf dem Login-Bildschirm im Anmeldemodus"
+  },
+  "authSignUpTitle": "Konto erstellen",
+  "@authSignUpTitle": {
+    "description": "Titel auf dem Login-Bildschirm im Registrierungsmodus"
   }
 }

@@ -4087,3 +4087,40 @@ Prochaine etape:
 - build rouge reproduit avec `flutter build web --no-pub --release --base-href=/PriorisProject/ --dart-define=PRIORIS_APP_VERSION=pilot-pages-2`
 - `flutter analyze --no-pub lib/l10n/app_localizations_de.dart lib/l10n/app_localizations_es.dart lib/presentation/pages/habits/widgets/components/advanced_habit_tracking_section.dart` -> vert
 - `flutter build web --no-pub --release --base-href=/PriorisProject/ --dart-define=PRIORIS_APP_VERSION=pilot-pages-2` -> vert apres creation d'un `.env` local temporaire de validation
+
+## BMAD Slice: closeout_story_6_1_public_pilot
+
+### Plan
+
+- [x] Porter dans l'etat officiel `main` le code minimal manquant pour rendre le pilote visible sur l'URL publique
+- [x] Corriger les ecarts reels observes sur l'instance publique (`manifest` / icones / metadata web)
+- [x] Ajouter la couverture QA optionnelle utile au lane `6.1` et verifier le lot localement
+- [x] Mettre a jour la story `6.1`, le tracker et la revue avec la preuve publique reelle disponible a ce stade
+- [x] Executer la revue de code BMAD puis resynchroniser l'etat final
+
+### Review
+
+- Cible publique confirmee: `https://n3z3d.github.io/PriorisProject/`
+- Verification publique effectuee le `2026-04-13`:
+  - l'URL charge bien sur desktop et mobile
+  - preuves capturees dans `pilot_pages_desktop.png` et `pilot_pages_mobile.png`
+  - un `404` manifest a ete observe sur `icons/Icon-192.png`, puis corrige dans ce lot
+- Correctifs portes dans l'etat officiel:
+  - identite pilote centralisee dans `AppConfig`
+  - bandeau pilote visible sur l'entree auth et le shell
+  - metadata web `index.html` / `manifest.json` realignees
+  - icones Pages ajoutees, y compris maskable, avec `.gitignore` corrige
+  - overflows reels corriges sur le shell desktop/mobile et l'etat vide des listes
+- QA optionnelle ajoutee et validee:
+  - `flutter gen-l10n`
+  - `flutter analyze --no-pub ...` cible sur les fichiers du lot
+  - `flutter test --no-pub test/core/config/app_config_test.dart test/presentation/pages/auth/components/login_header_test.dart test/presentation/pages/home_page_test.dart`
+  - `flutter build web --no-pub --release --base-href=/PriorisProject/ --dart-define=PRIORIS_APP_VERSION=pilot-pages-local`
+- Revue de code finale: aucun blocage restant dans le diff du lot 6.1. Le seul reliquat est operationnel: rerun manuel de `Deploy Pilot Web to GitHub Pages` pour publier ce commit et reprendre la preuve publique mise a jour.
+- Etat BMAD recommande apres ce lot: story `6.1` en `review`, pas encore `done`, jusqu'a la republication Pages et la reverification desktop/mobile du build courant.
+
+### Next Steps
+
+1. Lancer `Deploy Pilot Web to GitHub Pages` sur `main` pour publier ce commit.
+2. Reprendre une capture desktop + mobile de l'URL publique mise a jour.
+3. Basculer ensuite `6.1` en `done` et ouvrir `6.2`.

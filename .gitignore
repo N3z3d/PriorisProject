@@ -47,6 +47,8 @@ app.*.map.json
 /web/icons/
 !/web/icons/Icon-192.png
 !/web/icons/Icon-512.png
+!/web/icons/Icon-maskable-192.png
+!/web/icons/Icon-maskable-512.png
 
 # Hive databases
 *.hive

@@ -1,6 +1,6 @@
 # Story 6.1: Rendre une instance pilote externe identifiable et atteignable
 
-Status: in-progress
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -18,8 +18,8 @@ afin d'utiliser Prioris sans dependre d'un runtime local ni d'un harnais repo-ow
 
 ## Tasks / Subtasks
 
-- [ ] Nommer et brancher une cible pilote reelle unique, distincte du runtime local, sans creer un second produit. (AC: 1, 2, 3)
-  - [ ] Documenter un point d'entree pilote explicite et sa source de verite unique, au niveau du build, du runtime ou des artefacts de deploiement, au lieu de disperser des libelles/URLs pilotes en dur dans plusieurs widgets.
+- [x] Nommer et brancher une cible pilote reelle unique, distincte du runtime local, sans creer un second produit. (AC: 1, 2, 3)
+  - [x] Documenter un point d'entree pilote explicite et sa source de verite unique, au niveau du build, du runtime ou des artefacts de deploiement, au lieu de disperser des libelles/URLs pilotes en dur dans plusieurs widgets.
   - [x] Reutiliser le chemin runtime normal `PriorisApp -> AuthWrapper -> LoginPage/HomePage` sans introduire de route parallele, de shell alternatif ni de bypass repo-owned.
   - [x] Si une identite pilote visible est ajoutee dans l'application, la deriver d'une seule source de config ou de metadata de build plutot que de dupliquer un nom d'instance dans `web/index.html`, `manifest.json`, `LoginHeader`, `HomePage` ou `SettingsPage`.
 
@@ -36,7 +36,7 @@ afin d'utiliser Prioris sans dependre d'un runtime local ni d'un harnais repo-ow
 - [ ] Fermer une matrice de preuve distincte pour l'instance pilote reelle et les preuves repo-owned corrigees a la bonne frontiere. (AC: 1, 2, 3)
   - [x] Ajouter ou etendre des tests presentation/integration sur le chemin authentifie normal pour prouver les reperes d'identification pilote sur desktop et sur telephone.
   - [x] Si les metadata web ou le bootstrap web sont touches, verifier explicitement qu'ils restent compatibles avec le bootstrap Flutter normal (`flutter build web`, `index.html`, `manifest.json`) et ne cassent ni le `base href` ni le chargement `flutter_bootstrap.js`.
-  - [ ] Documenter en closeout la cible pilote hebergee, la preuve desktop, la preuve telephone, la date de verification et les limites retenues; toute preuve locale repo-owned n'est qu'un support secondaire.
+  - [x] Documenter en closeout la cible pilote hebergee, la preuve desktop, la preuve telephone, la date de verification et les limites retenues; toute preuve locale repo-owned n'est qu'un support secondaire.
 
 - [x] Documenter explicitement la frontiere d'implementation, les fichiers probables et les hors-scope avant `dev-story`. (AC: 2, 3)
   - [x] Nommer la frontiere principale `web entry / presentation shell / auth entry -> providers auth existants -> runtime courant`, sans branchement direct UI -> infrastructure.
@@ -235,6 +235,7 @@ afin d'utiliser Prioris sans dependre d'un runtime local ni d'un harnais repo-ow
 
 - 2026-04-12: story creee via workflow `create-story` pour ouvrir `Epic 6` sur le plus petit slice observable du lane `pilote externe reel`: rendre une vraie instance pilote identifiable et atteignable, sans confondre runtime local, preuve repo-owned et cible pilote hebergee.
 - 2026-04-13: implementation `dev-story` sur le chemin runtime normal avec source unique d'identite pilote dans `AppConfig`, preuves desktop/telephone repo-owned et closeout maintenu `in-progress` faute de cible pilote publique canonique documentee dans le depot.
+- 2026-04-14: closeout technique du pilote public: code officiel complete pour l'identite pilote sur auth/shell, metadata web et icones Pages corrigees, QA ciblee verte, build Pages vert et story passee en `review` avec republcation GitHub Pages encore requise pour fermer la preuve publique du build courant.
 
 ## Dev Agent Record
 
@@ -277,26 +278,41 @@ GPT-5 Codex
 
 ### Completion Notes List
 
-- `AppConfig` centralise maintenant l'identite pilote via `PRIORIS_INSTANCE_NAME`, `PRIORIS_INSTANCE_ENTRY_URL`, `pilotInstanceName`, `pilotInstanceEntryUrl`, `hasExplicitPilotInstance` et `applicationTitle`.
-- Le chemin runtime normal est reutilise sans route parallele: `PriorisApp -> AuthWrapper -> LoginPage/HomePage`. L'identite pilote visible passe par `LoginHeader`, `HomePage`, `SettingsPage` et le nouveau widget partage `PilotInstanceNotice`.
-- La copy pilote reste localisee via `AppLocalizations`; un badge explicite `pilotIdentityBadge` a ete ajoute en FR/EN/ES/DE puis regenere.
-- Les preuves repo-owned desktop + telephone sont fermees par les tests `app_config`, `home_page`, `settings_page` et `auth_flow_integration`; `flutter build web` reste vert.
-- Le chemin de deploiement externe minimal est maintenant prepare:
-  - nouvelle workflow GitHub Pages manuelle `deploy-pilot-pages.yml`
-  - generation d'un `.env` de build dans GitHub Actions
-  - build Pages validee localement avec `--base-href=/PriorisProject/`
-  - documentation d'activation dans `docs/PILOT_PAGES_DEPLOYMENT.md`
-- Choix de securite explicite pour cette cible web: `SUPABASE_URL` et la cle publique client `anon` sont traitees comme des variables GitHub de build, pas comme des secrets forts, parce qu'elles seront exposees dans le bundle web. `service_role` et tout secret backend restent interdits.
-- Le depot ne fournit toujours pas de cible pilote publique canonique: `.env` garde un redirect local (`http://localhost:3000/auth/callback`), `docs/LOCAL_RUNTIME.md` ne documente que des URLs locales/LAN, et aucun artefact de deploiement public n'a ete trouve. La story reste donc `in-progress` et ne doit pas etre cloturee comme preuve suffisante d'un pilote externe reel.
-- La limite restante est reduite mais non fermee: il faut encore un premier run GitHub Pages reussi, une URL publique finale verifiee et une preuve desktop + telephone sur cette URL avant de pouvoir passer la story en `review`.
+- La cible pilote publique est maintenant nommee et documentee: `https://n3z3d.github.io/PriorisProject/`.
+- Le code officiel porte enfin l'identite pilote sur les surfaces minimales du chemin runtime normal:
+  - `AppConfig` centralise `PRIORIS_INSTANCE_NAME`, `PRIORIS_INSTANCE_ENTRY_URL`, `hasExplicitPilotInstance` et `applicationTitle`
+  - `PriorisApp` reutilise ce titre applicatif
+  - `LoginHeader` et `HomePage` affichent le widget partage `PilotInstanceNotice`
+- Les metadata web ont ete realignees pour la cible Pages:
+  - `web/index.html` titre la cible comme pilote
+  - `web/manifest.json` decrit explicitement le pilote externe
+  - les icones Pages requises existent, y compris les variantes maskable, et `.gitignore` les autorise
+- Une verification publique reelle a ete capturee le `2026-04-13` sur l'URL publique:
+  - preuve desktop: `pilot_pages_desktop.png`
+  - preuve mobile: `pilot_pages_mobile.png`
+  - console: `pilot_pages_console.txt`
+  - le site etait atteignable mais exposait encore l'ancien build, ce qui a motive le port du code manquant dans l'etat officiel
+- QA ciblee fermee sur le diff du lot:
+  - `flutter gen-l10n`
+  - `flutter analyze --no-pub ...` cible sur les fichiers modifies
+  - `flutter test --no-pub test/core/config/app_config_test.dart test/presentation/pages/auth/components/login_header_test.dart test/presentation/pages/home_page_test.dart`
+  - `flutter build web --no-pub --release --base-href=/PriorisProject/ --dart-define=PRIORIS_APP_VERSION=pilot-pages-local`
+- En corrigeant la QA, deux regressions UI reelles ont ete fermees:
+  - overflow du shell desktop/mobile
+  - overflow de l'etat vide des listes quand le bandeau pilote reduit la hauteur utile
+- La story passe en `review`, pas en `done`: la republcation publique de ce commit depend encore d'un rerun manuel de `Deploy Pilot Web to GitHub Pages`, puis d'une reprise de preuve desktop + mobile sur le build courant.
 
 ### File List
 
+- `.gitignore`
 - `lib/core/config/app_config.dart`
 - `lib/presentation/app/prioris_app.dart`
 - `lib/presentation/pages/auth/components/login_header.dart`
 - `lib/presentation/pages/home_page.dart`
-- `lib/presentation/pages/settings_page.dart`
+- `lib/presentation/pages/home/widgets/desktop_sidebar.dart`
+- `lib/presentation/pages/home/widgets/premium_bottom_nav.dart`
+- `lib/presentation/pages/home/widgets/premium_nav_item.dart`
+- `lib/presentation/pages/lists/widgets/lists_no_data_state.dart`
 - `lib/presentation/widgets/pilot/pilot_instance_notice.dart`
 - `lib/l10n/app_fr.arb`
 - `lib/l10n/app_en.arb`
@@ -309,10 +325,13 @@ GPT-5 Codex
 - `lib/l10n/app_localizations_de.dart`
 - `test/core/config/app_config_test.dart`
 - `test/presentation/pages/home_page_test.dart`
-- `test/presentation/pages/settings_page_test.dart`
-- `test/integration/auth_flow_integration_test.dart`
-- `.github/workflows/deploy-pilot-pages.yml`
-- `docs/PILOT_PAGES_DEPLOYMENT.md`
+- `test/presentation/pages/auth/components/login_header_test.dart`
+- `web/icons/Icon-192.png`
+- `web/icons/Icon-512.png`
+- `web/icons/Icon-maskable-192.png`
+- `web/icons/Icon-maskable-512.png`
+- `_bmad-output/implementation-artifacts/tests/test-summary.md`
 - `_bmad-output/implementation-artifacts/6-1-rendre-une-instance-pilote-externe-identifiable-et-atteignable.md`
 - `_bmad-output/implementation-artifacts/sprint-status.yaml`
 - `tasks/todo.md`
+- `tasks/lessons.md`

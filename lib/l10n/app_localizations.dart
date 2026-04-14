@@ -2651,6 +2651,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Duplicate'**
   String get duplicate;
+
+  /// Short badge that identifies the external pilot instance
+  ///
+  /// In en, this message translates to:
+  /// **'External pilot'**
+  String get pilotIdentityBadge;
+
+  /// Body text describing the current pilot coverage
+  ///
+  /// In en, this message translates to:
+  /// **'Limited external pilot. Prioris currently covers the shell, lists, prioritisation, and basic habits.'**
+  String get settingsPilotStatusBody;
+
+  /// Body text describing the current pilot limits
+  ///
+  /// In en, this message translates to:
+  /// **'No billing, no public support, no hosted help centre, and no promise beyond the current scope.'**
+  String get settingsPilotLimitsBody;
+
+  /// Title shown on the login screen in sign-in mode
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get authLoginTitle;
+
+  /// Title shown on the login screen in sign-up mode
+  ///
+  /// In en, this message translates to:
+  /// **'Create an account'**
+  String get authSignUpTitle;
 }
 
 class _AppLocalizationsDelegate

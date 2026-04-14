@@ -817,5 +817,25 @@
   "duplicate": "Dupliquer",
   "@duplicate": {
     "description": "Libellé menu dupliquer"
+  },
+  "pilotIdentityBadge": "Pilote externe",
+  "@pilotIdentityBadge": {
+    "description": "Badge court qui identifie l'instance pilote externe"
+  },
+  "settingsPilotStatusBody": "Pilote externe limite. Prioris couvre aujourd'hui le shell, les listes, la priorisation et les habitudes de base.",
+  "@settingsPilotStatusBody": {
+    "description": "Texte qui decrit la couverture actuelle du pilote"
+  },
+  "settingsPilotLimitsBody": "Pas de billing, pas de support public, pas de centre d'aide heberge et pas de promesse au-dela du perimetre actuel.",
+  "@settingsPilotLimitsBody": {
+    "description": "Texte qui decrit les limites actuelles du pilote"
+  },
+  "authLoginTitle": "Connectez-vous",
+  "@authLoginTitle": {
+    "description": "Titre affiche sur l'ecran de connexion en mode connexion"
+  },
+  "authSignUpTitle": "Creer un compte",
+  "@authSignUpTitle": {
+    "description": "Titre affiche sur l'ecran de connexion en mode inscription"
   }
 }

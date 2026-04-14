@@ -36,6 +36,25 @@ void main() {
       expect(config.supabaseAnonKey, 'eyJ.trimmed');
       expect(config.supabaseAuthRedirectUrl, 'https://trim/callback');
     });
+
+    test('exposes pilot instance metadata from optional build variables', () {
+      AppConfig.setTestEnvironment(const {
+        'SUPABASE_URL': 'https://pilot.supabase.co',
+        'SUPABASE_ANON_KEY': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.pilot',
+        'SUPABASE_AUTH_REDIRECT_URL': 'https://pilot/auth/callback',
+        'PRIORIS_INSTANCE_NAME': 'Pilot externe Prioris',
+        'PRIORIS_INSTANCE_ENTRY_URL': 'https://n3z3d.github.io/PriorisProject/',
+      });
+
+      final config = AppConfig.instance;
+
+      expect(config.hasExplicitPilotInstance, isTrue);
+      expect(config.pilotInstanceName, 'Pilot externe Prioris');
+      expect(
+        config.pilotInstanceEntryUrl,
+        'https://n3z3d.github.io/PriorisProject/',
+      );
+      expect(config.applicationTitle, 'Pilot externe Prioris');
+    });
   });
 }
-

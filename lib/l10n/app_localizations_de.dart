@@ -1462,4 +1462,21 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get duplicate => 'Duplizieren';
+
+  @override
+  String get pilotIdentityBadge => 'Externer Pilot';
+
+  @override
+  String get settingsPilotStatusBody =>
+      'Begrenzter externer Pilot. Prioris deckt derzeit die Shell, Listen, Priorisierung und grundlegende Gewohnheiten ab.';
+
+  @override
+  String get settingsPilotLimitsBody =>
+      'Kein Billing, kein offentliches Support-Angebot, kein gehostetes Hilfezentrum und kein Versprechen uber den aktuellen Umfang hinaus.';
+
+  @override
+  String get authLoginTitle => 'Anmelden';
+
+  @override
+  String get authSignUpTitle => 'Konto erstellen';
 }

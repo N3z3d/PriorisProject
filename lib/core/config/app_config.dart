@@ -1,5 +1,5 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:meta/meta.dart';
 import 'package:prioris/infrastructure/services/logger_service.dart';
 import 'package:prioris/core/exceptions/app_exception.dart';
 
@@ -149,10 +149,6 @@ class AppConfig {
     }
   }
 
-  static Map<String, String> _snapshotEnv(Map<String, String> env) {
-    return env.map((key, value) => MapEntry(key, value.trim()));
-  }
-
   static void _validateConfiguration({
     required Map<String, String> sourceEnv,
     required bool allowFallback,
@@ -234,6 +230,19 @@ class AppConfig {
   bool get isDebugMode =>
       (_getOptionalEnvValue('DEBUG_MODE') ?? 'false').toLowerCase() == 'true';
 
+  bool get hasExplicitPilotInstance =>
+      _hasOptionalEnvValue('PRIORIS_INSTANCE_NAME') ||
+      _hasOptionalEnvValue('PRIORIS_INSTANCE_ENTRY_URL');
+
+  String get pilotInstanceName =>
+      _getOptionalEnvValue('PRIORIS_INSTANCE_NAME') ?? 'Prioris';
+
+  String get pilotInstanceEntryUrl =>
+      _getOptionalEnvValue('PRIORIS_INSTANCE_ENTRY_URL') ?? '';
+
+  String get applicationTitle =>
+      hasExplicitPilotInstance ? pilotInstanceName : 'Prioris';
+
   @visibleForTesting
   static void setTestEnvironment(Map<String, String> values) {
     _instance = null;
@@ -253,6 +262,10 @@ class AppConfig {
       return null;
     }
     return value;
+  }
+
+  static bool _hasOptionalEnvValue(String key) {
+    return _getOptionalEnvValue(key) != null;
   }
 
   void printConfigurationInfo() {
@@ -407,4 +420,3 @@ To enable cloud features:
 Current status: Using local storage only (Hive)
 ''';
 }
-
