@@ -4168,3 +4168,26 @@ Prochaine etape:
   - `.gitignore` reautorise explicitement `!/web/icons/` avant les exceptions fichier
   - les 4 icones Pages sont maintenant trackees par Git et poussees sur `origin/main` dans le commit `4224428` (`fix(pages): track pilot web icons`)
   - prochaine etape operationnelle: rerun manuel de `Deploy Pilot Web to GitHub Pages`, puis reverification publique de l'icone et de la console
+
+## BMAD Slice: finalize_story_6_1_done
+
+### Plan
+
+- [x] Reverifier publiquement le build GitHub Pages apres le rerun final
+- [x] Confirmer la resolution effective du reliquat `Icon-192.png`
+- [x] Basculer `6.1` de `review` a `done` dans les artefacts BMAD
+- [ ] Pousser l'etat final de cloture sur `main`
+
+### Review
+
+- Verification publique finale effectuee le `2026-04-14`:
+  - `https://n3z3d.github.io/PriorisProject/` sert bien le build courant du pilote
+  - la page de connexion publique affiche l'identite pilote `Prioris Pilot Invite` et le bandeau d'avertissement attendu
+  - preuve recapturee dans `pilot_pages_final_public.png`
+- Verification directe de l'asset public:
+  - `https://n3z3d.github.io/PriorisProject/icons/Icon-192.png` repond maintenant correctement en image `192x192`
+  - le `404` manifest qui bloquait encore la cloture publique de `6.1` est donc effectivement ferme
+- Etat BMAD apres cette verification:
+  - `6.1`: `done`
+  - `6.2`: `ready-for-dev`
+  - prochaine action recommandee: lancer `dev-story 6.2`

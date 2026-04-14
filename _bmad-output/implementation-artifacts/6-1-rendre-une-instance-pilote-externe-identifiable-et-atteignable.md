@@ -1,6 +1,6 @@
 # Story 6.1: Rendre une instance pilote externe identifiable et atteignable
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -33,7 +33,7 @@ afin d'utiliser Prioris sans dependre d'un runtime local ni d'un harnais repo-ow
   - [x] Ne pas transformer `Aide`, `Feedback`, `Confidentialite` ou `Conditions` en canaux riches ici; si un repere minimal est indispensable pour l'identite du pilote, le garder borne et laisser `6.2` fermer le support pilote reel.
   - [x] Ne pas presenter le runtime local Docker, le harnais `signed_in_smoke` ou une simple preuve repo-owned comme validation suffisante d'une instance pilote externe reelle.
 
-- [ ] Fermer une matrice de preuve distincte pour l'instance pilote reelle et les preuves repo-owned corrigees a la bonne frontiere. (AC: 1, 2, 3)
+- [x] Fermer une matrice de preuve distincte pour l'instance pilote reelle et les preuves repo-owned corrigees a la bonne frontiere. (AC: 1, 2, 3)
   - [x] Ajouter ou etendre des tests presentation/integration sur le chemin authentifie normal pour prouver les reperes d'identification pilote sur desktop et sur telephone.
   - [x] Si les metadata web ou le bootstrap web sont touches, verifier explicitement qu'ils restent compatibles avec le bootstrap Flutter normal (`flutter build web`, `index.html`, `manifest.json`) et ne cassent ni le `base href` ni le chargement `flutter_bootstrap.js`.
   - [x] Documenter en closeout la cible pilote hebergee, la preuve desktop, la preuve telephone, la date de verification et les limites retenues; toute preuve locale repo-owned n'est qu'un support secondaire.
@@ -236,6 +236,7 @@ afin d'utiliser Prioris sans dependre d'un runtime local ni d'un harnais repo-ow
 - 2026-04-12: story creee via workflow `create-story` pour ouvrir `Epic 6` sur le plus petit slice observable du lane `pilote externe reel`: rendre une vraie instance pilote identifiable et atteignable, sans confondre runtime local, preuve repo-owned et cible pilote hebergee.
 - 2026-04-13: implementation `dev-story` sur le chemin runtime normal avec source unique d'identite pilote dans `AppConfig`, preuves desktop/telephone repo-owned et closeout maintenu `in-progress` faute de cible pilote publique canonique documentee dans le depot.
 - 2026-04-14: closeout technique du pilote public: code officiel complete pour l'identite pilote sur auth/shell, metadata web et icones Pages corrigees, QA ciblee verte, build Pages vert et story passee en `review` avec republcation GitHub Pages encore requise pour fermer la preuve publique du build courant.
+- 2026-04-14: verification publique finale apres rerun GitHub Pages: l'URL pilote publique sert bien le build courant, le bandeau pilote est visible sur la page de connexion, l'icone `Icon-192.png` est publiquement resolue, et la story passe en `done`.
 
 ## Dev Agent Record
 
@@ -292,6 +293,10 @@ GPT-5 Codex
   - preuve mobile: `pilot_pages_mobile.png`
   - console: `pilot_pages_console.txt`
   - le site etait atteignable mais exposait encore l'ancien build, ce qui a motive le port du code manquant dans l'etat officiel
+- Verification publique finale reexecutee le `2026-04-14` sur `https://n3z3d.github.io/PriorisProject/`:
+  - la page publique affiche bien l'identite pilote (`Prioris Pilot Invite`) sur l'entree auth
+  - la preuve publique finale a ete recapturee dans `pilot_pages_final_public.png`
+  - l'URL directe `https://n3z3d.github.io/PriorisProject/icons/Icon-192.png` repond correctement en image `192x192`, ce qui ferme le `404` manifest precedemment observe
 - QA ciblee fermee sur le diff du lot:
   - `flutter gen-l10n`
   - `flutter analyze --no-pub ...` cible sur les fichiers modifies
@@ -300,7 +305,7 @@ GPT-5 Codex
 - En corrigeant la QA, deux regressions UI reelles ont ete fermees:
   - overflow du shell desktop/mobile
   - overflow de l'etat vide des listes quand le bandeau pilote reduit la hauteur utile
-- La story passe en `review`, pas en `done`: la republcation publique de ce commit depend encore d'un rerun manuel de `Deploy Pilot Web to GitHub Pages`, puis d'une reprise de preuve desktop + mobile sur le build courant.
+- La story est maintenant `done`: la cible GitHub Pages publique sert le build courant et la preuve publique finale ferme le reliquat d'icone/manifest.
 
 ### File List
 
