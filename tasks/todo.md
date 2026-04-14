@@ -4176,7 +4176,7 @@ Prochaine etape:
 - [x] Reverifier publiquement le build GitHub Pages apres le rerun final
 - [x] Confirmer la resolution effective du reliquat `Icon-192.png`
 - [x] Basculer `6.1` de `review` a `done` dans les artefacts BMAD
-- [ ] Pousser l'etat final de cloture sur `main`
+- [x] Pousser l'etat final de cloture sur `main`
 
 ### Review
 
@@ -4190,4 +4190,5 @@ Prochaine etape:
 - Etat BMAD apres cette verification:
   - `6.1`: `done`
   - `6.2`: `ready-for-dev`
+  - closeout pousse sur `origin/main` dans le commit `decf8ad` (`docs(bmad): close story 6.1 public pilot`)
   - prochaine action recommandee: lancer `dev-story 6.2`
