@@ -4154,7 +4154,7 @@ Prochaine etape:
 - [x] Reverifier l'URL publique apres rerun GitHub Pages
 - [x] Identifier la cause racine du `404` public sur `icons/Icon-192.png`
 - [x] Corriger le versioning Git des icones web pour qu'elles soient bien disponibles dans GitHub Actions
-- [ ] Pousser le correctif puis demander un nouveau rerun de `Deploy Pilot Web to GitHub Pages`
+- [x] Pousser le correctif puis demander un nouveau rerun de `Deploy Pilot Web to GitHub Pages`
 
 ### Review
 
@@ -4166,4 +4166,5 @@ Prochaine etape:
 - Cause racine identifiee: les fichiers `web/icons/*` existent localement, mais Git ne les suivait pas parce que le dossier parent `/web/icons/` restait ignore. Les exceptions sur les fichiers seuls n'etaient pas suffisantes pour garantir leur presence dans le checkout GitHub Actions.
 - Correctif applique:
   - `.gitignore` reautorise explicitement `!/web/icons/` avant les exceptions fichier
-  - prochaine etape operationnelle: commit/push des icones trackees puis rerun manuel de `Deploy Pilot Web to GitHub Pages`
+  - les 4 icones Pages sont maintenant trackees par Git et poussees sur `origin/main` dans le commit `4224428` (`fix(pages): track pilot web icons`)
+  - prochaine etape operationnelle: rerun manuel de `Deploy Pilot Web to GitHub Pages`, puis reverification publique de l'icone et de la console
