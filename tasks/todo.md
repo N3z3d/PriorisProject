@@ -4146,3 +4146,24 @@ Prochaine etape:
   - `6.1`: `review` tant que la republication publique du build courant n'est pas reverifiee
   - `6.2`: `ready-for-dev`
   - prochaine action recommandee cote implementation: rerun/verifier la republication publique de `6.1`, puis lancer `dev-story 6.2`
+
+## BMAD Slice: fix_pages_icon_tracking
+
+### Plan
+
+- [x] Reverifier l'URL publique apres rerun GitHub Pages
+- [x] Identifier la cause racine du `404` public sur `icons/Icon-192.png`
+- [x] Corriger le versioning Git des icones web pour qu'elles soient bien disponibles dans GitHub Actions
+- [ ] Pousser le correctif puis demander un nouveau rerun de `Deploy Pilot Web to GitHub Pages`
+
+### Review
+
+- La cible publique sert bien le bon build `6.1`: titre navigateur `Prioris Pilot` / `Prioris Pilot Invite`, et bandeau d'avertissement pilote visible sur la page de connexion.
+- Le message de prevention vu sur la page de connexion est donc attendu et conforme au scope pilote.
+- Residuel public confirme via console et acces direct:
+  - `https://n3z3d.github.io/PriorisProject/icons/Icon-192.png` -> `404`
+  - warning manifest associe sur la page publique
+- Cause racine identifiee: les fichiers `web/icons/*` existent localement, mais Git ne les suivait pas parce que le dossier parent `/web/icons/` restait ignore. Les exceptions sur les fichiers seuls n'etaient pas suffisantes pour garantir leur presence dans le checkout GitHub Actions.
+- Correctif applique:
+  - `.gitignore` reautorise explicitement `!/web/icons/` avant les exceptions fichier
+  - prochaine etape operationnelle: commit/push des icones trackees puis rerun manuel de `Deploy Pilot Web to GitHub Pages`
