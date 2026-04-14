@@ -4124,3 +4124,24 @@ Prochaine etape:
 1. Lancer `Deploy Pilot Web to GitHub Pages` sur `main` pour publier ce commit.
 2. Reprendre une capture desktop + mobile de l'URL publique mise a jour.
 3. Basculer ensuite `6.1` en `done` et ouvrir `6.2`.
+
+## BMAD Slice: create_story_6_2_pilot_support
+
+### Plan
+
+- [x] Charger le workflow `create-story` et confirmer la prochaine story backlog via `sprint-status.yaml`
+- [x] Analyser `Epic 6`, `6.2`, le PRD, l'architecture, l'UX minimale et le contexte projet actif
+- [x] Croiser ces artefacts avec l'etat reel du code officiel (`SettingsPage`, `language_selector`, tests presents/absents) au lieu de supposer que `5.3` est effectivement porte dans `main`
+- [x] Creer `_bmad-output/implementation-artifacts/6-2-remplacer-les-points-de-contact-placeholders-par-un-support-pilote-reel.md`
+- [x] Mettre a jour `_bmad-output/implementation-artifacts/sprint-status.yaml` (`6.2` -> `ready-for-dev`)
+- [ ] Pousser les nouveaux artefacts sur `main`
+
+### Review
+
+- La story `6.2` a ete creee en `ready-for-dev` avec un cadrage centre sur le plus petit prochain slice observable du pilote reel: fermer les points de contact/info pilotes du chemin `HomePage -> SettingsPage`, sans rouvrir auth, persistance, synchro ou deploiement.
+- Le garde-fou le plus important est maintenant explicite dans la story: l'artefact `5.3` raconte une `SettingsPage` pilote-ready, mais le code officiel courant expose encore une page hardcodee et placeholder. Le prochain `dev-story` devra donc partir du code reel, pas d'un etat idealise.
+- La story force aussi une source de verite unique pour les contenus de support pilote, et nomme un risque concret: `assets/legal/mentions_legales.md` contient bien des emails utiles (`contact@prioris-app.com`, `support@prioris-app.com`) mais raconte encore une application purement locale; ce document ne doit donc pas etre reutilise tel quel comme verite pilote.
+- Etat BMAD apres ce lot:
+  - `6.1`: `review` tant que la republication publique du build courant n'est pas reverifiee
+  - `6.2`: `ready-for-dev`
+  - prochaine action recommandee cote artefacts: commit/push de cette story, puis `dev-story 6.2`
