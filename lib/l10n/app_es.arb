@@ -100,7 +100,43 @@
   "prioritize": "Priorizar",
   "addHabit": "Agregar hábito",
   "addTask": "Agregar tarea",
-  "addList": "Agregar lista",
+  "addList": "Agregar una lista",
+  "listsEmptyTitle": "Todavia no hay listas",
+  "@listsEmptyTitle": {
+    "description": "Titulo mostrado cuando el usuario aun no tiene listas"
+  },
+  "listsEmptySubtitle": "Agrega tu primera lista para empezar",
+  "@listsEmptySubtitle": {
+    "description": "Texto de ayuda mostrado cuando el usuario aun no tiene listas"
+  },
+  "listEmptyTitle": "No se encontraron elementos",
+  "@listEmptyTitle": {
+    "description": "Titulo mostrado cuando una lista no tiene elementos visibles"
+  },
+  "listEmptySearchBody": "Prueba con otro termino de busqueda",
+  "@listEmptySearchBody": {
+    "description": "Texto mostrado cuando una busqueda en una lista no devuelve resultados"
+  },
+  "listEmptyNoItemsBody": "Agrega tu primer elemento para empezar",
+  "@listEmptyNoItemsBody": {
+    "description": "Texto mostrado cuando una lista todavia no tiene elementos"
+  },
+  "listsOverviewTitle": "Consulta tus listas de un vistazo",
+  "@listsOverviewTitle": {
+    "description": "Titulo del banner de resumen de listas"
+  },
+  "listsOverviewSubtitle": "{totalLists} listas | {totalItems} elementos activos",
+  "@listsOverviewSubtitle": {
+    "description": "Resumen compacto del banner de listas",
+    "placeholders": {
+      "totalLists": {
+        "type": "int"
+      },
+      "totalItems": {
+        "type": "int"
+      }
+    }
+  },
   "name": "Nombre",
   "description": "Descripción",
   "category": "Categoría",
@@ -118,6 +154,10 @@
   "hideEloScores": "Ocultar puntuaciones ELO",
   "showEloScores": "Mostrar puntuaciones ELO",
   "overview": "Resumen",
+  "insightsTabTrends": "Tendencias",
+  "@insightsTabTrends": {
+    "description": "Etiqueta de la pestana de tendencias en insights"
+  },
   "habitsTab": "Hábitos",
   "tasksTab": "Tareas",
   "totalPoints": "Puntos totales",
@@ -126,6 +166,71 @@
   "longestStreak": "Racha más larga",
   "language": "Idioma",
   "settings": "Configuración",
+  "settingsGeneralSectionTitle": "General",
+  "settingsPilotSectionTitle": "Piloto",
+  "pilotIdentityBadge": "Piloto externo",
+  "@pilotIdentityBadge": {
+    "description": "Etiqueta corta que identifica la instancia del piloto externo"
+  },
+  "settingsHelpFeedbackSectionTitle": "Ayuda y comentarios",
+  "settingsAboutSectionTitle": "Acerca de",
+  "settingsPilotStatusTitle": "Estado del piloto",
+  "settingsPilotStatusBody": "Piloto externo limitado. Prioris cubre hoy el shell, las listas, la priorización y los hábitos básicos.",
+  "settingsPilotLimitsTitle": "Límites actuales",
+  "settingsPilotLimitsBody": "Sin facturación, sin soporte público, sin centro de ayuda alojado y sin promesas más allá del alcance actual.",
+  "settingsVersionValue": "{version}",
+  "@settingsVersionValue": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsLanguageChanged": "Idioma cambiado a {language}",
+  "settingsVersionFallbackLabel": "Build del piloto externo",
+  "@settingsVersionFallbackLabel": {
+    "description": "Etiqueta honesta usada cuando no se inyecta una version runtime"
+  },
+  "@settingsLanguageChanged": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "logout": "Cerrar sesion",
+  "@logout": {
+    "description": "Etiqueta para cerrar sesion"
+  },
+  "homeLogoutHint": "Cierra la sesion del usuario actual",
+  "@homeLogoutHint": {
+    "description": "Ayuda de accesibilidad para la accion de cerrar sesion"
+  },
+  "homeSettingsHint": "Abre la configuracion de la aplicacion",
+  "@homeSettingsHint": {
+    "description": "Ayuda de accesibilidad para la accion de configuracion"
+  },
+  "homeMainContentLabel": "Contenido principal",
+  "@homeMainContentLabel": {
+    "description": "Etiqueta de accesibilidad para el contenido principal del shell"
+  },
+  "homePrimaryNavigationLabel": "Navegacion principal",
+  "@homePrimaryNavigationLabel": {
+    "description": "Etiqueta de accesibilidad para la navegacion principal"
+  },
+  "homePrimaryNavigationHint": "Usa la navegacion para cambiar de seccion",
+  "@homePrimaryNavigationHint": {
+    "description": "Ayuda de accesibilidad para la navegacion principal"
+  },
+  "homeNavigationAnnouncement": "Navegar a {section}",
+  "@homeNavigationAnnouncement": {
+    "description": "Anuncio de lector de pantalla al cambiar de seccion en el shell",
+    "placeholders": {
+      "section": {
+        "type": "String"
+      }
+    }
+  },
   "noData": "No hay datos disponibles",
   "loading": "Cargando...",
   "error": "Error",
@@ -158,6 +263,49 @@
   "all": "Todo",
   "none": "Ninguno",
   "today": "Hoy",
+  "todayPanelSubtitle": "Los pocos elementos que merecen tu atencion ahora",
+  "todayPanelCountLabel": "{count, plural, one {{count} elemento fiable} other {{count} elementos fiables}}",
+  "@todayPanelCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "todayPanelLoading": "Preparando tu vista de hoy...",
+  "todayPanelCalmTitle": "Nada urgente por ahora",
+  "todayPanelCalmBody": "Tu dia parece tranquilo. Sigue desde tus listas o habitos si quieres avanzar.",
+  "todayPanelFirstUseTitle": "Tu espacio esta listo",
+  "@todayPanelFirstUseTitle": {
+    "description": "Titulo mostrado cuando el usuario aun no tiene datos utiles"
+  },
+  "todayPanelFirstUseBody": "Empieza creando tu primera lista o habito. Tus proximas acciones apareceran aqui.",
+  "@todayPanelFirstUseBody": {
+    "description": "Texto mostrado cuando el usuario aun no tiene datos utiles"
+  },
+  "todayPanelPartial": "Vista parcial: algunas senales siguen cargando.",
+  "todayPanelError": "La vista de hoy esta temporalmente limitada.",
+  "todayPanelTaskKind": "Tarea",
+  "todayPanelHabitKind": "Habito",
+  "todayPanelStatusOverdue": "Atrasada",
+  "todayPanelStatusDueToday": "Hoy",
+  "todayPanelStatusPending": "Por revisar",
+  "todayPanelReasonOverdueTask": "Tarea ya atrasada",
+  "todayPanelReasonDueTodayTask": "Vence hoy",
+  "todayPanelReasonPriorityTask": "Tarea de alto impacto",
+  "todayPanelReasonDueTodayHabit": "Habito esperado hoy",
+  "todayPanelParentListLabel": "Lista: {title}",
+  "@todayPanelParentListLabel": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "todayPanelActionOpenList": "Abrir lista",
+  "todayPanelActionOpenDuel": "Priorizar",
+  "todayPanelActionRecordHabit": "Marcar hecho",
+  "todayPanelActionRecordValue": "Ingresar valor",
+  "todayPanelActionOpenHabits": "Abrir habitos",
+  "todayPanelActionUnavailable": "Esta accion ya no esta disponible en el estado actual.",
   "yesterday": "Ayer",
   "tomorrow": "Mañana",
   "thisWeek": "Esta semana",
@@ -198,20 +346,69 @@
   "performance": "Rendimiento",
   "analytics": "Análisis",
   "insights": "Perspectivas",
+  "insightsHeaderTitle": "Sigue tu progreso",
+  "@insightsHeaderTitle": {
+    "description": "Titulo del encabezado de la pagina insights"
+  },
+  "insightsHeaderSubtitleEmpty": "Crea habitos para desbloquear tus primeras perspectivas.",
+  "@insightsHeaderSubtitleEmpty": {
+    "description": "Subtitulo de insights cuando todavia no hay habitos"
+  },
+  "insightsHeaderSubtitleWithHabits": "Resumen y tendencias de tus {count} habitos",
+  "@insightsHeaderSubtitleWithHabits": {
+    "description": "Subtitulo de insights cuando ya existen habitos",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insightsEmptyTitle": "Todavia no hay perspectivas",
+  "@insightsEmptyTitle": {
+    "description": "Titulo del estado vacio de insights"
+  },
+  "insightsEmptyBody": "Crea tu primer habito para desbloquear tus primeras perspectivas aqui.",
+  "@insightsEmptyBody": {
+    "description": "Texto de ayuda del estado vacio de insights"
+  },
+  "insightsOverviewPlaceholder": "Tu resumen aparecera aqui pronto.",
+  "@insightsOverviewPlaceholder": {
+    "description": "Texto placeholder de la pestana resumen"
+  },
+  "insightsTrendsPlaceholder": "Tus tendencias apareceran aqui pronto.",
+  "@insightsTrendsPlaceholder": {
+    "description": "Texto placeholder de la pestana tendencias"
+  },
   "recommendations": "Recomendaciones",
   "suggestions": "Sugerencias",
   "tips": "Consejos",
   "help": "Ayuda",
+  "settingsHelpSubtitle": "Comprender cómo obtener ayuda durante este piloto.",
+  "settingsHelpDialogBody": "El soporte del piloto sigue siendo manual y limitado. Use el canal de feedback del piloto para hacer una pregunta, reportar un problema o compartir una necesidad. No se promete asistencia en tiempo real ni un SLA público.",
   "about": "Acerca de",
   "version": "Versión",
   "developer": "Desarrollador",
   "contact": "Contacto",
   "feedback": "Comentarios",
+  "settingsFeedbackSubtitle": "Abrir el canal de feedback del piloto.",
+  "settingsFeedbackDialogBody": "El canal de feedback del piloto abre un formulario simple en su navegador. Tambien se usa para ayuda, errores y solicitudes de funciones.",
   "reportBug": "Reportar error",
+  "settingsReportBugSubtitle": "Usar el mismo canal del piloto para reportar un error.",
+  "settingsReportBugDialogBody": "Los errores pasan por el mismo canal del piloto que el feedback general. Describa el contexto visible, el dispositivo y el resultado observado.",
   "requestFeature": "Solicitar función",
+  "settingsRequestFeatureSubtitle": "Usar el mismo canal del piloto para compartir una necesidad.",
+  "settingsRequestFeatureDialogBody": "Las solicitudes de funciones pasan por el mismo canal del piloto. Se revisan manualmente y no suponen un compromiso de entrega.",
+  "settingsSupportLaunchFailureBody": "No se pudo abrir este canal automaticamente. Use este enlace en su navegador:",
+  "settingsSupportUnavailableBody": "Esta build todavia no configura un canal de soporte del piloto. Agregue una URL de feedback o un correo de soporte antes de cualquier difusion externa.",
   "privacyPolicy": "Política de privacidad",
+  "settingsPrivacySubtitle": "Leer cómo se gestionan los datos del piloto.",
+  "settingsPrivacyDialogBody": "Prioris solo guarda los datos necesarios para este piloto: cuenta, listas, tareas, habitos y señales de sincronizacion asociadas. Estos datos se usan para hacer funcionar el producto, corregir problemas reportados y evaluar el piloto. Si tiene preguntas sobre sus datos, use el canal de feedback del piloto.",
   "termsOfService": "Términos de servicio",
+  "settingsTermsSubtitle": "Leer el marco minimo de uso de este piloto.",
+  "settingsTermsDialogBody": "Este piloto esta reservado a un pequeno grupo invitado. El acceso, las funciones y la disponibilidad pueden cambiar sin previo aviso. No use Prioris como sistema critico ni como unica fuente de verdad para decisiones sensibles. El feedback es bienvenido, pero no se garantiza una correccion inmediata ni una apertura publica.",
   "license": "Licencia",
+  "settingsLicenseSubtitle": "Abrir las licencias incluidas en esta versión.",
+  "settingsAboutLegalese": "Piloto externo limitado. Soporte manual a traves del canal del piloto, sin precios ni compromiso publico por ahora.",
   "credits": "Créditos",
   "changelog": "Registro de cambios",
   "updateAvailable": "Actualización disponible",
@@ -441,7 +638,7 @@
       }
     }
   },
-  "habitsButtonCreate": "Create a habit",
+  "habitsButtonCreate": "Crear un habito",
   "@habitsButtonCreate": {
     "description": "CTA button to create a habit"
   },
@@ -661,24 +858,73 @@
       }
     }
   },
-  "pilotIdentityBadge": "Piloto externo",
-  "@pilotIdentityBadge": {
-    "description": "Insignia corta que identifica la instancia piloto externa"
+  "authOfflineSignInError": "El inicio de sesiÃ³n no estÃ¡ disponible en modo sin conexiÃ³n. Configura credenciales reales de Supabase en .env para activar las funciones en lÃ­nea.",
+  "@authOfflineSignInError": {
+    "description": "Error mostrado al iniciar sesiÃ³n cuando la aplicaciÃ³n usa una configuraciÃ³n placeholder de Supabase"
   },
-  "settingsPilotStatusBody": "Piloto externo limitado. Prioris cubre hoy el shell, las listas, la priorizacion y los habitos basicos.",
-  "@settingsPilotStatusBody": {
-    "description": "Texto que describe la cobertura actual del piloto"
-  },
-  "settingsPilotLimitsBody": "Sin facturacion, sin soporte publico, sin centro de ayuda alojado y sin promesas mas alla del alcance actual.",
-  "@settingsPilotLimitsBody": {
-    "description": "Texto que describe los limites actuales del piloto"
+  "authOfflineSignUpError": "El registro no estÃ¡ disponible en modo sin conexiÃ³n. Configura credenciales reales de Supabase en .env para activar las funciones en lÃ­nea.",
+  "@authOfflineSignUpError": {
+    "description": "Error mostrado al registrarse cuando la aplicaciÃ³n usa una configuraciÃ³n placeholder de Supabase"
   },
   "authLoginTitle": "Inicia sesion",
   "@authLoginTitle": {
-    "description": "Titulo mostrado en la pantalla de acceso en modo inicio de sesion"
+    "description": "Titulo mostrado en la pantalla de autenticacion en modo inicio de sesion"
   },
   "authSignUpTitle": "Crear una cuenta",
   "@authSignUpTitle": {
-    "description": "Titulo mostrado en la pantalla de acceso en modo registro"
+    "description": "Titulo mostrado en la pantalla de autenticacion en modo registro"
+  },
+  "authSignInAction": "Iniciar sesion",
+  "@authSignInAction": {
+    "description": "Etiqueta de la accion principal de inicio de sesion"
+  },
+  "authSignUpAction": "Crear cuenta",
+  "@authSignUpAction": {
+    "description": "Etiqueta de la accion principal de registro"
+  },
+  "authToggleToSignUp": "No tienes cuenta? Crea una",
+  "@authToggleToSignUp": {
+    "description": "Accion secundaria para pasar de inicio de sesion a registro"
+  },
+  "authToggleToSignIn": "Ya tienes cuenta? Inicia sesion",
+  "@authToggleToSignIn": {
+    "description": "Accion secundaria para pasar de registro a inicio de sesion"
+  },
+  "authForgotPasswordAction": "Olvidaste tu contrasena?",
+  "@authForgotPasswordAction": {
+    "description": "Accion secundaria para abrir el dialogo de recuperacion de contrasena"
+  },
+  "authEmailLabel": "Correo electronico",
+  "@authEmailLabel": {
+    "description": "Etiqueta del campo de correo electronico de autenticacion"
+  },
+  "authEmailHint": "tu@correo.com",
+  "@authEmailHint": {
+    "description": "Placeholder del campo de correo electronico de autenticacion"
+  },
+  "authPasswordLabel": "Contrasena",
+  "@authPasswordLabel": {
+    "description": "Etiqueta del campo de contrasena de autenticacion"
+  },
+  "authPasswordHint": "********",
+  "@authPasswordHint": {
+    "description": "Placeholder del campo de contrasena de autenticacion"
+  },
+  "authTechnicalFieldLabel": "Campo tecnico (dejar vacio)",
+  "@authTechnicalFieldLabel": {
+    "description": "Etiqueta del campo honeypot oculto para proteger el registro"
+  },
+  "authPendingConfirmationTitle": "Confirmacion requerida",
+  "@authPendingConfirmationTitle": {
+    "description": "Titulo corto mostrado cuando el registro se completa sin sesion inmediata"
+  },
+  "authPendingConfirmationMessage": "Se envio un correo de validacion a {email}. Confirma tu correo electronico para terminar el registro y luego vuelve a iniciar sesion.",
+  "@authPendingConfirmationMessage": {
+    "description": "Mensaje mostrado cuando el registro se completa pero se requiere confirmacion por correo",
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
   }
 }
