@@ -101,6 +101,42 @@
   "addHabit": "Ajouter une habitude",
   "addTask": "Ajouter une tâche",
   "addList": "Ajouter une liste",
+  "listsEmptyTitle": "Aucune liste",
+  "@listsEmptyTitle": {
+    "description": "Titre affiche quand aucune liste n'existe encore"
+  },
+  "listsEmptySubtitle": "Ajoutez votre premiere liste pour commencer",
+  "@listsEmptySubtitle": {
+    "description": "Texte d'aide affiche quand aucune liste n'existe encore"
+  },
+  "listEmptyTitle": "Aucun element trouve",
+  "@listEmptyTitle": {
+    "description": "Titre affiche quand une liste n'a aucun element visible"
+  },
+  "listEmptySearchBody": "Essayez un autre terme de recherche",
+  "@listEmptySearchBody": {
+    "description": "Texte affiche quand une recherche dans une liste ne renvoie aucun resultat"
+  },
+  "listEmptyNoItemsBody": "Ajoutez votre premier element pour commencer",
+  "@listEmptyNoItemsBody": {
+    "description": "Texte affiche quand une liste n'a encore aucun element"
+  },
+  "listsOverviewTitle": "Organisez vos listes en un coup d'oeil",
+  "@listsOverviewTitle": {
+    "description": "Titre du bandeau de synthese des listes"
+  },
+  "listsOverviewSubtitle": "{totalLists} listes | {totalItems} elements actifs",
+  "@listsOverviewSubtitle": {
+    "description": "Resume compact du bandeau de synthese des listes",
+    "placeholders": {
+      "totalLists": {
+        "type": "int"
+      },
+      "totalItems": {
+        "type": "int"
+      }
+    }
+  },
   "name": "Nom",
   "description": "Description",
   "category": "Catégorie",
@@ -118,6 +154,10 @@
   "hideEloScores": "Masquer scores ELO",
   "showEloScores": "Afficher scores ELO",
   "overview": "Vue d'ensemble",
+  "insightsTabTrends": "Tendances",
+  "@insightsTabTrends": {
+    "description": "Libelle de l'onglet tendances de la page insights"
+  },
   "habitsTab": "Habitudes",
   "tasksTab": "Tâches",
   "totalPoints": "Points totaux",
@@ -126,6 +166,71 @@
   "longestStreak": "Plus longue série",
   "language": "Langue",
   "settings": "Paramètres",
+  "settingsGeneralSectionTitle": "Général",
+  "settingsPilotSectionTitle": "Pilote",
+  "pilotIdentityBadge": "Pilote externe",
+  "@pilotIdentityBadge": {
+    "description": "Badge court qui identifie l'instance pilote externe"
+  },
+  "settingsHelpFeedbackSectionTitle": "Aide et retour",
+  "settingsAboutSectionTitle": "À propos",
+  "settingsPilotStatusTitle": "Statut du pilote",
+  "settingsPilotStatusBody": "Pilote externe limite. Prioris couvre aujourd'hui le shell, les listes, la priorisation et les habitudes de base.",
+  "settingsPilotLimitsTitle": "Limites actuelles",
+  "settingsPilotLimitsBody": "Pas de billing, pas de support public, pas de centre d'aide hébergé et pas de promesse au-delà du périmètre actuel.",
+  "settingsVersionValue": "{version}",
+  "@settingsVersionValue": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsLanguageChanged": "Langue changée : {language}",
+  "settingsVersionFallbackLabel": "Build pilote externe",
+  "@settingsVersionFallbackLabel": {
+    "description": "Libelle honnete utilise quand aucune version runtime n'est injectee"
+  },
+  "@settingsLanguageChanged": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "logout": "Se deconnecter",
+  "@logout": {
+    "description": "Libelle de l'action de deconnexion"
+  },
+  "homeLogoutHint": "Deconnecte l'utilisateur actuel",
+  "@homeLogoutHint": {
+    "description": "Indice d'accessibilite pour l'action de deconnexion"
+  },
+  "homeSettingsHint": "Ouvre la page des parametres de l'application",
+  "@homeSettingsHint": {
+    "description": "Indice d'accessibilite pour l'action parametres"
+  },
+  "homeMainContentLabel": "Contenu principal",
+  "@homeMainContentLabel": {
+    "description": "Libelle d'accessibilite pour le contenu principal du shell"
+  },
+  "homePrimaryNavigationLabel": "Navigation principale",
+  "@homePrimaryNavigationLabel": {
+    "description": "Libelle d'accessibilite pour la navigation principale"
+  },
+  "homePrimaryNavigationHint": "Utilisez les elements de navigation pour changer de section",
+  "@homePrimaryNavigationHint": {
+    "description": "Indice d'accessibilite pour la navigation principale"
+  },
+  "homeNavigationAnnouncement": "Navigation vers {section}",
+  "@homeNavigationAnnouncement": {
+    "description": "Annonce lecteur d'ecran lors d'un changement de section du shell",
+    "placeholders": {
+      "section": {
+        "type": "String"
+      }
+    }
+  },
   "noData": "Aucune donnée disponible",
   "loading": "Chargement...",
   "error": "Erreur",
@@ -158,6 +263,49 @@
   "all": "Tout",
   "none": "Aucun",
   "today": "Aujourd'hui",
+  "todayPanelSubtitle": "Les quelques elements qui meritent votre attention maintenant",
+  "todayPanelCountLabel": "{count, plural, one {{count} element fiable} other {{count} elements fiables}}",
+  "@todayPanelCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "todayPanelLoading": "Preparation de votre vue du jour...",
+  "todayPanelCalmTitle": "Rien d'urgent pour l'instant",
+  "todayPanelCalmBody": "La vue du jour reste calme. Continuez depuis vos listes ou vos habitudes si vous voulez avancer.",
+  "todayPanelFirstUseTitle": "Votre espace est pret",
+  "@todayPanelFirstUseTitle": {
+    "description": "Titre affiche quand l'utilisateur n'a pas encore de donnees utiles"
+  },
+  "todayPanelFirstUseBody": "Commencez par creer une premiere liste ou une habitude. Vos prochaines actions apparaitront ici.",
+  "@todayPanelFirstUseBody": {
+    "description": "Texte affiche quand l'utilisateur n'a pas encore de donnees utiles"
+  },
+  "todayPanelPartial": "Vue partielle : certains signaux sont encore en cours de chargement.",
+  "todayPanelError": "La vue du jour est temporairement limitee.",
+  "todayPanelTaskKind": "Tache",
+  "todayPanelHabitKind": "Habitude",
+  "todayPanelStatusOverdue": "En retard",
+  "todayPanelStatusDueToday": "Aujourd'hui",
+  "todayPanelStatusPending": "A arbitrer",
+  "todayPanelReasonOverdueTask": "Tache deja en retard",
+  "todayPanelReasonDueTodayTask": "Echeance aujourd'hui",
+  "todayPanelReasonPriorityTask": "Tache a fort levier",
+  "todayPanelReasonDueTodayHabit": "Habitude attendue aujourd'hui",
+  "todayPanelParentListLabel": "Liste : {title}",
+  "@todayPanelParentListLabel": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "todayPanelActionOpenList": "Ouvrir la liste",
+  "todayPanelActionOpenDuel": "Arbitrer",
+  "todayPanelActionRecordHabit": "Marquer fait",
+  "todayPanelActionRecordValue": "Saisir",
+  "todayPanelActionOpenHabits": "Voir habitudes",
+  "todayPanelActionUnavailable": "Cette action n'est plus disponible dans l'etat actuel.",
   "yesterday": "Hier",
   "tomorrow": "Demain",
   "thisWeek": "Cette semaine",
@@ -198,20 +346,69 @@
   "performance": "Performance",
   "analytics": "Analyses",
   "insights": "Aperçus",
+  "insightsHeaderTitle": "Analysez vos progres",
+  "@insightsHeaderTitle": {
+    "description": "Titre d'en-tete de la page insights"
+  },
+  "insightsHeaderSubtitleEmpty": "Creez des habitudes pour faire apparaitre vos premiers reperes.",
+  "@insightsHeaderSubtitleEmpty": {
+    "description": "Sous-titre de la page insights quand aucune habitude n'existe encore"
+  },
+  "insightsHeaderSubtitleWithHabits": "Apercu et tendances de vos {count} habitudes",
+  "@insightsHeaderSubtitleWithHabits": {
+    "description": "Sous-titre de la page insights quand des habitudes existent",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insightsEmptyTitle": "Pas encore d'analyses",
+  "@insightsEmptyTitle": {
+    "description": "Titre de l'etat vide de la page insights"
+  },
+  "insightsEmptyBody": "Creez votre premiere habitude pour faire apparaitre vos premiers reperes ici.",
+  "@insightsEmptyBody": {
+    "description": "Texte d'aide de l'etat vide de la page insights"
+  },
+  "insightsOverviewPlaceholder": "Votre apercu apparaitra bientot ici.",
+  "@insightsOverviewPlaceholder": {
+    "description": "Texte placeholder de l'onglet apercu"
+  },
+  "insightsTrendsPlaceholder": "Vos tendances apparaitront bientot ici.",
+  "@insightsTrendsPlaceholder": {
+    "description": "Texte placeholder de l'onglet tendances"
+  },
   "recommendations": "Recommandations",
   "suggestions": "Suggestions",
   "tips": "Conseils",
   "help": "Aide",
+  "settingsHelpSubtitle": "Comprendre comment obtenir de l'aide pendant ce pilote.",
+  "settingsHelpDialogBody": "Le support du pilote reste manuel et borne. Utilisez le canal de retour du pilote pour poser une question, signaler un probleme ou partager un besoin. Aucune assistance en temps reel ni SLA public n'est promis.",
   "about": "À propos",
   "version": "Version",
   "developer": "Développeur",
   "contact": "Contact",
-  "feedback": "Retour",
+  "feedback": "Feedback",
+  "settingsFeedbackSubtitle": "Ouvrir le canal de retour du pilote.",
+  "settingsFeedbackDialogBody": "Le canal de retour du pilote ouvre un formulaire simple dans votre navigateur. Il sert aussi pour l'aide, les bugs et les demandes de fonctionnalites.",
   "reportBug": "Signaler un bug",
+  "settingsReportBugSubtitle": "Utiliser le meme canal pilote pour signaler un bug.",
+  "settingsReportBugDialogBody": "Le signalement de bug passe par le meme canal pilote que le retour general. Decrivez le contexte visible, l'appareil et le resultat observe.",
   "requestFeature": "Demander une fonctionnalité",
+  "settingsRequestFeatureSubtitle": "Utiliser le meme canal pilote pour partager un besoin.",
+  "settingsRequestFeatureDialogBody": "Les demandes de fonctionnalites passent par le meme canal pilote. Elles sont lues manuellement et ne valent pas engagement de livraison.",
+  "settingsSupportLaunchFailureBody": "Impossible d'ouvrir automatiquement ce canal. Utilisez ce lien dans votre navigateur :",
+  "settingsSupportUnavailableBody": "Cette build ne configure pas encore de canal de support pilote. Ajoutez une URL de feedback ou un email de support avant diffusion externe.",
   "privacyPolicy": "Politique de confidentialité",
+  "settingsPrivacySubtitle": "Lire comment les donnees du pilote sont traitees.",
+  "settingsPrivacyDialogBody": "Prioris enregistre uniquement les donnees necessaires au pilote : compte, listes, taches, habitudes et signaux de synchro associes. Ces donnees servent a faire fonctionner le produit, corriger les problemes signales et evaluer le pilote. Pour toute question sur vos donnees, utilisez le canal de retour du pilote.",
   "termsOfService": "Conditions d'utilisation",
+  "settingsTermsSubtitle": "Lire le cadre d'usage minimal du pilote.",
+  "settingsTermsDialogBody": "Ce pilote est reserve a un petit groupe invite. L'acces, les fonctionnalites et la disponibilite peuvent changer sans preavis. N'utilisez pas Prioris comme systeme critique ni comme source unique de verite pour des decisions sensibles. Les retours sont bienvenus, mais aucune correction immediate ni ouverture publique n'est garantie.",
   "license": "Licence",
+  "settingsLicenseSubtitle": "Ouvrir les licences incluses dans cette version.",
+  "settingsAboutLegalese": "Pilote externe limite. Support manuel via le canal du pilote, sans pricing ni engagement public.",
   "credits": "Crédits",
   "changelog": "Journal des modifications",
   "updateAvailable": "Mise à jour disponible",
@@ -817,5 +1014,74 @@
   "duplicate": "Dupliquer",
   "@duplicate": {
     "description": "Libellé menu dupliquer"
+  },
+  "authOfflineSignInError": "Connexion indisponible en mode hors ligne. Configurez de vrais identifiants Supabase dans .env pour activer les fonctionnalites en ligne.",
+  "@authOfflineSignInError": {
+    "description": "Message d'erreur affiche a la connexion quand l'application reste sur une configuration Supabase placeholder"
+  },
+  "authOfflineSignUpError": "Inscription indisponible en mode hors ligne. Configurez de vrais identifiants Supabase dans .env pour activer les fonctionnalites en ligne.",
+  "@authOfflineSignUpError": {
+    "description": "Message d'erreur affiche a l'inscription quand l'application reste sur une configuration Supabase placeholder"
+  },
+  "authLoginTitle": "Connectez-vous",
+  "@authLoginTitle": {
+    "description": "Titre affiche sur l'ecran d'authentification en mode connexion"
+  },
+  "authSignUpTitle": "Creer un compte",
+  "@authSignUpTitle": {
+    "description": "Titre affiche sur l'ecran d'authentification en mode inscription"
+  },
+  "authSignInAction": "Se connecter",
+  "@authSignInAction": {
+    "description": "Libelle de l'action principale de connexion"
+  },
+  "authSignUpAction": "Creer le compte",
+  "@authSignUpAction": {
+    "description": "Libelle de l'action principale d'inscription"
+  },
+  "authToggleToSignUp": "Pas de compte ? Creer un compte",
+  "@authToggleToSignUp": {
+    "description": "Action secondaire pour passer du mode connexion au mode inscription"
+  },
+  "authToggleToSignIn": "Deja un compte ? Se connecter",
+  "@authToggleToSignIn": {
+    "description": "Action secondaire pour passer du mode inscription au mode connexion"
+  },
+  "authForgotPasswordAction": "Mot de passe oublie ?",
+  "@authForgotPasswordAction": {
+    "description": "Action secondaire pour ouvrir le dialogue mot de passe oublie"
+  },
+  "authEmailLabel": "Email",
+  "@authEmailLabel": {
+    "description": "Libelle du champ email d'authentification"
+  },
+  "authEmailHint": "votre@email.com",
+  "@authEmailHint": {
+    "description": "Placeholder du champ email d'authentification"
+  },
+  "authPasswordLabel": "Mot de passe",
+  "@authPasswordLabel": {
+    "description": "Libelle du champ mot de passe d'authentification"
+  },
+  "authPasswordHint": "********",
+  "@authPasswordHint": {
+    "description": "Placeholder du champ mot de passe d'authentification"
+  },
+  "authTechnicalFieldLabel": "Champ technique (laisser vide)",
+  "@authTechnicalFieldLabel": {
+    "description": "Libelle du champ honeypot cache pour proteger l'inscription"
+  },
+  "authPendingConfirmationTitle": "Confirmation requise",
+  "@authPendingConfirmationTitle": {
+    "description": "Titre court affiche quand l'inscription reussit sans session immediate"
+  },
+  "authPendingConfirmationMessage": "Un email de validation a ete envoye a {email}. Confirmez votre adresse email pour terminer l'inscription, puis reconnectez-vous.",
+  "@authPendingConfirmationMessage": {
+    "description": "Message affiche quand l'inscription reussit mais qu'une confirmation email est requise",
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
   }
 }

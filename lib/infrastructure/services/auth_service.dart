@@ -1,5 +1,6 @@
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:prioris/core/config/app_config.dart';
+import 'package:prioris/core/exceptions/app_exception.dart';
 import 'package:prioris/infrastructure/security/signup_guard.dart';
 import 'package:prioris/infrastructure/services/logger_service.dart';
 import 'package:prioris/infrastructure/services/supabase_service.dart';
@@ -7,9 +8,15 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Service d'authentification avec Supabase.
 class AuthService {
+  AuthService._internal({
+    required SupabaseService supabaseService,
+    required LoggerService logger,
+  })  : _supabase = supabaseService,
+        _logger = logger;
+
   static AuthService? _instance;
-  static AuthService get instance =>
-      _instance ??= AuthService._internal(
+
+  static AuthService get instance => _instance ??= AuthService._internal(
         supabaseService: SupabaseService.instance,
         logger: LoggerService.instance,
       );
@@ -27,12 +34,6 @@ class AuthService {
       logger: logger ?? LoggerService.instance,
     );
   }
-
-  AuthService._internal({
-    required SupabaseService supabaseService,
-    required LoggerService logger,
-  })  : _supabase = supabaseService,
-        _logger = logger;
 
   final SupabaseService _supabase;
   final LoggerService _logger;
@@ -60,28 +61,50 @@ class AuthService {
       await SignupGuard.instance.ensureCanSignUp(metadata);
 
       final config = AppConfig.instance;
-      _logger.debug('URL Supabase: ${config.supabaseUrl}', context: 'AuthService.signUp');
+      final redirectUrl = config.supabaseAuthRedirectUrl;
+      _logger.debug('URL Supabase: ${config.supabaseUrl}',
+          context: 'AuthService.signUp');
+      _logger.debug(
+        'Redirect signup: $redirectUrl',
+        context: 'AuthService.signUp',
+      );
 
-      final isOffline = AppConfig.shouldEnableOfflineOnlyMode(config.supabaseUrl);
-      _logger.info('Mode hors ligne detecte: $isOffline', context: 'AuthService.signUp');
+      final isOffline =
+          AppConfig.shouldEnableOfflineOnlyMode(config.supabaseUrl);
+      _logger.info('Mode hors ligne detecte: $isOffline',
+          context: 'AuthService.signUp');
       if (isOffline) {
-        _logger.warning('Inscription bloquee: mode hors ligne actif', context: 'AuthService.signUp');
-        throw Exception(
-          'Registration unavailable in offline mode. Please configure real Supabase credentials in .env file to enable online features.',
+        _logger.warning('Inscription bloquee: mode hors ligne actif',
+            context: 'AuthService.signUp');
+        throw AppException.configuration(
+          message:
+              'Registration unavailable in offline mode. Please configure real Supabase credentials in .env file to enable online features.',
+          context: 'AuthService.signUp',
+          metadata: const {'messageKey': 'authOfflineSignUpError'},
         );
       }
 
-      _logger.info('Tentative d\'inscription Supabase', context: 'AuthService.signUp');
+      _logger.info('Tentative d\'inscription Supabase',
+          context: 'AuthService.signUp');
       final response = await _supabase.auth.signUp(
         email: email,
         password: password,
+        emailRedirectTo: redirectUrl,
         data: fullName != null ? {'full_name': fullName} : null,
       );
 
       if (response.user != null) {
-        _logger.info('Inscription reussie pour ${response.user!.id}', context: 'AuthService.signUp');
+        _logger.info('Inscription reussie pour ${response.user!.id}',
+            context: 'AuthService.signUp');
+        if (response.session == null) {
+          _logger.info(
+            'Inscription en attente de confirmation email',
+            context: 'AuthService.signUp',
+          );
+        }
       } else {
-        _logger.warning('Inscription sans utilisateur retourne', context: 'AuthService.signUp');
+        _logger.warning('Inscription sans utilisateur retourne',
+            context: 'AuthService.signUp');
       }
 
       await SignupGuard.instance.recordSuccessfulSignup();
@@ -109,31 +132,45 @@ class AuthService {
 
     try {
       final config = AppConfig.instance;
-      _logger.debug('URL Supabase: ${config.supabaseUrl}', context: 'AuthService.signIn');
+      _logger.debug('URL Supabase: ${config.supabaseUrl}',
+          context: 'AuthService.signIn');
       final anonKey = config.supabaseAnonKey;
-      final maskedKey = anonKey.length > 20 ? '${anonKey.substring(0, 20)}...' : '$anonKey...';
-      _logger.debug('Cle anonyme tronquee: $maskedKey', context: 'AuthService.signIn');
+      final maskedKey = anonKey.length > 20
+          ? '${anonKey.substring(0, 20)}...'
+          : '$anonKey...';
+      _logger.debug('Cle anonyme tronquee: $maskedKey',
+          context: 'AuthService.signIn');
 
-      final isOffline = AppConfig.shouldEnableOfflineOnlyMode(config.supabaseUrl);
-      _logger.info('Mode hors ligne detecte: $isOffline', context: 'AuthService.signIn');
+      final isOffline =
+          AppConfig.shouldEnableOfflineOnlyMode(config.supabaseUrl);
+      _logger.info('Mode hors ligne detecte: $isOffline',
+          context: 'AuthService.signIn');
       if (isOffline) {
-        _logger.warning('Connexion bloquee: mode hors ligne actif', context: 'AuthService.signIn');
-        throw Exception(
-          'Authentication unavailable in offline mode. Please configure real Supabase credentials in .env file to enable online features.',
+        _logger.warning('Connexion bloquee: mode hors ligne actif',
+            context: 'AuthService.signIn');
+        throw AppException.configuration(
+          message:
+              'Authentication unavailable in offline mode. Please configure real Supabase credentials in .env file to enable online features.',
+          context: 'AuthService.signIn',
+          metadata: const {'messageKey': 'authOfflineSignInError'},
         );
       }
 
-      _logger.info('Tentative de connexion Supabase', context: 'AuthService.signIn');
+      _logger.info('Tentative de connexion Supabase',
+          context: 'AuthService.signIn');
       final response = await _supabase.auth.signInWithPassword(
         email: email,
         password: password,
       );
 
       if (response.user != null) {
-        _logger.info('Connexion reussie pour ${response.user!.id}', context: 'AuthService.signIn');
-        _logger.debug('Session valide: ${response.session != null}', context: 'AuthService.signIn');
+        _logger.info('Connexion reussie pour ${response.user!.id}',
+            context: 'AuthService.signIn');
+        _logger.debug('Session valide: ${response.session != null}',
+            context: 'AuthService.signIn');
       } else {
-        _logger.warning('Connexion sans utilisateur retourne', context: 'AuthService.signIn');
+        _logger.warning('Connexion sans utilisateur retourne',
+            context: 'AuthService.signIn');
       }
 
       return response;
@@ -153,7 +190,8 @@ class AuthService {
           error: error,
           stackTrace: stack,
         );
-        _logger.error('URL utilisee: ${AppConfig.instance.supabaseUrl}', context: 'AuthService.signIn');
+        _logger.error('URL utilisee: ${AppConfig.instance.supabaseUrl}',
+            context: 'AuthService.signIn');
       }
 
       rethrow;
@@ -169,7 +207,10 @@ class AuthService {
         redirectTo: redirect,
       );
     } catch (error, stack) {
-      _logger.error('Erreur OAuth Google', context: 'AuthService.signInWithGoogle', error: error, stackTrace: stack);
+      _logger.error('Erreur OAuth Google',
+          context: 'AuthService.signInWithGoogle',
+          error: error,
+          stackTrace: stack);
       return false;
     }
   }
@@ -181,9 +222,11 @@ class AuthService {
     try {
       final currentUserId = currentUser?.id;
       if (currentUserId != null) {
-        _logger.info('Deconnexion de l\'utilisateur: $currentUserId', context: 'AuthService.signOut');
+        _logger.info('Deconnexion de l\'utilisateur: $currentUserId',
+            context: 'AuthService.signOut');
       } else {
-        _logger.info('Aucun utilisateur a deconnecter', context: 'AuthService.signOut');
+        _logger.info('Aucun utilisateur a deconnecter',
+            context: 'AuthService.signOut');
       }
 
       await _supabase.auth.signOut();

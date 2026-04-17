@@ -100,7 +100,43 @@
   "prioritize": "Priorisieren",
   "addHabit": "Gewohnheit hinzufügen",
   "addTask": "Aufgabe hinzufügen",
-  "addList": "Liste hinzufügen",
+  "addList": "Eine Liste hinzufugen",
+  "listsEmptyTitle": "Noch keine Liste",
+  "@listsEmptyTitle": {
+    "description": "Titel, wenn noch keine Liste vorhanden ist"
+  },
+  "listsEmptySubtitle": "Fuge deine erste Liste hinzu, um loszulegen",
+  "@listsEmptySubtitle": {
+    "description": "Hilfetext, wenn noch keine Liste vorhanden ist"
+  },
+  "listEmptyTitle": "Keine Elemente gefunden",
+  "@listEmptyTitle": {
+    "description": "Titel, wenn in einer Liste keine sichtbaren Elemente vorhanden sind"
+  },
+  "listEmptySearchBody": "Versuche einen anderen Suchbegriff",
+  "@listEmptySearchBody": {
+    "description": "Hilfetext, wenn eine Suche in einer Liste keine Treffer liefert"
+  },
+  "listEmptyNoItemsBody": "Fuge dein erstes Element hinzu, um loszulegen",
+  "@listEmptyNoItemsBody": {
+    "description": "Hilfetext, wenn eine Liste noch keine Elemente hat"
+  },
+  "listsOverviewTitle": "Behalte deine Listen auf einen Blick",
+  "@listsOverviewTitle": {
+    "description": "Titel des Listen-Uberblicksbanners"
+  },
+  "listsOverviewSubtitle": "{totalLists} Listen | {totalItems} aktive Elemente",
+  "@listsOverviewSubtitle": {
+    "description": "Kompakte Zusammenfassung im Listen-Uberblicksbanner",
+    "placeholders": {
+      "totalLists": {
+        "type": "int"
+      },
+      "totalItems": {
+        "type": "int"
+      }
+    }
+  },
   "name": "Name",
   "description": "Beschreibung",
   "category": "Kategorie",
@@ -118,6 +154,10 @@
   "hideEloScores": "ELO-Punkte ausblenden",
   "showEloScores": "ELO-Punkte anzeigen",
   "overview": "Übersicht",
+  "insightsTabTrends": "Trends",
+  "@insightsTabTrends": {
+    "description": "Bezeichnung fur den Trends-Tab in Insights"
+  },
   "habitsTab": "Gewohnheiten",
   "tasksTab": "Aufgaben",
   "totalPoints": "Gesamtpunkte",
@@ -126,6 +166,71 @@
   "longestStreak": "Längste Serie",
   "language": "Sprache",
   "settings": "Einstellungen",
+  "settingsGeneralSectionTitle": "Allgemein",
+  "settingsPilotSectionTitle": "Pilot",
+  "pilotIdentityBadge": "Externer Pilot",
+  "@pilotIdentityBadge": {
+    "description": "Kurzes Label zur Kennzeichnung der externen Pilotinstanz"
+  },
+  "settingsHelpFeedbackSectionTitle": "Hilfe und Feedback",
+  "settingsAboutSectionTitle": "Über",
+  "settingsPilotStatusTitle": "Pilotstatus",
+  "settingsPilotStatusBody": "Begrenzter externer Pilot. Prioris deckt derzeit die Shell, Listen, Priorisierung und grundlegende Gewohnheiten ab.",
+  "settingsPilotLimitsTitle": "Aktuelle Grenzen",
+  "settingsPilotLimitsBody": "Kein Billing, kein öffentlicher Support, kein gehostetes Hilfezentrum und kein Versprechen über den aktuellen Umfang hinaus.",
+  "settingsVersionValue": "{version}",
+  "@settingsVersionValue": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsLanguageChanged": "Sprache geändert zu {language}",
+  "settingsVersionFallbackLabel": "Externer Pilot-Build",
+  "@settingsVersionFallbackLabel": {
+    "description": "Ehrliches Fallback-Label, wenn keine Runtime-Version injiziert wird"
+  },
+  "@settingsLanguageChanged": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "logout": "Abmelden",
+  "@logout": {
+    "description": "Bezeichnung fur die Abmeldeaktion"
+  },
+  "homeLogoutHint": "Meldet den aktuellen Nutzer ab",
+  "@homeLogoutHint": {
+    "description": "Accessibility-Hinweis fur die Abmeldeaktion"
+  },
+  "homeSettingsHint": "Offnet die App-Einstellungen",
+  "@homeSettingsHint": {
+    "description": "Accessibility-Hinweis fur die Einstellungen"
+  },
+  "homeMainContentLabel": "Hauptinhalt",
+  "@homeMainContentLabel": {
+    "description": "Accessibility-Label fur den Hauptinhalt der App-Shell"
+  },
+  "homePrimaryNavigationLabel": "Hauptnavigation",
+  "@homePrimaryNavigationLabel": {
+    "description": "Accessibility-Label fur die primare Navigation"
+  },
+  "homePrimaryNavigationHint": "Nutze die Navigation, um zwischen den Bereichen zu wechseln",
+  "@homePrimaryNavigationHint": {
+    "description": "Accessibility-Hinweis fur die primare Navigation"
+  },
+  "homeNavigationAnnouncement": "Navigation zu {section}",
+  "@homeNavigationAnnouncement": {
+    "description": "Screenreader-Ansage beim Wechseln eines Bereichs in der App-Shell",
+    "placeholders": {
+      "section": {
+        "type": "String"
+      }
+    }
+  },
   "noData": "Keine Daten verfügbar",
   "loading": "Lädt...",
   "error": "Fehler",
@@ -158,6 +263,49 @@
   "all": "Alle",
   "none": "Keine",
   "today": "Heute",
+  "todayPanelSubtitle": "Die wenigen Elemente, die jetzt deine Aufmerksamkeit verdienen",
+  "todayPanelCountLabel": "{count, plural, one {{count} verlassliches Element} other {{count} verlassliche Elemente}}",
+  "@todayPanelCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "todayPanelLoading": "Deine Ansicht fur heute wird vorbereitet...",
+  "todayPanelCalmTitle": "Im Moment nichts Dringendes",
+  "todayPanelCalmBody": "Dein Tag wirkt ruhig. Mach in deinen Listen oder Gewohnheiten weiter, wenn du vorankommen willst.",
+  "todayPanelFirstUseTitle": "Dein Bereich ist bereit",
+  "@todayPanelFirstUseTitle": {
+    "description": "Titel, wenn der Nutzer noch keine nutzbaren Daten hat"
+  },
+  "todayPanelFirstUseBody": "Starte mit deiner ersten Liste oder Gewohnheit. Deine nachsten Aktionen erscheinen hier.",
+  "@todayPanelFirstUseBody": {
+    "description": "Hilfetext, wenn der Nutzer noch keine nutzbaren Daten hat"
+  },
+  "todayPanelPartial": "Teilansicht: Einige Signale laden noch.",
+  "todayPanelError": "Die Ansicht fur heute ist vorubergehend eingeschrankt.",
+  "todayPanelTaskKind": "Aufgabe",
+  "todayPanelHabitKind": "Gewohnheit",
+  "todayPanelStatusOverdue": "Uberfallig",
+  "todayPanelStatusDueToday": "Heute",
+  "todayPanelStatusPending": "Zu prufen",
+  "todayPanelReasonOverdueTask": "Aufgabe bereits uberfallig",
+  "todayPanelReasonDueTodayTask": "Heute fallig",
+  "todayPanelReasonPriorityTask": "Aufgabe mit hoher Wirkung",
+  "todayPanelReasonDueTodayHabit": "Gewohnheit fur heute erwartet",
+  "todayPanelParentListLabel": "Liste: {title}",
+  "@todayPanelParentListLabel": {
+    "placeholders": {
+      "title": {}
+    }
+  },
+  "todayPanelActionOpenList": "Liste offnen",
+  "todayPanelActionOpenDuel": "Priorisieren",
+  "todayPanelActionRecordHabit": "Als erledigt markieren",
+  "todayPanelActionRecordValue": "Wert eintragen",
+  "todayPanelActionOpenHabits": "Gewohnheiten offnen",
+  "todayPanelActionUnavailable": "Diese Aktion ist im aktuellen Zustand nicht mehr verfugbar.",
   "yesterday": "Gestern",
   "tomorrow": "Morgen",
   "thisWeek": "Diese Woche",
@@ -198,20 +346,69 @@
   "performance": "Leistung",
   "analytics": "Analysen",
   "insights": "Einblicke",
+  "insightsHeaderTitle": "Behalte deinen Fortschritt im Blick",
+  "@insightsHeaderTitle": {
+    "description": "Header-Titel der Insights-Seite"
+  },
+  "insightsHeaderSubtitleEmpty": "Erstelle Gewohnheiten, um deine ersten Einblicke freizuschalten.",
+  "@insightsHeaderSubtitleEmpty": {
+    "description": "Header-Untertitel der Insights-Seite ohne Gewohnheiten"
+  },
+  "insightsHeaderSubtitleWithHabits": "Uberblick und Trends fur deine {count} Gewohnheiten",
+  "@insightsHeaderSubtitleWithHabits": {
+    "description": "Header-Untertitel der Insights-Seite mit vorhandenen Gewohnheiten",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insightsEmptyTitle": "Noch keine Einblicke",
+  "@insightsEmptyTitle": {
+    "description": "Titel des leeren Zustands der Insights-Seite"
+  },
+  "insightsEmptyBody": "Erstelle deine erste Gewohnheit, um hier deine ersten Einblicke freizuschalten.",
+  "@insightsEmptyBody": {
+    "description": "Hilfetext des leeren Zustands der Insights-Seite"
+  },
+  "insightsOverviewPlaceholder": "Dein Uberblick erscheint hier bald.",
+  "@insightsOverviewPlaceholder": {
+    "description": "Platzhaltertext fur den Uberblick-Tab"
+  },
+  "insightsTrendsPlaceholder": "Deine Trends erscheinen hier bald.",
+  "@insightsTrendsPlaceholder": {
+    "description": "Platzhaltertext fur den Trends-Tab"
+  },
   "recommendations": "Empfehlungen",
   "suggestions": "Vorschläge",
   "tips": "Tipps",
   "help": "Hilfe",
+  "settingsHelpSubtitle": "Verstehen, wie Sie in diesem Pilot Hilfe erhalten.",
+  "settingsHelpDialogBody": "Der Support fuer diesen Pilot bleibt manuell und bewusst begrenzt. Nutzen Sie den Pilot-Feedback-Kanal, um eine Frage zu stellen, ein Problem zu melden oder einen Bedarf zu teilen. Es gibt weder Echtzeit-Support noch ein oeffentliches SLA.",
   "about": "Über",
   "version": "Version",
   "developer": "Entwickler",
   "contact": "Kontakt",
   "feedback": "Feedback",
+  "settingsFeedbackSubtitle": "Den Feedback-Kanal des Piloten oeffnen.",
+  "settingsFeedbackDialogBody": "Der Feedback-Kanal des Piloten oeffnet ein einfaches Formular in Ihrem Browser. Er wird auch fuer Hilfe, Fehler und Funktionswuensche verwendet.",
   "reportBug": "Fehler melden",
+  "settingsReportBugSubtitle": "Denselben Pilot-Kanal fuer eine Fehlermeldung nutzen.",
+  "settingsReportBugDialogBody": "Fehler werden ueber denselben Pilot-Kanal wie allgemeines Feedback gemeldet. Beschreiben Sie den sichtbaren Kontext, das Geraet und das beobachtete Ergebnis.",
   "requestFeature": "Funktion anfordern",
+  "settingsRequestFeatureSubtitle": "Denselben Pilot-Kanal nutzen, um einen Bedarf zu teilen.",
+  "settingsRequestFeatureDialogBody": "Funktionswuensche laufen ueber denselben Pilot-Kanal. Sie werden manuell geprueft und sind keine Lieferzusage.",
+  "settingsSupportLaunchFailureBody": "Dieser Kanal konnte nicht automatisch geoeffnet werden. Nutzen Sie diesen Link in Ihrem Browser:",
+  "settingsSupportUnavailableBody": "Diese Build konfiguriert noch keinen Support-Kanal fuer den Pilot. Fuegen Sie vor einer externen Pilot-Freigabe eine Feedback-URL oder eine Support-E-Mail hinzu.",
   "privacyPolicy": "Datenschutzrichtlinie",
+  "settingsPrivacySubtitle": "Lesen, wie Pilotdaten behandelt werden.",
+  "settingsPrivacyDialogBody": "Prioris speichert nur die Daten, die fuer diesen Pilot noetig sind: Konto, Listen, Aufgaben, Gewohnheiten und zugehoerige Sync-Signale. Diese Daten werden genutzt, um das Produkt zu betreiben, gemeldete Probleme zu beheben und den Pilot zu bewerten. Wenn Sie Fragen zu Ihren Daten haben, nutzen Sie den Pilot-Feedback-Kanal.",
   "termsOfService": "Nutzungsbedingungen",
+  "settingsTermsSubtitle": "Den minimalen Nutzungsrahmen dieses Piloten lesen.",
+  "settingsTermsDialogBody": "Dieser Pilot ist fuer eine kleine eingeladene Gruppe bestimmt. Zugang, Funktionen und Verfuegbarkeit koennen sich ohne Vorankuendigung aendern. Nutzen Sie Prioris nicht als kritisches System oder als einzige Wahrheitsquelle fuer sensible Entscheidungen. Feedback ist willkommen, aber weder ein sofortiger Fix noch eine oeffentliche Freigabe sind garantiert.",
   "license": "Lizenz",
+  "settingsLicenseSubtitle": "Die in dieser Version enthaltenen Lizenzen öffnen.",
+  "settingsAboutLegalese": "Begrenzter externer Pilot. Manueller Support ueber den Pilot-Kanal, noch ohne Preise oder oeffentliche Zusage.",
   "credits": "Credits",
   "changelog": "Änderungsprotokoll",
   "updateAvailable": "Update verfügbar",
@@ -447,7 +644,7 @@
       }
     }
   },
-  "habitsButtonCreate": "Create a habit",
+  "habitsButtonCreate": "Eine Gewohnheit erstellen",
   "@habitsButtonCreate": {
     "description": "CTA button to create a habit"
   },
@@ -529,8 +726,8 @@
   "habitFrequencyTimesPerYear": "{count, plural, one {{count} Mal pro Jahr} other {{count} Mal pro Jahr}}",
   "habitFrequencyEveryWeeks": "Alle {count} Wochen",
   "habitFrequencyEveryMonths": "Alle {count} Monate",
-  "habitFrequencyEveryQuarters": "Alle {count} Quartale",
-  "habitFrequencyEveryYears": "Alle {count} Jahre",
+  "habitFrequencyEveryQuarters": "{interval, plural, one {vierteljährlich} other {alle {interval} Quartale}}",
+  "habitFrequencyEveryYears": "{interval, plural, one {jährlich} other {alle {interval} Jahre}}",
   "habitFrequencyDaysPerCycle": "{daysActive} Tage von {daysCycle}",
   "habitFrequencySpecificDateAnnual": "Jedes Jahr am {date}",
   "habitFrequencySpecificDateOnce": "Am {date}",
@@ -652,12 +849,12 @@
   },
   "@habitFrequencyEveryQuarters": {
     "placeholders": {
-      "count": {}
+      "interval": {}
     }
   },
   "@habitFrequencyEveryYears": {
     "placeholders": {
-      "count": {}
+      "interval": {}
     }
   },
   "@habitFrequencyEveryDays": {
@@ -686,6 +883,75 @@
   "@habitFrequencySpecificDateOnce": {
     "placeholders": {
       "date": {
+        "type": "String"
+      }
+    }
+  },
+  "authOfflineSignInError": "Die Anmeldung ist im Offline-Modus nicht verfÃ¼gbar. Konfiguriere echte Supabase-Zugangsdaten in .env, um Online-Funktionen zu aktivieren.",
+  "@authOfflineSignInError": {
+    "description": "Fehlermeldung bei der Anmeldung, wenn die App mit einer Supabase-Platzhalterkonfiguration lÃ¤uft"
+  },
+  "authOfflineSignUpError": "Die Registrierung ist im Offline-Modus nicht verfÃ¼gbar. Konfiguriere echte Supabase-Zugangsdaten in .env, um Online-Funktionen zu aktivieren.",
+  "@authOfflineSignUpError": {
+    "description": "Fehlermeldung bei der Registrierung, wenn die App mit einer Supabase-Platzhalterkonfiguration lÃ¤uft"
+  },
+  "authLoginTitle": "Anmelden",
+  "@authLoginTitle": {
+    "description": "Titel auf dem Authentifizierungsbildschirm im Anmeldemodus"
+  },
+  "authSignUpTitle": "Konto erstellen",
+  "@authSignUpTitle": {
+    "description": "Titel auf dem Authentifizierungsbildschirm im Registrierungsmodus"
+  },
+  "authSignInAction": "Anmelden",
+  "@authSignInAction": {
+    "description": "Bezeichnung der primaren Aktion fur die Anmeldung"
+  },
+  "authSignUpAction": "Konto erstellen",
+  "@authSignUpAction": {
+    "description": "Bezeichnung der primaren Aktion fur die Registrierung"
+  },
+  "authToggleToSignUp": "Noch kein Konto? Jetzt erstellen",
+  "@authToggleToSignUp": {
+    "description": "Sekundare Aktion zum Wechsel vom Anmelden zum Registrieren"
+  },
+  "authToggleToSignIn": "Schon ein Konto? Anmelden",
+  "@authToggleToSignIn": {
+    "description": "Sekundare Aktion zum Wechsel vom Registrieren zum Anmelden"
+  },
+  "authForgotPasswordAction": "Passwort vergessen?",
+  "@authForgotPasswordAction": {
+    "description": "Sekundare Aktion zum Offnen des Dialogs fur Passwort vergessen"
+  },
+  "authEmailLabel": "E-Mail",
+  "@authEmailLabel": {
+    "description": "Bezeichnung des E-Mail-Felds fur die Authentifizierung"
+  },
+  "authEmailHint": "du@beispiel.de",
+  "@authEmailHint": {
+    "description": "Platzhalter des E-Mail-Felds fur die Authentifizierung"
+  },
+  "authPasswordLabel": "Passwort",
+  "@authPasswordLabel": {
+    "description": "Bezeichnung des Passwortfelds fur die Authentifizierung"
+  },
+  "authPasswordHint": "********",
+  "@authPasswordHint": {
+    "description": "Platzhalter des Passwortfelds fur die Authentifizierung"
+  },
+  "authTechnicalFieldLabel": "Technisches Feld (leer lassen)",
+  "@authTechnicalFieldLabel": {
+    "description": "Bezeichnung des versteckten Honeypot-Felds zum Schutz der Registrierung"
+  },
+  "authPendingConfirmationTitle": "Bestatigung erforderlich",
+  "@authPendingConfirmationTitle": {
+    "description": "Kurzer Titel, wenn die Registrierung ohne sofortige Sitzung erfolgreich war"
+  },
+  "authPendingConfirmationMessage": "Eine Bestatigungs-E-Mail wurde an {email} gesendet. Bestatige deine E-Mail-Adresse, um die Registrierung abzuschliessen, und melde dich dann erneut an.",
+  "@authPendingConfirmationMessage": {
+    "description": "Nachricht, wenn die Registrierung erfolgreich war, aber eine E-Mail-Bestatigung erforderlich ist",
+    "placeholders": {
+      "email": {
         "type": "String"
       }
     }

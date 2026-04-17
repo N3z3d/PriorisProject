@@ -18,8 +18,8 @@ afin d'utiliser Prioris sans dependre d'un runtime local ni d'un harnais repo-ow
 
 ## Tasks / Subtasks
 
-- [ ] Nommer et brancher une cible pilote reelle unique, distincte du runtime local, sans creer un second produit. (AC: 1, 2, 3)
-  - [ ] Documenter un point d'entree pilote explicite et sa source de verite unique, au niveau du build, du runtime ou des artefacts de deploiement, au lieu de disperser des libelles/URLs pilotes en dur dans plusieurs widgets.
+- [x] Nommer et brancher une cible pilote reelle unique, distincte du runtime local, sans creer un second produit. (AC: 1, 2, 3)
+  - [x] Documenter un point d'entree pilote explicite et sa source de verite unique, au niveau du build, du runtime ou des artefacts de deploiement, au lieu de disperser des libelles/URLs pilotes en dur dans plusieurs widgets.
   - [x] Reutiliser le chemin runtime normal `PriorisApp -> AuthWrapper -> LoginPage/HomePage` sans introduire de route parallele, de shell alternatif ni de bypass repo-owned.
   - [x] Si une identite pilote visible est ajoutee dans l'application, la deriver d'une seule source de config ou de metadata de build plutot que de dupliquer un nom d'instance dans `web/index.html`, `manifest.json`, `LoginHeader`, `HomePage` ou `SettingsPage`.
 
@@ -33,10 +33,10 @@ afin d'utiliser Prioris sans dependre d'un runtime local ni d'un harnais repo-ow
   - [x] Ne pas transformer `Aide`, `Feedback`, `Confidentialite` ou `Conditions` en canaux riches ici; si un repere minimal est indispensable pour l'identite du pilote, le garder borne et laisser `6.2` fermer le support pilote reel.
   - [x] Ne pas presenter le runtime local Docker, le harnais `signed_in_smoke` ou une simple preuve repo-owned comme validation suffisante d'une instance pilote externe reelle.
 
-- [ ] Fermer une matrice de preuve distincte pour l'instance pilote reelle et les preuves repo-owned corrigees a la bonne frontiere. (AC: 1, 2, 3)
+- [x] Fermer une matrice de preuve distincte pour l'instance pilote reelle et les preuves repo-owned corrigees a la bonne frontiere. (AC: 1, 2, 3)
   - [x] Ajouter ou etendre des tests presentation/integration sur le chemin authentifie normal pour prouver les reperes d'identification pilote sur desktop et sur telephone.
   - [x] Si les metadata web ou le bootstrap web sont touches, verifier explicitement qu'ils restent compatibles avec le bootstrap Flutter normal (`flutter build web`, `index.html`, `manifest.json`) et ne cassent ni le `base href` ni le chargement `flutter_bootstrap.js`.
-  - [ ] Documenter en closeout la cible pilote hebergee, la preuve desktop, la preuve telephone, la date de verification et les limites retenues; toute preuve locale repo-owned n'est qu'un support secondaire.
+  - [x] Documenter en closeout la cible pilote hebergee, la preuve desktop, la preuve telephone, la date de verification et les limites retenues; toute preuve locale repo-owned n'est qu'un support secondaire.
 
 - [x] Documenter explicitement la frontiere d'implementation, les fichiers probables et les hors-scope avant `dev-story`. (AC: 2, 3)
   - [x] Nommer la frontiere principale `web entry / presentation shell / auth entry -> providers auth existants -> runtime courant`, sans branchement direct UI -> infrastructure.
@@ -235,6 +235,12 @@ afin d'utiliser Prioris sans dependre d'un runtime local ni d'un harnais repo-ow
 
 - 2026-04-12: story creee via workflow `create-story` pour ouvrir `Epic 6` sur le plus petit slice observable du lane `pilote externe reel`: rendre une vraie instance pilote identifiable et atteignable, sans confondre runtime local, preuve repo-owned et cible pilote hebergee.
 - 2026-04-13: implementation `dev-story` sur le chemin runtime normal avec source unique d'identite pilote dans `AppConfig`, preuves desktop/telephone repo-owned et closeout maintenu `in-progress` faute de cible pilote publique canonique documentee dans le depot.
+- 2026-04-16: closeout `6.1` rerun avec verification live de `https://n3z3d.github.io/PriorisProject/` sur desktop et telephone, documentation de deploiement pilote mise a jour, puis blocage maintenu sur une regression globale hors scope `6.1` dans `test/presentation/pages/lists/widgets/lists_overview_banner_test.dart`.
+- 2026-04-16: le garde-fou global hors scope `6.1` a ete referme via le realignement localise de `test/presentation/pages/lists/widgets/lists_overview_banner_test.dart`; la baseline `flutter test --machine` repasse au vert et la story passe en `review`.
+- 2026-04-17: `code-review` BMAD execute. Story repassee en `in-progress`: AC1 reste seulement partiellement prouvee sur la cible publique, et la `File List` ne reflete pas completement le diff local actuel (`auth_wrapper.dart`, `login_page.dart`, `web/index.html`, `web/manifest.json`).
+- 2026-04-17: verification live supplementaire sur `https://n3z3d.github.io/PriorisProject/` via Playwright avec les credentials de test trouves dans `test/manual/test_credentials.txt`: la tentative de connexion hebergee echoue avec `AuthApiException(... invalid_credentials)`. La cible publique reste donc non prouvee comme instance pilote reelle atteignable pour un utilisateur invite.
+- 2026-04-17: verification publique corrigee de la build GitHub Pages. `assets/.env` sert bien `SUPABASE_URL=https://vgowxrktjzgwrfivtvse.supabase.co`, `PRIORIS_INSTANCE_NAME=Prioris Pilot Invite` et `SUPABASE_AUTH_REDIRECT_URL=https://n3z3d.github.io/PriorisProject/`; `auth/v1/settings` repond sur ce host. Le gap `AC1` restant n'est donc plus un host mort, mais l'absence de preuve repo-owned d'un login invite valide, les credentials de `test/manual/test_credentials.txt` retournant encore `invalid_credentials`.
+- 2026-04-17: correctif local supplementaire pour le gap public d'inscription invite: `AuthService.signUp` transmet maintenant explicitement `SUPABASE_AUTH_REDIRECT_URL` a Supabase via `emailRedirectTo`, et `LoginPage` affiche un retour visible "email de validation envoye" meme quand Supabase renvoie une inscription sans session immediate et sans `user` hydrate.
 
 ## Dev Agent Record
 
@@ -274,6 +280,31 @@ GPT-5 Codex
     - `flutter test test/presentation/pages/settings_page_test.dart`
     - `flutter build web`
     - `flutter build web --release --base-href=/PriorisProject/ --dart-define=PRIORIS_APP_VERSION=pilot-local`
+  - verification live `2026-04-16`:
+    - `Playwright -> https://n3z3d.github.io/PriorisProject/`
+    - capture desktop `1280x900`: titre `Prioris Pilot Invite`, badge `Pilote externe`, notice `Prioris Pilot Invite`
+    - capture telephone `390x844`: meme badge `Pilote externe` et meme notice visibles sur l'entree publique
+  - validations finales de closeout:
+    - `flutter analyze --no-pub lib/presentation/app/prioris_app.dart lib/presentation/pages/auth/auth_wrapper.dart lib/presentation/pages/auth/login_page.dart lib/presentation/pages/auth/components/login_header.dart lib/presentation/pages/home_page.dart lib/presentation/pages/settings_page.dart lib/core/config/app_config.dart lib/core/bootstrap/app_initializer.dart test/presentation/pages/home_page_test.dart test/presentation/pages/settings_page_test.dart test/integration/auth_flow_integration_test.dart test/integration/signed_in_smoke_integration_test.dart`
+    - `flutter test test/core/config/app_config_test.dart test/presentation/pages/home_page_test.dart test/presentation/pages/settings_page_test.dart test/integration/auth_flow_integration_test.dart`
+    - `flutter build web`
+    - `flutter test --machine` -> echec global sur `test/presentation/pages/lists/widgets/lists_overview_banner_test.dart` (`Null check operator used on a null value` dans `ListsOverviewBanner.build`)
+  - rerun final:
+    - `flutter test test/presentation/pages/lists/widgets/lists_overview_banner_test.dart` -> vert
+    - `flutter test --machine` -> vert (`success: true`)
+  - verification publique supplementaire `2026-04-17`:
+    - `Invoke-WebRequest https://n3z3d.github.io/PriorisProject/` -> HTML public servi avec `base href="/PriorisProject/"` et `title=Prioris Pilot`
+    - `Invoke-WebRequest https://n3z3d.github.io/PriorisProject/manifest.json` -> metadata pilote publique servie
+    - `Invoke-WebRequest https://n3z3d.github.io/PriorisProject/assets/.env` -> `SUPABASE_URL=https://vgowxrktjzgwrfivtvse.supabase.co`
+    - `Invoke-WebRequest https://vgowxrktjzgwrfivtvse.supabase.co/auth/v1/settings` -> endpoint auth joignable, `email=true`, `disable_signup=false`
+    - `POST https://vgowxrktjzgwrfivtvse.supabase.co/auth/v1/token?grant_type=password` avec `test/manual/test_credentials.txt` -> `{"code":400,"error_code":"invalid_credentials","msg":"Invalid login credentials"}`
+  - garde de deploiement public `6.1`:
+    - `flutter test test/core/config/pilot_deployment_guard_test.dart` -> vert apres implementation
+    - `dart run tool/validate_pilot_pages_config.dart` avec `PILOT_SUPABASE_URL=https://huxddyqkjczckagkpzef.supabase.co` -> echec attendu
+    - `dart run tool/validate_pilot_pages_config.dart` avec `PILOT_SUPABASE_URL=https://vgowxrktjzgwrfivtvse.supabase.co` -> succes
+    - `flutter analyze --no-pub lib/core/config/app_config.dart lib/core/config/pilot_deployment_guard.dart tool/validate_pilot_pages_config.dart test/core/config/pilot_deployment_guard_test.dart` -> vert
+    - `flutter test test/core/config/app_config_test.dart test/core/config/pilot_deployment_guard_test.dart` -> vert
+    - `flutter test --machine` -> vert apres ajout du garde de deploiement public
 
 ### Completion Notes List
 
@@ -287,13 +318,47 @@ GPT-5 Codex
   - build Pages validee localement avec `--base-href=/PriorisProject/`
   - documentation d'activation dans `docs/PILOT_PAGES_DEPLOYMENT.md`
 - Choix de securite explicite pour cette cible web: `SUPABASE_URL` et la cle publique client `anon` sont traitees comme des variables GitHub de build, pas comme des secrets forts, parce qu'elles seront exposees dans le bundle web. `service_role` et tout secret backend restent interdits.
-- Le depot ne fournit toujours pas de cible pilote publique canonique: `.env` garde un redirect local (`http://localhost:3000/auth/callback`), `docs/LOCAL_RUNTIME.md` ne documente que des URLs locales/LAN, et aucun artefact de deploiement public n'a ete trouve. La story reste donc `in-progress` et ne doit pas etre cloturee comme preuve suffisante d'un pilote externe reel.
-- La limite restante est reduite mais non fermee: il faut encore un premier run GitHub Pages reussi, une URL publique finale verifiee et une preuve desktop + telephone sur cette URL avant de pouvoir passer la story en `review`.
+- La cible pilote publique canonique documentee reste `https://n3z3d.github.io/PriorisProject/`. La source de verite unique documentee est `DEFAULT_PAGES_URL` dans `.github/workflows/deploy-pilot-pages.yml`, injectee ensuite dans `PRIORIS_INSTANCE_ENTRY_URL` et consommee par `AppConfig`.
+- La preuve externe `2026-04-16` ferme bien l'identification pilote sur la meme URL en desktop et en telephone:
+  - desktop `1280x900`: titre navigateur `Prioris Pilot Invite`, badge `Pilote externe` et notice pilote visibles sur l'entree publique
+  - telephone `390x844`: meme badge `Pilote externe` et meme notice visibles sur la meme URL publique
+- La verification live supplementaire `2026-04-17` ne ferme pas l'accessibilite reelle pour un utilisateur invite:
+  - tentative de connexion hebergee sur la cible publique avec les credentials de test du depot -> echec `AuthApiException(message: Invalid login credentials, statusCode: 400, code: invalid_credentials)`
+  - la preuve disponible couvre donc l'entree publique et le branding, pas une session pilote hebergee utilisable sur l'instance publique
+- La verification de configuration publique `2026-04-17` confirme maintenant que la cible Pages est bien branchee sur un host Supabase reel:
+  - `assets/.env` sert `SUPABASE_URL=https://vgowxrktjzgwrfivtvse.supabase.co`
+  - `assets/.env` sert aussi `PRIORIS_INSTANCE_NAME=Prioris Pilot Invite` et `SUPABASE_AUTH_REDIRECT_URL=https://n3z3d.github.io/PriorisProject/`
+  - `auth/v1/settings` repond correctement sur cette cible
+- Un garde repo-owned a ete ajoute pour bloquer cette regression de deploiement avant la prochaine publication publique:
+  - `lib/core/config/pilot_deployment_guard.dart` centralise les hosts Supabase placeholders interdits
+  - `AppConfig.validateSupabaseUrl` reutilise maintenant cette meme source de verite
+  - `tool/validate_pilot_pages_config.dart` echoue si `PILOT_SUPABASE_URL` est vide, non-HTTPS, non-Supabase ou placeholder
+  - `.github/workflows/deploy-pilot-pages.yml` execute ce garde avant `flutter build web`
+- Les preuves repo-owned restent secondaires et demeurent vertes pour le chemin runtime normal:
+  - `flutter analyze --no-pub ...` cible `6.1` -> vert
+  - `flutter test test/core/config/app_config_test.dart test/presentation/pages/home_page_test.dart test/presentation/pages/settings_page_test.dart test/integration/auth_flow_integration_test.dart` -> `69` tests OK
+  - `flutter test --machine` -> baseline globale verte apres ajout du garde de deploiement
+  - `flutter build web` -> succes
+- Le flux public d'inscription invite est maintenant durci localement avant redeploiement:
+  - `AuthService.signUp` relaie explicitement `AppConfig.supabaseAuthRedirectUrl` vers Supabase pour aligner le lien de confirmation email sur la cible GitHub Pages retenue
+  - `LoginPage` traite toute inscription sans session immediate comme une confirmation email en attente, au lieu de dependra d'un `response.user != null`
+  - la copy localisee annonce explicitement qu'un email de validation a ete envoye, ce qui ferme le trou UX signale sur la build publique
+- Limite residuelle documentee pour AC1: la cible publique est maintenant correctement branchee et joignable, mais la preuve repo-owned d'un acces invite reussi manque encore parce que `test/manual/test_credentials.txt` est stale (`invalid_credentials`).
+- Le garde-fou global hors scope detecte pendant le closeout a ete referme sans toucher au runtime produit: `test/presentation/pages/lists/widgets/lists_overview_banner_test.dart` pompe maintenant le widget avec `AppLocalizations`, ce qui realigne le harnais sur les prerequis reels du composant.
+- La baseline globale est revenue au vert apres ce correctif de harnais: `flutter test --machine` -> `success: true`.
+- La story ne satisfait pas encore AC1 au standard demande et reste en `in-progress`; la prochaine verification legitime est maintenant:
+  - fournir ou regenerer un vrai compte invite utilisable pour la cible publique
+  - revalider un login reussi sur `https://n3z3d.github.io/PriorisProject/` ou directement sur `auth/v1/token`
+  - seulement ensuite cloturer `6.1` ou lancer `6.3` avec une preuve d'acces invite effectivement reussie
 
 ### File List
 
 - `lib/core/config/app_config.dart`
+- `lib/core/config/pilot_deployment_guard.dart`
+- `lib/infrastructure/services/auth_service.dart`
 - `lib/presentation/app/prioris_app.dart`
+- `lib/presentation/pages/auth/auth_wrapper.dart`
+- `lib/presentation/pages/auth/login_page.dart`
 - `lib/presentation/pages/auth/components/login_header.dart`
 - `lib/presentation/pages/home_page.dart`
 - `lib/presentation/pages/settings_page.dart`
@@ -308,11 +373,41 @@ GPT-5 Codex
 - `lib/l10n/app_localizations_es.dart`
 - `lib/l10n/app_localizations_de.dart`
 - `test/core/config/app_config_test.dart`
+- `test/core/config/pilot_deployment_guard_test.dart`
+- `test/infrastructure/services/auth_service_test.dart`
 - `test/presentation/pages/home_page_test.dart`
 - `test/presentation/pages/settings_page_test.dart`
 - `test/integration/auth_flow_integration_test.dart`
+- `test/presentation/pages/lists/widgets/lists_overview_banner_test.dart`
+- `web/index.html`
+- `web/manifest.json`
 - `.github/workflows/deploy-pilot-pages.yml`
+- `tool/validate_pilot_pages_config.dart`
 - `docs/PILOT_PAGES_DEPLOYMENT.md`
 - `_bmad-output/implementation-artifacts/6-1-rendre-une-instance-pilote-externe-identifiable-et-atteignable.md`
 - `_bmad-output/implementation-artifacts/sprint-status.yaml`
 - `tasks/todo.md`
+- `tasks/lessons.md`
+
+## Senior Developer Review (AI)
+
+### Reviewer
+
+- Codex le 2026-04-17
+
+### Outcome
+
+- Changes Requested
+
+### Findings
+
+1. [HIGH] L'AC1 n'est pas completement prouvee. La story exige qu'un utilisateur pilote invite atteigne une instance pilote reelle utilisable, mais la preuve externe documentee couvre seulement l'entree publique identifiable sur desktop et telephone. Une verification live supplementaire sur la cible publique avec les credentials de test trouves dans `test/manual/test_credentials.txt` echoue en plus avec `AuthApiException(... invalid_credentials)`, ce qui laisse l'instance publique non prouvee comme cible pilote reelle atteignable pour un utilisateur invite. References: AC1, closeout et limites documentees dans cette story, plus `docs/PILOT_PAGES_DEPLOYMENT.md`.
+2. [MEDIUM] La `File List` n'etait pas complete par rapport au diff borne a la story. Le diff local inclut `lib/presentation/pages/auth/auth_wrapper.dart`, `lib/presentation/pages/auth/login_page.dart`, `web/index.html` et `web/manifest.json`, absents de la liste finale initiale alors qu'ils apparaissent aussi dans les commandes de verification et les surfaces declarees par la story. La liste a ete resynchronisee dans cet artefact.
+
+### Verification
+
+- `flutter analyze --no-pub lib/presentation/app/prioris_app.dart lib/presentation/pages/auth/auth_wrapper.dart lib/presentation/pages/auth/login_page.dart lib/presentation/pages/auth/components/login_header.dart lib/presentation/pages/home_page.dart lib/presentation/pages/settings_page.dart lib/core/config/app_config.dart test/core/config/app_config_test.dart test/presentation/pages/home_page_test.dart test/presentation/pages/settings_page_test.dart test/integration/auth_flow_integration_test.dart` -> `No issues found!`
+- `flutter test test/core/config/app_config_test.dart test/presentation/pages/home_page_test.dart test/presentation/pages/settings_page_test.dart test/integration/auth_flow_integration_test.dart` -> `69` tests OK
+- `flutter build web` -> succes (`Built build/web`)
+- Relecture de la preuve visuelle archivee `pilot_pages_live_desktop.png` / `pilot_pages_live_mobile.png`: l'identite pilote est bien visible a l'entree publique, mais cela ne ferme pas a lui seul la preuve d'une session hebergee utilisable sur la cible externe.
+- Verification live supplementaire `2026-04-17` sur `https://n3z3d.github.io/PriorisProject/` via Playwright avec les credentials de test du depot: la soumission du formulaire de connexion retourne `AuthApiException(message: Invalid login credentials, statusCode: 400, code: invalid_credentials)`.

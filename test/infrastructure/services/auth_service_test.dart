@@ -2,8 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:logger/logger.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
+import 'package:prioris/core/exceptions/app_exception.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:url_launcher/url_launcher.dart' show LaunchMode;
 import 'package:prioris/infrastructure/security/signup_guard.dart';
 import 'package:prioris/infrastructure/services/auth_service.dart';
 import 'package:prioris/infrastructure/services/logger_service.dart';
@@ -20,7 +20,6 @@ import 'auth_service_test.mocks.dart';
 class _StubGoTrueClient extends MockGoTrueClient {
   bool shouldThrowOAuth = false;
 
-  @override
   Future<bool> signInWithOAuth(
     OAuthProvider provider, {
     String? redirectTo,
@@ -134,18 +133,25 @@ void main() {
     setUp(() async {
       SharedPreferences.setMockInitialValues({});
       await SignupGuard.instance.resetCounters();
-      await AppConfig.initializeOfflineFirst();
+      AppConfig.setTestEnvironment(const {
+        'SUPABASE_URL': 'https://tests-prioris.supabase.co',
+        'SUPABASE_ANON_KEY':
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.tests-prioris',
+        'SUPABASE_AUTH_REDIRECT_URL': 'https://tests-prioris/auth/callback',
+        'ENVIRONMENT': 'test',
+        'DEBUG_MODE': 'false',
+      });
       mockSupabaseService = MockSupabaseService();
       mockAuth = _StubGoTrueClient();
       mockClient = MockSupabaseClient();
       stubLauncher = _StubUrlLauncher();
       UrlLauncherPlatform.instance = stubLauncher;
-      
+
       // Setup mock chain
       when(mockSupabaseService.auth).thenReturn(mockAuth);
       when(mockSupabaseService.client).thenReturn(mockClient);
       when(mockSupabaseService.currentUser).thenReturn(null);
-      
+
       AuthService.configureForTesting(
         supabaseService: mockSupabaseService,
         logger: LoggerService.testing(Logger()),
@@ -160,7 +166,8 @@ void main() {
         const email = 'test@example.com';
         const password = 'password123';
         const fullName = 'Test User';
-        
+        final redirectUrl = AppConfig.instance.supabaseAuthRedirectUrl;
+
         final mockResponse = AuthResponse(
           session: Session(
             accessToken: 'mock-token',
@@ -187,6 +194,7 @@ void main() {
         when(mockAuth.signUp(
           email: email,
           password: password,
+          emailRedirectTo: redirectUrl,
           data: {'full_name': fullName},
         )).thenAnswer((_) async => mockResponse);
 
@@ -202,6 +210,7 @@ void main() {
         verify(mockAuth.signUp(
           email: email,
           password: password,
+          emailRedirectTo: redirectUrl,
           data: {'full_name': fullName},
         )).called(1);
       });
@@ -210,7 +219,8 @@ void main() {
         // Arrange
         const email = 'test@example.com';
         const password = 'password123';
-        
+        final redirectUrl = AppConfig.instance.supabaseAuthRedirectUrl;
+
         final mockResponse = AuthResponse(
           session: Session(
             accessToken: 'mock-token',
@@ -237,6 +247,7 @@ void main() {
         when(mockAuth.signUp(
           email: email,
           password: password,
+          emailRedirectTo: redirectUrl,
           data: null,
         )).thenAnswer((_) async => mockResponse);
 
@@ -251,6 +262,7 @@ void main() {
         verify(mockAuth.signUp(
           email: email,
           password: password,
+          emailRedirectTo: redirectUrl,
           data: null,
         )).called(1);
       });
@@ -259,7 +271,7 @@ void main() {
         // Arrange
         const email = 'test@example.com';
         const password = 'password123';
-        
+
         final mockResponse = AuthResponse(
           session: Session(
             accessToken: 'mock-token',
@@ -344,7 +356,7 @@ void main() {
           aud: 'authenticated',
           createdAt: DateTime.now().toIso8601String(),
         );
-        
+
         when(mockSupabaseService.currentUser).thenReturn(mockUser);
 
         // Act
@@ -363,7 +375,7 @@ void main() {
           aud: 'authenticated',
           createdAt: DateTime.now().toIso8601String(),
         );
-        
+
         when(mockSupabaseService.currentUser).thenReturn(mockUser);
 
         // Act
@@ -402,7 +414,7 @@ void main() {
             createdAt: DateTime.now().toIso8601String(),
           ),
         );
-        
+
         when(mockAuth.currentSession).thenReturn(mockSession);
 
         // Act
@@ -425,7 +437,6 @@ void main() {
 
       test('hasValidSession should return true for valid session', () {
         // Arrange
-        final futureTimestamp = (DateTime.now().millisecondsSinceEpoch / 1000).round() + 3600;
         final mockSession = Session(
           accessToken: 'mock-token',
           tokenType: 'bearer',
@@ -439,7 +450,7 @@ void main() {
             createdAt: DateTime.now().toIso8601String(),
           ),
         );
-        
+
         when(mockAuth.currentSession).thenReturn(mockSession);
 
         // Act
@@ -502,16 +513,18 @@ void main() {
         // Arrange
         const fullName = 'Updated Name';
         const avatarUrl = 'https://example.com/avatar.jpg';
-        
+
         // Mock the updateUser method to avoid type issues
-        when(mockAuth.updateUser(any)).thenAnswer((_) async => throw UnimplementedError('Mocked'));
+        when(mockAuth.updateUser(any))
+            .thenAnswer((_) async => throw UnimplementedError('Mocked'));
 
         // Act & Assert
         expect(
-          () => authService.updateProfile(fullName: fullName, avatarUrl: avatarUrl),
+          () => authService.updateProfile(
+              fullName: fullName, avatarUrl: avatarUrl),
           throwsA(isA<UnimplementedError>()),
         );
-        
+
         verify(mockAuth.updateUser(any)).called(1);
       });
     });
@@ -562,14 +575,56 @@ void main() {
     });
 
     group('Error Handling', () {
+      test('signIn should block the known dead fallback Supabase host before network auth',
+          () async {
+        AppConfig.setTestEnvironment(const {
+          'SUPABASE_URL': 'https://huxddyqkjczckagkpzef.supabase.co',
+          'SUPABASE_ANON_KEY': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dead-host',
+          'SUPABASE_AUTH_REDIRECT_URL': 'https://tests-prioris/auth/callback',
+          'ENVIRONMENT': 'test',
+          'DEBUG_MODE': 'false',
+        });
+
+        when(mockAuth.signInWithPassword(
+          email: 'test@example.com',
+          password: 'password123',
+        )).thenAnswer((_) async => AuthResponse());
+
+        expect(
+          () => authService.signIn(
+            email: 'test@example.com',
+            password: 'password123',
+          ),
+          throwsA(
+            isA<AppException>()
+                .having(
+                  (error) => error.message,
+                  'message',
+                  contains('Authentication unavailable in offline mode'),
+                )
+                .having(
+                  (error) => error.metadata?['messageKey'],
+                  'messageKey',
+                  'authOfflineSignInError',
+                ),
+          ),
+        );
+
+        verifyNever(mockAuth.signInWithPassword(
+          email: 'test@example.com',
+          password: 'password123',
+        ));
+      });
+
       test('signUp should rethrow exceptions', () async {
         // Arrange
         const email = 'test@example.com';
         const password = 'password123';
-        
+
         when(mockAuth.signUp(
           email: email,
           password: password,
+          emailRedirectTo: AppConfig.instance.supabaseAuthRedirectUrl,
           data: null,
         )).thenThrow(Exception('Sign up failed'));
 
@@ -586,7 +641,7 @@ void main() {
         // Arrange
         const email = 'test@example.com';
         const password = 'password123';
-        
+
         when(mockAuth.signInWithPassword(
           email: email,
           password: password,

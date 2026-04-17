@@ -1,3 +1,35 @@
+## BMAD Slice: public_signup_confirmation_feedback
+
+### Plan
+
+- [x] Cartographier le flux actuel `signUp -> email de confirmation -> retour GitHub Pages` et isoler les deux ecarts utilisateurs observes
+- [x] Ecrire un test rouge service prouvant que `AuthService.signUp` transmet bien `SUPABASE_AUTH_REDIRECT_URL` a Supabase
+- [x] Ecrire un test rouge integration/UI prouvant qu'un signup sans session affiche un feedback explicite meme si la reponse ne fournit pas d'utilisateur exploitable
+- [x] Implementer la correction minimale sur `AuthService` et `LoginPage`, puis realigner le texte de confirmation si necessaire
+- [x] Revalider avec `flutter test` cible et `flutter analyze --no-pub` cible
+- [x] Documenter la revue du lot et la lecon extraite
+
+### Review
+
+- Cause racine 1 fermee cote runtime repo-owned: `AuthService.signUp` n'envoyait pas `SUPABASE_AUTH_REDIRECT_URL` a Supabase (`emailRedirectTo`), donc le lien de validation pouvait retomber sur le `Site URL` dashboard et sortir du sous-chemin GitHub Pages attendu.
+- Cause racine 2 fermee cote UI: `LoginPage` montrait le feedback de confirmation uniquement si `response.user != null && response.session == null`; un signup sans session mais sans `user` exploitable laissait donc l'ecran muet.
+- Correctif applique:
+  - `AuthService.signUp` transmet maintenant explicitement `emailRedirectTo: AppConfig.instance.supabaseAuthRedirectUrl`
+  - `LoginPage` traite tout signup reussi sans session comme une confirmation email en attente, meme si `response.user` est nul
+  - le message localise de confirmation indique maintenant explicitement qu'un email de validation a ete envoye
+- Validation executee:
+  - `flutter gen-l10n`
+  - `flutter test test/infrastructure/services/auth_service_test.dart` -> vert
+  - `flutter test test/integration/auth_flow_integration_test.dart` -> vert
+  - `flutter analyze --no-pub lib/infrastructure/services/auth_service.dart lib/presentation/pages/auth/login_page.dart test/infrastructure/services/auth_service_test.dart test/integration/auth_flow_integration_test.dart` -> vert
+- Limite residuelle honnete:
+  - la correction repo-owned est prete, mais l'instance publique GitHub Pages doit encore etre redeployee pour que le lien de validation utilise ce nouveau `emailRedirectTo`
+  - si un 404 persiste apres redeploiement, il faudra verifier cote Supabase le `Site URL`, la allow-list des redirect URLs et le template email utilise
+- Reverification live apres retour utilisateur:
+  - `assets/.env` public reste correct (`SUPABASE_URL=https://vgowxrktjzgwrfivtvse.supabase.co`, `SUPABASE_AUTH_REDIRECT_URL=https://n3z3d.github.io/PriorisProject/`)
+  - les fichiers du correctif signup restent modifies localement dans ce workspace (`auth_service.dart`, `login_page.dart`, l10n, tests) et n'etaient donc pas publiables sur GitHub sans commit/push depuis ici
+  - conclusion pratique: le redeploy GitHub mentionne par l'utilisateur n'a vraisemblablement pas inclus ce correctif local; l'absence de feedback visible et le `404` restent donc compatibles avec l'ancien code encore servi
+
 # Quick Dev Slice: web_bootstrap
 
 ## Plan
@@ -4064,3 +4096,234 @@ Prochaine etape:
 
 - Zone sensible assumee: ce lot touche CI/CD, mais via une workflow nouvelle et separee; ne pas destabiliser `.github/workflows/ci.yml`.
 - Limite connue avant implementation: meme avec la workflow en place, `6.1` ne pourra passer en `review` que si une URL publique reelle est effectivement activee et documentee.
+
+## BMAD Slice: dev_story_6_1_pages_build_unblock
+
+### Plan
+
+- [ ] Reproduire et diagnostiquer localement les erreurs du workflow GitHub Pages (`l10n` et `AppTheme`)
+- [ ] Corriger minimalement les sources canoniques touchees sans elargir le lot
+- [ ] Regenerer les localisations et verifier l'etat compile cible pour GitHub Pages
+- [ ] Mettre a jour les lecons et documenter le resultat concret de deblocage
+
+### Review
+
+- Aucun lot autonome n'a finalement ete mene sous ce nom.
+- Le besoin initial de deblocage GitHub Pages a ete absorbe par les slices voisins deja traces dans `tasks/todo.md`, puis par la revalidation documentaire et live de `6.1`.
+- Ne pas utiliser ce bloc comme source de verite pour `6.1`; les sections canoniques sont `dev_story_6_1_closeout` et `code_review_6_1`.
+
+## BMAD Slice: dev_story_6_2_blocked_missing_story
+
+### Plan
+
+- [x] Charger integralement le workflow `dev-story`, la config BMAD, `tasks/lessons.md`, `project-context.md` et le checklist de validation
+- [x] Verifier le tracker `_bmad-output/implementation-artifacts/sprint-status.yaml` pour resoudre l'etat reel du lane `Epic 6`
+- [x] Rechercher un fichier de story `6.2` exploitable dans `_bmad-output/implementation-artifacts`
+- [x] Verifier la dependance de sequence avec `6.1` et relire le cadrage canonique `Epic 6 -> Story 6.2`
+- [x] Arreter proprement l'execution des que le HALT workflow est confirme
+
+### Review
+
+- Workflow charge depuis `_bmad/bmm/workflows/4-implementation/dev-story/workflow.md`; communication et sortie documentaire maintenues en francais conformement a `_bmad/bmm/config.yaml`.
+- Contexte relu avant toute implementation:
+  - [tasks/lessons.md](C:/Users/Thibaut/Desktop/PriorisProject/tasks/lessons.md)
+  - [project-context.md](C:/Users/Thibaut/Desktop/PriorisProject/_bmad-output/project-context.md)
+  - [sprint-status.yaml](C:/Users/Thibaut/Desktop/PriorisProject/_bmad-output/implementation-artifacts/sprint-status.yaml)
+  - [epics.md](C:/Users/Thibaut/Desktop/PriorisProject/_bmad-output/planning-artifacts/epics.md)
+- Etat reel du tracker:
+  - `epic-6: in-progress`
+  - `6-1-rendre-une-instance-pilote-externe-identifiable-et-atteignable: in-progress`
+  - `6-2-remplacer-les-points-de-contact-placeholders-par-un-support-pilote-reel: backlog`
+- Verification executee sur `_bmad-output/implementation-artifacts`: aucun fichier `6-2-*.md` n'existe a ce stade. La seule story Epic 6 disponible est [6-1-rendre-une-instance-pilote-externe-identifiable-et-atteignable.md](C:/Users/Thibaut/Desktop/PriorisProject/_bmad-output/implementation-artifacts/6-1-rendre-une-instance-pilote-externe-identifiable-et-atteignable.md), actuellement `in-progress`.
+- Le cadrage canonique de [epics.md](C:/Users/Thibaut/Desktop/PriorisProject/_bmad-output/planning-artifacts/epics.md) confirme que `6.2` depend du pilote etabli par `6.1` et reste borne a un support minimal reel (`Aide`, `Feedback`, `Confidentialite`, `Conditions`, `version`).
+- HALT applique conformement au workflow:
+  - impossible d'executer `dev-story` sans story file accessible
+  - impossible d'implementer sans taches / sous-taches explicites dans un fichier de story
+  - aucune mise a jour de code, de story `6.2` ou de `sprint-status.yaml` n'a ete faite
+- Verification technique executee: lecture integrale des artefacts BMAD pertinents et controle de presence des fichiers; aucun test ni build n'a ete lance, car le workflow s'arrete avant la phase d'implementation.
+- Prochaine etape BMAD recommandee: lancer d'abord `create-story` pour `6.2` afin de produire `_bmad-output/implementation-artifacts/6-2-*.md`, puis relancer `dev-story 6.2`. Si vous voulez rester strict sur la sequence du lane, fermer ou au moins remettre en `review` la story `6.1` avant d'ouvrir `6.2`.
+
+## BMAD Slice: create_story_6_2
+
+### Plan
+
+- [x] Charger integralement le workflow `create-story`, la configuration BMAD, le protocole de decouverte, le template et le checklist
+- [x] Analyser exhaustivement les artefacts canoniques `Epic 6` (`epics.md`, `prd.md`, `architecture.md`, `ux-guidance-minimale.md`, `project-context.md`, `sprint-status.yaml`) et la story precedente `6.1`
+- [x] Cartographier les surfaces de code et documents deja existants pour les points de contact `Aide`, `Feedback`, `Confidentialite`, `Conditions` et la version
+- [x] Integrer une veille officielle minimale sur les contraintes actuelles utiles au support pilote web
+- [x] Rediger puis valider la story `_bmad-output/implementation-artifacts/6-2-remplacer-les-points-de-contact-placeholders-par-un-support-pilote-reel.md`
+- [x] Resynchroniser `sprint-status.yaml`, completer la revue dans `tasks/todo.md` et consigner toute nouvelle lecon si necessaire
+
+### Review
+
+- Workflow charge depuis `_bmad/bmm/workflows/4-implementation/create-story/workflow.md`; communication et sortie documentaire maintenues en francais conformement a `_bmad/bmm/config.yaml`.
+- Story creee: [6-2-remplacer-les-points-de-contact-placeholders-par-un-support-pilote-reel.md](C:/Users/Thibaut/Desktop/PriorisProject/_bmad-output/implementation-artifacts/6-2-remplacer-les-points-de-contact-placeholders-par-un-support-pilote-reel.md).
+- La story est volontairement bornee au support pilote minimal reel et reutilise les surfaces et garde-fous deja en place:
+  - `SettingsPage` comme hub produit unique
+  - `AppConfig` / lane `6.1` comme base de source de verite
+  - GitHub Pages existant uniquement comme extension optionnelle si `Confidentialite` / `Conditions` deviennent des contenus document-like
+- Veille officielle integree dans la story:
+  - `url_launcher` pour les contraintes `launchUrl`, `mailto:` et le fallback prefere a `canLaunchUrl`
+  - Flutter accessibilite pour les actions actives, la lisibilite lecteur d'ecran et les cibles `48x48`
+  - Flutter web FAQ pour la separation HTML du contenu statique/document-like, les navigateurs supportes et le risque de cache web
+- Validation documentaire executee avant finalisation:
+  - aucun placeholder `{{...}}` restant dans la story
+  - statut `ready-for-dev` present dans la story
+  - tracker BMAD resynchronise dans [sprint-status.yaml](C:/Users/Thibaut/Desktop/PriorisProject/_bmad-output/implementation-artifacts/sprint-status.yaml):
+    - `epic-6: in-progress`
+    - `6-1-rendre-une-instance-pilote-externe-identifiable-et-atteignable: in-progress`
+    - `6-2-remplacer-les-points-de-contact-placeholders-par-un-support-pilote-reel: ready-for-dev`
+- Verification technique executee pour ce slice:
+  - relecture integrale de la story creee
+  - verification du tracker `sprint-status.yaml`
+  - controle d'absence de placeholders de template
+  - aucun test Flutter ni build n'ont ete lances, car ce slice ne modifie que des artefacts BMAD et de tracking
+- `tasks/lessons.md` n'a pas ete mis a jour dans ce lot, car aucune correction utilisateur nouvelle n'a ete recue pendant l'execution.
+- Prochaine etape BMAD recommandee: lancer `dev-story 6.2`, puis `code-review` une fois les vraies destinations/canaux pilotes, les preuves desktop/telephone et la source de verite fermes.
+
+## BMAD Slice: dev_story_6_2
+
+### Plan
+
+- [x] Charger integralement le workflow `dev-story`, la config BMAD, `tasks/lessons.md`, `project-context.md`, la story `6.2` et le checklist de validation
+- [x] Resynchroniser le tracker BMAD sur l'etat reel de `6.2` (`in-progress`) et verrouiller le slice dans `tasks/todo.md`
+- [x] Auditer les surfaces cibles (`SettingsPage`, `AppConfig`, `l10n`, `pubspec`, `docs`, `web`) et figer une source unique de verite pour le support pilote minimal
+- [x] Ecrire les tests rouges sur la config support et le parcours `auth -> shell -> settings` desktop + telephone, y compris le fallback de lancement
+- [x] Implementer le support pilote minimal reel dans les frontieres `presentation -> config pilote` sans rouvrir auth/persistance/synchro
+- [x] Regenerer `l10n` si necessaire, lancer `analyze`, les suites cibles et `flutter build web` si le chemin web/support est touche
+- [x] Mettre a jour la story `6.2`, le `sprint-status.yaml` et cette revue uniquement avec les preuves effectivement obtenues
+
+### Review
+
+- Source de verite fermee autour de `AppConfig.pilotSupportInfo` + `PilotSupportLauncher`, avec cles `PRIORIS_PILOT_FEEDBACK_URL` et `PRIORIS_PILOT_SUPPORT_EMAIL`, fallback borne GitHub Issues et aucun acces direct `.env` depuis l'UI.
+- `SettingsPage` est maintenant un vrai hub de support pilote minimal: `Aide` explique le niveau de support promis, `Feedback` / `Signaler un bug` / `Demander une fonctionnalite` reutilisent le meme canal reel, `Confidentialite` / `Conditions` affichent un contenu court source-controle, `About` et les licences restent sur les primitives existantes.
+- Correctif de verification attrape et ferme pendant le lot: la locale FR `feedback` etait incoherente (`Retour`), et le test mobile d'integration devait ouvrir `SettingsPage` puis scroller explicitement la tile support pour rester representatif du viewport `390x844`.
+- Workflow/doc Pages alignees pour le lane `6.1`/`6.2`: `.github/workflows/deploy-pilot-pages.yml` injecte maintenant optionnellement `PRIORIS_PILOT_FEEDBACK_URL` / `PRIORIS_PILOT_SUPPORT_EMAIL`, et [PILOT_PAGES_DEPLOYMENT.md](C:/Users/Thibaut/Desktop/PriorisProject/docs/PILOT_PAGES_DEPLOYMENT.md) documente les fallbacks et la source de verite.
+- Validations executees sur l'etat final du slice:
+  - `flutter gen-l10n`
+  - `flutter analyze --no-pub lib/core/config/app_config.dart lib/core/config/pilot_support_info.dart lib/presentation/pages/settings_page.dart lib/presentation/widgets/pilot/pilot_support_launcher.dart test/core/config/app_config_test.dart test/presentation/pages/settings_page_test.dart test/presentation/pages/home_page_test.dart test/integration/auth_flow_integration_test.dart` -> vert
+  - `flutter test test/core/config/app_config_test.dart test/presentation/pages/settings_page_test.dart test/presentation/pages/home_page_test.dart test/integration/auth_flow_integration_test.dart` -> vert
+  - `flutter build web` -> vert
+- Prochaine etape BMAD recommandee: lancer `code-review` sur la story `6.2`, puis enchainer sur `6.3` pour documenter le gate de readiness et le closeout du pilote si la revue ne remonte pas de regression.
+
+### Notes de cadrage
+
+- Approche retenue pour le lot: unifier `Aide`, `Feedback`, `Signaler un bug` et `Demander une fonctionnalite` autour d'un canal externe minimal et reel pilote, tout en gardant `Confidentialite` et `Conditions` dans un contenu source-controle si leur longueur reste sobre.
+- Ne pas inventer d'adresse support implicite non tracee dans le repo; toute destination pilote doit venir d'une source unique de config ou d'un artefact public/source-controle explicite.
+- Ne pas ecraser le worktree sale: rester borne a la story `6.2` et aux fichiers directement relies au support pilote minimal.
+
+## BMAD Slice: code_review_fix_6_2
+
+### Plan
+
+- [x] Supprimer le fallback implicite GitHub du support pilote et exiger un canal explicite (`PRIORIS_PILOT_FEEDBACK_URL` ou `PRIORIS_PILOT_SUPPORT_EMAIL`) sur la build pilote externe
+- [x] Garder un comportement borne en local si aucun canal n'est configure, sans supposer une connaissance du repo ni casser `SettingsPage`
+- [x] Completer la preuve `auth -> shell -> settings -> help/legal` sur desktop et telephone
+- [x] Regenerer `l10n` si necessaire puis revalider `analyze`, tests cibles et `flutter build web`
+- [x] Resynchroniser la story `6.2`, le tracker sprint et cette revue avec l'etat final de la rerun
+
+### Review
+
+- `flutter gen-l10n` -> succes.
+- `flutter analyze --no-pub lib/core/config/app_config.dart lib/core/config/pilot_support_info.dart lib/presentation/pages/settings_page.dart lib/presentation/widgets/pilot/pilot_support_launcher.dart test/core/config/app_config_test.dart test/presentation/pages/settings_page_test.dart test/presentation/pages/home_page_test.dart test/integration/auth_flow_integration_test.dart` -> `No issues found!`
+- `flutter test test/core/config/app_config_test.dart test/presentation/pages/settings_page_test.dart test/presentation/pages/home_page_test.dart test/integration/auth_flow_integration_test.dart` -> `69` tests OK.
+- `flutter build web` -> succes (`Built build/web`).
+- Story `6.2` repassee en `done`; les deux findings `HIGH` de la review sont resolus et le tracker sprint est resynchronise.
+
+## BMAD Slice: code_review_6_1
+
+### Plan
+
+- [x] Charger integralement le workflow `code-review`, la config BMAD, `tasks/lessons.md`, `project-context.md` et la story `6.1`
+- [x] Cartographier les fichiers declares par `6.1` et les comparer au diff Git reel borne au lane
+- [x] Relire chaque fichier source/test du lane `6.1` et verifier les ACs, taches cochees et preuves annoncees
+- [x] Executer les validations ciblees utiles a la revue (`analyze` / tests / build` si necessaire) et noter les ecarts reels
+- [x] Consigner le verdict et les findings dans cette revue puis resynchroniser la story si le workflow l'exige
+
+### Review
+
+- Workflow `code-review` charge integralement avec `config.yaml`, `project-context.md`, story `6.1`, `docs/PILOT_PAGES_DEPLOYMENT.md`, `sprint-status.yaml` et les references Flutter web officielles.
+- Recoupement `git` vs story effectue sur le lane `6.1`:
+  - le worktree global est tres bruite, donc la comparaison a ete bornee aux fichiers declares / lies a `6.1`
+  - ecart documentaire confirme: le diff local inclut `lib/presentation/pages/auth/auth_wrapper.dart`, `lib/presentation/pages/auth/login_page.dart`, `web/index.html` et `web/manifest.json`, absents de la `File List` finale initiale de la story
+- Relecture des ACs et preuves:
+  - AC2 et AC3 restent globalement coherents avec le code et les validations ciblees
+  - AC1 reste seulement partiellement prouvee: la preuve publique archivee montre bien l'entree pilote identifiable sur desktop et telephone, mais ni la story ni `docs/PILOT_PAGES_DEPLOYMENT.md` ne ferment une session hebergee complete pour un utilisateur invite sur la cible publique
+  - verification live supplementaire `2026-04-17`: tentative de connexion sur `https://n3z3d.github.io/PriorisProject/` avec les credentials de test trouves dans le depot -> `AuthApiException(message: Invalid login credentials, statusCode: 400, code: invalid_credentials)`
+- Verifications executees:
+  - `flutter analyze --no-pub lib/presentation/app/prioris_app.dart lib/presentation/pages/auth/auth_wrapper.dart lib/presentation/pages/auth/login_page.dart lib/presentation/pages/auth/components/login_header.dart lib/presentation/pages/home_page.dart lib/presentation/pages/settings_page.dart lib/core/config/app_config.dart test/core/config/app_config_test.dart test/presentation/pages/home_page_test.dart test/presentation/pages/settings_page_test.dart test/integration/auth_flow_integration_test.dart` -> `No issues found!`
+  - `flutter test test/core/config/app_config_test.dart test/presentation/pages/home_page_test.dart test/presentation/pages/settings_page_test.dart test/integration/auth_flow_integration_test.dart` -> `69` tests OK
+  - `flutter build web` -> succes (`Built build/web`)
+  - relecture des captures `pilot_pages_live_desktop.png` et `pilot_pages_live_mobile.png` -> identite pilote visible a l'entree publique
+  - verification live Playwright supplementaire sur la cible publique -> echec d'authentification `invalid_credentials`
+- Decision de revue:
+  - `6.1` repassee de `review` a `in-progress`
+  - `_bmad-output/implementation-artifacts/6-1-rendre-une-instance-pilote-externe-identifiable-et-atteignable.md` mise a jour avec `Senior Developer Review (AI)`, `Change Log`, closeout resynchronise et `File List` corrigee
+  - `_bmad-output/implementation-artifacts/sprint-status.yaml` resynchronise sur `6-1 -> in-progress`
+
+## BMAD Slice: dev_story_6_1_closeout
+
+### Plan
+
+- [x] Recharger integralement le workflow `dev-story`, la config BMAD, `tasks/lessons.md`, `project-context.md`, la story `6.1` et le checklist de validation
+- [x] Auditer l'etat reel de la cible pilote publique et verifier si `6.1` reste bloquee ou si elle peut etre close honnetement
+- [x] Mettre a jour la documentation de deploiement pilote avec la cible publique active, la source de verite unique et les limites restantes
+- [x] Resynchroniser la story `6.1` (tasks, closeout, changelog, file list, status) et `sprint-status.yaml` sur la preuve externe effective
+- [x] Executer les validations finales pertinentes et consigner la revue avec date, URL, preuve desktop et preuve telephone
+- [x] Corriger le garde-fou global hors scope `6.1` sur `lists_overview_banner_test` sans toucher au runtime produit
+- [x] Rejouer le test cible puis la baseline globale avant de redecider le statut `6.1`
+
+### Review
+
+- Verification live directe executee sur `https://n3z3d.github.io/PriorisProject/` le `2026-04-16`:
+  - desktop `1280x900`: titre navigateur `Prioris Pilot Invite`, badge `Pilote externe` et notice pilote visibles
+  - telephone `390x844`: meme badge `Pilote externe` et meme notice visibles sur la meme URL publique
+- La doc [PILOT_PAGES_DEPLOYMENT.md](C:/Users/Thibaut/Desktop/PriorisProject/docs/PILOT_PAGES_DEPLOYMENT.md) a ete re-synchronisee sur l'etat reel: URL publique active, source de verite unique (`DEFAULT_PAGES_URL -> PRIORIS_INSTANCE_ENTRY_URL -> AppConfig`) et limites restantes.
+- Validations repo-owned ciblees executees:
+  - `flutter analyze --no-pub ...` cible `6.1` -> vert
+  - `flutter test test/core/config/app_config_test.dart test/presentation/pages/home_page_test.dart test/presentation/pages/settings_page_test.dart test/integration/auth_flow_integration_test.dart` -> `69` tests OK
+  - `flutter build web` -> succes
+- Le garde-fou global hors scope `6.1` etait bien un harnais de test incoherent:
+  - red reproduit sur `test/presentation/pages/lists/widgets/lists_overview_banner_test.dart`
+  - cause: `ListsOverviewBanner` etait pompe sans `AppLocalizations`, alors que le widget depend explicitement de ce runtime
+  - correction minimale: test realigne sur un `MaterialApp` localise et assertions basees sur `listsOverviewTitle` / `listsOverviewSubtitle`
+- Validations apres correctif:
+  - `flutter test test/presentation/pages/lists/widgets/lists_overview_banner_test.dart` -> vert
+  - `flutter test --machine` -> vert (`success: true`, fichier de capture `machine_test_story_6_1_closeout_rerun.json`)
+- Decision finale: `6.1` peut maintenant etre fermee honnetement cote workflow `dev-story`; la story et `sprint-status.yaml` sont passes en `review`.
+
+## BMAD Slice: dev_story_6_1_public_instance_gap
+
+### Plan
+
+- [x] Re-verifier la cible publique `6.1` et extraire sa configuration runtime effectivement servie
+- [x] Ajouter un garde repo-owned qui refuse une build GitHub Pages pilote si `PRIORIS_PILOT_SUPABASE_URL` pointe vers un host placeholder ou mort
+- [x] Couvrir ce garde par des tests deterministes puis revalider les fichiers modifies
+- [x] Resynchroniser la documentation et la story `6.1` sur la cause racine et le blocage restant reel
+
+### Review
+
+- Verification publique `2026-04-17`:
+  - `https://n3z3d.github.io/PriorisProject/` repond bien avec le bootstrap Flutter attendu et des metadata pilote
+  - `assets/.env` public sert `SUPABASE_URL=https://vgowxrktjzgwrfivtvse.supabase.co`, `PRIORIS_INSTANCE_NAME=Prioris Pilot Invite` et `SUPABASE_AUTH_REDIRECT_URL=https://n3z3d.github.io/PriorisProject/`
+  - `auth/v1/settings` repond correctement sur `https://vgowxrktjzgwrfivtvse.supabase.co`
+  - le login avec les credentials stockes dans `test/manual/test_credentials.txt` retourne encore `invalid_credentials`
+  - conclusion: l'URL publique est maintenant correctement branchee, mais `AC1` n'est toujours pas prouvee cote repo-owned faute d'un compte invite valide
+- Correctif repo-owned borne ajoute:
+  - nouveau garde centralise [pilot_deployment_guard.dart](C:/Users/Thibaut/Desktop/PriorisProject/lib/core/config/pilot_deployment_guard.dart)
+  - `AppConfig.validateSupabaseUrl` reutilise maintenant cette source unique
+  - nouveau script [validate_pilot_pages_config.dart](C:/Users/Thibaut/Desktop/PriorisProject/tool/validate_pilot_pages_config.dart) branche dans [deploy-pilot-pages.yml](C:/Users/Thibaut/Desktop/PriorisProject/.github/workflows/deploy-pilot-pages.yml) avant `flutter build web`
+- Validations executees:
+  - `flutter test test/core/config/pilot_deployment_guard_test.dart` -> vert
+  - `dart run tool/validate_pilot_pages_config.dart` avec `PILOT_SUPABASE_URL=https://huxddyqkjczckagkpzef.supabase.co` -> echec attendu
+  - `dart run tool/validate_pilot_pages_config.dart` avec `PILOT_SUPABASE_URL=https://vgowxrktjzgwrfivtvse.supabase.co` -> succes
+  - `flutter analyze --no-pub lib/core/config/app_config.dart lib/core/config/pilot_deployment_guard.dart tool/validate_pilot_pages_config.dart test/core/config/pilot_deployment_guard_test.dart` -> vert
+  - `flutter test test/core/config/app_config_test.dart test/core/config/pilot_deployment_guard_test.dart` -> vert
+  - `flutter test --machine` -> vert
+- Artefacts BMAD resynchronises:
+  - [PILOT_PAGES_DEPLOYMENT.md](C:/Users/Thibaut/Desktop/PriorisProject/docs/PILOT_PAGES_DEPLOYMENT.md) indique maintenant explicitement que la build publique active sert bien un host Supabase reel, mais qu'il manque encore une preuve repo-owned de login invite
+  - [6-1-rendre-une-instance-pilote-externe-identifiable-et-atteignable.md](C:/Users/Thibaut/Desktop/PriorisProject/_bmad-output/implementation-artifacts/6-1-rendre-une-instance-pilote-externe-identifiable-et-atteignable.md) reste `in-progress` avec le branchement public revalide et un gap restant borne aux credentials de preuve
+- Blocage restant reel pour fermer `6.1`:
+  - fournir ou regenerer un vrai compte invite utilisable pour la cible publique
+  - revalider un login reussi sur la build Pages publique
+  - seulement ensuite cloturer `6.1`

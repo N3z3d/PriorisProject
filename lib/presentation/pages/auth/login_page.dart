@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:prioris/core/exceptions/app_exception.dart';
 import 'package:prioris/data/providers/auth_providers.dart';
 import 'package:prioris/infrastructure/security/signup_guard.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'components/login_actions.dart';
 import 'components/login_error_display.dart';
 import 'components/login_form_fields.dart';
@@ -13,7 +17,12 @@ import 'components/login_header.dart';
 /// SRP: orchestrer les interactions d'authentification.
 /// Architecture: MVVM (state avec Riverpod).
 class LoginPage extends ConsumerStatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({
+    super.key,
+    this.initialErrorMessage,
+  });
+
+  final String? initialErrorMessage;
 
   @override
   ConsumerState<LoginPage> createState() => _LoginPageState();
@@ -27,8 +36,33 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   bool _isLoading = false;
   bool _isSignUp = false;
+  bool _showsInformationalMessage = false;
   String? _errorMessage;
   DateTime? _signUpStartedAt;
+
+  @override
+  void initState() {
+    super.initState();
+    _errorMessage = widget.initialErrorMessage;
+  }
+
+  @override
+  void didUpdateWidget(covariant LoginPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    final shouldSyncExternalError =
+        widget.initialErrorMessage != oldWidget.initialErrorMessage &&
+            !_isLoading &&
+            (_errorMessage == null ||
+                _errorMessage == oldWidget.initialErrorMessage);
+
+    if (shouldSyncExternalError) {
+      setState(() {
+        _errorMessage = widget.initialErrorMessage;
+        _showsInformationalMessage = false;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -44,6 +78,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
+      _showsInformationalMessage = false;
     });
 
     try {
@@ -54,11 +89,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           startedAt: _signUpStartedAt,
           honeypotFilled: _honeypotController.text.trim().isNotEmpty,
         );
-        await authController.signUp(
+        final response = await authController.signUp(
           email: _emailController.text.trim(),
           password: _passwordController.text,
           metadata: metadata,
         );
+
+        if (_requiresEmailConfirmation(response)) {
+          _showPendingConfirmationFeedback(
+            email: response.user?.email ?? _emailController.text.trim(),
+          );
+        }
       } else {
         await authController.signIn(
           email: _emailController.text.trim(),
@@ -70,10 +111,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     } on SignupThrottledException catch (error) {
       setState(() {
         _errorMessage = error.message;
+        _showsInformationalMessage = false;
       });
     } catch (error) {
       setState(() {
-        _errorMessage = 'Erreur: $error';
+        _errorMessage = error is AppException
+            ? _resolveErrorMessage(error)
+            : 'Erreur: $error';
+        _showsInformationalMessage = false;
       });
       // TODO: relier a un logger centralise.
     } finally {
@@ -83,6 +128,46 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         });
       }
     }
+  }
+
+  bool _requiresEmailConfirmation(AuthResponse response) {
+    return response.session == null;
+  }
+
+  void _showPendingConfirmationFeedback({required String email}) {
+    final l10n = AppLocalizations.of(context);
+    final title =
+        l10n?.authPendingConfirmationTitle ?? 'Confirmation requise';
+    final message = l10n?.authPendingConfirmationMessage(email) ??
+        'Confirmez votre adresse email pour terminer l\'inscription.';
+
+    _passwordController.clear();
+    _honeypotController.clear();
+
+    setState(() {
+      _isSignUp = false;
+      _signUpStartedAt = null;
+      _showsInformationalMessage = true;
+      _errorMessage = '$title\n$message';
+    });
+  }
+
+  String _resolveErrorMessage(AppException error) {
+    final l10n = AppLocalizations.of(context);
+    final messageKey = error.metadata?['messageKey'];
+
+    switch (messageKey) {
+      case 'authOfflineSignInError':
+        return l10n?.authOfflineSignInError ?? error.displayMessage;
+      case 'authOfflineSignUpError':
+        return l10n?.authOfflineSignUpError ?? error.displayMessage;
+      default:
+        return error.displayMessage;
+    }
+  }
+
+  Color _messageColor() {
+    return _showsInformationalMessage ? AppTheme.primaryColor : Colors.red;
   }
 
   @override
@@ -111,7 +196,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       onSubmit: _handleAuth,
                     ),
                     const SizedBox(height: 24),
-                    LoginErrorDisplay(errorMessage: _errorMessage),
+                    LoginErrorDisplay(
+                      errorMessage: _errorMessage,
+                      errorColor: _messageColor(),
+                    ),
                     LoginActions(
                       isLoading: _isLoading,
                       isSignUp: _isSignUp,
@@ -132,6 +220,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     setState(() {
       _isSignUp = !_isSignUp;
       _errorMessage = null;
+      _showsInformationalMessage = false;
       _honeypotController.clear();
       _signUpStartedAt = _isSignUp ? DateTime.now() : null;
     });
