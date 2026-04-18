@@ -24,10 +24,13 @@ jobs:
       FLUTTER_VERSION: '3.32.8'
       BASE_HREF: /PriorisProject/
       DEFAULT_PAGES_URL: https://${{ github.repository_owner }}.github.io/PriorisProject/
+      DEFAULT_PILOT_SUPPORT_EMAIL: support@prioris-app.com
       PILOT_SUPABASE_URL: ${{ vars.PRIORIS_PILOT_SUPABASE_URL }}
       PILOT_SUPABASE_ANON_KEY: ${{ vars.PRIORIS_PILOT_SUPABASE_ANON_KEY }}
       PILOT_INSTANCE_NAME: ${{ vars.PRIORIS_PILOT_INSTANCE_NAME }}
       PILOT_SUPABASE_AUTH_REDIRECT_URL: ${{ vars.PRIORIS_PILOT_SUPABASE_AUTH_REDIRECT_URL }}
+      PILOT_FEEDBACK_URL: ${{ vars.PRIORIS_PILOT_FEEDBACK_URL }}
+      PILOT_SUPPORT_EMAIL: ${{ vars.PRIORIS_PILOT_SUPPORT_EMAIL }}
 
     steps:
       - name: Checkout code
@@ -55,11 +58,17 @@ jobs:
             exit 1
           fi
 
+          if [[ -z "${PILOT_FEEDBACK_URL}" && -z "${PILOT_SUPPORT_EMAIL}" && -z "${DEFAULT_PILOT_SUPPORT_EMAIL}" ]]; then
+            echo "::error::Configure PRIORIS_PILOT_FEEDBACK_URL or PRIORIS_PILOT_SUPPORT_EMAIL, or restore DEFAULT_PILOT_SUPPORT_EMAIL in the workflow"
+            exit 1
+          fi
+
       - name: Generate pilot build environment
         shell: bash
         run: |
           INSTANCE_NAME="${PILOT_INSTANCE_NAME:-Prioris Pilot}"
           REDIRECT_URL="${PILOT_SUPABASE_AUTH_REDIRECT_URL:-${DEFAULT_PAGES_URL}}"
+          SUPPORT_EMAIL="${PILOT_SUPPORT_EMAIL:-${DEFAULT_PILOT_SUPPORT_EMAIL}}"
 
           cat > .env <<EOF
           SUPABASE_URL=${PILOT_SUPABASE_URL}
@@ -71,8 +80,19 @@ jobs:
           PRIORIS_INSTANCE_ENTRY_URL=${DEFAULT_PAGES_URL}
           EOF
 
+          if [[ -n "${PILOT_FEEDBACK_URL}" ]]; then
+            echo "PRIORIS_PILOT_FEEDBACK_URL=${PILOT_FEEDBACK_URL}" >> .env
+          fi
+
+          if [[ -n "${SUPPORT_EMAIL}" ]]; then
+            echo "PRIORIS_PILOT_SUPPORT_EMAIL=${SUPPORT_EMAIL}" >> .env
+          fi
+
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Validate live pilot runtime target
+        run: dart run tool/validate_pilot_pages_config.dart
 
       - name: Build release web for pilot pages
         run: flutter build web --release --base-href=${{ env.BASE_HREF }} --dart-define=PRIORIS_APP_VERSION=pilot-pages-${{ github.run_number }}
