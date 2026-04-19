@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart' show visibleForTesting;
@@ -27,6 +28,8 @@ class WebAuthCallbackBrowserAdapter {
 }
 
 class WebAuthCallbackStabilizer {
+  static const Duration _defaultSessionWaitTimeout = Duration(seconds: 5);
+
   static const Set<String> _authSignalKeys = <String>{
     'code',
     'access_token',
@@ -74,6 +77,46 @@ class WebAuthCallbackStabilizer {
     final sanitizedUri = stripAuthCallbackPayload(currentUri);
     browserAdapter.replaceUrl(sanitizedUri.toString());
     return true;
+  }
+
+  static Future<bool> stabilizeFromCurrentOrIncomingSessionIfNeeded({
+    required String supabaseUrl,
+    required Session? initialSession,
+    required Stream<AuthState> authStateChanges,
+    WebAuthCallbackBrowserAdapter browserAdapter =
+        const WebAuthCallbackBrowserAdapter(),
+    Duration waitTimeout = _defaultSessionWaitTimeout,
+  }) async {
+    final stabilizedImmediately = await stabilizeIfNeeded(
+      supabaseUrl: supabaseUrl,
+      session: initialSession,
+      browserAdapter: browserAdapter,
+    );
+    if (stabilizedImmediately) {
+      return true;
+    }
+
+    final currentUri = browserAdapter.currentUri;
+    if (currentUri == null || !isAuthCallbackUri(currentUri)) {
+      return false;
+    }
+
+    try {
+      final callbackSession = await authStateChanges
+          .map((authState) => authState.session)
+          .firstWhere(isSessionUsable)
+          .timeout(waitTimeout);
+
+      return stabilizeIfNeeded(
+        supabaseUrl: supabaseUrl,
+        session: callbackSession,
+        browserAdapter: browserAdapter,
+      );
+    } on TimeoutException {
+      return false;
+    } on StateError {
+      return false;
+    }
   }
 
   @visibleForTesting
