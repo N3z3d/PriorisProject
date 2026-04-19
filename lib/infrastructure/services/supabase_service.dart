@@ -1,16 +1,17 @@
 import 'package:prioris/core/config/app_config.dart';
 import 'package:prioris/infrastructure/services/logger_service.dart';
+import 'package:prioris/infrastructure/services/web_auth_callback_stabilizer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Service d'initialisation et d'acces Supabase.
 class SupabaseService {
+  SupabaseService._();
+
   static SupabaseService? _instance;
   static SupabaseService get instance => _instance ??= SupabaseService._();
   static set instance(SupabaseService service) {
     _instance = service;
   }
-
-  SupabaseService._();
 
   /// Initialise Supabase a partir de la configuration applicative.
   static Future<void> initialize() async {
@@ -23,9 +24,23 @@ class SupabaseService {
         debug: config.isDebugMode,
       );
 
-      LoggerService.instance.info('Supabase initialise', context: 'SupabaseService');
+      final callbackSessionStabilized =
+          await WebAuthCallbackStabilizer.stabilizeIfNeeded(
+        supabaseUrl: config.supabaseUrl,
+        session: Supabase.instance.client.auth.currentSession,
+      );
+
+      LoggerService.instance
+          .info('Supabase initialise', context: 'SupabaseService');
+      if (callbackSessionStabilized) {
+        LoggerService.instance.info(
+          'Session de callback web stabilisee avant le bootstrap UI',
+          context: 'SupabaseService',
+        );
+      }
       if (config.isDebugMode) {
-        LoggerService.instance.debug('Mode debug actif', context: 'SupabaseService');
+        LoggerService.instance
+            .debug('Mode debug actif', context: 'SupabaseService');
         config.printConfigurationInfo();
       }
     } catch (error, stack) {
