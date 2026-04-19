@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,6 +17,7 @@ import 'package:prioris/data/repositories/task_repository.dart';
 import 'package:prioris/domain/models/core/entities/task.dart';
 import 'package:prioris/infrastructure/security/signup_guard.dart';
 import 'package:prioris/infrastructure/services/auth_service.dart';
+import 'package:prioris/infrastructure/services/web_auth_callback_stabilizer.dart';
 import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/pages/auth/auth_wrapper.dart';
 import 'package:prioris/presentation/pages/auth/login_page.dart';
@@ -384,6 +386,121 @@ void main() {
       final persistedUser = _buildUser('persisted@example.com');
       final authService = TestAuthService(
         initialUser: persistedUser,
+        initialAuthStateDelay: const Duration(seconds: 1),
+      );
+      addTearDown(authService.dispose);
+
+      await pumpAuthFlowApp(
+        tester,
+        authService: authService,
+        useAuthWrapper: true,
+      );
+
+      expect(find.byType(HomePage), findsOneWidget);
+      expect(find.byType(LoginPage), findsNothing);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+
+      await tester.pump(const Duration(seconds: 1));
+    });
+
+    testWidgets(
+        'AuthWrapper restores a persisted session even when currentUser is not hydrated yet',
+        (WidgetTester tester) async {
+      final persistedUser = _buildUser('persisted-session@example.com');
+      final persistedSession = Session(
+        accessToken: 'token-${persistedUser.id}',
+        tokenType: 'bearer',
+        expiresIn: 3600,
+        refreshToken: 'refresh-${persistedUser.id}',
+        user: persistedUser,
+      );
+      final authService = TestAuthService(
+        initialSession: persistedSession,
+        initialAuthStateDelay: const Duration(seconds: 1),
+      );
+      addTearDown(authService.dispose);
+
+      await pumpAuthFlowApp(
+        tester,
+        authService: authService,
+        useAuthWrapper: true,
+      );
+
+      expect(find.byType(HomePage), findsOneWidget);
+      expect(find.byType(LoginPage), findsNothing);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+
+      await tester.pump(const Duration(seconds: 1));
+    });
+
+    testWidgets(
+        'AuthWrapper restores a callback-created session even when token expiry is not derivable yet',
+        (WidgetTester tester) async {
+      final callbackUser = _buildUser('callback-session@example.com');
+      final callbackSession = Session(
+        accessToken: 'opaque-callback-token',
+        tokenType: 'bearer',
+        expiresIn: 3600,
+        refreshToken: 'refresh-callback-token',
+        user: callbackUser,
+      );
+      final authService = TestAuthService(
+        initialSession: callbackSession,
+        initialAuthStateDelay: const Duration(seconds: 1),
+      );
+      addTearDown(authService.dispose);
+
+      await pumpAuthFlowApp(
+        tester,
+        authService: authService,
+        useAuthWrapper: true,
+      );
+
+      expect(find.byType(HomePage), findsOneWidget);
+      expect(find.byType(LoginPage), findsNothing);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+
+      await tester.pump(const Duration(seconds: 1));
+    });
+
+    testWidgets(
+        'callback session stabilization survives a reload-like bootstrap',
+        (WidgetTester tester) async {
+      final callbackUser = _buildUser('callback-reload@example.com');
+      final callbackSession = Session(
+        accessToken: 'opaque-callback-token',
+        tokenType: 'bearer',
+        expiresIn: 3600,
+        refreshToken: 'refresh-callback-token',
+        user: callbackUser,
+      );
+      final browserAdapter = RecordingWebAuthCallbackBrowserAdapter(
+        currentUri: Uri.parse(
+          'https://tests.prioris.app/auth/callback?code=one-shot-code&type=signup&next=lists',
+        ),
+      );
+
+      final stabilized = await WebAuthCallbackStabilizer.stabilizeIfNeeded(
+        supabaseUrl: AppConfig.instance.supabaseUrl,
+        session: callbackSession,
+        browserAdapter: browserAdapter,
+      );
+
+      expect(stabilized, isTrue);
+      expect(browserAdapter.persistedSessions, hasLength(1));
+      expect(
+        browserAdapter.replacedUrls.single,
+        'https://tests.prioris.app/auth/callback?next=lists',
+      );
+
+      final persistedSession = Session.fromJson(
+        jsonDecode(browserAdapter.persistedSessions.single.serializedSession)
+            as Map<String, dynamic>,
+      );
+      expect(persistedSession, isNotNull);
+
+      final authService = TestAuthService(
+        initialSession: persistedSession,
         initialAuthStateDelay: const Duration(seconds: 1),
       );
       addTearDown(authService.dispose);
@@ -984,10 +1101,14 @@ class TestAuthService implements AuthService {
   User? get currentUser => _currentUser;
 
   @override
+  User? get bootstrapUser => _currentSession?.user ?? _currentUser;
+
+  @override
   String? get currentToken => _currentSession?.accessToken;
 
   @override
-  bool get hasValidSession => forcedHasValidSession ?? _currentSession != null;
+  bool get hasValidSession =>
+      forcedHasValidSession ?? AuthService.isSessionUsable(_currentSession);
 
   @override
   bool get isSignedIn => _currentUser != null;
@@ -1129,6 +1250,46 @@ class TestAuthService implements AuthService {
       user: user,
     );
   }
+}
+
+class RecordingWebAuthCallbackBrowserAdapter
+    extends WebAuthCallbackBrowserAdapter {
+  RecordingWebAuthCallbackBrowserAdapter({required this.currentUri});
+
+  @override
+  final Uri? currentUri;
+
+  final List<PersistedBrowserSessionRecord> persistedSessions =
+      <PersistedBrowserSessionRecord>[];
+  final List<String> replacedUrls = <String>[];
+
+  @override
+  Future<void> persistSession({
+    required String storageKey,
+    required String serializedSession,
+  }) async {
+    persistedSessions.add(
+      PersistedBrowserSessionRecord(
+        storageKey: storageKey,
+        serializedSession: serializedSession,
+      ),
+    );
+  }
+
+  @override
+  void replaceUrl(String url) {
+    replacedUrls.add(url);
+  }
+}
+
+class PersistedBrowserSessionRecord {
+  const PersistedBrowserSessionRecord({
+    required this.storageKey,
+    required this.serializedSession,
+  });
+
+  final String storageKey;
+  final String serializedSession;
 }
 
 void _setBaseAppConfig() {
