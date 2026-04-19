@@ -25,9 +25,11 @@ class SupabaseService {
       );
 
       final callbackSessionStabilized =
-          await WebAuthCallbackStabilizer.stabilizeIfNeeded(
+          await WebAuthCallbackStabilizer
+              .stabilizeFromCurrentOrIncomingSessionIfNeeded(
         supabaseUrl: config.supabaseUrl,
-        session: Supabase.instance.client.auth.currentSession,
+        initialSession: Supabase.instance.client.auth.currentSession,
+        authStateChanges: Supabase.instance.client.auth.onAuthStateChange,
       );
 
       LoggerService.instance
