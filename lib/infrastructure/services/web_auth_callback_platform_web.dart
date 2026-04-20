@@ -6,6 +6,10 @@ Uri? readCurrentBrowserUri() {
   return Uri.tryParse(html.window.location.href);
 }
 
+String? readBrowserStorageItem(String key) {
+  return html.window.localStorage[key];
+}
+
 Future<void> persistBrowserSession({
   required String storageKey,
   required String serializedSession,

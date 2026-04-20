@@ -22,6 +22,9 @@ class SupabaseService {
         url: config.supabaseUrl,
         anonKey: config.supabaseAnonKey,
         debug: config.isDebugMode,
+        authOptions: const FlutterAuthClientOptions(
+          detectSessionInUri: false,
+        ),
       );
 
       final callbackSessionStabilized =
@@ -29,7 +32,10 @@ class SupabaseService {
               .stabilizeFromCurrentOrIncomingSessionIfNeeded(
         supabaseUrl: config.supabaseUrl,
         initialSession: Supabase.instance.client.auth.currentSession,
+        currentSessionReader: () => Supabase.instance.client.auth.currentSession,
         authStateChanges: Supabase.instance.client.auth.onAuthStateChange,
+        exchangeSessionFromUrl:
+            (uri) => Supabase.instance.client.auth.getSessionFromUrl(uri),
       );
 
       LoggerService.instance

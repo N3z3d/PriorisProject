@@ -38,6 +38,20 @@ void main() {
       );
     });
 
+    test('stripAuthCallbackPayload removes an auth-only query payload', () {
+      final callbackUri = Uri.parse(
+        'https://tests.prioris.app/auth/callback?code=pkce-code&type=signup',
+      );
+
+      final sanitizedUri =
+          WebAuthCallbackStabilizer.stripAuthCallbackPayload(callbackUri);
+
+      expect(
+        sanitizedUri.toString(),
+        'https://tests.prioris.app/auth/callback',
+      );
+    });
+
     test('stripAuthCallbackPayload removes auth tokens from fragment payload', () {
       final callbackUri = Uri.parse(
         'https://tests.prioris.app/auth/callback#access_token=token&refresh_token=refresh&tab=settings',
@@ -49,6 +63,20 @@ void main() {
       expect(
         sanitizedUri.toString(),
         'https://tests.prioris.app/auth/callback#tab=settings',
+      );
+    });
+
+    test('stripAuthCallbackPayload removes an auth-only fragment payload', () {
+      final callbackUri = Uri.parse(
+        'https://tests.prioris.app/auth/callback#access_token=token&refresh_token=refresh',
+      );
+
+      final sanitizedUri =
+          WebAuthCallbackStabilizer.stripAuthCallbackPayload(callbackUri);
+
+      expect(
+        sanitizedUri.toString(),
+        'https://tests.prioris.app/auth/callback',
       );
     });
 
@@ -121,35 +149,43 @@ void main() {
     });
 
     test(
-        'stabilizeFromCurrentOrIncomingSessionIfNeeded waits for a later auth session and then sanitizes the callback URL',
+        'stabilizeFromCurrentOrIncomingSessionIfNeeded exchanges a fresh PKCE callback and then sanitizes the URL',
         () async {
       final browserAdapter = _RecordingBrowserAdapter(
         currentUri: Uri.parse(
           'https://tests.prioris.app/auth/callback?code=pkce-code&type=signup&next=lists',
         ),
+        storageItems: <String, String>{
+          WebAuthCallbackStabilizer.pkceCodeVerifierStorageKey:
+              '"raw-code-verifier"',
+        },
       );
       final authStateController = StreamController<AuthState>();
       addTearDown(authStateController.close);
+      Session? currentSession;
+      Uri? exchangedUri;
 
       final future = WebAuthCallbackStabilizer
           .stabilizeFromCurrentOrIncomingSessionIfNeeded(
         supabaseUrl: 'https://tests-prioris.supabase.co',
         initialSession: null,
+        currentSessionReader: () => currentSession,
         authStateChanges: authStateController.stream,
+        exchangeSessionFromUrl: (uri) async {
+          exchangedUri = uri;
+          currentSession = _buildCallbackSession('delayed-callback@example.com');
+          authStateController.add(
+            AuthState(AuthChangeEvent.signedIn, currentSession),
+          );
+        },
         browserAdapter: browserAdapter,
         waitTimeout: const Duration(milliseconds: 100),
-      );
-
-      authStateController.add(
-        AuthState(
-          AuthChangeEvent.signedIn,
-          _buildCallbackSession('delayed-callback@example.com'),
-        ),
       );
 
       final stabilized = await future;
 
       expect(stabilized, isTrue);
+      expect(exchangedUri, browserAdapter.currentUri);
       expect(browserAdapter.persistedSessions, hasLength(1));
       expect(
         browserAdapter.replacedUrls.single,
@@ -158,39 +194,91 @@ void main() {
     });
 
     test(
-        'stabilizeFromCurrentOrIncomingSessionIfNeeded times out when no usable auth session arrives',
+        'stabilizeFromCurrentOrIncomingSessionIfNeeded sanitizes a stale callback by reusing the restored session when no PKCE verifier remains',
         () async {
       final browserAdapter = _RecordingBrowserAdapter(
         currentUri: Uri.parse(
-          'https://tests.prioris.app/auth/callback?code=pkce-code',
+          'https://tests.prioris.app/auth/callback?code=pkce-code&type=signup&next=lists',
         ),
       );
+      final restoredSession = _buildCallbackSession('restored@example.com');
+      var exchanged = false;
+
+      final stabilized = await WebAuthCallbackStabilizer
+          .stabilizeFromCurrentOrIncomingSessionIfNeeded(
+        supabaseUrl: 'https://tests-prioris.supabase.co',
+        initialSession: restoredSession,
+        currentSessionReader: () => restoredSession,
+        authStateChanges: const Stream<AuthState>.empty(),
+        exchangeSessionFromUrl: (_) async {
+          exchanged = true;
+        },
+        browserAdapter: browserAdapter,
+        waitTimeout: const Duration(milliseconds: 10),
+      );
+
+      expect(stabilized, isTrue);
+      expect(exchanged, isFalse);
+      expect(browserAdapter.persistedSessions, hasLength(1));
+      expect(
+        browserAdapter.replacedUrls.single,
+        'https://tests.prioris.app/auth/callback?next=lists',
+      );
+    });
+
+    test(
+        'stabilizeFromCurrentOrIncomingSessionIfNeeded sanitizes a stale callback without session when no PKCE verifier remains',
+        () async {
+      final browserAdapter = _RecordingBrowserAdapter(
+        currentUri: Uri.parse(
+          'https://tests.prioris.app/auth/callback?code=pkce-code&type=signup',
+        ),
+      );
+      var exchanged = false;
 
       final stabilized = await WebAuthCallbackStabilizer
           .stabilizeFromCurrentOrIncomingSessionIfNeeded(
         supabaseUrl: 'https://tests-prioris.supabase.co',
         initialSession: null,
+        currentSessionReader: () => null,
         authStateChanges: const Stream<AuthState>.empty(),
+        exchangeSessionFromUrl: (_) async {
+          exchanged = true;
+        },
         browserAdapter: browserAdapter,
         waitTimeout: const Duration(milliseconds: 10),
       );
 
       expect(stabilized, isFalse);
+      expect(exchanged, isFalse);
       expect(browserAdapter.persistedSessions, isEmpty);
-      expect(browserAdapter.replacedUrls, isEmpty);
+      expect(
+        browserAdapter.replacedUrls.single,
+        'https://tests.prioris.app/auth/callback',
+      );
     });
   });
 }
 
 class _RecordingBrowserAdapter extends WebAuthCallbackBrowserAdapter {
-  _RecordingBrowserAdapter({required this.currentUri});
+  _RecordingBrowserAdapter({
+    required this.currentUri,
+    this.storageItems = const <String, String>{},
+  });
 
   @override
   final Uri? currentUri;
 
+  final Map<String, String> storageItems;
+
   final List<_PersistedSessionRecord> persistedSessions =
       <_PersistedSessionRecord>[];
   final List<String> replacedUrls = <String>[];
+
+  @override
+  String? readStorageItem(String key) {
+    return storageItems[key];
+  }
 
   @override
   Future<void> persistSession({
