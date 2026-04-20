@@ -33,6 +33,7 @@ class WebAuthCallbackBrowserAdapter {
 
 class WebAuthCallbackStabilizer {
   static const Duration _defaultSessionWaitTimeout = Duration(seconds: 5);
+  static const String _sharedPreferencesWebPrefix = 'flutter.';
   static const String _pkceCodeVerifierStorageKey =
       'supabase.auth.token-code-verifier';
 
@@ -221,6 +222,10 @@ class WebAuthCallbackStabilizer {
   static String get pkceCodeVerifierStorageKey => _pkceCodeVerifierStorageKey;
 
   @visibleForTesting
+  static String get prefixedPkceCodeVerifierStorageKey =>
+      '$_sharedPreferencesWebPrefix$_pkceCodeVerifierStorageKey';
+
+  @visibleForTesting
   static bool isSessionUsable(Session? session) {
     if (session == null) {
       return false;
@@ -236,7 +241,21 @@ class WebAuthCallbackStabilizer {
   static bool _hasPkceCodeVerifier(
     WebAuthCallbackBrowserAdapter browserAdapter,
   ) {
-    final rawValue = browserAdapter.readStorageItem(_pkceCodeVerifierStorageKey);
+    return _hasStoredValue(
+          browserAdapter,
+          _pkceCodeVerifierStorageKey,
+        ) ||
+        _hasStoredValue(
+          browserAdapter,
+          prefixedPkceCodeVerifierStorageKey,
+        );
+  }
+
+  static bool _hasStoredValue(
+    WebAuthCallbackBrowserAdapter browserAdapter,
+    String key,
+  ) {
+    final rawValue = browserAdapter.readStorageItem(key);
     return rawValue != null && rawValue.trim().isNotEmpty;
   }
 

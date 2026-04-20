@@ -156,7 +156,7 @@ void main() {
           'https://tests.prioris.app/auth/callback?code=pkce-code&type=signup&next=lists',
         ),
         storageItems: <String, String>{
-          WebAuthCallbackStabilizer.pkceCodeVerifierStorageKey:
+          WebAuthCallbackStabilizer.prefixedPkceCodeVerifierStorageKey:
               '"raw-code-verifier"',
         },
       );
@@ -190,6 +190,45 @@ void main() {
       expect(
         browserAdapter.replacedUrls.single,
         'https://tests.prioris.app/auth/callback?next=lists',
+      );
+    });
+
+    test(
+        'stabilizeFromCurrentOrIncomingSessionIfNeeded also accepts the unprefixed PKCE verifier key',
+        () async {
+      final browserAdapter = _RecordingBrowserAdapter(
+        currentUri: Uri.parse(
+          'https://tests.prioris.app/auth/callback?code=pkce-code&type=signup',
+        ),
+        storageItems: <String, String>{
+          WebAuthCallbackStabilizer.pkceCodeVerifierStorageKey:
+              '"raw-code-verifier"',
+        },
+      );
+      final authStateController = StreamController<AuthState>();
+      addTearDown(authStateController.close);
+      Session? currentSession;
+
+      final stabilized = await WebAuthCallbackStabilizer
+          .stabilizeFromCurrentOrIncomingSessionIfNeeded(
+        supabaseUrl: 'https://tests-prioris.supabase.co',
+        initialSession: null,
+        currentSessionReader: () => currentSession,
+        authStateChanges: authStateController.stream,
+        exchangeSessionFromUrl: (_) async {
+          currentSession = _buildCallbackSession('unprefixed@example.com');
+          authStateController.add(
+            AuthState(AuthChangeEvent.signedIn, currentSession),
+          );
+        },
+        browserAdapter: browserAdapter,
+        waitTimeout: const Duration(milliseconds: 100),
+      );
+
+      expect(stabilized, isTrue);
+      expect(
+        browserAdapter.replacedUrls.single,
+        'https://tests.prioris.app/auth/callback',
       );
     });
 
