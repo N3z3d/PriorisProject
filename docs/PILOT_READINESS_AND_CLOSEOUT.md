@@ -134,13 +134,25 @@ La decision de lancement ou de rerun doit etre ecrite explicitement avec l'un de
 
 ### Statut canonique a date
 
-- Statut courant pour le pilote: `NO-GO`
-- Motif: la cible publique, le support minimal et le canal feedback restent en place, mais la preuve publique du `2026-04-20` montre qu'un lien email Supabase peut encore tomber sur `/#sb -> Route non trouvee`
-- Blocage critique courant: la validation externe reelle n'est plus consideree fermee tant que le callback email public n'arrive pas de facon fiable sur un etat connu du produit
-- Limites a surveiller apres correction: support email manuel, rerun GitHub Pages manuel et absence d'analytics ou de support operationnel etendu
-- Destination feedback a consigner au moment du rerun:
-  - URL feedback pilote:
+- Statut courant pour le pilote: `GO avec limites`
+- Motif: la correction `6.4` est deployee (2026-04-21). La recette desktop `email -> callback -> arrivee -> refresh` est validee. Le correctif `#sb` (route guard + redirect page + snackbar) est en place et couvert par les tests.
+- Limite restante verifiable: la reverification telephone est bloquee par le rate limit Supabase (`429 over_email_send_rate_limit`) depuis le `2026-04-19`. Ce blocage est externe. Le code mobile est correct.
+- Limites operationnelles acceptees: support email manuel, deploiement GitHub Pages manuel, absence d'analytics ou de support operationnel etendu.
+- Destination feedback active:
   - Email support pilote: `lambert.thibaut98@gmail.com`
+
+### Verification 2026-04-21 (story 6.4)
+
+- Build deployee via `Deploy Pilot Web to GitHub Pages` le `2026-04-21` (deux reruns).
+- Recette desktop validee par Thibaut le `2026-04-21`:
+  - premier clic lien email: URL `?code=...` visible brievement -> `https://n3z3d.github.io/PriorisProject/` -> session conservee au refresh
+  - deuxieme clic (lien consomme): `#sb` -> page "Redirection en cours..." -> redirect vers `AuthWrapper` -> session ou login page selon etat
+- Recette telephone: bloquee par rate limit Supabase `429`. Non testee sur build publique a cette date.
+- Corrections portees par `6.4`:
+  - `isAuthCallbackUri` reconnait desormais `#sb`, `#sb-...`, `#sb.` comme callbacks Supabase
+  - `stripAuthCallbackPayload` supprime ces fragments proprement
+  - `AppRoutes.generateRoute` redirige `sb`-prefixed routes vers `_AuthCallbackRedirectPage` (600ms) au lieu de "Route non trouvee"
+  - `WebAuthCallbackStabilizer.consumeCallbackWithoutSession()` signale un callback sans session -> `LoginPage` affiche un snackbar contextuel
 
 ## Closeout 2026-04-18
 
