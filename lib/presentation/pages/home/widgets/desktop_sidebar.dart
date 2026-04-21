@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/pages/home/models/navigation_item.dart';
-import 'package:prioris/domain/services/ui/accessibility_service.dart';
+import 'package:prioris/presentation/theme/app_theme.dart';
 
 /// Barre latérale de navigation pour desktop
 class DesktopSidebar extends ConsumerWidget {
-  final int currentPage;
-  final List<NavigationItem> navigationItems;
-  final Function(int, NavigationItem) onNavigationTap;
-
   const DesktopSidebar({
     super.key,
     required this.currentPage,
     required this.navigationItems,
     required this.onNavigationTap,
   });
+
+  final int currentPage;
+  final List<NavigationItem> navigationItems;
+  final Function(int, NavigationItem) onNavigationTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -54,7 +53,7 @@ class DesktopSidebar extends ConsumerWidget {
         children: [
           _buildLogo(),
           const SizedBox(width: 12),
-          _buildTitle(),
+          const Expanded(child: _HeaderTitle()),
         ],
       ),
     );
@@ -65,7 +64,7 @@ class DesktopSidebar extends ConsumerWidget {
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [AppTheme.primaryColor, AppTheme.accentColor],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -76,17 +75,6 @@ class DesktopSidebar extends ConsumerWidget {
         Icons.checklist_rtl,
         color: Colors.white,
         size: 22,
-      ),
-    );
-  }
-
-  Widget _buildTitle() {
-    return const Text(
-      'Prioris',
-      style: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w700,
-        color: AppTheme.textPrimary,
       ),
     );
   }
@@ -161,5 +149,23 @@ class DesktopSidebar extends ConsumerWidget {
 
   void _handleTap(int index, NavigationItem item) {
     onNavigationTap(index, item);
+  }
+}
+
+class _HeaderTitle extends StatelessWidget {
+  const _HeaderTitle();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Text(
+      'Prioris',
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w700,
+        color: AppTheme.textPrimary,
+      ),
+    );
   }
 }

@@ -127,6 +127,7 @@ class AppException implements Exception {
     String? context,
     dynamic originalError,
     StackTrace? stackTrace,
+    Map<String, dynamic>? metadata,
   }) => AppException(
     type: ErrorType.configurationError,
     message: message,
@@ -134,6 +135,7 @@ class AppException implements Exception {
     context: context,
     originalError: originalError,
     stackTrace: stackTrace,
+    metadata: metadata,
   );
   
   /// Factory for data persistence errors

@@ -291,31 +291,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get addList => 'Ajouter une liste';
 
   @override
-  String get listsEmptyTitle => 'Aucune liste';
-
-  @override
-  String get listsEmptySubtitle =>
-      'Ajoutez votre premiere liste pour commencer';
-
-  @override
-  String get listEmptyTitle => 'Aucun element trouve';
-
-  @override
-  String get listEmptySearchBody => 'Essayez un autre terme de recherche';
-
-  @override
-  String get listEmptyNoItemsBody =>
-      'Ajoutez votre premier element pour commencer';
-
-  @override
-  String get listsOverviewTitle => 'Organisez vos listes en un coup d\'oeil';
-
-  @override
-  String listsOverviewSubtitle(int totalLists, int totalItems) {
-    return '$totalLists listes | $totalItems elements actifs';
-  }
-
-  @override
   String get name => 'Nom';
 
   @override
@@ -367,9 +342,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get overview => 'Vue d\'ensemble';
 
   @override
-  String get insightsTabTrends => 'Tendances';
-
-  @override
   String get habitsTab => 'Habitudes';
 
   @override
@@ -392,73 +364,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settings => 'Paramètres';
-
-  @override
-  String get settingsGeneralSectionTitle => 'Général';
-
-  @override
-  String get settingsPilotSectionTitle => 'Pilote';
-
-  @override
-  String get pilotIdentityBadge => 'Pilote externe';
-
-  @override
-  String get settingsHelpFeedbackSectionTitle => 'Aide et retour';
-
-  @override
-  String get settingsAboutSectionTitle => 'À propos';
-
-  @override
-  String get settingsPilotStatusTitle => 'Statut du pilote';
-
-  @override
-  String get settingsPilotStatusBody =>
-      'Pilote externe limite. Prioris couvre aujourd\'hui le shell, les listes, la priorisation et les habitudes de base.';
-
-  @override
-  String get settingsPilotLimitsTitle => 'Limites actuelles';
-
-  @override
-  String get settingsPilotLimitsBody =>
-      'Pas de billing, pas de support public, pas de centre d\'aide hébergé et pas de promesse au-delà du périmètre actuel.';
-
-  @override
-  String settingsVersionValue(String version) {
-    return '$version';
-  }
-
-  @override
-  String get settingsVersionFallbackLabel => 'Build pilote externe';
-
-  @override
-  String settingsLanguageChanged(String language) {
-    return 'Langue changée : $language';
-  }
-
-  @override
-  String get logout => 'Se deconnecter';
-
-  @override
-  String get homeLogoutHint => 'Deconnecte l\'utilisateur actuel';
-
-  @override
-  String get homeSettingsHint =>
-      'Ouvre la page des parametres de l\'application';
-
-  @override
-  String get homeMainContentLabel => 'Contenu principal';
-
-  @override
-  String get homePrimaryNavigationLabel => 'Navigation principale';
-
-  @override
-  String get homePrimaryNavigationHint =>
-      'Utilisez les elements de navigation pour changer de section';
-
-  @override
-  String homeNavigationAnnouncement(String section) {
-    return 'Navigation vers $section';
-  }
 
   @override
   String get noData => 'Aucune donnée disponible';
@@ -557,96 +462,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get today => 'Aujourd\'hui';
 
   @override
-  String get todayPanelSubtitle =>
-      'Les quelques elements qui meritent votre attention maintenant';
-
-  @override
-  String todayPanelCountLabel(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count elements fiables',
-      one: '$count element fiable',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get todayPanelLoading => 'Preparation de votre vue du jour...';
-
-  @override
-  String get todayPanelCalmTitle => 'Rien d\'urgent pour l\'instant';
-
-  @override
-  String get todayPanelCalmBody =>
-      'La vue du jour reste calme. Continuez depuis vos listes ou vos habitudes si vous voulez avancer.';
-
-  @override
-  String get todayPanelFirstUseTitle => 'Votre espace est pret';
-
-  @override
-  String get todayPanelFirstUseBody =>
-      'Commencez par creer une premiere liste ou une habitude. Vos prochaines actions apparaitront ici.';
-
-  @override
-  String get todayPanelPartial =>
-      'Vue partielle : certains signaux sont encore en cours de chargement.';
-
-  @override
-  String get todayPanelError => 'La vue du jour est temporairement limitee.';
-
-  @override
-  String get todayPanelTaskKind => 'Tache';
-
-  @override
-  String get todayPanelHabitKind => 'Habitude';
-
-  @override
-  String get todayPanelStatusOverdue => 'En retard';
-
-  @override
-  String get todayPanelStatusDueToday => 'Aujourd\'hui';
-
-  @override
-  String get todayPanelStatusPending => 'A arbitrer';
-
-  @override
-  String get todayPanelReasonOverdueTask => 'Tache deja en retard';
-
-  @override
-  String get todayPanelReasonDueTodayTask => 'Echeance aujourd\'hui';
-
-  @override
-  String get todayPanelReasonPriorityTask => 'Tache a fort levier';
-
-  @override
-  String get todayPanelReasonDueTodayHabit => 'Habitude attendue aujourd\'hui';
-
-  @override
-  String todayPanelParentListLabel(Object title) {
-    return 'Liste : $title';
-  }
-
-  @override
-  String get todayPanelActionOpenList => 'Ouvrir la liste';
-
-  @override
-  String get todayPanelActionOpenDuel => 'Arbitrer';
-
-  @override
-  String get todayPanelActionRecordHabit => 'Marquer fait';
-
-  @override
-  String get todayPanelActionRecordValue => 'Saisir';
-
-  @override
-  String get todayPanelActionOpenHabits => 'Voir habitudes';
-
-  @override
-  String get todayPanelActionUnavailable =>
-      'Cette action n\'est plus disponible dans l\'etat actuel.';
-
-  @override
   String get yesterday => 'Hier';
 
   @override
@@ -720,33 +535,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get insights => 'Aperçus';
 
   @override
-  String get insightsHeaderTitle => 'Analysez vos progres';
-
-  @override
-  String get insightsHeaderSubtitleEmpty =>
-      'Creez des habitudes pour faire apparaitre vos premiers reperes.';
-
-  @override
-  String insightsHeaderSubtitleWithHabits(int count) {
-    return 'Apercu et tendances de vos $count habitudes';
-  }
-
-  @override
-  String get insightsEmptyTitle => 'Pas encore d\'analyses';
-
-  @override
-  String get insightsEmptyBody =>
-      'Creez votre premiere habitude pour faire apparaitre vos premiers reperes ici.';
-
-  @override
-  String get insightsOverviewPlaceholder =>
-      'Votre apercu apparaitra bientot ici.';
-
-  @override
-  String get insightsTrendsPlaceholder =>
-      'Vos tendances apparaitront bientot ici.';
-
-  @override
   String get recommendations => 'Recommandations';
 
   @override
@@ -757,14 +545,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get help => 'Aide';
-
-  @override
-  String get settingsHelpSubtitle =>
-      'Comprendre comment obtenir de l\'aide pendant ce pilote.';
-
-  @override
-  String get settingsHelpDialogBody =>
-      'Le support du pilote reste manuel et borne. Utilisez le canal de retour du pilote pour poser une question, signaler un probleme ou partager un besoin. Aucune assistance en temps reel ni SLA public n\'est promis.';
 
   @override
   String get about => 'À propos';
@@ -779,77 +559,22 @@ class AppLocalizationsFr extends AppLocalizations {
   String get contact => 'Contact';
 
   @override
-  String get feedback => 'Feedback';
-
-  @override
-  String get settingsFeedbackSubtitle => 'Ouvrir le canal de retour du pilote.';
-
-  @override
-  String get settingsFeedbackDialogBody =>
-      'Le canal de retour du pilote ouvre un formulaire simple dans votre navigateur. Il sert aussi pour l\'aide, les bugs et les demandes de fonctionnalites.';
+  String get feedback => 'Retour';
 
   @override
   String get reportBug => 'Signaler un bug';
 
   @override
-  String get settingsReportBugSubtitle =>
-      'Utiliser le meme canal pilote pour signaler un bug.';
-
-  @override
-  String get settingsReportBugDialogBody =>
-      'Le signalement de bug passe par le meme canal pilote que le retour general. Decrivez le contexte visible, l\'appareil et le resultat observe.';
-
-  @override
   String get requestFeature => 'Demander une fonctionnalité';
-
-  @override
-  String get settingsRequestFeatureSubtitle =>
-      'Utiliser le meme canal pilote pour partager un besoin.';
-
-  @override
-  String get settingsRequestFeatureDialogBody =>
-      'Les demandes de fonctionnalites passent par le meme canal pilote. Elles sont lues manuellement et ne valent pas engagement de livraison.';
-
-  @override
-  String get settingsSupportLaunchFailureBody =>
-      'Impossible d\'ouvrir automatiquement ce canal. Utilisez ce lien dans votre navigateur :';
-
-  @override
-  String get settingsSupportUnavailableBody =>
-      'Cette build ne configure pas encore de canal de support pilote. Ajoutez une URL de feedback ou un email de support avant diffusion externe.';
 
   @override
   String get privacyPolicy => 'Politique de confidentialité';
 
   @override
-  String get settingsPrivacySubtitle =>
-      'Lire comment les donnees du pilote sont traitees.';
-
-  @override
-  String get settingsPrivacyDialogBody =>
-      'Prioris enregistre uniquement les donnees necessaires au pilote : compte, listes, taches, habitudes et signaux de synchro associes. Ces donnees servent a faire fonctionner le produit, corriger les problemes signales et evaluer le pilote. Pour toute question sur vos donnees, utilisez le canal de retour du pilote.';
-
-  @override
   String get termsOfService => 'Conditions d\'utilisation';
 
   @override
-  String get settingsTermsSubtitle =>
-      'Lire le cadre d\'usage minimal du pilote.';
-
-  @override
-  String get settingsTermsDialogBody =>
-      'Ce pilote est reserve a un petit groupe invite. L\'acces, les fonctionnalites et la disponibilite peuvent changer sans preavis. N\'utilisez pas Prioris comme systeme critique ni comme source unique de verite pour des decisions sensibles. Les retours sont bienvenus, mais aucune correction immediate ni ouverture publique n\'est garantie.';
-
-  @override
   String get license => 'Licence';
-
-  @override
-  String get settingsLicenseSubtitle =>
-      'Ouvrir les licences incluses dans cette version.';
-
-  @override
-  String get settingsAboutLegalese =>
-      'Pilote externe limite. Support manuel via le canal du pilote, sans pricing ni engagement public.';
 
   @override
   String get credits => 'Crédits';
@@ -1755,54 +1480,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get duplicate => 'Dupliquer';
 
   @override
-  String get authOfflineSignInError =>
-      'Connexion indisponible en mode hors ligne. Configurez de vrais identifiants Supabase dans .env pour activer les fonctionnalites en ligne.';
+  String get pilotIdentityBadge => 'Pilote externe';
 
   @override
-  String get authOfflineSignUpError =>
-      'Inscription indisponible en mode hors ligne. Configurez de vrais identifiants Supabase dans .env pour activer les fonctionnalites en ligne.';
+  String get settingsPilotStatusBody =>
+      'Pilote externe limite. Prioris couvre aujourd\'hui le shell, les listes, la priorisation et les habitudes de base.';
+
+  @override
+  String get settingsPilotLimitsBody =>
+      'Pas de billing, pas de support public, pas de centre d\'aide heberge et pas de promesse au-dela du perimetre actuel.';
 
   @override
   String get authLoginTitle => 'Connectez-vous';
 
   @override
   String get authSignUpTitle => 'Creer un compte';
-
-  @override
-  String get authSignInAction => 'Se connecter';
-
-  @override
-  String get authSignUpAction => 'Creer le compte';
-
-  @override
-  String get authToggleToSignUp => 'Pas de compte ? Creer un compte';
-
-  @override
-  String get authToggleToSignIn => 'Deja un compte ? Se connecter';
-
-  @override
-  String get authForgotPasswordAction => 'Mot de passe oublie ?';
-
-  @override
-  String get authEmailLabel => 'Email';
-
-  @override
-  String get authEmailHint => 'votre@email.com';
-
-  @override
-  String get authPasswordLabel => 'Mot de passe';
-
-  @override
-  String get authPasswordHint => '********';
-
-  @override
-  String get authTechnicalFieldLabel => 'Champ technique (laisser vide)';
-
-  @override
-  String get authPendingConfirmationTitle => 'Confirmation requise';
-
-  @override
-  String authPendingConfirmationMessage(String email) {
-    return 'Un email de validation a ete envoye a $email. Confirmez votre adresse email pour terminer l\'inscription, puis reconnectez-vous.';
-  }
 }

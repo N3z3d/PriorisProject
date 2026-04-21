@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:prioris/core/config/app_config.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/pages/duel_page.dart';
 import 'package:prioris/presentation/pages/habits_page.dart';
@@ -8,9 +9,11 @@ import 'package:prioris/presentation/pages/lists_page.dart';
 import 'package:prioris/presentation/pages/settings_page.dart';
 import 'package:prioris/domain/services/ui/accessibility_service.dart';
 import 'package:prioris/data/providers/auth_providers.dart';
+import 'package:prioris/infrastructure/services/logger_service.dart';
 import 'package:prioris/presentation/pages/home/models/navigation_item.dart';
 import 'package:prioris/presentation/pages/home/widgets/desktop_sidebar.dart';
 import 'package:prioris/presentation/pages/home/widgets/premium_bottom_nav.dart';
+import 'package:prioris/presentation/widgets/pilot/pilot_instance_notice.dart';
 
 final currentPageProvider = StateProvider<int>((ref) => 0);
 
@@ -109,25 +112,25 @@ class HomePage extends ConsumerWidget {
 
   List<NavigationItem> _getNavigationItems() {
     return [
-      NavigationItem(
+      const NavigationItem(
         icon: Icons.checklist_outlined,
         activeIcon: Icons.checklist,
         label: 'Listes',
         color: AppTheme.primaryColor,
       ),
-      NavigationItem(
+      const NavigationItem(
         icon: Icons.psychology_outlined,
         activeIcon: Icons.psychology,
         label: 'Priorisé',
         color: AppTheme.accentColor,
       ),
-      NavigationItem(
+      const NavigationItem(
         icon: Icons.trending_up_outlined,
         activeIcon: Icons.trending_up,
         label: 'Habitudes',
         color: AppTheme.warningColor,
       ),
-      NavigationItem(
+      const NavigationItem(
         icon: Icons.insights_outlined,
         activeIcon: Icons.insights,
         label: 'Insights',
@@ -210,7 +213,10 @@ class HomePage extends ConsumerWidget {
           tooltip: 'Déconnexion',
           iconSize: 24,
           onPressed: () {
-            print('🔒 Déconnexion simple');
+            LoggerService.instance.info(
+              'Deconnexion simple',
+              context: 'HomePage',
+            );
             ref.read(authControllerProvider).signOut();
           },
         ),
@@ -246,18 +252,31 @@ class HomePage extends ConsumerWidget {
   }
 
   Widget _buildBody(List<Widget> pages, int currentPage) {
+    final config = AppConfig.instance;
+
     return SafeArea(
       child: Semantics(
         container: true,
         label: 'Contenu principal',
-        child: IndexedStack(
-          index: currentPage,
-          children: pages
-              .map((page) => Semantics(
-                    container: true,
-                    child: page,
-                  ))
-              .toList(),
+        child: Column(
+          children: [
+            if (config.hasExplicitPilotInstance)
+              const Padding(
+                padding: EdgeInsets.fromLTRB(16, 12, 16, 8),
+                child: PilotInstanceNotice(),
+              ),
+            Expanded(
+              child: IndexedStack(
+                index: currentPage,
+                children: pages
+                    .map((page) => Semantics(
+                          container: true,
+                          child: page,
+                        ))
+                    .toList(),
+              ),
+            ),
+          ],
         ),
       ),
     );

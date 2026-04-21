@@ -621,50 +621,8 @@ abstract class AppLocalizations {
   /// Add list button text
   ///
   /// In en, this message translates to:
-  /// **'Add a list'**
+  /// **'Add List'**
   String get addList;
-
-  /// Title shown when the user has no list yet
-  ///
-  /// In en, this message translates to:
-  /// **'No list yet'**
-  String get listsEmptyTitle;
-
-  /// Helper text shown when the user has no list yet
-  ///
-  /// In en, this message translates to:
-  /// **'Add your first list to get started'**
-  String get listsEmptySubtitle;
-
-  /// Title shown when a list has no visible items
-  ///
-  /// In en, this message translates to:
-  /// **'No items found'**
-  String get listEmptyTitle;
-
-  /// Helper text shown when a list search returns no results
-  ///
-  /// In en, this message translates to:
-  /// **'Try another search term'**
-  String get listEmptySearchBody;
-
-  /// Helper text shown when a list contains no items yet
-  ///
-  /// In en, this message translates to:
-  /// **'Add your first item to get started'**
-  String get listEmptyNoItemsBody;
-
-  /// Hero title shown at the top of the lists page
-  ///
-  /// In en, this message translates to:
-  /// **'See your lists at a glance'**
-  String get listsOverviewTitle;
-
-  /// Compact lists overview summary
-  ///
-  /// In en, this message translates to:
-  /// **'{totalLists} lists | {totalItems} active items'**
-  String listsOverviewSubtitle(int totalLists, int totalItems);
 
   /// Name field label
   ///
@@ -768,12 +726,6 @@ abstract class AppLocalizations {
   /// **'Overview'**
   String get overview;
 
-  /// Label for the trends tab in insights
-  ///
-  /// In en, this message translates to:
-  /// **'Trends'**
-  String get insightsTabTrends;
-
   /// Habits tab title
   ///
   /// In en, this message translates to:
@@ -821,120 +773,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Settings'**
   String get settings;
-
-  /// Section title for general settings
-  ///
-  /// In en, this message translates to:
-  /// **'General'**
-  String get settingsGeneralSectionTitle;
-
-  /// Section title for pilot information
-  ///
-  /// In en, this message translates to:
-  /// **'Pilot'**
-  String get settingsPilotSectionTitle;
-
-  /// Short badge that identifies the external pilot instance
-  ///
-  /// In en, this message translates to:
-  /// **'External pilot'**
-  String get pilotIdentityBadge;
-
-  /// Section title for help and feedback actions
-  ///
-  /// In en, this message translates to:
-  /// **'Help & feedback'**
-  String get settingsHelpFeedbackSectionTitle;
-
-  /// Section title for about information
-  ///
-  /// In en, this message translates to:
-  /// **'About'**
-  String get settingsAboutSectionTitle;
-
-  /// Title for the current pilot status tile
-  ///
-  /// In en, this message translates to:
-  /// **'Pilot status'**
-  String get settingsPilotStatusTitle;
-
-  /// Body text describing the current pilot coverage
-  ///
-  /// In en, this message translates to:
-  /// **'Limited external pilot. Prioris currently covers the shell, lists, prioritisation, and basic habits.'**
-  String get settingsPilotStatusBody;
-
-  /// Title for the current pilot limits tile
-  ///
-  /// In en, this message translates to:
-  /// **'Current limits'**
-  String get settingsPilotLimitsTitle;
-
-  /// Body text describing the current pilot limits
-  ///
-  /// In en, this message translates to:
-  /// **'No billing, no public support, no hosted help centre, and no promise beyond the current scope.'**
-  String get settingsPilotLimitsBody;
-
-  /// Version value shown in settings
-  ///
-  /// In en, this message translates to:
-  /// **'{version}'**
-  String settingsVersionValue(String version);
-
-  /// Honest fallback label used when no runtime version is injected
-  ///
-  /// In en, this message translates to:
-  /// **'External pilot build'**
-  String get settingsVersionFallbackLabel;
-
-  /// Snackbar shown when the language changes
-  ///
-  /// In en, this message translates to:
-  /// **'Language changed to {language}'**
-  String settingsLanguageChanged(String language);
-
-  /// Label for signing out
-  ///
-  /// In en, this message translates to:
-  /// **'Sign out'**
-  String get logout;
-
-  /// Accessibility hint for the sign-out action
-  ///
-  /// In en, this message translates to:
-  /// **'Sign out the current user'**
-  String get homeLogoutHint;
-
-  /// Accessibility hint for the settings action
-  ///
-  /// In en, this message translates to:
-  /// **'Open the application settings'**
-  String get homeSettingsHint;
-
-  /// Accessibility label for the main authenticated shell content
-  ///
-  /// In en, this message translates to:
-  /// **'Main content'**
-  String get homeMainContentLabel;
-
-  /// Accessibility label for the primary shell navigation
-  ///
-  /// In en, this message translates to:
-  /// **'Primary navigation'**
-  String get homePrimaryNavigationLabel;
-
-  /// Accessibility hint for the primary shell navigation
-  ///
-  /// In en, this message translates to:
-  /// **'Use the navigation items to move between sections'**
-  String get homePrimaryNavigationHint;
-
-  /// Screen-reader announcement when navigating between shell sections
-  ///
-  /// In en, this message translates to:
-  /// **'Navigate to {section}'**
-  String homeNavigationAnnouncement(String section);
 
   /// No data message
   ///
@@ -1128,156 +966,6 @@ abstract class AppLocalizations {
   /// **'Today'**
   String get today;
 
-  /// Subtitle shown in the Today panel header
-  ///
-  /// In en, this message translates to:
-  /// **'The few items that deserve your attention now'**
-  String get todayPanelSubtitle;
-
-  /// Compact count label shown in the Today panel header
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, one {{count} reliable item} other {{count} reliable items}}'**
-  String todayPanelCountLabel(int count);
-
-  /// Loading helper text for the Today panel
-  ///
-  /// In en, this message translates to:
-  /// **'Preparing your view for today...'**
-  String get todayPanelLoading;
-
-  /// Title for the calm empty state in the Today panel
-  ///
-  /// In en, this message translates to:
-  /// **'Nothing urgent right now'**
-  String get todayPanelCalmTitle;
-
-  /// Body for the calm empty state in the Today panel
-  ///
-  /// In en, this message translates to:
-  /// **'Your day looks calm. Continue from your lists or habits if you want to keep moving.'**
-  String get todayPanelCalmBody;
-
-  /// Title shown when the user has no useful data yet
-  ///
-  /// In en, this message translates to:
-  /// **'Your space is ready'**
-  String get todayPanelFirstUseTitle;
-
-  /// Body shown when the user has no useful data yet
-  ///
-  /// In en, this message translates to:
-  /// **'Start by creating your first list or habit. Your next actions will show up here.'**
-  String get todayPanelFirstUseBody;
-
-  /// Message shown when the Today panel has only partial data
-  ///
-  /// In en, this message translates to:
-  /// **'Partial view: some signals are still loading.'**
-  String get todayPanelPartial;
-
-  /// Message shown when the Today panel cannot rely on all sources
-  ///
-  /// In en, this message translates to:
-  /// **'The view for today is temporarily limited.'**
-  String get todayPanelError;
-
-  /// Singular label used for task items in the Today panel
-  ///
-  /// In en, this message translates to:
-  /// **'Task'**
-  String get todayPanelTaskKind;
-
-  /// Singular label used for habit items in the Today panel
-  ///
-  /// In en, this message translates to:
-  /// **'Habit'**
-  String get todayPanelHabitKind;
-
-  /// Status chip for overdue Today panel items
-  ///
-  /// In en, this message translates to:
-  /// **'Overdue'**
-  String get todayPanelStatusOverdue;
-
-  /// Status chip for Today panel items due today
-  ///
-  /// In en, this message translates to:
-  /// **'Today'**
-  String get todayPanelStatusDueToday;
-
-  /// Status chip for pending Today panel items
-  ///
-  /// In en, this message translates to:
-  /// **'To review'**
-  String get todayPanelStatusPending;
-
-  /// Reason text for overdue tasks in the Today panel
-  ///
-  /// In en, this message translates to:
-  /// **'Task already overdue'**
-  String get todayPanelReasonOverdueTask;
-
-  /// Reason text for tasks due today in the Today panel
-  ///
-  /// In en, this message translates to:
-  /// **'Due today'**
-  String get todayPanelReasonDueTodayTask;
-
-  /// Reason text for priority tasks in the Today panel
-  ///
-  /// In en, this message translates to:
-  /// **'High-leverage task'**
-  String get todayPanelReasonPriorityTask;
-
-  /// Reason text for habits due today in the Today panel
-  ///
-  /// In en, this message translates to:
-  /// **'Habit expected today'**
-  String get todayPanelReasonDueTodayHabit;
-
-  /// Context label for the parent list shown on Today panel task entries
-  ///
-  /// In en, this message translates to:
-  /// **'List: {title}'**
-  String todayPanelParentListLabel(Object title);
-
-  /// Primary action label for Today panel task entries that open a list
-  ///
-  /// In en, this message translates to:
-  /// **'Open list'**
-  String get todayPanelActionOpenList;
-
-  /// Primary action label for Today panel entries that open the duel flow
-  ///
-  /// In en, this message translates to:
-  /// **'Prioritise'**
-  String get todayPanelActionOpenDuel;
-
-  /// Primary action label for Today panel binary habits
-  ///
-  /// In en, this message translates to:
-  /// **'Mark done'**
-  String get todayPanelActionRecordHabit;
-
-  /// Primary action label for Today panel quantitative habits
-  ///
-  /// In en, this message translates to:
-  /// **'Enter value'**
-  String get todayPanelActionRecordValue;
-
-  /// Secondary rebound action label for Today panel habit entries
-  ///
-  /// In en, this message translates to:
-  /// **'Open habits'**
-  String get todayPanelActionOpenHabits;
-
-  /// Snackbar shown when a Today panel action can no longer be executed
-  ///
-  /// In en, this message translates to:
-  /// **'This action is no longer available in the current state.'**
-  String get todayPanelActionUnavailable;
-
   /// Yesterday label
   ///
   /// In en, this message translates to:
@@ -1416,48 +1104,6 @@ abstract class AppLocalizations {
   /// **'Insights'**
   String get insights;
 
-  /// Header title for the insights page
-  ///
-  /// In en, this message translates to:
-  /// **'Track your progress'**
-  String get insightsHeaderTitle;
-
-  /// Header subtitle for insights when there is no habit yet
-  ///
-  /// In en, this message translates to:
-  /// **'Create habits to unlock your first insights.'**
-  String get insightsHeaderSubtitleEmpty;
-
-  /// Header subtitle for insights when habits exist
-  ///
-  /// In en, this message translates to:
-  /// **'Overview and trends for your {count} habits'**
-  String insightsHeaderSubtitleWithHabits(int count);
-
-  /// Empty-state title for the insights page
-  ///
-  /// In en, this message translates to:
-  /// **'No insights yet'**
-  String get insightsEmptyTitle;
-
-  /// Empty-state helper text for the insights page
-  ///
-  /// In en, this message translates to:
-  /// **'Create your first habit to unlock your first insights here.'**
-  String get insightsEmptyBody;
-
-  /// Placeholder text for the overview tab when data exists later
-  ///
-  /// In en, this message translates to:
-  /// **'Your overview will appear here soon.'**
-  String get insightsOverviewPlaceholder;
-
-  /// Placeholder text for the trends tab when data exists later
-  ///
-  /// In en, this message translates to:
-  /// **'Your trends will appear here soon.'**
-  String get insightsTrendsPlaceholder;
-
   /// Recommendations label
   ///
   /// In en, this message translates to:
@@ -1481,18 +1127,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Help'**
   String get help;
-
-  /// Subtitle for the help action in settings
-  ///
-  /// In en, this message translates to:
-  /// **'Understand how to get help during this pilot.'**
-  String get settingsHelpSubtitle;
-
-  /// Body shown when opening help in settings
-  ///
-  /// In en, this message translates to:
-  /// **'Pilot support stays manual and intentionally bounded. Use the pilot feedback channel to ask a question, report an issue, or share a need. No real-time assistance or public SLA is promised.'**
-  String get settingsHelpDialogBody;
 
   /// About label
   ///
@@ -1524,35 +1158,11 @@ abstract class AppLocalizations {
   /// **'Feedback'**
   String get feedback;
 
-  /// Subtitle for the feedback action in settings
-  ///
-  /// In en, this message translates to:
-  /// **'Open the pilot feedback channel.'**
-  String get settingsFeedbackSubtitle;
-
-  /// Body shown when opening feedback in settings
-  ///
-  /// In en, this message translates to:
-  /// **'The pilot feedback channel opens a simple form in your browser. It is also used for help requests, bugs, and feature requests.'**
-  String get settingsFeedbackDialogBody;
-
   /// Report bug button text
   ///
   /// In en, this message translates to:
   /// **'Report Bug'**
   String get reportBug;
-
-  /// Subtitle for the report bug action in settings
-  ///
-  /// In en, this message translates to:
-  /// **'Use the same pilot channel to report a bug.'**
-  String get settingsReportBugSubtitle;
-
-  /// Body shown when opening report bug in settings
-  ///
-  /// In en, this message translates to:
-  /// **'Bug reports go through the same pilot channel as general feedback. Describe the visible context, the device, and the observed result.'**
-  String get settingsReportBugDialogBody;
 
   /// Request feature button text
   ///
@@ -1560,47 +1170,11 @@ abstract class AppLocalizations {
   /// **'Request Feature'**
   String get requestFeature;
 
-  /// Subtitle for the request feature action in settings
-  ///
-  /// In en, this message translates to:
-  /// **'Use the same pilot channel to share a need.'**
-  String get settingsRequestFeatureSubtitle;
-
-  /// Body shown when opening request feature in settings
-  ///
-  /// In en, this message translates to:
-  /// **'Feature requests go through the same pilot channel. They are reviewed manually and do not create a delivery commitment.'**
-  String get settingsRequestFeatureDialogBody;
-
-  /// Fallback message shown when the pilot support link cannot be opened automatically
-  ///
-  /// In en, this message translates to:
-  /// **'Unable to open this channel automatically. Use this link in your browser:'**
-  String get settingsSupportLaunchFailureBody;
-
-  /// Fallback message shown when no pilot support channel is configured
-  ///
-  /// In en, this message translates to:
-  /// **'This build does not configure a pilot support channel yet. Add a feedback URL or a support email before any external pilot release.'**
-  String get settingsSupportUnavailableBody;
-
   /// Privacy policy link
   ///
   /// In en, this message translates to:
   /// **'Privacy Policy'**
   String get privacyPolicy;
-
-  /// Subtitle for the privacy policy action in settings
-  ///
-  /// In en, this message translates to:
-  /// **'Read how pilot data is handled.'**
-  String get settingsPrivacySubtitle;
-
-  /// Body shown when opening privacy information in settings
-  ///
-  /// In en, this message translates to:
-  /// **'Prioris only stores the data needed for this pilot: account, lists, tasks, habits, and related sync signals. This data is used to run the product, fix reported issues, and evaluate the pilot. If you have a question about your data, use the pilot feedback channel.'**
-  String get settingsPrivacyDialogBody;
 
   /// Terms of service link
   ///
@@ -1608,35 +1182,11 @@ abstract class AppLocalizations {
   /// **'Terms of Service'**
   String get termsOfService;
 
-  /// Subtitle for the terms of service action in settings
-  ///
-  /// In en, this message translates to:
-  /// **'Read the minimal usage framework for this pilot.'**
-  String get settingsTermsSubtitle;
-
-  /// Body shown when opening terms information in settings
-  ///
-  /// In en, this message translates to:
-  /// **'This pilot is reserved for a small invited group. Access, features, and availability may change without notice. Do not use Prioris as a critical system or as the sole source of truth for sensitive decisions. Feedback is welcome, but no immediate fix or public rollout is guaranteed.'**
-  String get settingsTermsDialogBody;
-
   /// License link
   ///
   /// In en, this message translates to:
   /// **'License'**
   String get license;
-
-  /// Subtitle for the license action in settings
-  ///
-  /// In en, this message translates to:
-  /// **'Open the licenses shipped with this build.'**
-  String get settingsLicenseSubtitle;
-
-  /// Legal text shown in the about dialog for the pilot
-  ///
-  /// In en, this message translates to:
-  /// **'Limited external pilot. Manual support through the pilot channel, with no pricing or public commitment yet.'**
-  String get settingsAboutLegalese;
 
   /// Credits link
   ///
@@ -3102,17 +2652,23 @@ abstract class AppLocalizations {
   /// **'Duplicate'**
   String get duplicate;
 
-  /// Error shown on login when the app is locked to offline placeholder configuration
+  /// Short badge that identifies the external pilot instance
   ///
   /// In en, this message translates to:
-  /// **'Sign-in is unavailable in offline mode. Configure real Supabase credentials in .env to enable online features.'**
-  String get authOfflineSignInError;
+  /// **'External pilot'**
+  String get pilotIdentityBadge;
 
-  /// Error shown on sign-up when the app is locked to offline placeholder configuration
+  /// Body text describing the current pilot coverage
   ///
   /// In en, this message translates to:
-  /// **'Sign-up is unavailable in offline mode. Configure real Supabase credentials in .env to enable online features.'**
-  String get authOfflineSignUpError;
+  /// **'Limited external pilot. Prioris currently covers the shell, lists, prioritisation, and basic habits.'**
+  String get settingsPilotStatusBody;
+
+  /// Body text describing the current pilot limits
+  ///
+  /// In en, this message translates to:
+  /// **'No billing, no public support, no hosted help centre, and no promise beyond the current scope.'**
+  String get settingsPilotLimitsBody;
 
   /// Title shown on the login screen in sign-in mode
   ///
@@ -3125,78 +2681,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create an account'**
   String get authSignUpTitle;
-
-  /// Primary action label for sign-in
-  ///
-  /// In en, this message translates to:
-  /// **'Sign in'**
-  String get authSignInAction;
-
-  /// Primary action label for sign-up
-  ///
-  /// In en, this message translates to:
-  /// **'Create account'**
-  String get authSignUpAction;
-
-  /// Secondary action to switch from sign-in to sign-up
-  ///
-  /// In en, this message translates to:
-  /// **'No account yet? Create one'**
-  String get authToggleToSignUp;
-
-  /// Secondary action to switch from sign-up to sign-in
-  ///
-  /// In en, this message translates to:
-  /// **'Already have an account? Sign in'**
-  String get authToggleToSignIn;
-
-  /// Secondary action to open the forgot password dialog
-  ///
-  /// In en, this message translates to:
-  /// **'Forgot password?'**
-  String get authForgotPasswordAction;
-
-  /// Label for the auth email field
-  ///
-  /// In en, this message translates to:
-  /// **'Email'**
-  String get authEmailLabel;
-
-  /// Placeholder for the auth email field
-  ///
-  /// In en, this message translates to:
-  /// **'you@example.com'**
-  String get authEmailHint;
-
-  /// Label for the auth password field
-  ///
-  /// In en, this message translates to:
-  /// **'Password'**
-  String get authPasswordLabel;
-
-  /// Placeholder for the auth password field
-  ///
-  /// In en, this message translates to:
-  /// **'********'**
-  String get authPasswordHint;
-
-  /// Hidden honeypot field label for sign-up protection
-  ///
-  /// In en, this message translates to:
-  /// **'Technical field (leave empty)'**
-  String get authTechnicalFieldLabel;
-
-  /// Short title shown when sign-up succeeds without an immediate session
-  ///
-  /// In en, this message translates to:
-  /// **'Confirmation required'**
-  String get authPendingConfirmationTitle;
-
-  /// Message shown when sign-up succeeds but email confirmation is required
-  ///
-  /// In en, this message translates to:
-  /// **'A confirmation email was sent to {email}. Confirm your email address to finish the sign-up flow, then sign in again.'**
-  String authPendingConfirmationMessage(String email);
 }
 
 class _AppLocalizationsDelegate

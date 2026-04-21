@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:prioris/presentation/theme/app_theme.dart';
-import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 import 'package:prioris/domain/services/ui/accessibility_service.dart';
 import 'package:prioris/presentation/pages/home/models/navigation_item.dart';
+import 'package:prioris/presentation/theme/app_theme.dart';
+import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 
 /// Widget de navigation premium avec animations et accessibilité
 class PremiumNavItem extends StatefulWidget {
-  final NavigationItem item;
-  final bool isActive;
-  final VoidCallback onTap;
-
   const PremiumNavItem({
     super.key,
     required this.item,
     required this.isActive,
     required this.onTap,
   });
+
+  final NavigationItem item;
+  final bool isActive;
+  final VoidCallback onTap;
 
   @override
   State<PremiumNavItem> createState() => _PremiumNavItemState();
@@ -97,7 +97,7 @@ class _PremiumNavItemState extends State<PremiumNavItem>
           ? 'Section actuelle'
           : 'Appuyez pour naviguer vers ${widget.item.label}',
       child: Container(
-        constraints: BoxConstraints(
+        constraints: const BoxConstraints(
           minWidth: AccessibilityService.minTouchTargetSize,
           minHeight: AccessibilityService.minTouchTargetSize,
         ),
@@ -140,7 +140,7 @@ class _PremiumNavItemState extends State<PremiumNavItem>
       animation: _animationController,
       builder: (context, child) {
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -202,7 +202,12 @@ class _PremiumNavItemState extends State<PremiumNavItem>
             ? widget.item.color
             : AppTheme.textTertiary,
       ),
-      child: Text(widget.item.label),
+      child: Text(
+        widget.item.label,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
+      ),
     );
   }
 

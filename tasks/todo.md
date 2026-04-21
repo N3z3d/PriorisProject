@@ -4101,16 +4101,129 @@ Prochaine etape:
 
 ### Plan
 
-- [ ] Reproduire et diagnostiquer localement les erreurs du workflow GitHub Pages (`l10n` et `AppTheme`)
-- [ ] Corriger minimalement les sources canoniques touchees sans elargir le lot
-- [ ] Regenerer les localisations et verifier l'etat compile cible pour GitHub Pages
-- [ ] Mettre a jour les lecons et documenter le resultat concret de deblocage
+- [x] Reproduire et diagnostiquer localement les erreurs du workflow GitHub Pages (`l10n` et `AppTheme`)
+- [x] Corriger minimalement les sources canoniques touchees sans elargir le lot
+- [x] Regenerer les localisations et verifier l'etat compile cible pour GitHub Pages
+- [x] Mettre a jour les lecons et documenter le resultat concret de deblocage
 
 ### Review
 
-- Aucun lot autonome n'a finalement ete mene sous ce nom.
-- Le besoin initial de deblocage GitHub Pages a ete absorbe par les slices voisins deja traces dans `tasks/todo.md`, puis par la revalidation documentaire et live de `6.1`.
-- Ne pas utiliser ce bloc comme source de verite pour `6.1`; les sections canoniques sont `dev_story_6_1_closeout` et `code_review_6_1`.
+- Cause racine confirmee sur `main`:
+- `lib/l10n/app_de.arb` et `lib/l10n/app_es.arb` utilisaient encore `{count}` au lieu de `{interval}` pour `habitFrequencyEveryQuarters` et `habitFrequencyEveryYears`
+- `lib/presentation/pages/habits/widgets/components/advanced_habit_tracking_section.dart` utilisait `AppTheme.accentColor` sans importer `app_theme.dart`
+- Correctif minimal applique:
+- source l10n corrigee dans `app_de.arb` et `app_es.arb`
+- fichiers generes `app_localizations_de.dart` et `app_localizations_es.dart` realignes
+- import `AppTheme` ajoute et `BorderSide` passe en `const`
+- Verification executee dans un worktree propre base sur `HEAD`:
+- build rouge reproduit avec `flutter build web --no-pub --release --base-href=/PriorisProject/ --dart-define=PRIORIS_APP_VERSION=pilot-pages-2`
+- `flutter analyze --no-pub lib/l10n/app_localizations_de.dart lib/l10n/app_localizations_es.dart lib/presentation/pages/habits/widgets/components/advanced_habit_tracking_section.dart` -> vert
+- `flutter build web --no-pub --release --base-href=/PriorisProject/ --dart-define=PRIORIS_APP_VERSION=pilot-pages-2` -> vert apres creation d'un `.env` local temporaire de validation
+
+## BMAD Slice: closeout_story_6_1_public_pilot
+
+### Plan
+
+- [x] Porter dans l'etat officiel `main` le code minimal manquant pour rendre le pilote visible sur l'URL publique
+- [x] Corriger les ecarts reels observes sur l'instance publique (`manifest` / icones / metadata web)
+- [x] Ajouter la couverture QA optionnelle utile au lane `6.1` et verifier le lot localement
+- [x] Mettre a jour la story `6.1`, le tracker et la revue avec la preuve publique reelle disponible a ce stade
+- [x] Executer la revue de code BMAD puis resynchroniser l'etat final
+
+### Review
+
+- Cible publique confirmee: `https://n3z3d.github.io/PriorisProject/`
+- Verification publique effectuee le `2026-04-13`:
+  - l'URL charge bien sur desktop et mobile
+  - preuves capturees dans `pilot_pages_desktop.png` et `pilot_pages_mobile.png`
+  - un `404` manifest a ete observe sur `icons/Icon-192.png`, puis corrige dans ce lot
+- Correctifs portes dans l'etat officiel:
+  - identite pilote centralisee dans `AppConfig`
+  - bandeau pilote visible sur l'entree auth et le shell
+  - metadata web `index.html` / `manifest.json` realignees
+  - icones Pages ajoutees, y compris maskable, avec `.gitignore` corrige
+  - overflows reels corriges sur le shell desktop/mobile et l'etat vide des listes
+- QA optionnelle ajoutee et validee:
+  - `flutter gen-l10n`
+  - `flutter analyze --no-pub ...` cible sur les fichiers du lot
+  - `flutter test --no-pub test/core/config/app_config_test.dart test/presentation/pages/auth/components/login_header_test.dart test/presentation/pages/home_page_test.dart`
+  - `flutter build web --no-pub --release --base-href=/PriorisProject/ --dart-define=PRIORIS_APP_VERSION=pilot-pages-local`
+- Revue de code finale: aucun blocage restant dans le diff du lot 6.1. Le seul reliquat est operationnel: rerun manuel de `Deploy Pilot Web to GitHub Pages` pour publier ce commit et reprendre la preuve publique mise a jour.
+- Etat BMAD recommande apres ce lot: story `6.1` en `review`, pas encore `done`, jusqu'a la republication Pages et la reverification desktop/mobile du build courant.
+
+### Next Steps
+
+1. Lancer `Deploy Pilot Web to GitHub Pages` sur `main` pour publier ce commit.
+2. Reprendre une capture desktop + mobile de l'URL publique mise a jour.
+3. Basculer ensuite `6.1` en `done` et ouvrir `6.2`.
+
+## BMAD Slice: create_story_6_2_pilot_support
+
+### Plan
+
+- [x] Charger le workflow `create-story` et confirmer la prochaine story backlog via `sprint-status.yaml`
+- [x] Analyser `Epic 6`, `6.2`, le PRD, l'architecture, l'UX minimale et le contexte projet actif
+- [x] Croiser ces artefacts avec l'etat reel du code officiel (`SettingsPage`, `language_selector`, tests presents/absents) au lieu de supposer que `5.3` est effectivement porte dans `main`
+- [x] Creer `_bmad-output/implementation-artifacts/6-2-remplacer-les-points-de-contact-placeholders-par-un-support-pilote-reel.md`
+- [x] Mettre a jour `_bmad-output/implementation-artifacts/sprint-status.yaml` (`6.2` -> `ready-for-dev`)
+- [x] Pousser les nouveaux artefacts sur `main`
+
+### Review
+
+- La story `6.2` a ete creee en `ready-for-dev` avec un cadrage centre sur le plus petit prochain slice observable du pilote reel: fermer les points de contact/info pilotes du chemin `HomePage -> SettingsPage`, sans rouvrir auth, persistance, synchro ou deploiement.
+- Le garde-fou le plus important est maintenant explicite dans la story: l'artefact `5.3` raconte une `SettingsPage` pilote-ready, mais le code officiel courant expose encore une page hardcodee et placeholder. Le prochain `dev-story` devra donc partir du code reel, pas d'un etat idealise.
+- La story force aussi une source de verite unique pour les contenus de support pilote, et nomme un risque concret: `assets/legal/mentions_legales.md` contient bien des emails utiles (`contact@prioris-app.com`, `support@prioris-app.com`) mais raconte encore une application purement locale; ce document ne doit donc pas etre reutilise tel quel comme verite pilote.
+- Les artefacts BMAD ont ete pushes sur `origin/main` dans le commit `a8c20bc` (`docs(bmad): create story 6.2 pilot support`).
+- Etat BMAD apres ce lot:
+  - `6.1`: `review` tant que la republication publique du build courant n'est pas reverifiee
+  - `6.2`: `ready-for-dev`
+  - prochaine action recommandee cote implementation: rerun/verifier la republication publique de `6.1`, puis lancer `dev-story 6.2`
+
+## BMAD Slice: fix_pages_icon_tracking
+
+### Plan
+
+- [x] Reverifier l'URL publique apres rerun GitHub Pages
+- [x] Identifier la cause racine du `404` public sur `icons/Icon-192.png`
+- [x] Corriger le versioning Git des icones web pour qu'elles soient bien disponibles dans GitHub Actions
+- [x] Pousser le correctif puis demander un nouveau rerun de `Deploy Pilot Web to GitHub Pages`
+
+### Review
+
+- La cible publique sert bien le bon build `6.1`: titre navigateur `Prioris Pilot` / `Prioris Pilot Invite`, et bandeau d'avertissement pilote visible sur la page de connexion.
+- Le message de prevention vu sur la page de connexion est donc attendu et conforme au scope pilote.
+- Residuel public confirme via console et acces direct:
+  - `https://n3z3d.github.io/PriorisProject/icons/Icon-192.png` -> `404`
+  - warning manifest associe sur la page publique
+- Cause racine identifiee: les fichiers `web/icons/*` existent localement, mais Git ne les suivait pas parce que le dossier parent `/web/icons/` restait ignore. Les exceptions sur les fichiers seuls n'etaient pas suffisantes pour garantir leur presence dans le checkout GitHub Actions.
+- Correctif applique:
+  - `.gitignore` reautorise explicitement `!/web/icons/` avant les exceptions fichier
+  - les 4 icones Pages sont maintenant trackees par Git et poussees sur `origin/main` dans le commit `4224428` (`fix(pages): track pilot web icons`)
+  - prochaine etape operationnelle: rerun manuel de `Deploy Pilot Web to GitHub Pages`, puis reverification publique de l'icone et de la console
+
+## BMAD Slice: finalize_story_6_1_done
+
+### Plan
+
+- [x] Reverifier publiquement le build GitHub Pages apres le rerun final
+- [x] Confirmer la resolution effective du reliquat `Icon-192.png`
+- [x] Basculer `6.1` de `review` a `done` dans les artefacts BMAD
+- [x] Pousser l'etat final de cloture sur `main`
+
+### Review
+
+- Verification publique finale effectuee le `2026-04-14`:
+  - `https://n3z3d.github.io/PriorisProject/` sert bien le build courant du pilote
+  - la page de connexion publique affiche l'identite pilote `Prioris Pilot Invite` et le bandeau d'avertissement attendu
+  - preuve recapturee dans `pilot_pages_final_public.png`
+- Verification directe de l'asset public:
+  - `https://n3z3d.github.io/PriorisProject/icons/Icon-192.png` repond maintenant correctement en image `192x192`
+  - le `404` manifest qui bloquait encore la cloture publique de `6.1` est donc effectivement ferme
+- Etat BMAD apres cette verification:
+  - `6.1`: `done`
+  - `6.2`: `ready-for-dev`
+  - closeout pousse sur `origin/main` dans le commit `decf8ad` (`docs(bmad): close story 6.1 public pilot`)
+  - prochaine action recommandee: lancer `dev-story 6.2`
 
 ## BMAD Slice: dev_story_6_2_blocked_missing_story
 

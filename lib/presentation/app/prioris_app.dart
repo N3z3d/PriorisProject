@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:prioris/core/config/app_config.dart';
 import 'package:prioris/data/providers/lists_controller_provider.dart';
 import 'package:prioris/domain/services/core/language_service.dart';
 import 'package:prioris/domain/services/ui/responsive_service.dart';
@@ -20,9 +21,10 @@ class PriorisApp extends ConsumerWidget {
     ref.watch(authChangeListenerProvider);
 
     final currentLocale = ref.watch(currentLocaleProvider);
+    final applicationTitle = AppConfig.instance.applicationTitle;
 
     return MaterialApp(
-      title: 'Prioris',
+      title: applicationTitle,
       theme: _buildAppTheme(),
       themeMode: ThemeMode.light, // Fixed to light theme for consistency
       home: const AuthWrapper(),

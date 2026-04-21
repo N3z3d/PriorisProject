@@ -1,11 +1,11 @@
 {
-    "name": "prioris",
-    "short_name": "prioris",
+    "name": "Prioris Pilot",
+    "short_name": "Prioris",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Prioris external pilot. Lists, prioritisation, and basic habits.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
