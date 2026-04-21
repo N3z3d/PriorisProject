@@ -20,7 +20,10 @@ Les intrants canoniques de ce gate viennent des closeouts `6.1` et `6.2`, pas de
 - Resolution canonique du canal de feedback pilote: `AppConfig.pilotSupportInfo`
 - Priorite du canal de feedback pilote: `PRIORIS_PILOT_FEEDBACK_URL`, sinon `mailto:` derive de `PRIORIS_PILOT_SUPPORT_EMAIL`
 - Baseline repo-owned preparee pour le prochain rerun: la workflow GitHub Pages injecte `PRIORIS_PILOT_SUPPORT_EMAIL=support@prioris-app.com` si aucun override n'est fourni
-- Statut public verifie le `2026-04-18`: aucun canal de feedback public concret n'est observable dans `assets/.env` sur la build active
+- Statut public verifie le `2026-04-19`: `assets/.env` expose toujours `PRIORIS_PILOT_SUPPORT_EMAIL=lambert.thibaut98@gmail.com` sur la build active
+- Validation auth partielle verifiee le `2026-04-19`: `connexion normale avec compte deja confirme -> refresh` passe sur la build pilote publique
+- Revalidation specifique du callback email le `2026-04-19`: temporairement bloquee par `AuthApiException(... statusCode: 429, code: over_email_send_rate_limit)` lors d'une nouvelle tentative d'email de confirmation
+- Reouverture canonique du `2026-04-20`: le callback email Supabase ouvre maintenant `https://n3z3d.github.io/PriorisProject/#sb` et tombe sur `Route non trouvee` sur la build publique
 - Proprietaire de la decision go / no-go: Thibaut
 
 ## Les quatre niveaux de preuve
@@ -90,12 +93,12 @@ Si un item bloqueur ci-dessous est absent ou non revalide apres un changement pe
 | --- | --- | --- |
 | URL pilote publique | La cible publique repond et reste `https://n3z3d.github.io/PriorisProject/` | Oui. Cible documentee dans `6.1` et `docs/PILOT_PAGES_DEPLOYMENT.md` |
 | Workflow de deploiement | La publication passe par `Deploy Pilot Web to GitHub Pages` avec `environment: github-pages` et `concurrency: pilot-pages` | Oui. Workflow source-controlee dans `.github/workflows/deploy-pilot-pages.yml` |
-| Variables / entrees requises | `PRIORIS_PILOT_SUPABASE_URL`, `PRIORIS_PILOT_SUPABASE_ANON_KEY` et un canal concret via `PRIORIS_PILOT_FEEDBACK_URL`, `PRIORIS_PILOT_SUPPORT_EMAIL` ou le fallback workflow `support@prioris-app.com` | Non sur la build active. Le depot prepare maintenant `support@prioris-app.com` comme email minimal par defaut, mais `assets/.env` public relu le `2026-04-18` n'expose encore aucun canal; une nouvelle publication concrete reste necessaire |
+| Variables / entrees requises | `PRIORIS_PILOT_SUPABASE_URL`, `PRIORIS_PILOT_SUPABASE_ANON_KEY` et un canal concret via `PRIORIS_PILOT_FEEDBACK_URL`, `PRIORIS_PILOT_SUPPORT_EMAIL` ou le fallback workflow `support@prioris-app.com` | Oui. `assets/.env` public relu le `2026-04-18` expose `PRIORIS_PILOT_SUPPORT_EMAIL=lambert.thibaut98@gmail.com` sur la build active |
 | Support minimal | `SettingsPage` expose `Aide`, `Feedback`, `Confidentialite`, `Conditions` avec une source de verite unique | Oui. Ferme par `6.2` via `AppConfig.pilotSupportInfo` |
-| Canal de feedback | Une build pilote reelle expose un canal explicite joignable, sans fallback implicite GitHub | Non sur la build publique active. Resolution canonique: `PRIORIS_PILOT_FEEDBACK_URL`, sinon `mailto:` via `PRIORIS_PILOT_SUPPORT_EMAIL`; le depot prepare maintenant `support@prioris-app.com` comme baseline minimale, mais aucune destination publique concrete n'est encore observable le `2026-04-18` |
+| Canal de feedback | Une build pilote reelle expose un canal explicite joignable, sans fallback implicite GitHub | Oui. Resolution canonique: `PRIORIS_PILOT_FEEDBACK_URL`, sinon `mailto:` via `PRIORIS_PILOT_SUPPORT_EMAIL`; la build publique active expose `PRIORIS_PILOT_SUPPORT_EMAIL=lambert.thibaut98@gmail.com` le `2026-04-18` |
 | Preuve desktop | La build publique pilote reste identifiable et utilisable sur desktop | Oui. Verification publique `2026-04-16` + preuves repo-owned `6.1` / `6.2` |
 | Preuve telephone | La meme information essentielle reste visible et exploitable sur telephone | Oui. Verification publique `2026-04-16` en `390x844` + preuves repo-owned `6.1` / `6.2` |
-| Validation externe reelle | Un utilisateur invite a complete le parcours attendu sur la cible publique | Oui. Rerun publique `2026-04-18` reussie |
+| Validation externe reelle | Un utilisateur invite a complete le parcours attendu sur la cible publique | Non. La rerun publique `2026-04-18` reste historique utile, mais la preuve publique du `2026-04-20` reouvre le parcours callback email (`/#sb -> Route non trouvee`) |
 | Date de verification | Une date absolue de verification est consignee pour chaque preuve decisive | Oui. `2026-04-16`, `2026-04-17`, `2026-04-18` sont les dates canoniques actuelles |
 | Proprietaire de decision | Une personne nommee tranche explicitement `go` / `no-go` | Oui. Thibaut |
 
@@ -113,8 +116,12 @@ Ces limites n'empechent pas a elles seules le pilote si tous les bloqueurs ci-de
 - `2026-04-16`: verification publique de l'entree pilote sur desktop et telephone a la meme URL
 - `2026-04-17`: verification publique de la configuration servie (`assets/.env`, host Supabase reel, endpoint `auth/v1/settings`)
 - `2026-04-18`: rerun publique utilisateur reussie sur le flux `creation de compte -> email de validation -> lien de confirmation -> connexion`
-- `2026-04-18`: relecture publique de `assets/.env`; aucun canal de feedback/support n'y est observable sur la build active
+- `2026-04-18`: rerun workflow `cf228ca0f4bde2c97fd7bb6ea9a214aece7790e9` reussi; `assets/.env` public expose `PRIORIS_PILOT_SUPPORT_EMAIL=lambert.thibaut98@gmail.com`
 - `2026-04-18`: preparation repo-owned d'un rerun minimal avec `PRIORIS_PILOT_SUPPORT_EMAIL=support@prioris-app.com` par defaut dans la workflow Pages si aucun override n'est fourni
+- `2026-04-19`: relecture publique post-deploiement confirmee sur desktop et telephone; le shell de connexion pilote reste visible et `assets/.env` public reste coherent avec la cible pilote
+- `2026-04-19`: tentative de recette signee-in avec `test/manual/test_credentials.txt` en echec `invalid_credentials`; ce compte repo-owned est stale et ne peut pas servir de preuve canonique du runtime authentifie courant
+- `2026-04-19`: validation partielle utile sur la build publique avec un compte deja confirme: `connexion normale -> refresh` fonctionne
+- `2026-04-19`: la reverification decisive du chemin `email de confirmation -> lien Supabase -> arrivee -> refresh immediat` est temporairement bloquee par Supabase (`429 over_email_send_rate_limit`) et reste donc `pending` cote preuve manuelle
 - `6.2`: support minimal reel ferme sur le chemin `HomePage -> SettingsPage`, avec source de verite unique et sans fallback implicite vers le repository GitHub
 
 ## Decision de lancement
@@ -127,12 +134,72 @@ La decision de lancement ou de rerun doit etre ecrite explicitement avec l'un de
 
 ### Statut canonique a date
 
-- Statut courant pour tout nouveau rerun pilote: `NO-GO`
-- Motif bloquant: la resolution du canal est definie cote code via `AppConfig.pilotSupportInfo`, et la repo-owned baseline de republication est maintenant `support@prioris-app.com` par defaut, mais la build publique active relue le `2026-04-18` n'expose encore ni `PRIORIS_PILOT_FEEDBACK_URL` ni `PRIORIS_PILOT_SUPPORT_EMAIL` dans `assets/.env`
-- Condition minimale de retour a `GO` ou `GO avec limites`: republier puis re-verifier sur la build publique une destination de feedback concrete, au minimum `PRIORIS_PILOT_SUPPORT_EMAIL=support@prioris-app.com` ou un override explicite
+- Statut courant pour le pilote: `NO-GO`
+- Motif: la cible publique, le support minimal et le canal feedback restent en place, mais la preuve publique du `2026-04-20` montre qu'un lien email Supabase peut encore tomber sur `/#sb -> Route non trouvee`
+- Blocage critique courant: la validation externe reelle n'est plus consideree fermee tant que le callback email public n'arrive pas de facon fiable sur un etat connu du produit
+- Limites a surveiller apres correction: support email manuel, rerun GitHub Pages manuel et absence d'analytics ou de support operationnel etendu
 - Destination feedback a consigner au moment du rerun:
   - URL feedback pilote:
-  - Email support pilote: `support@prioris-app.com` par defaut workflow, sauf override explicite
+  - Email support pilote: `lambert.thibaut98@gmail.com`
+
+## Closeout 2026-04-18
+
+Ce closeout reste un jalon historique valide au `2026-04-18`, mais il ne constitue plus le statut courant du pilote depuis la reouverture canonique du `2026-04-20`.
+
+- Fenetre du pilote: `2026-04-16` -> `2026-04-18`
+- Cohorte / utilisateurs invites: premier utilisateur externe invite + verification createur sur la cible publique
+- Hypotheses testees:
+  - la cible publique GitHub Pages reste atteignable et branchee sur une vraie instance Supabase
+  - le flux `creation de compte -> email de validation -> lien de confirmation -> connexion` est realisable sur la build publique
+  - le pilote expose enfin un canal feedback/support concret sur la build publique active
+- Criteres d'entree verifies:
+  - build publique accessible
+  - support minimal configure
+  - rerun externe observable
+  - decision de lancement explicite
+- Criteres de sortie verifies:
+  - signaux compares
+  - incidents et blocages classes
+  - destination feedback consignee
+  - decision finale et prochaine action ecrites
+- Signaux attendus:
+  - URL publique stable
+  - auth email active
+  - support pilote visible dans `assets/.env`
+- Signaux observes:
+  - `https://n3z3d.github.io/PriorisProject/` repond publiquement
+  - `auth/v1/settings` reste actif sur le host pilote
+  - rerun publique utilisateur du `2026-04-18` reussie sur le flux coeur
+  - rerun workflow `cf228ca0f4bde2c97fd7bb6ea9a214aece7790e9` reussi et `assets/.env` public expose `PRIORIS_PILOT_SUPPORT_EMAIL=lambert.thibaut98@gmail.com`
+  - relecture publique post-deploiement `2026-04-19` reussie sur le shell desktop et telephone; `assets/.env` public reste coherent avec la cible pilote
+  - validation partielle `2026-04-19`: `connexion normale avec un compte deja confirme -> refresh` passe sur la build publique
+- Incidents observes:
+  - premier rerun workflow `1c1c37684a92bdeb70471f5c7e34b43474f579e9` en echec car `tool/validate_pilot_pages_config.dart` n'etait pas encore publie sur `main`
+  - tentative de recette signee-in `2026-04-19` avec `test/manual/test_credentials.txt` en echec `invalid_credentials`, ce qui bloque une reverification authentifiee repo-owned des correctifs de session/priorisation sur la build publique courante
+  - tentative de recreation de compte `2026-04-19` bloquee par Supabase en `AuthApiException(... statusCode: 429, code: over_email_send_rate_limit)`, ce qui empeche temporairement de rejouer la recette `email de confirmation -> callback -> refresh immediat`
+- Blocages non tolerables:
+  - aucun bloqueur critique ouvert a la fin de cette verification
+- Limites confirmees:
+  - support pilote borne a un email manuel
+  - deploiement GitHub Pages encore manuel
+  - pas d'analytics ni de support operationnel etendu
+- Limite de verification restante:
+  - le chemin `login normal -> refresh` est valide, mais la reverification manuelle du chemin `callback email Supabase -> refresh immediat` reste suspendue a la levee du rate limit ou a la disponibilite d'un autre compte / alias de confirmation
+- Decision finale: `continuer avec limites`
+- Prochaine action recommandee: implementer la story `6.4`, redeployer la build pilote, puis rejouer la recette publique `email de confirmation -> lien Supabase -> arrivee -> refresh immediat` sur desktop et telephone avant toute ouverture d'un lane suivant
+- Artefacts relies:
+  - workflow run en echec `24609372855`
+  - workflow run reussi `24610836842`
+  - `https://n3z3d.github.io/PriorisProject/assets/.env`
+
+## Reouverture 2026-04-20
+
+- Nouvelle preuve publique: le lien email Supabase ouvre `https://n3z3d.github.io/PriorisProject/#sb`
+- Symptome visible: l'application affiche `Route non trouvee`
+- Interpretation canonique: la variante hash / fragment route-like du callback public n'est pas encore absorbee proprement par le runtime pilote
+- Impact sur le gate: la validation externe reelle repasse en `non fermee`
+- Decision provisoire: `corriger puis relancer`
+- Prochaine action BMAD: rouvrir `Epic 6`, creer puis implementer `6.4`, redeployer et reexecuter la recette publique callback sur desktop et telephone
 
 ## Cadre de closeout reutilisable
 
