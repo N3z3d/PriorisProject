@@ -327,6 +327,7 @@ void main() {
     test(
         'stabilizeFromCurrentOrIncomingSessionIfNeeded sanitizes a stale callback without session when no PKCE verifier remains',
         () async {
+      WebAuthCallbackStabilizer.callbackWithoutSession = false;
       final browserAdapter = _RecordingBrowserAdapter(
         currentUri: Uri.parse(
           'https://tests.prioris.app/auth/callback?code=pkce-code&type=signup',
@@ -354,6 +355,59 @@ void main() {
         browserAdapter.replacedUrls.single,
         'https://tests.prioris.app/auth/callback',
       );
+      expect(WebAuthCallbackStabilizer.consumeCallbackWithoutSession(), isTrue);
+    });
+
+    test(
+        'stabilizeFromCurrentOrIncomingSessionIfNeeded sets callbackWithoutSession when #sb arrives with no session',
+        () async {
+      WebAuthCallbackStabilizer.callbackWithoutSession = false;
+      final browserAdapter = _RecordingBrowserAdapter(
+        currentUri: Uri.parse('https://n3z3d.github.io/PriorisProject/#sb'),
+      );
+
+      final stabilized = await WebAuthCallbackStabilizer
+          .stabilizeFromCurrentOrIncomingSessionIfNeeded(
+        supabaseUrl: 'https://vgowxrktjzgwrfivtvse.supabase.co',
+        initialSession: null,
+        currentSessionReader: () => null,
+        authStateChanges: const Stream<AuthState>.empty(),
+        exchangeSessionFromUrl: (_) async {},
+        browserAdapter: browserAdapter,
+        waitTimeout: const Duration(milliseconds: 10),
+      );
+
+      expect(stabilized, isFalse);
+      expect(WebAuthCallbackStabilizer.consumeCallbackWithoutSession(), isTrue);
+      expect(
+        browserAdapter.replacedUrls.single,
+        'https://n3z3d.github.io/PriorisProject/',
+      );
+    });
+
+    test(
+        'stabilizeFromCurrentOrIncomingSessionIfNeeded does NOT set callbackWithoutSession when session is successfully established',
+        () async {
+      WebAuthCallbackStabilizer.callbackWithoutSession = false;
+      final restoredSession = _buildCallbackSession('ok@example.com');
+      final browserAdapter = _RecordingBrowserAdapter(
+        currentUri: Uri.parse(
+          'https://tests.prioris.app/auth/callback?code=pkce-code',
+        ),
+      );
+
+      await WebAuthCallbackStabilizer
+          .stabilizeFromCurrentOrIncomingSessionIfNeeded(
+        supabaseUrl: 'https://tests-prioris.supabase.co',
+        initialSession: restoredSession,
+        currentSessionReader: () => restoredSession,
+        authStateChanges: const Stream<AuthState>.empty(),
+        exchangeSessionFromUrl: (_) async {},
+        browserAdapter: browserAdapter,
+        waitTimeout: const Duration(milliseconds: 10),
+      );
+
+      expect(WebAuthCallbackStabilizer.consumeCallbackWithoutSession(), isFalse);
     });
   });
 }

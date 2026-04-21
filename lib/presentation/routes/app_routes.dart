@@ -3,6 +3,7 @@ import 'package:prioris/presentation/pages/home_page.dart';
 import 'package:prioris/presentation/pages/list_detail_page.dart';
 import 'package:prioris/presentation/pages/list_detail_loader_page.dart';
 import 'package:prioris/presentation/pages/agents_monitoring_page.dart';
+import 'package:prioris/presentation/pages/auth/auth_wrapper.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/infrastructure/services/logger_service.dart';
 
@@ -64,8 +65,25 @@ class AppRoutes {
       );
     }
 
-    // 3) Route inconnue → erreur
+    // 3) Garde Supabase : fragments route-like (#sb, sb-, sb.) capturés par le
+    // moteur Flutter avant que le stabilizer ait pu remplacer l'URL.
+    if (_isSupabaseCallbackRoute(settings.name)) {
+      return MaterialPageRoute(
+        builder: (_) => const _AuthCallbackRedirectPage(),
+        settings: settings,
+      );
+    }
+
+    // 4) Route inconnue → erreur
     return _errorRoute('Route non trouvée');
+  }
+
+  static bool _isSupabaseCallbackRoute(String? name) {
+    if (name == null) return false;
+    final normalized = name.replaceAll('/', '').replaceAll('#', '');
+    return normalized == 'sb' ||
+        normalized.startsWith('sb-') ||
+        normalized.startsWith('sb.');
   }
   
   /// Route d'erreur pour les routes non définies
@@ -117,4 +135,58 @@ class AppRoutes {
       (route) => false,
     );
   }
-} 
+}
+
+/// Page de redirection pour les fragments Supabase route-like (#sb, #sb-...).
+///
+/// Affiché quand le moteur Flutter a capturé l'URL de callback avant que le
+/// stabilizer ait pu la nettoyer via history.replaceState. Redirige vers
+/// [AuthWrapper] après un bref délai pour ne pas laisser l'utilisateur sur
+/// une page vide ou "Route non trouvée".
+class _AuthCallbackRedirectPage extends StatefulWidget {
+  const _AuthCallbackRedirectPage();
+
+  @override
+  State<_AuthCallbackRedirectPage> createState() =>
+      _AuthCallbackRedirectPageState();
+}
+
+class _AuthCallbackRedirectPageState extends State<_AuthCallbackRedirectPage> {
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(milliseconds: 600), _redirectToAuthWrapper);
+  }
+
+  void _redirectToAuthWrapper() {
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const AuthWrapper()),
+      (route) => false,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(height: 20),
+            Text(
+              'Redirection en cours…',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 12),
+            TextButton(
+              onPressed: _redirectToAuthWrapper,
+              child: const Text('Continuer maintenant'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

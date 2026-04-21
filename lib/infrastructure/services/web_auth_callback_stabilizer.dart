@@ -37,6 +37,25 @@ class WebAuthCallbackStabilizer {
   static const String _pkceCodeVerifierStorageKey =
       'supabase.auth.token-code-verifier';
 
+  /// Vrai si un callback d'authentification a été détecté au démarrage mais
+  /// qu'aucune session n'a pu être établie (lien expiré, code déjà utilisé,
+  /// ou navigateur différent de celui où le flux a été initié).
+  /// Lu une seule fois par [LoginPage] pour afficher un message contextuel.
+  static bool _callbackWithoutSession = false;
+
+  /// Lit et réinitialise l'indicateur en une seule opération.
+  /// À appeler une seule fois par [LoginPage] au démarrage.
+  static bool consumeCallbackWithoutSession() {
+    final value = _callbackWithoutSession;
+    _callbackWithoutSession = false;
+    return value;
+  }
+
+  @visibleForTesting
+  static set callbackWithoutSession(bool value) {
+    _callbackWithoutSession = value;
+  }
+
   static const Set<String> _authSignalKeys = <String>{
     'code',
     'access_token',
@@ -122,6 +141,7 @@ class WebAuthCallbackStabilizer {
       );
     }
 
+    _callbackWithoutSession = true;
     browserAdapter.replaceUrl(stripAuthCallbackPayload(currentUri).toString());
     return false;
   }
@@ -207,6 +227,7 @@ class WebAuthCallbackStabilizer {
       );
     }
 
+    _callbackWithoutSession = true;
     browserAdapter.replaceUrl(stripAuthCallbackPayload(currentUri).toString());
     return false;
   }
