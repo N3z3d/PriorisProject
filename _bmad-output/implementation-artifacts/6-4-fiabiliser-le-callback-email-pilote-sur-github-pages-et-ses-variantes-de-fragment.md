@@ -1,6 +1,6 @@
 # Story 6.4: Fiabiliser le callback email pilote sur GitHub Pages et ses variantes de fragment
 
-Status: ready-for-dev
+Status: in-progress
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -44,10 +44,10 @@ afin d'entrer dans le pilote sans `Route non trouvee` et de conserver ma session
   - [x] `flutter build web` propre.
 
 - [ ] Documenter la preuve publique de cloture. (AC: 1, 2, 3)
-  - [ ] Redeployer la build via le workflow `Deploy Pilot Web to GitHub Pages`.
+  - [x] Redeployer la build via le workflow `Deploy Pilot Web to GitHub Pages`. (2026-04-21 — build passee, confirmee par Thibaut)
   - [ ] Rejouer la recette `email -> callback -> arrivee -> refresh` sur desktop (Chrome / Edge 1280x800) avec la cible publique `https://n3z3d.github.io/PriorisProject/`.
   - [ ] Rejouer la meme recette sur telephone (Chrome Android ou Safari iPhone 390x844).
-  - [ ] Dater les preuves (2026-04-XX) et les ajouter dans le Dev Agent Record de cette story.
+  - [ ] Dater les preuves (2026-04-21) et les ajouter dans le Dev Agent Record de cette story.
   - [ ] Mettre a jour `docs/PILOT_READINESS_AND_CLOSEOUT.md` vers `GO` si les preuves passent.
 
 ## Dev Notes
@@ -208,4 +208,8 @@ claude-sonnet-4-6
 - La preuve publique (desktop + telephone) est obligatoire pour fermer cette story.
 
 ### File List
+
+- `lib/infrastructure/services/web_auth_callback_stabilizer.dart`
+- `test/infrastructure/services/web_auth_callback_stabilizer_test.dart`
+- `lib/infrastructure/services/supabase_service.dart`
 
