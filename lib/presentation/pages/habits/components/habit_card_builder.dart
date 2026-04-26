@@ -454,21 +454,18 @@ class HabitCardBuilder implements IHabitCardBuilder {
     return 'Quotidien'; // Placeholder
   }
 
-  /// Calculate habit progress (0.0 to 1.0)
+  /// Calculate habit progress over the last 7 days (0.0 to 1.0)
   double _calculateProgress(Habit habit) {
-    // This would depend on your Habit model and completion tracking
-    return 0.7; // Placeholder
+    return habit.getSuccessRate(days: 7);
   }
 
-  /// Calculate current streak
+  /// Calculate current consecutive streak
   int _calculateStreak(Habit habit) {
-    // This would depend on your habit completion tracking
-    return 5; // Placeholder
+    return habit.getCurrentStreak();
   }
 
-  /// Calculate weekly completions
+  /// Calculate completions in the last 7 days
   int _calculateWeeklyCompletions(Habit habit) {
-    // This would depend on your habit completion tracking
-    return 4; // Placeholder
+    return (habit.getSuccessRate(days: 7) * 7).round();
   }
 }

@@ -45,7 +45,7 @@ class HabitAdapter extends TypeAdapter<Habit> {
       cycleStartDate: fields[25] as DateTime?,
       specificWeekdays: (fields[26] as List?)?.cast<int>(),
       specificDate: fields[27] as DateTime?,
-      repeatEveryYear: fields[28] as bool? ?? false,
+      repeatEveryYear: fields[28] as bool,
     );
   }
 

@@ -23,6 +23,7 @@ class HabitActionHandler implements IHabitActionHandler {
   void handleHabitAction(String action, Habit habit) {
     switch (action.toLowerCase()) {
       case 'record':
+      case 'complete':
         recordHabit(habit);
         break;
       case 'edit':
@@ -43,6 +44,7 @@ class HabitActionHandler implements IHabitActionHandler {
   Future<void> recordHabit(Habit habit) async {
     try {
       _showLoadingDialog(_l10n.habitsLoadingRecord);
+      habit.markCompleted(true);
       await _ref.read(habitsStateProvider.notifier).updateHabit(habit);
       if (_context.mounted) {
         Navigator.of(_context).pop();
