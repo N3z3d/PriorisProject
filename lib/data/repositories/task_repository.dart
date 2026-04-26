@@ -80,11 +80,8 @@ class InMemoryTaskRepository implements TaskRepository {
 
   @override
   Future<void> updateEloScores(Task winner, Task loser) async {
-    // Mettre à jour les scores ELO
-    winner.updateEloScore(loser, true);
-    loser.updateEloScore(winner, false);
-    
-    // Sauvegarder les tâches mises à jour
+    // Les scores ELO sont déjà calculés par l'appelant (UnifiedPrioritizationService)
+    // — ne pas recalculer ici pour éviter le double calcul.
     await updateTask(winner);
     await updateTask(loser);
   }

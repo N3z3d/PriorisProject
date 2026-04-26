@@ -6,6 +6,7 @@ import 'package:prioris/data/providers/lists_controller_provider.dart';
 import 'package:prioris/data/providers/prioritization_providers.dart';
 import 'package:prioris/data/repositories/task_repository.dart';
 import 'package:prioris/domain/models/core/entities/task.dart';
+import 'package:prioris/domain/task/services/list_item_task_converter.dart';
 import 'package:prioris/infrastructure/services/logger_service.dart';
 
 import 'duel_task_filter.dart';
@@ -111,10 +112,38 @@ class DuelService implements DuelFlowService {
   @override
   Future<void> processWinner(Task winner, Task loser) async {
     final unifiedService = _ref.read(unifiedPrioritizationServiceProvider);
-    await unifiedService.updateEloScoresFromDuel(winner, loser);
+    final result = await unifiedService.updateEloScoresFromDuel(winner, loser);
 
-    _ref.invalidate(tasksSortedByEloProvider);
-    _ref.invalidate(allPrioritizationTasksProvider);
+    try {
+      await _persistEloToLists(result.winner, result.loser);
+    } catch (e, stack) {
+      LoggerService.instance.error(
+        'Échec persistance ELO dans les listes',
+        context: 'DuelService',
+        error: e,
+        stackTrace: stack,
+      );
+    } finally {
+      _ref.invalidate(tasksSortedByEloProvider);
+      _ref.invalidate(allPrioritizationTasksProvider);
+    }
+  }
+
+  Future<void> _persistEloToLists(Task winner, Task loser) async {
+    // Convention : task.tags = [listId] pour une tâche list-backed (Supabase).
+    // task.tags.isEmpty = tâche classique InMemory → pas de persistance Supabase.
+    // Cf. ListItemTaskConverter.convertListItemToTask : tags: [listItem.listId]
+    final converter = ListItemTaskConverter();
+    final listsNotifier = _ref.read(listsControllerProvider.notifier);
+
+    for (final task in [winner, loser]) {
+      if (task.tags.isEmpty) continue;
+      assert(task.tags.length == 1, 'Task list-backed doit avoir exactement 1 tag (listId)');
+      final listItem = converter.convertTaskToListItem(task);
+      final listId = listItem.listId;
+      if (listId.isEmpty || listId == 'default') continue;
+      await listsNotifier.updateListItem(listId, listItem);
+    }
   }
 
   @override
