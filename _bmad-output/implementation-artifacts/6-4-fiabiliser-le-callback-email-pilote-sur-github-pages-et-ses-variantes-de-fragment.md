@@ -1,6 +1,6 @@
 # Story 6.4: Fiabiliser le callback email pilote sur GitHub Pages et ses variantes de fragment
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -179,6 +179,18 @@ afin d'entrer dans le pilote sans `Route non trouvee` et de conserver ma session
   - `docs/PILOT_READINESS_AND_CLOSEOUT.md`
   - `docs/PILOT_PAGES_DEPLOYMENT.md`
   - `.github/workflows/deploy-pilot-pages.yml`
+
+### Review Findings
+
+- [x] [Review][Decision] Déviation architecture acceptée : router guard conservé (Cause racine 2 empiriquement prouvée — Flutter web lit l'URL avant Dart). `_AuthCallbackRedirectPage` supprimée, remplacée par routing direct vers `AuthWrapper`. Architecture docs à mettre à jour. [résolu 2026-04-22]
+- [x] [Review][Patch] Timer 600ms supprimé — `_AuthCallbackRedirectPage` éliminée ; le guard route directement vers `AuthWrapper` (le stabilizer a déjà tourné au moment du routing). [app_routes.dart:71-76, résolu 2026-04-22]
+- [x] [Review][Patch] Isolation des tests : `setUp` centralisé — groupe `callbackWithoutSession flag` avec `setUp(() { ... = false; })` ; resets manuels en tête de test supprimés. [web_auth_callback_stabilizer_test.dart:327-414, résolu 2026-04-22]
+- [x] [Review][Patch] Faux positifs dans `_isSupabaseCallbackRoute` — normalisation remplacée : retire uniquement le premier `/` et premier `#`, sans écraser les segments légitimes. [app_routes.dart:82-92, résolu 2026-04-22]
+- [x] [Review][Patch] Chaînes l10n — clé `authCallbackExpiredMessage` ajoutée dans les 4 `.arb` + abstract class + 4 implémentations. `login_page.dart` utilise `AppLocalizations.of(context)?.authCallbackExpiredMessage`. `_AuthCallbackRedirectPage` supprimée (ses chaînes disparaissent avec). [résolu 2026-04-22]
+- [x] [Review][Patch] Test de régression `isAuthCallbackUri` avec `#access_token=...` ajouté. [web_auth_callback_stabilizer_test.dart, résolu 2026-04-22]
+- [x] [Review][Patch] Widget tests `_AuthCallbackRedirectPage` — N/A : classe supprimée, routing direct vers `AuthWrapper`. [résolu par suppression 2026-04-22]
+- [x] [Review][Defer] Duplication logique `_isSupabaseCallbackRoute` / stabilizer [app_routes.dart:81-87, web_auth_callback_stabilizer.dart] — deferred, résoudre si la dualité layers devient gênante à l'évolution
+- [x] [Review][Defer] Couplage cross-layer : flag statique infra (`WebAuthCallbackStabilizer`) consommé par la présentation (`LoginPage`) en contournant Riverpod [web_auth_callback_stabilizer.dart:44, login_page.dart:48] — deferred, résoudre via Riverpod provider est hors scope d'une story bug-fix
 
 ## Change Log
 

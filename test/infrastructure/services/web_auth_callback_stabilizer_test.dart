@@ -324,10 +324,14 @@ void main() {
       );
     });
 
+    group('callbackWithoutSession flag', () {
+      setUp(() {
+        WebAuthCallbackStabilizer.callbackWithoutSession = false;
+      });
+
     test(
         'stabilizeFromCurrentOrIncomingSessionIfNeeded sanitizes a stale callback without session when no PKCE verifier remains',
         () async {
-      WebAuthCallbackStabilizer.callbackWithoutSession = false;
       final browserAdapter = _RecordingBrowserAdapter(
         currentUri: Uri.parse(
           'https://tests.prioris.app/auth/callback?code=pkce-code&type=signup',
@@ -361,7 +365,6 @@ void main() {
     test(
         'stabilizeFromCurrentOrIncomingSessionIfNeeded sets callbackWithoutSession when #sb arrives with no session',
         () async {
-      WebAuthCallbackStabilizer.callbackWithoutSession = false;
       final browserAdapter = _RecordingBrowserAdapter(
         currentUri: Uri.parse('https://n3z3d.github.io/PriorisProject/#sb'),
       );
@@ -388,7 +391,6 @@ void main() {
     test(
         'stabilizeFromCurrentOrIncomingSessionIfNeeded does NOT set callbackWithoutSession when session is successfully established',
         () async {
-      WebAuthCallbackStabilizer.callbackWithoutSession = false;
       final restoredSession = _buildCallbackSession('ok@example.com');
       final browserAdapter = _RecordingBrowserAdapter(
         currentUri: Uri.parse(
@@ -408,6 +410,17 @@ void main() {
       );
 
       expect(WebAuthCallbackStabilizer.consumeCallbackWithoutSession(), isFalse);
+    });
+    }); // end group callbackWithoutSession flag
+
+    test(
+        'isAuthCallbackUri returns true for a fragment-based implicit flow (#access_token=...)',
+        () {
+      final callbackUri = Uri.parse(
+        'https://tests.prioris.app/auth/callback#access_token=tok&refresh_token=ref',
+      );
+
+      expect(WebAuthCallbackStabilizer.isAuthCallbackUri(callbackUri), isTrue);
     });
   });
 }

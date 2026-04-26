@@ -1,7 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/infrastructure/security/signup_guard.dart';
 import 'package:prioris/infrastructure/services/auth_service.dart';
+import 'package:prioris/infrastructure/services/web_auth_callback_stabilizer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+/// Provider pour le flag callback-sans-session (one-shot read-and-reset).
+/// autoDispose garantit que le provider est recréé entre deux visites de LoginPage,
+/// empêchant la valeur true d'être mémoïsée après consommation du flag.
+final callbackWithoutSessionProvider = Provider.autoDispose<bool>((ref) {
+  return WebAuthCallbackStabilizer.consumeCallbackWithoutSession();
+});
 
 /// Provider pour le service d'authentification.
 final authServiceProvider = Provider<AuthService>((ref) {

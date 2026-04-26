@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/core/exceptions/app_exception.dart';
 import 'package:prioris/data/providers/auth_providers.dart';
 import 'package:prioris/infrastructure/security/signup_guard.dart';
-import 'package:prioris/infrastructure/services/web_auth_callback_stabilizer.dart';
 import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -45,15 +44,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   void initState() {
     super.initState();
     _errorMessage = widget.initialErrorMessage;
-    if (WebAuthCallbackStabilizer.consumeCallbackWithoutSession()) {
+    if (ref.read(callbackWithoutSessionProvider)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
+        final message = AppLocalizations.of(context)?.authCallbackExpiredMessage ??
+            'Votre lien de connexion est expiré ou a été ouvert depuis un autre navigateur. Veuillez vous connecter.';
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Votre lien de connexion est expiré ou a été ouvert depuis un autre navigateur. Veuillez vous connecter.',
-            ),
-            duration: Duration(seconds: 6),
+          SnackBar(
+            content: Text(message),
+            duration: const Duration(seconds: 6),
           ),
         );
       });

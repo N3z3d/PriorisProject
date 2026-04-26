@@ -5,6 +5,7 @@ import 'package:mockito/annotations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:prioris/data/providers/auth_providers.dart';
 import 'package:prioris/infrastructure/services/auth_service.dart';
+import 'package:prioris/infrastructure/services/web_auth_callback_stabilizer.dart';
 
 // Generate mocks
 @GenerateMocks([AuthService])
@@ -266,6 +267,46 @@ void main() {
 
         // Assert
         expect(uiState, equals(AuthUIState.error));
+      });
+    });
+
+    group('callbackWithoutSessionProvider', () {
+      late ProviderContainer callbackContainer;
+
+      setUp(() {
+        WebAuthCallbackStabilizer.callbackWithoutSession = false;
+        callbackContainer = ProviderContainer();
+      });
+
+      tearDown(() {
+        callbackContainer.dispose();
+        WebAuthCallbackStabilizer.callbackWithoutSession = false;
+      });
+
+      test('returns true when flag is set, consuming it', () {
+        WebAuthCallbackStabilizer.callbackWithoutSession = true;
+
+        final result = callbackContainer.read(callbackWithoutSessionProvider);
+
+        expect(result, isTrue);
+        expect(WebAuthCallbackStabilizer.consumeCallbackWithoutSession(), isFalse);
+      });
+
+      test('returns false when flag is not set', () {
+        final result = callbackContainer.read(callbackWithoutSessionProvider);
+
+        expect(result, isFalse);
+      });
+
+      test('new container evaluates fresh after previous consumption', () {
+        WebAuthCallbackStabilizer.callbackWithoutSession = true;
+        callbackContainer.read(callbackWithoutSessionProvider);
+        callbackContainer.dispose();
+
+        final secondContainer = ProviderContainer();
+        addTearDown(secondContainer.dispose);
+
+        expect(secondContainer.read(callbackWithoutSessionProvider), isFalse);
       });
     });
 

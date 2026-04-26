@@ -1,13 +1,14 @@
 # CLAUDE.md — Directives de refactorisation du projet (Claude Code)
 
 ## Mandat
-- Refactoriser le projet en appliquant **Clean Code** et **SOLID** parfaitement.
+- Refactoriser le projet en appliquant **Clean Code** et **SOLID** de façon pragmatique, proportionnée au problème réel, sans abstraction spéculative ni refactorisation non demandée.
 - **Analyser le projet** et **supprimer les fichiers inutiles**.
 - Travailler en **TDD** : Red → Green → Refactor, en petits lots sûrs.
 
 ## Processus & Sécurité
+0) **Clarification avant action** : avant toute modification, expliciter les hypothèses, ambiguïtés, risques et arbitrages. Si une ambiguïté peut provoquer une mauvaise refactorisation, demander confirmation au lieu de deviner.
 1) **Cartographie** (sans code) : liste des modules, dépendances, zones mortes/dupliquées.
-2) **Plan par lots** (≤ 200 lignes modifiées/lot). Pas de big bang.
+2) **Plan par lots** (≤ 200 lignes modifiées/lot). Pas de big bang. Chaque lot doit avoir un objectif observable et une vérification explicite : test, commande, diff attendu ou critère d’acceptation.
 3) **Suppression contrôlée** :
    - Étape 1 (rapport) : fichier | raison | références | décision.
    - Étape 2 (diff) : supprimer uniquement ce qui a été validé.
@@ -26,6 +27,7 @@
 - Nommer classes/méthodes/variables **explicitement**.
 - **Aucun code mort**. **Aucune duplication** (DRY).
 - Méthodes **courtes et cohérentes** (une seule intention).
+- **Changements chirurgicaux** : ne modifier que les lignes nécessaires à la demande. Ne pas reformater, renommer, déplacer ou “améliorer” du code adjacent sans lien direct avec l’objectif.
 - Respect des conventions du repo (indentation, style, lint/format).
 - **Tests unitaires systématiques** sur tout code modifié/ajouté.
 
@@ -36,10 +38,12 @@
 - **ISP** — Interface Segregation Principle
 - **DIP** — Dependency Inversion Principle
 
-## Design Patterns (utiliser quand le besoin est avéré, pas par dogme)
-- **Création** : Singleton, Factory Method, Abstract Factory, Builder, Prototype
-- **Structuraux** : Adapter, Facade, Decorator, Composite, Proxy, Flyweight, Bridge
-- **Comportement** : Strategy, Observer, Command, Chain of Responsibility, Template Method, Mediator, Iterator, Memento, Interpreter, State
+## Design Patterns
+- Utiliser un design pattern uniquement si le problème concret le justifie.
+- Avant d’introduire un pattern, expliquer :
+  1) le problème résolu,
+  2) pourquoi une solution simple ne suffit pas,
+  3) quel coût de complexité est ajouté.
 
 ## Architectures (choix guidé par le contexte)
 - **Layered Architecture**
@@ -60,6 +64,7 @@
 - Couverture visée ≥ **85% lignes** sur le code modifié (qualité > pourcentage).
 - Cas : **nominal + ≥3 edge cases** + erreurs attendues.
 - Tests **déterministes** (isoler temps/réseau/IO via mocks/adapters).
+- Pour les changements triviaux sans logique métier (typo, commentaire, renommage local, formatage ciblé), ne pas créer de test artificiel. Expliquer pourquoi aucun test n’est nécessaire.
 
 ## Sortie attendue (obligatoire pour chaque demande à Claude)
 1) **Plan bref** (3–6 puces) décrivant l’approche.

@@ -10,6 +10,8 @@
 include: package:flutter_lints/flutter.yaml
 
 analyzer:
+  exclude:
+    - _archive/**
   errors:
     # Remove deprecated API warnings ignore to enforce modern API usage
     # deprecated_member_use: ignore

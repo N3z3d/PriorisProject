@@ -303,7 +303,7 @@ class WebAuthCallbackStabilizer {
       return true;
     }
 
-    if (_isSupabaseRouteLikeFragment(uri.fragment)) {
+    if (isSupabaseRouteLikeFragment(uri.fragment)) {
       return true;
     }
 
@@ -369,7 +369,10 @@ class WebAuthCallbackStabilizer {
     }
   }
 
-  static bool _isSupabaseRouteLikeFragment(String fragment) {
+  /// Retourne true si [fragment] correspond à un fragment Supabase route-like.
+  /// [fragment] doit être pré-strippé : sans `#` initial. Ex: 'sb', 'sb-xxx', 'sb.xxx'.
+  /// Appeler avec '#sb' retourne false — supprimer le '#' avant l'appel.
+  static bool isSupabaseRouteLikeFragment(String fragment) {
     return fragment == 'sb' ||
         fragment.startsWith('sb-') ||
         fragment.startsWith('sb.');
@@ -383,7 +386,7 @@ class WebAuthCallbackStabilizer {
       return '';
     }
 
-    if (_isSupabaseRouteLikeFragment(rawFragment)) {
+    if (isSupabaseRouteLikeFragment(rawFragment)) {
       return '';
     }
 
