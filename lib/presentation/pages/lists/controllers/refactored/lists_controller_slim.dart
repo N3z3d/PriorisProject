@@ -96,19 +96,27 @@ class ListsControllerSlim extends StateNotifier<ListsState>
         action: (current) => crudOperations.addListItem(current, listId, item),
       );
 
-  Future<void> addMultipleItems(String listId, List<ListItem> items) async {
+  Future<void> addMultipleItems(
+    String listId,
+    List<ListItem> items, {
+    void Function(int, int)? onProgress,
+  }) async {
     if (items.isEmpty) return;
     final pendingIds = items.map((item) => item.id).toSet();
     await _runItemsOperation(
       operation: 'addMultipleItems',
       itemIds: pendingIds,
       action: (currentState) =>
-          crudOperations.addMultipleItems(currentState, listId, items),
+          crudOperations.addMultipleItems(currentState, listId, items, onProgress: onProgress),
     );
   }
 
-  Future<void> addMultipleItemsToList(String listId, List<ListItem> items) =>
-      addMultipleItems(listId, items);
+  Future<void> addMultipleItemsToList(
+    String listId,
+    List<ListItem> items, {
+    void Function(int, int)? onProgress,
+  }) =>
+      addMultipleItems(listId, items, onProgress: onProgress);
 
   Future<void> updateListItem(String listId, ListItem item) =>
       _runItemOperation(

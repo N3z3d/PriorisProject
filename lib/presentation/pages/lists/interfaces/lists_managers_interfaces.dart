@@ -60,7 +60,7 @@ abstract class IListsPersistenceManager {
   Future<void> deleteListItem(String itemId);
 
   /// Sauvegarde plusieurs éléments en une opération
-  Future<void> saveMultipleItems(List<ListItem> items);
+  Future<void> saveMultipleItems(List<ListItem> items, {void Function(int, int)? onProgress});
 
   // === Opérations de maintenance ===
 

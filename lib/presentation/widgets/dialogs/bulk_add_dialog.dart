@@ -13,10 +13,20 @@ enum BulkAddMode {
   multiple,
 }
 
+/// Exception signalant une annulation volontaire — ne doit pas afficher d'erreur UI.
+/// Étendre cette classe depuis le site d'appel pour propager le signal d'annulation.
+class BulkAddCancelException implements Exception {}
+
+/// Callback d'ajout en lot — async, reçoit les titres et un rapporteur de progression.
+typedef BulkAddOnSubmit = Future<void> Function(
+  List<String> items,
+  void Function(int current, int total) onProgress,
+);
+
 class BulkAddDialog extends StatefulWidget {
   final String title;
   final String hintText;
-  final Function(List<String>) onSubmit;
+  final BulkAddOnSubmit onSubmit;
 
   const BulkAddDialog({
     super.key,
@@ -27,7 +37,7 @@ class BulkAddDialog extends StatefulWidget {
 
   factory BulkAddDialog.create({
     String title = '',
-    required Function(List<String>) onItemsAdded,
+    required BulkAddOnSubmit onItemsAdded,
   }) {
     return BulkAddDialog(
       title: title,
@@ -46,6 +56,9 @@ class _BulkAddDialogState extends State<BulkAddDialog> with TickerProviderStateM
   BulkAddMode _currentMode = BulkAddMode.single;
   bool _keepOpen = false;
   bool _isSubmitting = false;
+  int _processedCount = 0;
+  int _totalCount = 0;
+  String? _submitError;
   late TabController _tabController;
 
   @override
@@ -78,52 +91,64 @@ class _BulkAddDialogState extends State<BulkAddDialog> with TickerProviderStateM
     });
   }
 
-  void _handleSubmit() {
+  Future<void> _handleSubmit() async {
     if (!_isValid || _isSubmitting) return;
-
-    setState(() {
-      _isSubmitting = true;
-    });
 
     final text = _controller.text.trim();
     final items = _currentMode == BulkAddMode.multiple
         ? text.split('\n').map((e) => e.trim()).where((e) => e.isNotEmpty).toList()
         : [text];
 
-    if (items.isEmpty) {
-      setState(() {
-        _isSubmitting = false;
+    if (items.isEmpty) return;
+
+    setState(() {
+      _isSubmitting = true;
+      _processedCount = 0;
+      _totalCount = items.length;
+      _submitError = null;
+    });
+
+    try {
+      final submitFuture = widget.onSubmit(items, (current, total) {
+        if (mounted) setState(() { _processedCount = current; _totalCount = total; });
       });
-      return;
-    }
 
-    widget.onSubmit(items);
-
-    if (_keepOpen) {
-      _controller.clear();
-      _focusNode.requestFocus();
-      // Reset submitting flag after short delay to prevent rapid re-submissions
-      Future.delayed(const Duration(milliseconds: 300), () {
+      if (_keepOpen) {
+        // Keep-open mode: await both completion AND 300ms debounce to protect against rapid re-submit
+        await Future.wait([
+          submitFuture,
+          Future.delayed(const Duration(milliseconds: 300)),
+        ]);
         if (mounted) {
-          setState(() {
-            _isSubmitting = false;
-          });
+          setState(() { _isSubmitting = false; _processedCount = 0; _totalCount = 0; });
+          _controller.clear();
+          _focusNode.requestFocus();
         }
-      });
-    } else {
-      Navigator.of(context).pop();
+      } else {
+        await submitFuture;
+        if (mounted) {
+          Navigator.of(context).pop(_processedCount > 0 ? _processedCount : items.length);
+        }
+      }
+    } on BulkAddCancelException {
+      if (mounted) setState(() { _isSubmitting = false; _submitError = null; });
+    } catch (e) {
+      if (mounted) setState(() { _isSubmitting = false; _submitError = e.toString(); });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: AppTheme.surfaceColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+    return PopScope(
+      canPop: !_isSubmitting,
+      child: Dialog(
+        backgroundColor: AppTheme.surfaceColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        elevation: 8,
+        child: _buildDialogContent(context),
       ),
-      elevation: 8,
-      child: _buildDialogContent(context),
     );
   }
 
@@ -132,10 +157,12 @@ class _BulkAddDialogState extends State<BulkAddDialog> with TickerProviderStateM
       width: MediaQuery.of(context).size.width * 0.9,
       constraints: const BoxConstraints(maxWidth: 500),
       padding: const EdgeInsets.all(24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: _buildDialogChildren(context),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: _buildDialogChildren(context),
+        ),
       ),
     );
   }
@@ -165,31 +192,8 @@ class _BulkAddDialogState extends State<BulkAddDialog> with TickerProviderStateM
       ),
       ..._buildHelpSection(context),
       const SizedBox(height: 20),
-      if (_isSubmitting) ...[
-        Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  l10n.bulkAddSubmitting,
-                  style: const TextStyle(
-                    color: AppTheme.textSecondary,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
+      if (_isSubmitting) _buildProgressSection(l10n),
+      if (_submitError != null) _buildErrorSection(l10n),
       BulkAddKeepOpenOption(
         value: _keepOpen,
         onChanged: _isSubmitting ? null : (value) => setState(() => _keepOpen = value ?? false),
@@ -202,6 +206,50 @@ class _BulkAddDialogState extends State<BulkAddDialog> with TickerProviderStateM
         onSubmit: _handleSubmit,
       ),
     ];
+  }
+
+  Widget _buildProgressSection(AppLocalizations l10n) {
+    final hasProgress = _processedCount > 0;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          LinearProgressIndicator(
+            value: hasProgress ? _processedCount / _totalCount : null,
+            backgroundColor: AppTheme.surfaceColor,
+            color: AppTheme.primaryColor,
+          ),
+          const SizedBox(height: 8),
+          Center(
+            child: Text(
+              hasProgress
+                  ? '$_processedCount / $_totalCount'
+                  : l10n.bulkAddSubmitting,
+              style: const TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 14,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorSection(AppLocalizations l10n) {
+    final partialInfo = _processedCount > 0
+        ? ' — ${l10n.bulkAddImportSuccess(_processedCount)}'
+        : '';
+    return Padding(
+      padding: const EdgeInsets.only(top: 4, bottom: 4),
+      child: Text(
+        '${l10n.bulkAddImportError}$partialInfo',
+        style: const TextStyle(color: AppTheme.errorColor, fontSize: 13),
+        textAlign: TextAlign.center,
+      ),
+    );
   }
 
   List<Widget> _buildHelpSection(BuildContext context) {

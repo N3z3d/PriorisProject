@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:prioris/presentation/widgets/dialogs/bulk_add_dialog.dart';
+import '../../../helpers/localized_widget.dart';
 
 /// Tests for debounce protection in BulkAddDialog
 /// Prevents duplicate submissions on rapid double-clicks
@@ -14,16 +15,12 @@ void main() {
         List<List<String>> allSubmissions = [];
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: BulkAddDialog(
-                onSubmit: (items) {
-                  callCount++;
-                  allSubmissions.add(items);
-                },
-              ),
-            ),
-          ),
+          localizedApp(BulkAddDialog(
+            onSubmit: (items, _) async {
+              callCount++;
+              allSubmissions.add(items);
+            },
+          )),
         );
 
         await tester.pumpAndSettle();
@@ -63,13 +60,9 @@ void main() {
         int callCount = 0;
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: BulkAddDialog(
-                onSubmit: (items) => callCount++,
-              ),
-            ),
-          ),
+          localizedApp(BulkAddDialog(
+            onSubmit: (items, _) async => callCount++,
+          )),
         );
 
         await tester.pumpAndSettle();
@@ -113,13 +106,9 @@ void main() {
         int callCount = 0;
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: BulkAddDialog(
-                onSubmit: (items) => callCount++,
-              ),
-            ),
-          ),
+          localizedApp(BulkAddDialog(
+            onSubmit: (items, _) async => callCount++,
+          )),
         );
 
         await tester.pumpAndSettle();
@@ -159,16 +148,12 @@ void main() {
         List<List<String>> allSubmissions = [];
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: BulkAddDialog(
-                onSubmit: (items) {
-                  callCount++;
-                  allSubmissions.add(items);
-                },
-              ),
-            ),
-          ),
+          localizedApp(BulkAddDialog(
+            onSubmit: (items, _) async {
+              callCount++;
+              allSubmissions.add(items);
+            },
+          )),
         );
 
         await tester.pumpAndSettle();

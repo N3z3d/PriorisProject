@@ -82,8 +82,9 @@ class ListsCrudOperations {
   Future<ListsState> addMultipleItems(
     ListsState current,
     String listId,
-    List<ListItem> items,
-  ) {
+    List<ListItem> items, {
+    void Function(int, int)? onProgress,
+  }) {
     return _executeMutation(
       current,
       validate: () {
@@ -91,7 +92,7 @@ class ListsCrudOperations {
           _ensureItemValid(item);
         }
       },
-      persist: () => persistence.saveMultipleItems(items),
+      persist: () => persistence.saveMultipleItems(items, onProgress: onProgress),
       updateState: (state) => stateManager.addItems(state, listId, items),
     );
   }

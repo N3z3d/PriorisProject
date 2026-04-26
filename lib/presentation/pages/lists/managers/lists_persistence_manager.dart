@@ -224,15 +224,17 @@ class ListsPersistenceManager
   }
 
   @override
-  Future<void> saveMultipleItems(List<ListItem> items) async {
+  Future<void> saveMultipleItems(List<ListItem> items, {void Function(int, int)? onProgress}) async {
     await executeMonitoredOperation('saveMultipleItems', () async {
       final savedItems = <ListItem>[];
+      final total = items.length;
 
       try {
-        for (final item in items) {
-          await saveListItem(item);
-          await verifyItemPersistence(item.id);
-          savedItems.add(item);
+        for (var i = 0; i < total; i++) {
+          await saveListItem(items[i]);
+          await verifyItemPersistence(items[i].id);
+          savedItems.add(items[i]);
+          onProgress?.call(i + 1, total);
         }
 
         LoggerService.instance.info(

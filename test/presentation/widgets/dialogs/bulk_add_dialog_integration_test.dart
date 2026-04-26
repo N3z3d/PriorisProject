@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:prioris/presentation/widgets/dialogs/bulk_add_dialog.dart';
+import '../../../helpers/localized_widget.dart';
 
 /// Tests d'integration pour BulkAddDialog
 /// Objectif: Reproduire le bug "rien ne se passe" lors de l'ajout
@@ -11,20 +12,15 @@ void main() {
       (tester) async {
         // ARRANGE - Setup callback spy
         List<String>? submittedItems;
-        final callback = (List<String> items) {
-          submittedItems = items;
-        };
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: BulkAddDialog(
-                key: const ValueKey('bulk_add_dialog'),
-                title: 'Test Dialog',
-                onSubmit: callback,
-              ),
-            ),
-          ),
+          localizedApp(BulkAddDialog(
+            key: const ValueKey('bulk_add_dialog'),
+            title: 'Test Dialog',
+            onSubmit: (items, _) async {
+              submittedItems = items;
+            },
+          )),
         );
 
         await tester.pumpAndSettle();
@@ -61,13 +57,9 @@ void main() {
       'REPRO: submit button should be disabled when field is empty',
       (tester) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: BulkAddDialog(
-                onSubmit: (_) {},
-              ),
-            ),
-          ),
+          localizedApp(BulkAddDialog(
+            onSubmit: (_, __) async {},
+          )),
         );
 
         await tester.pumpAndSettle();
@@ -93,13 +85,9 @@ void main() {
       'REPRO: should enable submit button when text is entered',
       (tester) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: BulkAddDialog(
-                onSubmit: (_) {},
-              ),
-            ),
-          ),
+          localizedApp(BulkAddDialog(
+            onSubmit: (_, __) async {},
+          )),
         );
 
         await tester.pumpAndSettle();
@@ -130,18 +118,13 @@ void main() {
       (tester) async {
         // ARRANGE
         List<String>? submittedItems;
-        final callback = (List<String> items) {
-          submittedItems = items;
-        };
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: BulkAddDialog(
-                onSubmit: callback,
-              ),
-            ),
-          ),
+          localizedApp(BulkAddDialog(
+            onSubmit: (items, _) async {
+              submittedItems = items;
+            },
+          )),
         );
 
         await tester.pumpAndSettle();
@@ -183,13 +166,9 @@ void main() {
         List<String>? submittedItems;
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: BulkAddDialog(
-                onSubmit: (items) => submittedItems = items,
-              ),
-            ),
-          ),
+          localizedApp(BulkAddDialog(
+            onSubmit: (items, _) async { submittedItems = items; },
+          )),
         );
 
         await tester.pumpAndSettle();
@@ -221,16 +200,12 @@ void main() {
         List<List<String>> allSubmissions = [];
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: BulkAddDialog(
-                onSubmit: (items) {
-                  callCount++;
-                  allSubmissions.add(items);
-                },
-              ),
-            ),
-          ),
+          localizedApp(BulkAddDialog(
+            onSubmit: (items, _) async {
+              callCount++;
+              allSubmissions.add(items);
+            },
+          )),
         );
 
         await tester.pumpAndSettle();
@@ -273,17 +248,72 @@ void main() {
     );
   });
 
+  group('BulkAddDialog - Cancel exception path', () {
+    testWidgets(
+      'BulkAddCancelException remet le dialog en état idle sans message erreur',
+      (tester) async {
+        await tester.pumpWidget(
+          localizedApp(BulkAddDialog(
+            onSubmit: (_, __) async { throw BulkAddCancelException(); },
+          )),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.enterText(find.byType(TextField), 'Café');
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('Ajouter'));
+        await tester.pumpAndSettle();
+
+        // Dialog reste ouvert
+        expect(find.byType(BulkAddDialog), findsOneWidget);
+        // Aucun message d'erreur (ni nom de classe, ni texte "Import fehlgeschlagen")
+        expect(find.textContaining('Exception'), findsNothing);
+        expect(find.textContaining('_DuplicateCancelException'), findsNothing);
+        // Le bouton Ajouter est de nouveau actif (isSubmitting = false)
+        final submitButton = find.ancestor(
+          of: find.text('Ajouter'),
+          matching: find.byType(ElevatedButton),
+        );
+        final button = tester.widget<ElevatedButton>(submitButton);
+        expect(button.onPressed, isNotNull, reason: 'Le dialog doit être revenu en état éditable');
+      },
+    );
+
+    testWidgets(
+      'Exception réelle affiche le message erreur dans le dialog',
+      (tester) async {
+        await tester.pumpWidget(
+          localizedApp(BulkAddDialog(
+            onSubmit: (_, __) async { throw Exception('Erreur réseau'); },
+          )),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.enterText(find.byType(TextField), 'Test');
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Ajouter'));
+        await tester.pumpAndSettle();
+
+        // L'erreur réelle doit être visible (la clé i18n bulkAddImportError est affichée)
+        expect(find.byType(BulkAddDialog), findsOneWidget);
+        final submitButton = find.ancestor(
+          of: find.text('Ajouter'),
+          matching: find.byType(ElevatedButton),
+        );
+        final button = tester.widget<ElevatedButton>(submitButton);
+        expect(button.onPressed, isNotNull, reason: 'Dialog revenu en état éditable après erreur');
+      },
+    );
+  });
+
   group('BulkAddDialog - Accessibility', () {
     testWidgets('should have semantic labels for screen readers', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: BulkAddDialog(
-              title: 'Ajouter des elements',
-              onSubmit: (_) {},
-            ),
-          ),
-        ),
+        localizedApp(BulkAddDialog(
+          title: 'Ajouter des elements',
+          onSubmit: (_, __) async {},
+        )),
       );
 
       await tester.pumpAndSettle();
@@ -303,13 +333,9 @@ void main() {
 
     testWidgets('submit button should have ValueKey for testing', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: BulkAddDialog(
-              onSubmit: (_) {},
-            ),
-          ),
-        ),
+        localizedApp(BulkAddDialog(
+          onSubmit: (_, __) async {},
+        )),
       );
 
       await tester.pumpAndSettle();

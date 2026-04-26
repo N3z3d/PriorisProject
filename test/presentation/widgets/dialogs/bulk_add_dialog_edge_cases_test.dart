@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:prioris/presentation/widgets/dialogs/bulk_add_dialog.dart';
+import '../../../helpers/localized_widget.dart';
 
 /// Non-regression tests for BulkAddDialog edge cases
 /// Ensures robustness for bulk add operations
@@ -12,13 +13,9 @@ void main() {
         List<String>? submittedItems;
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: BulkAddDialog(
-                onSubmit: (items) => submittedItems = items,
-              ),
-            ),
-          ),
+          localizedApp(BulkAddDialog(
+            onSubmit: (items, _) async { submittedItems = items; },
+          )),
         );
 
         await tester.pumpAndSettle();
@@ -47,13 +44,9 @@ void main() {
         List<String>? submittedItems;
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: BulkAddDialog(
-                onSubmit: (items) => submittedItems = items,
-              ),
-            ),
-          ),
+          localizedApp(BulkAddDialog(
+            onSubmit: (items, _) async { submittedItems = items; },
+          )),
         );
 
         await tester.pumpAndSettle();
@@ -81,13 +74,9 @@ void main() {
         List<String>? submittedItems;
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: BulkAddDialog(
-                onSubmit: (items) => submittedItems = items,
-              ),
-            ),
-          ),
+          localizedApp(BulkAddDialog(
+            onSubmit: (items, _) async { submittedItems = items; },
+          )),
         );
 
         await tester.pumpAndSettle();
@@ -114,13 +103,9 @@ void main() {
         int callCount = 0;
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: BulkAddDialog(
-                onSubmit: (_) => callCount++,
-              ),
-            ),
-          ),
+          localizedApp(BulkAddDialog(
+            onSubmit: (_, __) async { callCount++; },
+          )),
         );
 
         await tester.pumpAndSettle();
@@ -148,13 +133,9 @@ void main() {
         List<String>? submittedItems;
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: BulkAddDialog(
-                onSubmit: (items) => submittedItems = items,
-              ),
-            ),
-          ),
+          localizedApp(BulkAddDialog(
+            onSubmit: (items, _) async { submittedItems = items; },
+          )),
         );
 
         await tester.pumpAndSettle();
@@ -182,13 +163,9 @@ void main() {
         List<String>? submittedItems;
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: BulkAddDialog(
-                onSubmit: (items) => submittedItems = items,
-              ),
-            ),
-          ),
+          localizedApp(BulkAddDialog(
+            onSubmit: (items, _) async { submittedItems = items; },
+          )),
         );
 
         await tester.pumpAndSettle();
@@ -217,13 +194,9 @@ void main() {
         List<String>? submittedItems;
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: BulkAddDialog(
-                onSubmit: (items) => submittedItems = items,
-              ),
-            ),
-          ),
+          localizedApp(BulkAddDialog(
+            onSubmit: (items, _) async { submittedItems = items; },
+          )),
         );
 
         await tester.pumpAndSettle();
@@ -252,13 +225,9 @@ void main() {
         List<String>? submittedItems;
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: BulkAddDialog(
-                onSubmit: (items) => submittedItems = items,
-              ),
-            ),
-          ),
+          localizedApp(BulkAddDialog(
+            onSubmit: (items, _) async { submittedItems = items; },
+          )),
         );
 
         await tester.pumpAndSettle();
@@ -291,13 +260,9 @@ void main() {
         int callCount = 0;
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: BulkAddDialog(
-                onSubmit: (_) => callCount++,
-              ),
-            ),
-          ),
+          localizedApp(BulkAddDialog(
+            onSubmit: (_, __) async { callCount++; },
+          )),
         );
 
         await tester.pumpAndSettle();
@@ -322,21 +287,17 @@ void main() {
         int callCount = 0;
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: Builder(
-                builder: (context) => ElevatedButton(
-                  onPressed: () => showDialog(
-                    context: context,
-                    builder: (_) => BulkAddDialog(
-                      onSubmit: (_) => callCount++,
-                    ),
-                  ),
-                  child: const Text('Open'),
+          localizedApp(Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () => showDialog(
+                context: context,
+                builder: (_) => BulkAddDialog(
+                  onSubmit: (_, __) async { callCount++; },
                 ),
               ),
+              child: const Text('Open'),
             ),
-          ),
+          )),
         );
 
         await tester.pumpAndSettle();
@@ -370,13 +331,9 @@ void main() {
         List<String>? submittedItems;
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: BulkAddDialog(
-                onSubmit: (items) => submittedItems = items,
-              ),
-            ),
-          ),
+          localizedApp(BulkAddDialog(
+            onSubmit: (items, _) async { submittedItems = items; },
+          )),
         );
 
         await tester.pumpAndSettle();
@@ -407,13 +364,9 @@ void main() {
         List<String>? submittedItems;
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: BulkAddDialog(
-                onSubmit: (items) => submittedItems = items,
-              ),
-            ),
-          ),
+          localizedApp(BulkAddDialog(
+            onSubmit: (items, _) async { submittedItems = items; },
+          )),
         );
 
         await tester.pumpAndSettle();
@@ -441,13 +394,9 @@ void main() {
       'should preserve text when switching between modes',
       (tester) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: BulkAddDialog(
-                onSubmit: (_) {},
-              ),
-            ),
-          ),
+          localizedApp(BulkAddDialog(
+            onSubmit: (_, __) async {},
+          )),
         );
 
         await tester.pumpAndSettle();
@@ -480,13 +429,9 @@ void main() {
         List<String>? submittedItems;
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: BulkAddDialog(
-                onSubmit: (items) => submittedItems = items,
-              ),
-            ),
-          ),
+          localizedApp(BulkAddDialog(
+            onSubmit: (items, _) async { submittedItems = items; },
+          )),
         );
 
         await tester.pumpAndSettle();

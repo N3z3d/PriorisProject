@@ -104,7 +104,7 @@ class ListsController extends ListsControllerSlim {
   ///
   /// NOTE: When entries are Strings, IDs are generated client-side.
   /// For ListItem entries, IDs should already be set by the caller.
-  Future<void> addMultipleItemsToList(String listId, List<dynamic> entries) {
+  Future<void> addMultipleItemsToList(String listId, List<dynamic> entries, {void Function(int, int)? onProgress}) {
     final normalizedItems = <ListItem>[];
 
     for (var index = 0; index < entries.length; index++) {
@@ -131,7 +131,7 @@ class ListsController extends ListsControllerSlim {
       );
     }
 
-    return addMultipleItems(listId, normalizedItems);
+    return addMultipleItems(listId, normalizedItems, onProgress: onProgress);
   }
 
   /// Legacy ID generation for backward compatibility
