@@ -15,7 +15,9 @@ import 'package:prioris/presentation/pages/lists/widgets/list_items_list_view.da
 import 'package:prioris/presentation/pages/lists/widgets/list_search_bar.dart';
 import 'package:prioris/presentation/pages/lists/widgets/list_sort_toolbar.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
+import 'package:prioris/domain/services/duplicate_detection_service.dart';
 import 'package:prioris/presentation/widgets/dialogs/bulk_add_dialog.dart';
+import 'package:prioris/presentation/widgets/dialogs/duplicate_warning_dialog.dart';
 import 'package:uuid/uuid.dart';
 
 /// Page de dÃ©tail d'une liste personnalisÃ©e
@@ -34,6 +36,8 @@ class ListDetailPage extends ConsumerStatefulWidget {
   @override
   ConsumerState<ListDetailPage> createState() => _ListDetailPageState();
 }
+
+class _DuplicateCancelException extends BulkAddCancelException {}
 
 class _ListDetailPageState extends ConsumerState<ListDetailPage> {
   String _searchQuery = '';
@@ -214,16 +218,53 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
     });
   }
 
-  /// Affiche le dialogue d'ajout en lot
-  void _showBulkAddDialog() {
-    showDialog(
+  /// Affiche le dialogue d'ajout en lot avec feedback de progression et détection de doublons
+  Future<void> _showBulkAddDialog() async {
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    int skippedCount = 0;
+
+    final count = await showDialog<int>(
       context: context,
-      builder: (context) => BulkAddDialog(
-        onSubmit: (itemTitles) {
-          // Generate unique IDs using centralized service
+      barrierDismissible: false,
+      builder: (dialogContext) => BulkAddDialog(
+        onSubmit: (itemTitles, onProgress) async {
+          final stateList = ref.read(listsControllerProvider).findListById(widget.list.id);
+          final existing = (stateList != null && stateList.items.isNotEmpty)
+              ? stateList.items
+              : widget.list.items;
+          debugPrint('[7.4] existing=${existing.length} widget=${widget.list.items.length} stateList=${stateList?.items.length}');
+
+          final result =
+              const DuplicateDetectionService().detect(existing, itemTitles);
+
+          var titlesToAdd = itemTitles;
+
+          if (result.hasDuplicates && context.mounted) {
+            final choice = await showDialog<DuplicateChoice>(
+              context: context,
+              builder: (_) => DuplicateWarningDialog(
+                duplicateTitles: result.duplicateTitles,
+                totalCount: itemTitles.length,
+              ),
+            );
+
+            if (!context.mounted) throw _DuplicateCancelException();
+            if (choice == null || choice == DuplicateChoice.cancel) {
+              throw _DuplicateCancelException();
+            }
+            if (choice == DuplicateChoice.skipDuplicates) {
+              skippedCount = result.duplicateTitles.length;
+              titlesToAdd = result.uniqueTitles;
+            }
+            // DuplicateChoice.addAll → titlesToAdd reste inchangé
+          }
+
+          if (titlesToAdd.isEmpty) throw _DuplicateCancelException();
+
           final idService = IdGenerationService();
-          final ids = idService.generateBatchIds(itemTitles.length);
-          final items = itemTitles.asMap().entries.map((entry) {
+          final ids = idService.generateBatchIds(titlesToAdd.length);
+          final items = titlesToAdd.asMap().entries.map((entry) {
             final index = entry.key;
             final title = entry.value;
             final createdAt = DateTime.now().add(Duration(microseconds: index));
@@ -235,12 +276,24 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
               createdAt: createdAt,
             );
           }).toList();
-          ref
+
+          await ref
               .read(listsControllerProvider.notifier)
-              .addMultipleItemsToList(widget.list.id, items);
+              .addMultipleItems(widget.list.id, items, onProgress: onProgress);
+          onProgress(titlesToAdd.length, titlesToAdd.length);
         },
       ),
     );
+
+    if (count != null && count > 0 && context.mounted) {
+      final message = skippedCount > 0
+          ? l10n.bulkAddImportSuccessWithSkipped(count, skippedCount)
+          : l10n.bulkAddImportSuccess(count);
+      messenger.showSnackBar(SnackBar(
+        content: Text(message),
+        backgroundColor: AppTheme.successColor,
+      ));
+    }
   }
 
   /// Affiche le dialogue d'Ã©dition de liste

@@ -3000,6 +3000,18 @@ abstract class AppLocalizations {
   /// **'Multiple'**
   String get bulkAddModeMultiple;
 
+  /// Snackbar message after a bulk import succeeds
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one {{count} item imported} other {{count} items imported}}'**
+  String bulkAddImportSuccess(int count);
+
+  /// Error label shown inside the bulk add dialog when onSubmit fails
+  ///
+  /// In en, this message translates to:
+  /// **'Import failed'**
+  String get bulkAddImportError;
+
   /// Dialog title for deleting a list
   ///
   /// In en, this message translates to:
@@ -3197,6 +3209,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A confirmation email was sent to {email}. Confirm your email address to finish the sign-up flow, then sign in again.'**
   String authPendingConfirmationMessage(String email);
+
+  /// Snackbar shown when a Supabase callback is detected but no session could be established (expired link, already-used code, or different browser)
+  ///
+  /// In en, this message translates to:
+  /// **'Your sign-in link has expired or was opened in a different browser. Please sign in again.'**
+  String get authCallbackExpiredMessage;
+
+  /// Title of the duplicate warning dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate detected'**
+  String get duplicateWarningTitle;
+
+  /// Single duplicate warning message
+  ///
+  /// In en, this message translates to:
+  /// **'The item \"{title}\" is already in your list.'**
+  String duplicateWarningSingle(String title);
+
+  /// Multiple duplicates warning message
+  ///
+  /// In en, this message translates to:
+  /// **'{duplicateCount, plural, one {{duplicateCount} item is already} other {{duplicateCount} items are already}} in your list (out of {total}).'**
+  String duplicateWarningMultiple(int duplicateCount, int total);
+
+  /// Button: skip duplicates and add only unique items
+  ///
+  /// In en, this message translates to:
+  /// **'Skip duplicates ({uniqueCount} to add)'**
+  String duplicateWarningSkipAction(int uniqueCount);
+
+  /// Button: add the item despite the duplicate (single mode)
+  ///
+  /// In en, this message translates to:
+  /// **'Add anyway'**
+  String get duplicateWarningAddAllSingle;
+
+  /// Button: add all items including duplicates (bulk mode)
+  ///
+  /// In en, this message translates to:
+  /// **'Add all ({count})'**
+  String duplicateWarningAddAllBulk(int count);
+
+  /// SnackBar after bulk import with duplicates skipped
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one {{count} item imported} other {{count} items imported}}, {skipped, plural, one {{skipped} duplicate skipped} other {{skipped} duplicates skipped}}'**
+  String bulkAddImportSuccessWithSkipped(int count, int skipped);
 }
 
 class _AppLocalizationsDelegate

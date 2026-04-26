@@ -937,6 +937,19 @@
   "@bulkAddModeMultiple": {
     "description": "Tab label for multiple items mode"
   },
+  "bulkAddImportSuccess": "{count, plural, one {{count} élément importé} other {{count} éléments importés}}",
+  "@bulkAddImportSuccess": {
+    "description": "Snackbar message after a bulk import succeeds",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bulkAddImportError": "Erreur lors de l'import",
+  "@bulkAddImportError": {
+    "description": "Error label shown inside the bulk add dialog when onSubmit fails"
+  },
   "listDeleteDialogTitle": "Supprimer la liste",
   "@listDeleteDialogTitle": {
     "description": "Titre du dialogue de suppression de liste"
@@ -1082,6 +1095,55 @@
       "email": {
         "type": "String"
       }
+    }
+  },
+  "authCallbackExpiredMessage": "Votre lien de connexion est expiré ou a été ouvert depuis un autre navigateur. Veuillez vous connecter.",
+  "@authCallbackExpiredMessage": {
+    "description": "Snackbar affiche quand un callback Supabase est detecte mais qu'aucune session n'a pu etre etablie (lien expire, code deja utilise, ou navigateur different)"
+  },
+  "duplicateWarningTitle": "Doublon détecté",
+  "@duplicateWarningTitle": {
+    "description": "Titre du dialogue de détection de doublon"
+  },
+  "duplicateWarningSingle": "L'élément \"{title}\" est déjà dans votre liste.",
+  "@duplicateWarningSingle": {
+    "description": "Message singulier de doublon",
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
+  "duplicateWarningMultiple": "{duplicateCount, plural, one {{duplicateCount} élément est déjà} other {{duplicateCount} éléments sont déjà}} dans votre liste (sur {total}).",
+  "@duplicateWarningMultiple": {
+    "description": "Message pluriel de doublon",
+    "placeholders": {
+      "duplicateCount": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "duplicateWarningSkipAction": "Ignorer ({uniqueCount} à ajouter)",
+  "@duplicateWarningSkipAction": {
+    "description": "Bouton : ignorer les doublons et n'ajouter que les uniques",
+    "placeholders": {
+      "uniqueCount": { "type": "int" }
+    }
+  },
+  "duplicateWarningAddAllSingle": "Ajouter quand même",
+  "@duplicateWarningAddAllSingle": {
+    "description": "Bouton : ajouter l'élément malgré le doublon (mode single)"
+  },
+  "duplicateWarningAddAllBulk": "Tout ajouter ({count})",
+  "@duplicateWarningAddAllBulk": {
+    "description": "Bouton : ajouter tous les éléments y compris les doublons (mode bulk)",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "bulkAddImportSuccessWithSkipped": "{count, plural, one {{count} élément importé} other {{count} éléments importés}}, {skipped, plural, one {{skipped} doublon ignoré} other {{skipped} doublons ignorés}}",
+  "@bulkAddImportSuccessWithSkipped": {
+    "description": "SnackBar après import avec doublons ignorés",
+    "placeholders": {
+      "count": { "type": "int" },
+      "skipped": { "type": "int" }
     }
   }
 }

@@ -1683,6 +1683,20 @@ class AppLocalizationsDe extends AppLocalizations {
   String get bulkAddModeMultiple => 'Mehrere hinzufügen';
 
   @override
+  String bulkAddImportSuccess(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Elemente importiert',
+      one: '$count Element importiert',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get bulkAddImportError => 'Import fehlgeschlagen';
+
+  @override
   String get listDeleteDialogTitle => 'Liste löschen';
 
   @override
@@ -1787,5 +1801,58 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String authPendingConfirmationMessage(String email) {
     return 'Eine Bestatigungs-E-Mail wurde an $email gesendet. Bestatige deine E-Mail-Adresse, um die Registrierung abzuschliessen, und melde dich dann erneut an.';
+  }
+
+  @override
+  String get authCallbackExpiredMessage =>
+      'Dein Anmelde-Link ist abgelaufen oder wurde in einem anderen Browser geöffnet. Bitte melde dich erneut an.';
+
+  @override
+  String get duplicateWarningTitle => 'Duplicate detected';
+
+  @override
+  String duplicateWarningSingle(String title) {
+    return 'The item \"$title\" is already in your list.';
+  }
+
+  @override
+  String duplicateWarningMultiple(int duplicateCount, int total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      duplicateCount,
+      locale: localeName,
+      other: '$duplicateCount items are already',
+      one: '$duplicateCount item is already',
+    );
+    return '$_temp0 in your list (out of $total).';
+  }
+
+  @override
+  String duplicateWarningSkipAction(int uniqueCount) {
+    return 'Skip duplicates ($uniqueCount to add)';
+  }
+
+  @override
+  String get duplicateWarningAddAllSingle => 'Add anyway';
+
+  @override
+  String duplicateWarningAddAllBulk(int count) {
+    return 'Add all ($count)';
+  }
+
+  @override
+  String bulkAddImportSuccessWithSkipped(int count, int skipped) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items imported',
+      one: '$count item imported',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      skipped,
+      locale: localeName,
+      other: '$skipped duplicates skipped',
+      one: '$skipped duplicate skipped',
+    );
+    return '$_temp0, $_temp1';
   }
 }

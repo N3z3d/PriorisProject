@@ -767,6 +767,8 @@
   "bulkAddSubmitting": "Añadiendo...",
   "bulkAddModeSingle": "Añadir uno",
   "bulkAddModeMultiple": "Añadir varios",
+  "bulkAddImportSuccess": "{count, plural, one {{count} elemento importado} other {{count} elementos importados}}",
+  "bulkAddImportError": "Error al importar",
   "listDeleteDialogTitle": "Eliminar lista",
   "listDeleteDialogMessage": "¿Seguro que quieres eliminar \"{listName}\"?",
   "@listDeleteDialogMessage": {
@@ -925,6 +927,55 @@
       "email": {
         "type": "String"
       }
+    }
+  },
+  "authCallbackExpiredMessage": "Tu enlace de inicio de sesion ha expirado o fue abierto en un navegador diferente. Por favor, inicia sesion de nuevo.",
+  "@authCallbackExpiredMessage": {
+    "description": "Snackbar mostrado cuando se detecta un callback de Supabase pero no se pudo establecer ninguna sesion"
+  },
+  "duplicateWarningTitle": "Duplicate detected",
+  "@duplicateWarningTitle": {
+    "description": "Title of the duplicate warning dialog"
+  },
+  "duplicateWarningSingle": "The item \"{title}\" is already in your list.",
+  "@duplicateWarningSingle": {
+    "description": "Single duplicate warning message",
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
+  "duplicateWarningMultiple": "{duplicateCount, plural, one {{duplicateCount} item is already} other {{duplicateCount} items are already}} in your list (out of {total}).",
+  "@duplicateWarningMultiple": {
+    "description": "Multiple duplicates warning message",
+    "placeholders": {
+      "duplicateCount": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "duplicateWarningSkipAction": "Skip duplicates ({uniqueCount} to add)",
+  "@duplicateWarningSkipAction": {
+    "description": "Button: skip duplicates and add only unique items",
+    "placeholders": {
+      "uniqueCount": { "type": "int" }
+    }
+  },
+  "duplicateWarningAddAllSingle": "Add anyway",
+  "@duplicateWarningAddAllSingle": {
+    "description": "Button: add the item despite the duplicate (single mode)"
+  },
+  "duplicateWarningAddAllBulk": "Add all ({count})",
+  "@duplicateWarningAddAllBulk": {
+    "description": "Button: add all items including duplicates (bulk mode)",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "bulkAddImportSuccessWithSkipped": "{count, plural, one {{count} item imported} other {{count} items imported}}, {skipped, plural, one {{skipped} duplicate skipped} other {{skipped} duplicates skipped}}",
+  "@bulkAddImportSuccessWithSkipped": {
+    "description": "SnackBar after bulk import with duplicates skipped",
+    "placeholders": {
+      "count": { "type": "int" },
+      "skipped": { "type": "int" }
     }
   }
 }
