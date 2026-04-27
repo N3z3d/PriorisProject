@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/data/repositories/task_repository.dart';
 import 'package:prioris/domain/models/core/entities/task.dart';
+import 'package:prioris/l10n/app_localizations.dart';
+import 'package:prioris/presentation/widgets/common/error/app_error_widget.dart';
 import 'package:prioris/presentation/widgets/common/forms/common_text_field.dart';
 import 'package:prioris/presentation/widgets/common/forms/common_button.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
@@ -40,8 +42,9 @@ class _TasksPageState extends ConsumerState<TasksPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final tasksAsync = ref.watch(allTasksProvider);
-    
+
     return Scaffold(
       appBar: const PageHeader(
         title: 'Mes Tâches',
@@ -51,9 +54,22 @@ class _TasksPageState extends ConsumerState<TasksPage> {
         data: (tasks) => tasks.isEmpty
             ? _buildEmptyState()
             : _buildTasksList(tasks),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              Text(l10n.loading),
+            ],
+          ),
+        ),
         error: (error, stack) => Center(
-          child: Text('Erreur: $error'),
+          child: AppErrorWidget.fromError(
+            context: context,
+            error: error,
+            onRetry: () => ref.invalidate(allTasksProvider),
+          ),
         ),
       ),
       floatingActionButton: Semantics(

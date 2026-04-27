@@ -70,6 +70,8 @@ class _HabitsPageState extends ConsumerState<HabitsPage> {
                 onCreateHabit: _showCreateHabitModal,
                 onEditHabit: (habit) =>
                     _showCreateHabitModal(initialHabit: habit),
+                onRetry: () =>
+                    ref.read(habitsStateProvider.notifier).loadHabits(),
               ),
             ),
           ],

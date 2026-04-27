@@ -1872,4 +1872,27 @@ class AppLocalizationsFr extends AppLocalizations {
     );
     return '$_temp0, $_temp1';
   }
+
+  @override
+  String get errorGenericTitle => 'Une erreur est survenue';
+
+  @override
+  String get errorNetworkTitle => 'Problème de connexion';
+
+  @override
+  String get errorNetworkMessage =>
+      'Vérifiez votre connexion internet et réessayez.';
+
+  @override
+  String get errorGenericMessage =>
+      'Une erreur inattendue s\'est produite. Veuillez réessayer.';
+
+  @override
+  String get loadingListDetail => 'Chargement de votre liste...';
+
+  @override
+  String get noListsTitle => 'Aucune liste disponible';
+
+  @override
+  String get noListsBody => 'Créez votre première liste pour commencer.';
 }

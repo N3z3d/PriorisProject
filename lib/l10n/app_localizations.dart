@@ -3257,6 +3257,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, one {{count} item imported} other {{count} items imported}}, {skipped, plural, one {{skipped} duplicate skipped} other {{skipped} duplicates skipped}}'**
   String bulkAddImportSuccessWithSkipped(int count, int skipped);
+
+  /// Generic error state title
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred'**
+  String get errorGenericTitle;
+
+  /// Network error state title
+  ///
+  /// In en, this message translates to:
+  /// **'Connection issue'**
+  String get errorNetworkTitle;
+
+  /// Network error message with retry invitation
+  ///
+  /// In en, this message translates to:
+  /// **'Check your internet connection and try again.'**
+  String get errorNetworkMessage;
+
+  /// Generic error message with retry invitation
+  ///
+  /// In en, this message translates to:
+  /// **'An unexpected error occurred. Please try again.'**
+  String get errorGenericMessage;
+
+  /// Loading text shown on the list detail page
+  ///
+  /// In en, this message translates to:
+  /// **'Loading your list...'**
+  String get loadingListDetail;
+
+  /// Empty state title: no lists
+  ///
+  /// In en, this message translates to:
+  /// **'No lists available'**
+  String get noListsTitle;
+
+  /// Empty state body: invitation to create a list
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first list to get started.'**
+  String get noListsBody;
 }
 
 class _AppLocalizationsDelegate

@@ -1837,4 +1837,27 @@ class AppLocalizationsEs extends AppLocalizations {
     );
     return '$_temp0, $_temp1';
   }
+
+  @override
+  String get errorGenericTitle => 'An error occurred';
+
+  @override
+  String get errorNetworkTitle => 'Connection issue';
+
+  @override
+  String get errorNetworkMessage =>
+      'Check your internet connection and try again.';
+
+  @override
+  String get errorGenericMessage =>
+      'An unexpected error occurred. Please try again.';
+
+  @override
+  String get loadingListDetail => 'Loading your list...';
+
+  @override
+  String get noListsTitle => 'No lists available';
+
+  @override
+  String get noListsBody => 'Create your first list to get started.';
 }

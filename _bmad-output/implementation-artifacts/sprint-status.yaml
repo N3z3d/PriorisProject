@@ -35,7 +35,7 @@
 # - Le developpeur passe la story a 'review', puis lance le workflow de code review
 
 generated: '2026-04-12T22:39:56.0084619+02:00'
-last_updated: '2026-04-26T12:00:00+02:00'
+last_updated: '2026-04-26T18:00:00+02:00'
 project: 'PriorisProject'
 project_key: 'NOKEY'
 tracking_system: 'file-system'
@@ -76,7 +76,7 @@ development_status:
   7-2-corriger-elo-calcul-persistance-rafraichissement-ui: done
   7-3-feedback-visuel-operations-longues: done
   7-4-detection-et-gestion-doublons-ajout-liste: done
-  7-5-ameliorer-messages-erreur-et-etats-de-chargement: backlog
+  7-5-ameliorer-messages-erreur-et-etats-de-chargement: review
   7-6-verifier-et-completer-couverture-i18n-fr-en: backlog
   7-7-bases-rgpd-minimales: backlog
   7-8-insights-apres-stabilisation-du-socle: backlog

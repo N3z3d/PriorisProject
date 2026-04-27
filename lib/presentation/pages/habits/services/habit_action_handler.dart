@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:prioris/core/exceptions/app_exception.dart';
 import 'package:prioris/data/providers/habits_state_provider.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
 import 'package:prioris/l10n/app_localizations.dart';
@@ -57,7 +58,9 @@ class HabitActionHandler implements IHabitActionHandler {
         Navigator.of(_context).pop();
       }
       _showActionError(
-        _l10n.habitsActionRecordError(error.toString()),
+        _l10n.habitsActionRecordError(
+          ExceptionHandler.handle(error).displayMessage,
+        ),
       );
     }
   }
@@ -69,7 +72,9 @@ class HabitActionHandler implements IHabitActionHandler {
           .showHabitForm(initialHabit: habit);
     } catch (error) {
       _showActionError(
-        _l10n.habitsActionUpdateError(error.toString()),
+        _l10n.habitsActionUpdateError(
+          ExceptionHandler.handle(error).displayMessage,
+        ),
       );
     }
   }
@@ -93,7 +98,9 @@ class HabitActionHandler implements IHabitActionHandler {
         Navigator.of(_context).pop();
       }
       _showActionError(
-        _l10n.habitsActionDeleteError(error.toString()),
+        _l10n.habitsActionDeleteError(
+          ExceptionHandler.handle(error).displayMessage,
+        ),
       );
     }
   }
@@ -104,7 +111,9 @@ class HabitActionHandler implements IHabitActionHandler {
       await HabitFormDialogService(context: _context, ref: _ref).showHabitForm();
     } catch (error) {
       _showActionError(
-        _l10n.habitsActionCreateError(error.toString()),
+        _l10n.habitsActionCreateError(
+          ExceptionHandler.handle(error).displayMessage,
+        ),
       );
     }
   }

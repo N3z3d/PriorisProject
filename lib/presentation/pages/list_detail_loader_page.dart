@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/pages/list_detail_page.dart';
-import 'package:prioris/presentation/pages/lists/controllers/lists_controller.dart';
+import 'package:prioris/presentation/widgets/common/error/app_error_widget.dart';
 import 'package:prioris/data/providers/lists_controller_provider.dart';
 
 /// ARCHITECTURE FIX: Provider stable pour récupérer une liste 
@@ -40,7 +41,7 @@ class ListDetailLoaderPage extends ConsumerWidget {
         print('🎯 UX: Pas d\'ID fourni, utilisation de la première liste: ${firstList.name}');
         return ListDetailPage(list: firstList);
       } else if (listsState.isLoading) {
-        return _buildLoadingState();
+        return _buildLoadingState(context);
       } else {
         return _buildNoListsState(context);
       }
@@ -71,61 +72,52 @@ class ListDetailLoaderPage extends ConsumerWidget {
         print('🔧 DEBUG ListDetailLoaderPage: Navigation vers ListDetailPage avec liste: ${list.name}');
         return ListDetailPage(list: list);
       },
-      loading: () => _buildLoadingState(),
+      loading: () => _buildLoadingState(context),
       error: (error, stack) => _buildErrorState(context, error),
     );
   }
   
-  Widget _buildLoadingState() {
-    return const Scaffold(
+  Widget _buildLoadingState(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text('Chargement de votre liste...'),
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            Text(l10n.loadingListDetail),
           ],
         ),
       ),
     );
   }
-  
+
   Widget _buildNoListsState(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Aucune liste')),
-      body: const Center(
+      appBar: AppBar(title: Text(l10n.noListsTitle)),
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.list_alt, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
-            Text('Aucune liste disponible'),
-            SizedBox(height: 8),
-            Text('Créez votre première liste pour commencer'),
+            const Icon(Icons.list_alt, size: 64, color: Colors.grey),
+            const SizedBox(height: 16),
+            Text(l10n.noListsTitle),
+            const SizedBox(height: 8),
+            Text(l10n.noListsBody),
           ],
         ),
       ),
     );
   }
-  
+
   Widget _buildErrorState(BuildContext context, Object error) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Erreur')),
+      appBar: AppBar(title: Text(l10n.error)),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error, color: Colors.red, size: 48),
-            const SizedBox(height: 16),
-            Text('Erreur: $error'),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Retour'),
-            ),
-          ],
-        ),
+        child: AppErrorWidget.fromError(context: context, error: error),
       ),
     );
   }

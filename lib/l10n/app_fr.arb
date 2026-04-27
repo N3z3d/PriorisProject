@@ -1145,5 +1145,33 @@
       "count": { "type": "int" },
       "skipped": { "type": "int" }
     }
+  },
+  "errorGenericTitle": "Une erreur est survenue",
+  "@errorGenericTitle": {
+    "description": "Titre générique d'état d'erreur"
+  },
+  "errorNetworkTitle": "Problème de connexion",
+  "@errorNetworkTitle": {
+    "description": "Titre d'état d'erreur réseau"
+  },
+  "errorNetworkMessage": "Vérifiez votre connexion internet et réessayez.",
+  "@errorNetworkMessage": {
+    "description": "Message d'erreur réseau avec invitation à réessayer"
+  },
+  "errorGenericMessage": "Une erreur inattendue s'est produite. Veuillez réessayer.",
+  "@errorGenericMessage": {
+    "description": "Message d'erreur générique avec invitation à réessayer"
+  },
+  "loadingListDetail": "Chargement de votre liste...",
+  "@loadingListDetail": {
+    "description": "Texte de chargement affiché sur la page de détail d'une liste"
+  },
+  "noListsTitle": "Aucune liste disponible",
+  "@noListsTitle": {
+    "description": "Titre état vide : aucune liste"
+  },
+  "noListsBody": "Créez votre première liste pour commencer.",
+  "@noListsBody": {
+    "description": "Corps état vide : invitation à créer une liste"
   }
 }

@@ -12,6 +12,7 @@ class HabitsBody extends StatelessWidget {
   final void Function(Habit) onRecordHabit;
   final VoidCallback onCreateHabit;
   final void Function(Habit) onEditHabit;
+  final VoidCallback onRetry;
 
   const HabitsBody({
     super.key,
@@ -22,6 +23,7 @@ class HabitsBody extends StatelessWidget {
     required this.onRecordHabit,
     required this.onCreateHabit,
     required this.onEditHabit,
+    required this.onRetry,
   });
 
   @override
@@ -33,7 +35,7 @@ class HabitsBody extends StatelessWidget {
     if (error != null) {
       return HabitsErrorState(
         error: error!,
-        onRetry: () {},
+        onRetry: onRetry,
       );
     }
 

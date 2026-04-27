@@ -977,5 +977,33 @@
       "count": { "type": "int" },
       "skipped": { "type": "int" }
     }
+  },
+  "errorGenericTitle": "An error occurred",
+  "@errorGenericTitle": {
+    "description": "Generic error state title"
+  },
+  "errorNetworkTitle": "Connection issue",
+  "@errorNetworkTitle": {
+    "description": "Network error state title"
+  },
+  "errorNetworkMessage": "Check your internet connection and try again.",
+  "@errorNetworkMessage": {
+    "description": "Network error message with retry invitation"
+  },
+  "errorGenericMessage": "An unexpected error occurred. Please try again.",
+  "@errorGenericMessage": {
+    "description": "Generic error message with retry invitation"
+  },
+  "loadingListDetail": "Loading your list...",
+  "@loadingListDetail": {
+    "description": "Loading text shown on the list detail page"
+  },
+  "noListsTitle": "No lists available",
+  "@noListsTitle": {
+    "description": "Empty state title: no lists"
+  },
+  "noListsBody": "Create your first list to get started.",
+  "@noListsBody": {
+    "description": "Empty state body: invitation to create a list"
   }
 }

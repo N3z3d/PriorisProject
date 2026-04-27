@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:prioris/core/exceptions/app_exception.dart';
 import 'package:prioris/data/providers/habits_state_provider.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
 import 'package:prioris/domain/services/core/language_service.dart';
@@ -25,7 +26,9 @@ class HabitsController extends StateNotifier<HabitsControllerState> {
     } catch (error) {
       state = state.copyWith(
         lastAction: HabitAction.added,
-        lastActionMessage: _l10n.habitsActionCreateError(error.toString()),
+        lastActionMessage: _l10n.habitsActionCreateError(
+          ExceptionHandler.handle(error).displayMessage,
+        ),
         actionResult: ActionResult.error,
       );
     }
@@ -42,7 +45,9 @@ class HabitsController extends StateNotifier<HabitsControllerState> {
     } catch (error) {
       state = state.copyWith(
         lastAction: HabitAction.edited,
-        lastActionMessage: _l10n.habitsActionUpdateError(error.toString()),
+        lastActionMessage: _l10n.habitsActionUpdateError(
+          ExceptionHandler.handle(error).displayMessage,
+        ),
         actionResult: ActionResult.error,
       );
     }
@@ -59,7 +64,9 @@ class HabitsController extends StateNotifier<HabitsControllerState> {
     } catch (error) {
       state = state.copyWith(
         lastAction: HabitAction.deleted,
-        lastActionMessage: _l10n.habitsActionDeleteError(error.toString()),
+        lastActionMessage: _l10n.habitsActionDeleteError(
+          ExceptionHandler.handle(error).displayMessage,
+        ),
         actionResult: ActionResult.error,
       );
     }
