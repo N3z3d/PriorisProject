@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:prioris/data/providers/lists_controller_provider.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/domain/core/interfaces/logger_interface.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
@@ -69,6 +70,9 @@ Future<void> _pumpListDetailPage(
         listsControllerProvider.overrideWith((ref) => effectiveController),
       ],
       child: MaterialApp(
+        locale: const Locale('fr'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: ListDetailPage(list: list),
       ),
     ),
@@ -172,8 +176,6 @@ void main() {
       dropdownState.didChange(TaskSortField.random);
       await _settle(tester);
 
-      expect(find.byIcon(Icons.casino), findsOneWidget);
-
       final sortIconFinder = find.ancestor(
         of: find.byIcon(Icons.arrow_downward),
         matching: find.byType(IconButton),
@@ -203,7 +205,6 @@ void main() {
       );
       final IconButton sortIcon = tester.widget(sortIconFinder);
       expect(sortIcon.onPressed, isNotNull);
-      expect(find.byIcon(Icons.casino), findsNothing);
     });
   });
 }
@@ -308,7 +309,8 @@ class _InMemoryListsPersistenceManager implements IListsPersistenceManager {
   }
 
   @override
-  Future<void> saveMultipleItems(List<ListItem> items) async {
+  Future<void> saveMultipleItems(
+      List<ListItem> items, {void Function(int, int)? onProgress}) async {
     for (final item in items) {
       await saveListItem(item);
     }

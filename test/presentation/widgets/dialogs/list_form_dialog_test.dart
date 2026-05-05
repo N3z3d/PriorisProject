@@ -9,6 +9,7 @@ void main() {
     testWidgets('affiche le titre de création', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Builder(
             builder: (context) => ElevatedButton(
               onPressed: () => showDialog(
@@ -29,6 +30,7 @@ void main() {
       bool submitted = false;
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Builder(
             builder: (context) => ElevatedButton(
               onPressed: () => showDialog(
@@ -52,6 +54,7 @@ void main() {
       CustomList? result;
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Builder(
             builder: (context) => ElevatedButton(
               onPressed: () => showDialog(
@@ -84,6 +87,7 @@ void main() {
       );
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Builder(
             builder: (context) => ElevatedButton(
               onPressed: () => showDialog(

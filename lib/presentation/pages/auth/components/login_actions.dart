@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/widgets/common/forms/common_button.dart';
 import 'package:prioris/presentation/widgets/dialogs/forgot_password_dialog.dart';
 
@@ -21,29 +22,28 @@ class LoginActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         CommonButton(
           onPressed: isLoading ? null : onSubmit,
           text: isLoading
-              ? 'Chargement...'
-              : (isSignUp ? 'Créer le compte' : 'Se connecter'),
+              ? l10n.loading
+              : (isSignUp ? l10n.authSignUpAction : l10n.authSignInAction),
           isLoading: isLoading,
         ),
         const SizedBox(height: 16),
         TextButton(
           onPressed: onToggleMode,
           child: Text(
-            isSignUp
-                ? 'Déjà un compte ? Se connecter'
-                : 'Pas de compte ? Créer un compte',
+            isSignUp ? l10n.authToggleToSignIn : l10n.authToggleToSignUp,
           ),
         ),
         if (!isSignUp) ...[
           const SizedBox(height: 16),
           TextButton(
             onPressed: () => _showForgotPasswordDialog(context),
-            child: const Text('Mot de passe oublié ?'),
+            child: Text(AppLocalizations.of(context)!.authForgotPasswordAction),
           ),
         ],
       ],

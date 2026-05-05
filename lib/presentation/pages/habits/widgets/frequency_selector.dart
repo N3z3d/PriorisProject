@@ -348,42 +348,24 @@ class _FrequencySelectorState extends State<FrequencySelector> {
         Wrap(
           spacing: 8,
           children: [
-            FilterChip(
-              label: Text(l10n.habitFrequencyDayFilterAllDays),
-              selected: _currentFrequency.dayFilter == DayFilter.none,
-              onSelected: (selected) {
-                if (selected) {
-                  _updateFrequency(
-                    _currentFrequency.copyWith(dayFilter: DayFilter.none),
-                  );
-                }
-              },
-            ),
-            FilterChip(
-              label: Text(l10n.habitFrequencyDayFilterWeekdays),
-              selected: _currentFrequency.dayFilter == DayFilter.weekdays,
-              onSelected: (selected) {
-                if (selected) {
-                  _updateFrequency(
-                    _currentFrequency.copyWith(dayFilter: DayFilter.weekdays),
-                  );
-                }
-              },
-            ),
-            FilterChip(
-              label: Text(l10n.habitFrequencyDayFilterWeekends),
-              selected: _currentFrequency.dayFilter == DayFilter.weekends,
-              onSelected: (selected) {
-                if (selected) {
-                  _updateFrequency(
-                    _currentFrequency.copyWith(dayFilter: DayFilter.weekends),
-                  );
-                }
-              },
-            ),
+            _buildDayFilterChip(l10n.habitFrequencyDayFilterAllDays, DayFilter.none),
+            _buildDayFilterChip(l10n.habitFrequencyDayFilterWeekdays, DayFilter.weekdays),
+            _buildDayFilterChip(l10n.habitFrequencyDayFilterWeekends, DayFilter.weekends),
           ],
         ),
       ],
+    );
+  }
+
+  FilterChip _buildDayFilterChip(String label, DayFilter filter) {
+    return FilterChip(
+      label: Text(label),
+      selected: _currentFrequency.dayFilter == filter,
+      onSelected: (selected) {
+        if (selected) {
+          _updateFrequency(_currentFrequency.copyWith(dayFilter: filter));
+        }
+      },
     );
   }
 

@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/data/providers/habits_state_provider.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/pages/habits_page.dart';
 
 /// TDD-RED: Tests proving infinite loop in HabitsPage
@@ -29,8 +30,11 @@ void main() {
         await tester.pumpWidget(
           UncontrolledProviderScope(
             container: container,
-            child: const MaterialApp(
-              home: HabitsPage(),
+            child: MaterialApp(
+              locale: const Locale('fr'),
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: const HabitsPage(),
             ),
           ),
         );
@@ -71,8 +75,11 @@ void main() {
         await tester.pumpWidget(
           UncontrolledProviderScope(
             container: container,
-            child: const MaterialApp(
-              home: HabitsPage(),
+            child: MaterialApp(
+              locale: const Locale('fr'),
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: const HabitsPage(),
             ),
           ),
         );
@@ -117,8 +124,11 @@ void main() {
         await tester.pumpWidget(
           UncontrolledProviderScope(
             container: container,
-            child: const MaterialApp(
-              home: HabitsPage(),
+            child: MaterialApp(
+              locale: const Locale('fr'),
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: const HabitsPage(),
             ),
           ),
         );
@@ -166,8 +176,11 @@ void main() {
         await tester.pumpWidget(
           UncontrolledProviderScope(
             container: container,
-            child: const MaterialApp(
-              home: HabitsPage(),
+            child: MaterialApp(
+              locale: const Locale('fr'),
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: const HabitsPage(),
             ),
           ),
         );
@@ -208,8 +221,11 @@ void main() {
         await tester.pumpWidget(
           UncontrolledProviderScope(
             container: container,
-            child: const MaterialApp(
-              home: HabitsPage(),
+            child: MaterialApp(
+              locale: const Locale('fr'),
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: const HabitsPage(),
             ),
           ),
         );
@@ -219,7 +235,7 @@ void main() {
         // ASSERT - Should show empty state, not loading indicator
         expect(find.byType(CircularProgressIndicator), findsNothing);
         expect(
-          find.textContaining('No habits'),
+          find.textContaining('Aucune habitude'),
           findsAtLeastNWidgets(1),
           reason: 'BUG: Empty state UI not shown! '
               'Users see infinite spinner instead of empty state',

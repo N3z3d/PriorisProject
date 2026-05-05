@@ -251,9 +251,38 @@
   "@overview": {
     "description": "Overview tab title"
   },
+  "insightsTabOverview": "Overview",
+  "@insightsTabOverview": {
+    "description": "Label for the overview tab on the insights page"
+  },
   "insightsTabTrends": "Trends",
   "@insightsTabTrends": {
     "description": "Label for the trends tab in insights"
+  },
+  "insightsCtaCreateHabit": "Create a habit",
+  "@insightsCtaCreateHabit": {
+    "description": "Primary CTA button in the insights empty state"
+  },
+  "insightsTrendsSuccessRate": "Success rate",
+  "@insightsTrendsSuccessRate": {
+    "description": "Success rate metric label in Trends tab"
+  },
+  "insightsTrendsStreak": "Current streak",
+  "@insightsTrendsStreak": {
+    "description": "Current streak metric label in Trends tab"
+  },
+  "insightsTrendsStreakDays": "{count} d.",
+  "@insightsTrendsStreakDays": {
+    "description": "Formatted streak value with day unit",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insightsTrendsToday": "Completed today",
+  "@insightsTrendsToday": {
+    "description": "Today completion metric label in Trends tab"
   },
   "habitsTab": "Habits",
   "@habitsTab": {
@@ -2155,5 +2184,156 @@
   "noListsBody": "Create your first list to get started.",
   "@noListsBody": {
     "description": "Empty state body: invitation to create a list"
+  },
+  "settingsFeatureInDevelopment": "Feature in development",
+  "@settingsFeatureInDevelopment": {
+    "description": "Snackbar message when a feature is still in development"
+  },
+  "archiveAction": "Archive",
+  "@archiveAction": {
+    "description": "Archive action for an item"
+  },
+  "listCreateDialogTitle": "New list",
+  "@listCreateDialogTitle": {
+    "description": "Title of the create list dialog"
+  },
+  "listCreateError": "Unable to create the list. Try again.",
+  "@listCreateError": {
+    "description": "Error message when list creation fails"
+  },
+  "listEditError": "Error while editing: {error}",
+  "@listEditError": {
+    "description": "Error message when list edit fails",
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "listDeleteError": "Error while deleting: {error}",
+  "@listDeleteError": {
+    "description": "Error message when list deletion fails",
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "logoutKeepDataAction": "Keep my data",
+  "@logoutKeepDataAction": {
+    "description": "Sign-out without clearing local data"
+  },
+  "logoutClearDataAction": "Clear my data",
+  "@logoutClearDataAction": {
+    "description": "Sign-out with local data cleared"
+  },
+  "listCreatedSuccess": "List \"{title}\" created successfully",
+  "@listCreatedSuccess": {
+    "description": "Success snackbar when a list is created",
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
+  "listUpdatedSuccess": "List \"{name}\" updated successfully",
+  "@listUpdatedSuccess": {
+    "description": "Success snackbar when a list is updated",
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "listDeletedSuccess": "List \"{name}\" deleted successfully",
+  "@listDeletedSuccess": {
+    "description": "Success snackbar when a list is deleted",
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "logoutDataQuestion": "What would you like to do with your local data?",
+  "@logoutDataQuestion": {
+    "description": "Question about data handling in logout dialog"
+  },
+  "logoutLocalDataInfo": "Your lists are stored locally on this device",
+  "@logoutLocalDataInfo": {
+    "description": "Info about local data storage in logout dialog"
+  },
+  "privacyConsentTitle": "Data Protection",
+  "@privacyConsentTitle": {
+    "description": "Title of the GDPR consent page"
+  },
+  "privacyConsentBody": "Prioris collects your personal data (tasks, habits, profile) to provide the service. Your data is stored securely and is not shared with third parties for advertising purposes.",
+  "@privacyConsentBody": {
+    "description": "Explanation text for GDPR consent"
+  },
+  "privacyConsentAcceptButton": "I accept and continue",
+  "@privacyConsentAcceptButton": {
+    "description": "GDPR consent accept button"
+  },
+  "privacyConsentReadPolicyLink": "Read the privacy policy",
+  "@privacyConsentReadPolicyLink": {
+    "description": "Link to privacy policy on consent page"
+  },
+  "privacyPolicyTitle": "Privacy Policy",
+  "@privacyPolicyTitle": {
+    "description": "Title of the privacy policy page"
+  },
+  "settingsPrivacySectionTitle": "PRIVACY & DATA",
+  "@settingsPrivacySectionTitle": {
+    "description": "Privacy section title in Settings"
+  },
+  "settingsPrivacyPolicyTile": "Privacy Policy",
+  "@settingsPrivacyPolicyTile": {
+    "description": "Privacy policy tile title in Settings"
+  },
+  "settingsPrivacyPolicySubtitle": "View our privacy practices",
+  "@settingsPrivacyPolicySubtitle": {
+    "description": "Privacy policy tile subtitle"
+  },
+  "settingsRevokeConsentTile": "Withdraw my consent",
+  "@settingsRevokeConsentTile": {
+    "description": "Revoke consent tile title in Settings"
+  },
+  "settingsRevokeConsentSubtitle": "Revoke access to your personal data",
+  "@settingsRevokeConsentSubtitle": {
+    "description": "Revoke consent tile subtitle"
+  },
+  "settingsRevokeConsentDialogTitle": "Withdraw your consent",
+  "@settingsRevokeConsentDialogTitle": {
+    "description": "Title of the revoke consent dialog"
+  },
+  "settingsRevokeConsentDialogBody": "You will be immediately redirected to the consent page. You can accept again at any time.",
+  "@settingsRevokeConsentDialogBody": {
+    "description": "Body of the revoke consent dialog"
+  },
+  "settingsRevokeConsentDialogConfirm": "Withdraw",
+  "@settingsRevokeConsentDialogConfirm": {
+    "description": "Confirm button in revoke consent dialog"
+  },
+  "settingsRevokeConsentDialogCancel": "Cancel",
+  "@settingsRevokeConsentDialogCancel": {
+    "description": "Cancel button in revoke consent dialog"
+  },
+  "settingsRevokeConsentError": "Error withdrawing consent. Please try again.",
+  "@settingsRevokeConsentError": {
+    "description": "Error message if consent revocation fails"
+  },
+  "settingsDeleteAccountTile": "Delete my account",
+  "@settingsDeleteAccountTile": {
+    "description": "Delete account tile title in Settings"
+  },
+  "settingsDeleteAccountSubtitle": "Request deletion of your data",
+  "@settingsDeleteAccountSubtitle": {
+    "description": "Delete account tile subtitle"
+  },
+  "settingsDeleteAccountDialogTitle": "Delete your account",
+  "@settingsDeleteAccountDialogTitle": {
+    "description": "Account deletion dialog title"
+  },
+  "settingsDeleteAccountDialogBody": "To delete your account and all your personal data, send an email to:",
+  "@settingsDeleteAccountDialogBody": {
+    "description": "Account deletion dialog body"
+  },
+  "settingsDeleteAccountDialogCopyEmail": "Copy email address",
+  "@settingsDeleteAccountDialogCopyEmail": {
+    "description": "Button to copy contact email to clipboard"
+  },
+  "settingsDeleteAccountEmailCopied": "Email address copied",
+  "@settingsDeleteAccountEmailCopied": {
+    "description": "Snackbar confirming email copied to clipboard"
   }
 }

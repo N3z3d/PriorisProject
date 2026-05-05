@@ -3,47 +3,11 @@
 @Tags(['integration'])
 library;
 
-import 'dart:io';
-
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:gotrue/gotrue.dart';
 import 'package:prioris/data/repositories/supabase/supabase_habit_repository.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
-import 'package:prioris/infrastructure/services/auth_service.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// Lit les credentials Supabase directement depuis .env (bypass flutter_test_config.dart
-/// qui injecte une URL de mock 'tests-prioris.supabase.co' pour les tests unitaires).
-Map<String, String> _readDotEnv() {
-  final file = File('.env');
-  if (!file.existsSync()) throw StateError('.env introuvable — lancer depuis la racine du projet');
-  final result = <String, String>{};
-  for (final line in file.readAsLinesSync()) {
-    final trimmed = line.trim();
-    if (trimmed.isEmpty || trimmed.startsWith('#')) continue;
-    final idx = trimmed.indexOf('=');
-    if (idx < 0) continue;
-    result[trimmed.substring(0, idx).trim()] = trimmed.substring(idx + 1).trim();
-  }
-  return result;
-}
-
-/// Storage PKCE en memoire pour les tests VM (pas de shared_preferences requis).
-class _InMemoryGotrueAsyncStorage implements GotrueAsyncStorage {
-  final Map<String, String> _store = {};
-
-  @override
-  Future<String?> getItem({required String key}) async => _store[key];
-
-  @override
-  Future<void> setItem({required String key, required String value}) async {
-    _store[key] = value;
-  }
-
-  @override
-  Future<void> removeItem({required String key}) async => _store.remove(key);
-}
+import '../helpers/supabase_test_harness.dart';
 
 /// Tests d'integration Supabase reelle -- CRUD habitudes
 ///
@@ -62,23 +26,7 @@ void main() {
     String testHabitId = '';
 
     setUpAll(() async {
-      WidgetsFlutterBinding.ensureInitialized();
-      final env = _readDotEnv();
-      final supabaseUrl = env['SUPABASE_URL']!;
-      final supabaseAnonKey = env['SUPABASE_ANON_KEY']!;
-      await Supabase.initialize(
-        url: supabaseUrl,
-        anonKey: supabaseAnonKey,
-        authOptions: FlutterAuthClientOptions(
-          detectSessionInUri: false,
-          localStorage: const EmptyLocalStorage(),
-          pkceAsyncStorage: _InMemoryGotrueAsyncStorage(),
-        ),
-      );
-      await AuthService.instance.signIn(
-        email: 'test_1776892399910_958@example.com',
-        password: 'TestPassword123!',
-      );
+      await SupabaseTestHarness.setUp();
       repository = SupabaseHabitRepository();
     });
 
@@ -91,7 +39,7 @@ void main() {
           print('Cleanup warning: could not delete $testHabitId -- $e');
         }
       }
-      await AuthService.instance.signOut();
+      await SupabaseTestHarness.tearDown();
     });
 
     test('CRUD complet sans PostgrestException', () async {
@@ -108,16 +56,18 @@ void main() {
         reason: 'saveHabit must not throw PostgrestException',
       );
 
-      // READ
+      // READ — search by name: DB trigger may overwrite the Dart-generated UUID
       final allHabits = await repository.getAllHabits();
+      final savedHabits = allHabits.where((h) => h.name == 'Test 7.1 Schema CRUD').toList();
       expect(
-        allHabits.any((h) => h.id == testHabitId),
+        savedHabits.isNotEmpty,
         isTrue,
         reason: 'getAllHabits must return the created habit',
       );
+      testHabitId = savedHabits.first.id; // use actual DB id for cleanup + DELETE
 
-      // UPDATE
-      final updated = habit.copyWith(name: 'Test 7.1 Schema Updated');
+      // UPDATE — use fetched habit (carries real user_id for RLS WITH CHECK)
+      final updated = savedHabits.first.copyWith(name: 'Test 7.1 Schema Updated');
       await expectLater(
         () => repository.updateHabit(updated),
         returnsNormally,

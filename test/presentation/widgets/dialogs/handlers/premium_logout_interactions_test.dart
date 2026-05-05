@@ -82,6 +82,7 @@ void main() {
 
         await tester.pumpWidget(
           MaterialApp(
+            theme: ThemeData(splashFactory: InkRipple.splashFactory),
             home: Builder(
               builder: (context) {
                 return ElevatedButton(
@@ -120,6 +121,7 @@ void main() {
 
         await tester.pumpWidget(
           MaterialApp(
+            theme: ThemeData(splashFactory: InkRipple.splashFactory),
             home: Builder(
               builder: (context) {
                 return ElevatedButton(
@@ -158,6 +160,7 @@ void main() {
       testWidgets('should show data clear confirmation dialog', (WidgetTester tester) async {
         await tester.pumpWidget(
           MaterialApp(
+            theme: ThemeData(splashFactory: InkRipple.splashFactory),
             home: Builder(
               builder: (context) {
                 return ElevatedButton(
@@ -195,6 +198,7 @@ void main() {
 
         await tester.pumpWidget(
           MaterialApp(
+            theme: ThemeData(splashFactory: InkRipple.splashFactory),
             home: Builder(
               builder: (context) {
                 return ElevatedButton(
@@ -237,6 +241,7 @@ void main() {
 
         await tester.pumpWidget(
           MaterialApp(
+            theme: ThemeData(splashFactory: InkRipple.splashFactory),
             home: Builder(
               builder: (context) {
                 return ElevatedButton(
@@ -296,6 +301,7 @@ void main() {
       testWidgets('should work with data clear confirmation dialog animations', (WidgetTester tester) async {
         await tester.pumpWidget(
           MaterialApp(
+            theme: ThemeData(splashFactory: InkRipple.splashFactory),
             home: Builder(
               builder: (context) {
                 return ElevatedButton(

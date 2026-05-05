@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/data/providers/habits_state_provider.dart';
+import 'package:prioris/domain/models/core/entities/habit.dart';
+import 'package:prioris/domain/services/calculation/habit_calculation_service.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/pages/home_page.dart';
+import 'package:prioris/presentation/pages/statistics/widgets/smart/smart_insights_widget.dart';
+import 'package:prioris/presentation/theme/app_theme.dart';
+import 'package:prioris/presentation/widgets/common/displays/premium_card.dart';
 import 'package:prioris/presentation/widgets/common/headers/unified_page_header.dart';
+import 'package:prioris/presentation/widgets/loading/advanced_loading_widget.dart';
 
-/// Page Insights refactorée selon les specs UX
-/// - Tabs: "Aperçu | Tendances" (pas "Habitudes | Statistiques")
-/// - Empty state cohérent: "Pas encore d'analyses"
-/// - CTA unique: "Créer une habitude"
-/// - Pas de FAB sur cette page
 class InsightsPage extends ConsumerStatefulWidget {
   const InsightsPage({super.key});
 
@@ -25,6 +26,9 @@ class _InsightsPageState extends ConsumerState<InsightsPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) ref.read(habitsStateProvider.notifier).loadHabits();
+    });
   }
 
   @override
@@ -36,31 +40,46 @@ class _InsightsPageState extends ConsumerState<InsightsPage>
   @override
   Widget build(BuildContext context) {
     final habits = ref.watch(reactiveHabitsProvider);
+    final isLoading = ref.watch(habitsLoadingProvider);
+    final error = ref.watch(habitsErrorProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return Column(
       children: [
-        _buildPageHeader(habits.length),
-        _buildTabBar(),
+        _buildPageHeader(habits.length, l10n),
+        _buildTabBar(l10n),
         Expanded(
-          child: _buildTabBarView(),
+          child: error != null
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: AdvancedErrorWidget(
+                      message: error,
+                      onRetry: () =>
+                          ref.read(habitsStateProvider.notifier).loadHabits(),
+                    ),
+                  ),
+                )
+              : isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _buildTabBarView(habits, l10n),
         ),
       ],
     );
   }
 
-  Widget _buildPageHeader(int habitCount) {
+  Widget _buildPageHeader(int habitCount, AppLocalizations l10n) {
     return UnifiedPageHeader(
       icon: Icons.insights,
-      title: 'Analysez vos progrès',
+      title: l10n.insightsHeaderTitle,
       subtitle: habitCount > 0
-          ? 'Aperçu et tendances de vos $habitCount habitudes'
-          : 'Créez des habitudes pour voir vos statistiques',
+          ? l10n.insightsHeaderSubtitleWithHabits(habitCount)
+          : l10n.insightsHeaderSubtitleEmpty,
       iconColor: AppTheme.secondaryColor,
     );
   }
 
-  /// Construit la barre d'onglets Aperçu | Tendances (sans icônes)
-  Widget _buildTabBar() {
+  Widget _buildTabBar(AppLocalizations l10n) {
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.cardColor,
@@ -78,106 +97,79 @@ class _InsightsPageState extends ConsumerState<InsightsPage>
         unselectedLabelColor: AppTheme.textTertiary,
         indicatorColor: AppTheme.primaryColor,
         indicatorWeight: 3,
-        labelStyle: const TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 14,
-        ),
-        tabs: const [
-          Tab(text: 'Aperçu'),
-          Tab(text: 'Tendances'),
+        labelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+        tabs: [
+          Tab(text: l10n.insightsTabOverview),
+          Tab(text: l10n.insightsTabTrends),
         ],
       ),
     );
   }
 
-  /// Construit le contenu des tabs avec empty states appropriés
-  Widget _buildTabBarView() {
-    final habits = ref.watch(reactiveHabitsProvider);
+  Widget _buildTabBarView(List<Habit> habits, AppLocalizations l10n) {
     final hasData = habits.isNotEmpty;
 
     return TabBarView(
       controller: _tabController,
       children: [
         hasData
-            ? _buildOverviewTab()
-            : _buildEmptyState(
-                context,
-                title: 'Pas encore d\'analyses',
-                message: 'Créez votre première habitude pour voir vos progrès ici.',
-              ),
+            ? _buildOverviewTab(habits, l10n)
+            : _buildEmptyState(context, l10n),
         hasData
-            ? _buildTrendsTab()
-            : _buildEmptyState(
-                context,
-                title: 'Pas encore d\'analyses',
-                message: 'Créez votre première habitude pour voir vos progrès ici.',
-              ),
+            ? _buildTrendsTab(habits, l10n)
+            : _buildEmptyState(context, l10n),
       ],
     );
   }
 
-  /// Construit l'onglet Aperçu (statistiques principales)
-  Widget _buildOverviewTab() {
+  Widget _buildOverviewTab(List<Habit> habits, AppLocalizations l10n) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: SmartInsightsWidget(
+        insights: HabitCalculationService.generateHabitInsights(habits),
+      ),
+    );
+  }
+
+  Widget _buildTrendsTab(List<Habit> habits, AppLocalizations l10n) {
+    final successRate = HabitCalculationService.calculateSuccessRate(habits);
+    final streak = HabitCalculationService.calculateCurrentStreak(habits);
+    final todayRate = HabitCalculationService.calculateTodayCompletionRate(habits);
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: AppTheme.cardColor,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Center(
-              child: Text(
-                'Aperçu des statistiques à venir',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: AppTheme.textSecondary,
-                ),
-              ),
-            ),
+          _buildMetricCard(l10n.insightsTrendsSuccessRate, '$successRate%'),
+          const SizedBox(height: 12),
+          _buildMetricCard(l10n.insightsTrendsStreak, l10n.insightsTrendsStreakDays(streak)),
+          const SizedBox(height: 12),
+          _buildMetricCard(l10n.insightsTrendsToday, '$todayRate%'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMetricCard(String label, String value) {
+    return PremiumCard(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(fontSize: 14, color: AppTheme.textSecondary),
+          ),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ],
       ),
     );
   }
 
-  /// Construit l'onglet Tendances (graphiques)
-  Widget _buildTrendsTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: AppTheme.cardColor,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Center(
-              child: Text(
-                'Graphiques de tendances à venir',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: AppTheme.textSecondary,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Construit un empty state cohérent (règle: un seul CTA)
-  Widget _buildEmptyState(
-    BuildContext context, {
-    required String title,
-    required String message,
-  }) {
+  Widget _buildEmptyState(BuildContext context, AppLocalizations l10n) {
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 400),
@@ -192,7 +184,7 @@ class _InsightsPageState extends ConsumerState<InsightsPage>
             ),
             const SizedBox(height: 24),
             Text(
-              title,
+              l10n.insightsEmptyTitle,
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
@@ -202,28 +194,24 @@ class _InsightsPageState extends ConsumerState<InsightsPage>
             ),
             const SizedBox(height: 12),
             Text(
-              message,
-              style: TextStyle(
-                fontSize: 16,
-                color: AppTheme.textSecondary,
-              ),
+              l10n.insightsEmptyBody,
+              style: const TextStyle(fontSize: 16, color: AppTheme.textSecondary),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
-            _buildPrimaryCTA(context),
+            _buildPrimaryCTA(context, l10n),
           ],
         ),
       ),
     );
   }
 
-  /// CTA primaire unique: "Créer une habitude"
-  Widget _buildPrimaryCTA(BuildContext context) {
+  Widget _buildPrimaryCTA(BuildContext context, AppLocalizations l10n) {
     return SizedBox(
       width: double.infinity,
       height: 48,
       child: ElevatedButton(
-        onPressed: () => _navigateToHabits(context),
+        onPressed: () => _navigateToHabits(),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.accentColor,
           foregroundColor: Colors.white,
@@ -231,20 +219,15 @@ class _InsightsPageState extends ConsumerState<InsightsPage>
             borderRadius: BorderRadius.circular(8),
           ),
         ),
-        child: const Text(
-          'Créer une habitude',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+        child: Text(
+          l10n.insightsCtaCreateHabit,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
     );
   }
 
-  /// Navigation vers la page Habitudes > Nouvelle
-  void _navigateToHabits(BuildContext context) {
-    // Change vers l'onglet Habitudes (index 2)
+  void _navigateToHabits() {
     ref.read(currentPageProvider.notifier).state = 2;
   }
 }

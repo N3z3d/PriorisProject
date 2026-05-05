@@ -10,6 +10,7 @@ void main() {
       // Variable inutilisée supprimée
       
       await tester.pumpWidget(MaterialApp(
+        theme: ThemeData(splashFactory: InkRipple.splashFactory),
         home: Scaffold(
           body: Builder(
             builder: (context) => ElevatedButton(
@@ -46,6 +47,7 @@ void main() {
       ListItem? result;
       
       await tester.pumpWidget(MaterialApp(
+        theme: ThemeData(splashFactory: InkRipple.splashFactory),
         home: Scaffold(
           body: Builder(
             builder: (context) => ElevatedButton(
@@ -89,6 +91,7 @@ void main() {
     testWidgets('valide le titre obligatoire', (WidgetTester tester) async {
       // Arrange
       await tester.pumpWidget(MaterialApp(
+        theme: ThemeData(splashFactory: InkRipple.splashFactory),
         home: Scaffold(
           body: Builder(
             builder: (context) => ElevatedButton(
@@ -134,6 +137,7 @@ void main() {
       ListItem? result;
       
       await tester.pumpWidget(MaterialApp(
+        theme: ThemeData(splashFactory: InkRipple.splashFactory),
         home: Scaffold(
           body: Builder(
             builder: (context) => ElevatedButton(
@@ -182,6 +186,7 @@ void main() {
       ListItem? result;
       
       await tester.pumpWidget(MaterialApp(
+        theme: ThemeData(splashFactory: InkRipple.splashFactory),
         home: Scaffold(
           body: Builder(
             builder: (context) => ElevatedButton(
@@ -218,6 +223,7 @@ void main() {
       final longTitle = 'a' * 250; // Titre trop long
       
       await tester.pumpWidget(MaterialApp(
+        theme: ThemeData(splashFactory: InkRipple.splashFactory),
         home: Scaffold(
           body: Builder(
             builder: (context) => ElevatedButton(
@@ -253,6 +259,7 @@ void main() {
       ListItem? result;
       
       await tester.pumpWidget(MaterialApp(
+        theme: ThemeData(splashFactory: InkRipple.splashFactory),
         home: Scaffold(
           body: Builder(
             builder: (context) => ElevatedButton(

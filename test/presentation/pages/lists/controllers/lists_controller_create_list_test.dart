@@ -97,7 +97,8 @@ class _InMemoryPersistence implements IListsPersistenceManager {
   Future<void> deleteListItem(String itemId) async {}
 
   @override
-  Future<void> saveMultipleItems(List<ListItem> items) async {}
+  Future<void> saveMultipleItems(
+      List<ListItem> items, {void Function(int, int)? onProgress}) async {}
 
   @override
   Future<List<CustomList>> forceReloadFromPersistence() async =>

@@ -1,6 +1,6 @@
 # Story 7.5 : Améliorer les messages d'erreur et les états de chargement globaux
 
-Status: review
+Status: done
 
 ## Story
 
@@ -538,3 +538,20 @@ claude-sonnet-4-6
 | Date       | Version | Description                                             | Author           |
 |------------|---------|---------------------------------------------------------|------------------|
 | 2026-04-26 | 1.0     | Implémentation complète story 7.5 — messages d'erreur et états de chargement globaux | claude-sonnet-4-6 |
+
+---
+
+### Review Findings
+
+- [x] [Review][Decision→Fixed] `_buildErrorState` — ajout `onRetry: () => ref.invalidate(listsInitializationManagerProvider)` + passage de `WidgetRef ref` au helper [`list_detail_loader_page.dart:115-123`]
+
+- [x] [Review][Dismiss] `_buildNoListsState` body — faux positif (blind hunter) : `noListsTitle` (heading) + `noListsBody` (description) sont TOUS LES DEUX rendus, pattern empty-state standard [`list_detail_loader_page.dart:106-108`]
+
+- [x] [Review][Defer] `AppErrorWidget` collapse 401/403/validation dans le message générique — conception intentionnelle de la story (réseau vs générique uniquement), à enrichir dans une story dédiée [defer, out of scope]
+- [x] [Review][Defer] `HabitsErrorState` n'utilise pas `AppErrorWidget` — hors scope per spec (ses propres clés i18n habitsError*) [defer, out of scope]
+- [x] [Review][Defer] `habits_body_test.dart` — aucun test ne couvre le chemin error-state avec onRetry non-nul [defer, low risk, wiring simple]
+- [x] [Review][Defer] Test cas 3 `AppErrorWidget` — seul `find.byIcon(Icons.refresh)` vérifié, le tap callback n'est pas asserté [defer, weak but acceptable]
+- [x] [Review][Defer] `ExceptionHandler.handle` avale les sous-classes `Error` (AssertionError, etc.) — pré-existant, non introduit par 7.5 [defer, pre-existing]
+- [x] [Review][Defer] `ExceptionHandler.handle` classification par pattern-matching string — pré-existant, blast radius étendu par 7.5 [defer, pre-existing]
+- [x] [Review][Defer] 6 appels `print()` dans `list_detail_loader_page.dart` — pré-existants, fichier modifié mais nettoyage hors scope [defer, pre-existing]
+- [x] [Review][Defer] `HabitsLoadingState` sans label i18n — hors scope per spec [defer, out of scope]

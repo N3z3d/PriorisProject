@@ -16,9 +16,11 @@ void main() {
       expect(find.byKey(const ValueKey('habit-name-field')), findsOneWidget);
       expect(find.byKey(const ValueKey('habit-category-dropdown')), findsOneWidget);
 
-      expect(find.text('Je veux faire cette habitude'), findsOneWidget);
+      expect(find.text('Je veux faire cette habitude'), findsAtLeastNWidgets(1));
       expect(find.byKey(const ValueKey('habit-tracking-times-field')), findsOneWidget);
 
+      await tester.ensureVisible(find.byKey(const ValueKey('habit-period-dropdown')));
+      await tester.pumpAndSettle();
       await tester.tap(find.byKey(const ValueKey('habit-period-dropdown')));
       await tester.pumpAndSettle();
 
@@ -34,6 +36,8 @@ void main() {
 
       await tester.enterText(find.byKey(const ValueKey('habit-name-field')), 'Boire de l eau');
 
+      await tester.ensureVisible(find.byKey(const ValueKey('habit-period-dropdown')));
+      await tester.pumpAndSettle();
       await tester.tap(find.byKey(const ValueKey('habit-period-dropdown')));
       await tester.pumpAndSettle();
       await tester.tap(find.text('tous les...').last);
@@ -66,6 +70,8 @@ void main() {
         find.byKey(const ValueKey('habit-tracking-times-field')),
         '3',
       );
+      await tester.ensureVisible(find.byKey(const ValueKey('habit-period-dropdown')));
+      await tester.pumpAndSettle();
       await tester.tap(find.byKey(const ValueKey('habit-period-dropdown')));
       await tester.pumpAndSettle();
       await tester.tap(find.text('par semaine').last);
@@ -120,6 +126,8 @@ void main() {
 
       await tester.enterText(find.byKey(const ValueKey('habit-name-field')), 'Sport');
       await tester.enterText(find.byKey(const ValueKey('habit-tracking-times-field')), '3');
+      await tester.ensureVisible(find.byKey(const ValueKey('habit-period-dropdown')));
+      await tester.pumpAndSettle();
       await tester.tap(find.byKey(const ValueKey('habit-period-dropdown')));
       await tester.pumpAndSettle();
       await tester.tap(find.text('par semaine').last);
@@ -128,10 +136,13 @@ void main() {
       final submitButton =
           find.byWidgetPredicate((widget) => widget is ElevatedButton);
 
-      await tester.drag(find.byType(SingleChildScrollView), const Offset(0, -800));
+      await tester.ensureVisible(submitButton);
       await tester.pumpAndSettle();
 
       await tester.tap(submitButton);
+      await tester.pumpAndSettle();
+      // Dismiss the "no category" confirmation dialog
+      await tester.tap(find.text('Continuer'));
       await tester.pumpAndSettle();
 
       expect(submitted, isNotNull);
@@ -149,6 +160,7 @@ Widget _buildForm({
 }) {
   return MaterialApp(
     locale: const Locale('fr'),
+    theme: ThemeData(splashFactory: InkRipple.splashFactory),
     supportedLocales: AppLocalizations.supportedLocales,
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     home: Scaffold(

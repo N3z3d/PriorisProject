@@ -114,6 +114,7 @@ void main() {
 Widget _wrapWithMaterial(Widget child) {
   return MaterialApp(
     locale: const Locale('fr'),
+    theme: ThemeData(splashFactory: InkRipple.splashFactory),
     supportedLocales: AppLocalizations.supportedLocales,
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     home: Scaffold(

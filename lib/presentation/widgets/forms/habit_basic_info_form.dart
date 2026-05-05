@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import '../selectors/category_selector.dart';
 
 class HabitBasicInfoForm extends StatelessWidget {
@@ -30,7 +31,7 @@ class HabitBasicInfoForm extends StatelessWidget {
         const SizedBox(height: 16),
         _buildCategorySelector(),
         const SizedBox(height: 16),
-        _buildTypeDropdown(),
+        _buildTypeDropdown(context),
       ],
     );
   }
@@ -72,21 +73,22 @@ class HabitBasicInfoForm extends StatelessWidget {
     );
   }
 
-  Widget _buildTypeDropdown() {
+  Widget _buildTypeDropdown(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return DropdownButtonFormField<HabitType>(
       value: selectedType,
       decoration: const InputDecoration(
         labelText: "Type d'habitude",
         border: OutlineInputBorder(),
       ),
-      items: const [
+      items: [
         DropdownMenuItem(
           value: HabitType.binary,
-          child: Text('Binaire (Oui/Non)'),
+          child: Text(l10n.habitFormTypeBinaryOption),
         ),
         DropdownMenuItem(
           value: HabitType.quantitative,
-          child: Text('Quantitatif (Nombre)'),
+          child: Text(l10n.habitFormTypeQuantOption),
         ),
       ],
       onChanged: (value) {

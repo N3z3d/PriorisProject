@@ -70,6 +70,7 @@ void main() {
     testWidgets('déclenche onTap quand tapé', (WidgetTester tester) async {
       bool tapped = false;
       await tester.pumpWidget(MaterialApp(
+        theme: ThemeData(splashFactory: InkRipple.splashFactory),
         home: Scaffold(
           body: CommonListTile(title: 'Titre', onTap: () => tapped = true),
         ),

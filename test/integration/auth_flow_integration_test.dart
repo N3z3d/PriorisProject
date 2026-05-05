@@ -1,3 +1,8 @@
+// ignore_for_file: avoid_print
+
+@Tags(['integration'])
+library;
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -1108,7 +1113,8 @@ class TestAuthService implements AuthService {
 
   @override
   bool get hasValidSession =>
-      forcedHasValidSession ?? AuthService.isSessionUsable(_currentSession);
+      forcedHasValidSession ??
+          WebAuthCallbackStabilizer.isSessionUsable(_currentSession);
 
   @override
   bool get isSignedIn => _currentUser != null;

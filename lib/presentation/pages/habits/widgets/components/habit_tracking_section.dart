@@ -63,18 +63,7 @@ class HabitTrackingSection extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppTheme.surfaceColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.dividerColor.withValues(alpha: 0.6)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+      decoration: _containerDecoration(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -86,18 +75,7 @@ class HabitTrackingSection extends StatelessWidget {
                 ),
           ),
           const SizedBox(height: 16),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              _modeChip(l10n.habitTrackingPrefix, TrackingMode.period),
-              _modeChip(l10n.habitTrackingEveryWord, TrackingMode.interval),
-              _modeChip(l10n.habitTrackingModeCycle, TrackingMode.cycle),
-              _modeChip(l10n.habitTrackingModeWeekdays, TrackingMode.weekdays),
-              _modeChip(l10n.habitTrackingModeSpecificDate,
-                  TrackingMode.specificDate),
-            ],
-          ),
+          _buildModeChips(l10n),
           const SizedBox(height: 12),
           _buildModeContent(l10n),
           const SizedBox(height: 8),
@@ -109,6 +87,35 @@ class HabitTrackingSection extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  BoxDecoration _containerDecoration() {
+    return BoxDecoration(
+      color: AppTheme.surfaceColor,
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: AppTheme.dividerColor.withValues(alpha: 0.6)),
+      boxShadow: const [
+        BoxShadow(
+          color: Color(0x0D000000),
+          blurRadius: 12,
+          offset: Offset(0, 4),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildModeChips(AppLocalizations l10n) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        _modeChip(l10n.habitTrackingPrefix, TrackingMode.period),
+        _modeChip(l10n.habitTrackingEveryWord, TrackingMode.interval),
+        _modeChip(l10n.habitTrackingModeCycle, TrackingMode.cycle),
+        _modeChip(l10n.habitTrackingModeWeekdays, TrackingMode.weekdays),
+        _modeChip(l10n.habitTrackingModeSpecificDate, TrackingMode.specificDate),
+      ],
     );
   }
 

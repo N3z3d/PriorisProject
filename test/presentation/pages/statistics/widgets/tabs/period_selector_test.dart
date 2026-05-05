@@ -7,6 +7,7 @@ void main() {
     String selected = '7_days';
     await tester.pumpWidget(
       MaterialApp(
+        theme: ThemeData(splashFactory: InkRipple.splashFactory),
         home: Scaffold(
           body: PeriodSelector(
             selectedPeriod: selected,

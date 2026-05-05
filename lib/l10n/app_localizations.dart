@@ -768,11 +768,47 @@ abstract class AppLocalizations {
   /// **'Overview'**
   String get overview;
 
+  /// Label for the overview tab on the insights page
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get insightsTabOverview;
+
   /// Label for the trends tab in insights
   ///
   /// In en, this message translates to:
   /// **'Trends'**
   String get insightsTabTrends;
+
+  /// Primary CTA button in the insights empty state
+  ///
+  /// In en, this message translates to:
+  /// **'Create a habit'**
+  String get insightsCtaCreateHabit;
+
+  /// Success rate metric label in Trends tab
+  ///
+  /// In en, this message translates to:
+  /// **'Success rate'**
+  String get insightsTrendsSuccessRate;
+
+  /// Current streak metric label in Trends tab
+  ///
+  /// In en, this message translates to:
+  /// **'Current streak'**
+  String get insightsTrendsStreak;
+
+  /// Formatted streak value with day unit
+  ///
+  /// In en, this message translates to:
+  /// **'{count} d.'**
+  String insightsTrendsStreakDays(int count);
+
+  /// Today completion metric label in Trends tab
+  ///
+  /// In en, this message translates to:
+  /// **'Completed today'**
+  String get insightsTrendsToday;
 
   /// Habits tab title
   ///
@@ -3299,6 +3335,210 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create your first list to get started.'**
   String get noListsBody;
+
+  /// Snackbar message when a feature is still in development
+  ///
+  /// In en, this message translates to:
+  /// **'Feature in development'**
+  String get settingsFeatureInDevelopment;
+
+  /// Archive action for an item
+  ///
+  /// In en, this message translates to:
+  /// **'Archive'**
+  String get archiveAction;
+
+  /// Title of the create list dialog
+  ///
+  /// In en, this message translates to:
+  /// **'New list'**
+  String get listCreateDialogTitle;
+
+  /// Error message when list creation fails
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to create the list. Try again.'**
+  String get listCreateError;
+
+  /// Error message when list edit fails
+  ///
+  /// In en, this message translates to:
+  /// **'Error while editing: {error}'**
+  String listEditError(String error);
+
+  /// Error message when list deletion fails
+  ///
+  /// In en, this message translates to:
+  /// **'Error while deleting: {error}'**
+  String listDeleteError(String error);
+
+  /// Sign-out without clearing local data
+  ///
+  /// In en, this message translates to:
+  /// **'Keep my data'**
+  String get logoutKeepDataAction;
+
+  /// Sign-out with local data cleared
+  ///
+  /// In en, this message translates to:
+  /// **'Clear my data'**
+  String get logoutClearDataAction;
+
+  /// Success snackbar when a list is created
+  ///
+  /// In en, this message translates to:
+  /// **'List \"{title}\" created successfully'**
+  String listCreatedSuccess(String title);
+
+  /// Success snackbar when a list is updated
+  ///
+  /// In en, this message translates to:
+  /// **'List \"{name}\" updated successfully'**
+  String listUpdatedSuccess(String name);
+
+  /// Success snackbar when a list is deleted
+  ///
+  /// In en, this message translates to:
+  /// **'List \"{name}\" deleted successfully'**
+  String listDeletedSuccess(String name);
+
+  /// Question about data handling in logout dialog
+  ///
+  /// In en, this message translates to:
+  /// **'What would you like to do with your local data?'**
+  String get logoutDataQuestion;
+
+  /// Info about local data storage in logout dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Your lists are stored locally on this device'**
+  String get logoutLocalDataInfo;
+
+  /// Title of the GDPR consent page
+  ///
+  /// In en, this message translates to:
+  /// **'Data Protection'**
+  String get privacyConsentTitle;
+
+  /// Explanation text for GDPR consent
+  ///
+  /// In en, this message translates to:
+  /// **'Prioris collects your personal data (tasks, habits, profile) to provide the service. Your data is stored securely and is not shared with third parties for advertising purposes.'**
+  String get privacyConsentBody;
+
+  /// GDPR consent accept button
+  ///
+  /// In en, this message translates to:
+  /// **'I accept and continue'**
+  String get privacyConsentAcceptButton;
+
+  /// Link to privacy policy on consent page
+  ///
+  /// In en, this message translates to:
+  /// **'Read the privacy policy'**
+  String get privacyConsentReadPolicyLink;
+
+  /// Title of the privacy policy page
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicyTitle;
+
+  /// Privacy section title in Settings
+  ///
+  /// In en, this message translates to:
+  /// **'PRIVACY & DATA'**
+  String get settingsPrivacySectionTitle;
+
+  /// Privacy policy tile title in Settings
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get settingsPrivacyPolicyTile;
+
+  /// Privacy policy tile subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'View our privacy practices'**
+  String get settingsPrivacyPolicySubtitle;
+
+  /// Revoke consent tile title in Settings
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw my consent'**
+  String get settingsRevokeConsentTile;
+
+  /// Revoke consent tile subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke access to your personal data'**
+  String get settingsRevokeConsentSubtitle;
+
+  /// Title of the revoke consent dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw your consent'**
+  String get settingsRevokeConsentDialogTitle;
+
+  /// Body of the revoke consent dialog
+  ///
+  /// In en, this message translates to:
+  /// **'You will be immediately redirected to the consent page. You can accept again at any time.'**
+  String get settingsRevokeConsentDialogBody;
+
+  /// Confirm button in revoke consent dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw'**
+  String get settingsRevokeConsentDialogConfirm;
+
+  /// Cancel button in revoke consent dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get settingsRevokeConsentDialogCancel;
+
+  /// Error message if consent revocation fails
+  ///
+  /// In en, this message translates to:
+  /// **'Error withdrawing consent. Please try again.'**
+  String get settingsRevokeConsentError;
+
+  /// Delete account tile title in Settings
+  ///
+  /// In en, this message translates to:
+  /// **'Delete my account'**
+  String get settingsDeleteAccountTile;
+
+  /// Delete account tile subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Request deletion of your data'**
+  String get settingsDeleteAccountSubtitle;
+
+  /// Account deletion dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Delete your account'**
+  String get settingsDeleteAccountDialogTitle;
+
+  /// Account deletion dialog body
+  ///
+  /// In en, this message translates to:
+  /// **'To delete your account and all your personal data, send an email to:'**
+  String get settingsDeleteAccountDialogBody;
+
+  /// Button to copy contact email to clipboard
+  ///
+  /// In en, this message translates to:
+  /// **'Copy email address'**
+  String get settingsDeleteAccountDialogCopyEmail;
+
+  /// Snackbar confirming email copied to clipboard
+  ///
+  /// In en, this message translates to:
+  /// **'Email address copied'**
+  String get settingsDeleteAccountEmailCopied;
 }
 
 class _AppLocalizationsDelegate

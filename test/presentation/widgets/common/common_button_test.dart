@@ -15,7 +15,9 @@ void main() {
 
     testWidgets('déclenche onPressed quand tapé', (WidgetTester tester) async {
       bool tapped = false;
+      // InkRipple évite le shader ink_sparkle.frag qui échoue dans l'env de test
       await tester.pumpWidget(MaterialApp(
+        theme: ThemeData(splashFactory: InkRipple.splashFactory),
         home: Scaffold(
           body: CommonButton(text: 'Cliquer', onPressed: () => tapped = true),
         ),
@@ -118,27 +120,34 @@ void main() {
     });
 
     testWidgets('utilise la couleur personnalisée', (WidgetTester tester) async {
+      // Couleur sombre avec contraste suffisant contre le texte blanc (ratio ~9:1)
+      const accessibleDarkBlue = Color(0xFF1565C0);
       await tester.pumpWidget(MaterialApp(
         home: Scaffold(
-          body: CommonButton(text: 'Cliquer', color: Colors.green),
+          body: CommonButton(text: 'Cliquer', color: accessibleDarkBlue),
         ),
       ));
       final elevatedButton = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
       final style = elevatedButton.style as ButtonStyle;
       final backgroundColor = style.backgroundColor?.resolve({});
-      expect(backgroundColor, Colors.green);
+      expect(backgroundColor, accessibleDarkBlue);
     });
 
     testWidgets('utilise la couleur de texte personnalisée', (WidgetTester tester) async {
+      // Fond sombre + texte blanc : contraste garanti 21:1
       await tester.pumpWidget(MaterialApp(
         home: Scaffold(
-          body: CommonButton(text: 'Cliquer', textColor: Colors.blue),
+          body: CommonButton(
+            text: 'Cliquer',
+            color: Colors.black,
+            textColor: Colors.white,
+          ),
         ),
       ));
       final elevatedButton = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
       final style = elevatedButton.style as ButtonStyle;
       final foregroundColor = style.foregroundColor?.resolve({});
-      expect(foregroundColor, Colors.blue);
+      expect(foregroundColor, Colors.white);
     });
 
     testWidgets('utilise la taille de police personnalisée', (WidgetTester tester) async {

@@ -24,7 +24,7 @@ void main() {
     testWidgets('affiche le titre et le graphique', (tester) async {
       await tester.pumpWidget(createTestWidget());
 
-      expect(find.text('�Y"S Distribution ELO'), findsOneWidget);
+      expect(find.text('🎯 Distribution ELO'), findsOneWidget);
       expect(find.byType(CustomPaint), findsWidgets);
       expect(
         find.text('Répartition de la difficulté de vos tâches en fonction de leur score ELO.'),
@@ -35,7 +35,7 @@ void main() {
     testWidgets('affiche un message lorsque la liste est vide', (tester) async {
       await tester.pumpWidget(createTestWidget(tasks: []));
 
-      expect(find.text('�Y"S Distribution ELO'), findsOneWidget);
+      expect(find.text('🎯 Distribution ELO'), findsOneWidget);
       expect(find.text('Aucune tâche'), findsOneWidget);
       expect(find.byType(CustomPaint), findsWidgets);
     });
@@ -47,7 +47,7 @@ void main() {
       expect(find.text('1200 - 1399'), findsOneWidget);
       expect(find.text('1400 - 1599'), findsOneWidget);
       expect(find.text('1600 - 1799'), findsOneWidget);
-      expect(find.text('1800+'), findsOneWidget);
+      expect(find.text('1800 - 1999'), findsOneWidget);
     });
 
     testWidgets('utilise un Card avec padding interne', (tester) async {

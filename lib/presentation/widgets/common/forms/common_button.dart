@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
@@ -310,11 +312,11 @@ class CommonButton extends StatelessWidget {
     return 0.2126 * r + 0.7152 * g + 0.0722 * b;
   }
 
-  /// Calcule la luminance relative d'un composant de couleur
+  /// Calcule la luminance relative d'un composant de couleur (sRGB IEC 61966-2-1)
   double _getRelativeLuminance(double component) {
     return component <= 0.03928
         ? component / 12.92
-        : ((component + 0.055) / 1.055) * ((component + 0.055) / 1.055);
+        : math.pow((component + 0.055) / 1.055, 2.4).toDouble();
   }
 
   /// Construit un bouton avec couleurs garanties accessibles

@@ -22,6 +22,7 @@ void main() {
     testWidgets('should display glassmorphism design elements', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(
@@ -56,6 +57,7 @@ void main() {
     testWidgets('should validate and display error messages properly', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(
@@ -92,6 +94,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(
@@ -133,6 +136,7 @@ void main() {
     testWidgets('should close dialog when cancel is pressed', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(
@@ -169,6 +173,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(
@@ -213,6 +218,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(

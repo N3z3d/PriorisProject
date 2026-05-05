@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 
 /// Widget de chargement avancé avec animations et feedbacks visuels
@@ -286,7 +287,7 @@ class AdvancedErrorWidget extends StatelessWidget {
           const SizedBox(height: 16),
           _buildMessage(theme),
           ..._buildDetails(theme),
-          ..._buildRetryButton(theme),
+          ..._buildRetryButton(context, theme),
         ],
       ),
     );
@@ -327,7 +328,7 @@ class AdvancedErrorWidget extends StatelessWidget {
     ];
   }
 
-  List<Widget> _buildRetryButton(ThemeData theme) {
+  List<Widget> _buildRetryButton(BuildContext context, ThemeData theme) {
     if (onRetry == null) {
       return const [];
     }
@@ -336,7 +337,7 @@ class AdvancedErrorWidget extends StatelessWidget {
       ElevatedButton.icon(
         onPressed: onRetry,
         icon: const Icon(Icons.refresh),
-        label: const Text('Reessayer'),
+        label: Text(AppLocalizations.of(context)!.retry),
         style: ElevatedButton.styleFrom(
           backgroundColor: theme.colorScheme.error,
           foregroundColor: theme.colorScheme.onError,

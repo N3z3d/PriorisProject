@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/data/providers/auth_providers.dart';
+import 'package:prioris/data/providers/consent_providers.dart';
 import 'package:prioris/presentation/pages/auth/login_page.dart';
+import 'package:prioris/presentation/pages/consent_gate_page.dart';
 import 'package:prioris/presentation/pages/home_page.dart';
 
 /// Wrapper qui gère la navigation entre login et app principale
@@ -21,7 +23,12 @@ class AuthWrapper extends ConsumerWidget {
         );
         
       case AuthUIState.signedIn:
-        return const HomePage();
+        final consentAsync = ref.watch(consentProvider);
+        return consentAsync.when(
+          data: (hasConsent) => hasConsent ? const HomePage() : const ConsentGatePage(),
+          loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+          error: (_, __) => const HomePage(),
+        );
         
       case AuthUIState.signedOut:
       case AuthUIState.error:

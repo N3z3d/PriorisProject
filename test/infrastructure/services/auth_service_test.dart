@@ -575,11 +575,11 @@ void main() {
     });
 
     group('Error Handling', () {
-      test('signIn should block the known dead fallback Supabase host before network auth',
+      test('signIn should block placeholder Supabase host before network auth',
           () async {
         AppConfig.setTestEnvironment(const {
-          'SUPABASE_URL': 'https://huxddyqkjczckagkpzef.supabase.co',
-          'SUPABASE_ANON_KEY': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dead-host',
+          'SUPABASE_URL': 'https://your-project-id.supabase.co',
+          'SUPABASE_ANON_KEY': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder',
           'SUPABASE_AUTH_REDIRECT_URL': 'https://tests-prioris/auth/callback',
           'ENVIRONMENT': 'test',
           'DEBUG_MODE': 'false',
@@ -590,11 +590,13 @@ void main() {
           password: 'password123',
         )).thenAnswer((_) async => AuthResponse());
 
-        expect(
-          () => authService.signIn(
-            email: 'test@example.com',
-            password: 'password123',
-          ),
+        await expectLater(
+          () async {
+            await authService.signIn(
+              email: 'test@example.com',
+              password: 'password123',
+            );
+          },
           throwsA(
             isA<AppException>()
                 .having(

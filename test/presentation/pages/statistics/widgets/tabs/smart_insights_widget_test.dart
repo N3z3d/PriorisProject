@@ -16,7 +16,7 @@ void main() {
       );
       expect(find.text(insights[0]), findsOneWidget);
       expect(find.text(insights[1]), findsOneWidget);
-      expect(find.text('💡 Insights Intelligents'), findsOneWidget);
+      expect(find.text('Insights intelligents'), findsOneWidget);
     });
 
     testWidgets('affiche les messages Map avec icône', (tester) async {
@@ -41,7 +41,7 @@ void main() {
           home: SmartInsightsWidget(insights: const []),
         ),
       );
-      expect(find.text('💡 Insights Intelligents'), findsOneWidget);
+      expect(find.text('Insights intelligents'), findsOneWidget);
     });
   });
 } 

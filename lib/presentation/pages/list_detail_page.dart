@@ -16,6 +16,7 @@ import 'package:prioris/presentation/pages/lists/widgets/list_search_bar.dart';
 import 'package:prioris/presentation/pages/lists/widgets/list_sort_toolbar.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/domain/services/duplicate_detection_service.dart';
+import 'package:prioris/presentation/pages/lists/services/list_detail_item_service.dart';
 import 'package:prioris/presentation/widgets/dialogs/bulk_add_dialog.dart';
 import 'package:prioris/presentation/widgets/dialogs/duplicate_warning_dialog.dart';
 import 'package:uuid/uuid.dart';
@@ -233,8 +234,6 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
           final existing = (stateList != null && stateList.items.isNotEmpty)
               ? stateList.items
               : widget.list.items;
-          debugPrint('[7.4] existing=${existing.length} widget=${widget.list.items.length} stateList=${stateList?.items.length}');
-
           final result =
               const DuplicateDetectionService().detect(existing, itemTitles);
 
@@ -537,69 +536,11 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
   }
 
   Future<void> _showMoveItemDialog(ListItem item) async {
-    final l10n = AppLocalizations.of(context);
-    final listsState = ref.read(listsControllerProvider);
-    final available =
-        listsState.lists.where((list) => list.id != widget.list.id).toList();
-    if (available.isEmpty) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            l10n?.listMoveNoOtherList ?? "Aucune autre liste disponible",
-          ),
-        ),
-      );
-      return;
-    }
-    String targetId = available.first.id;
-    final selected = await showDialog<String>(
+    await ListDetailItemService(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n?.listMoveDialogTitle ?? "Déplacer l'élément"),
-        content: DropdownButtonFormField<String>(
-          value: targetId,
-          decoration: InputDecoration(
-            labelText: l10n?.listMoveDialogLabel ?? "Liste de destination",
-          ),
-          items: available
-              .map(
-                (list) => DropdownMenuItem(
-                  value: list.id,
-                  child: Text(list.name),
-                ),
-              )
-              .toList(),
-          onChanged: (value) {
-            if (value != null) {
-              targetId = value;
-            }
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(l10n?.cancel ?? "Annuler"),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(targetId),
-            child: Text(l10n?.move ?? "Déplacer"),
-          ),
-        ],
-      ),
-    );
-    if (selected == null || selected == widget.list.id) return;
-    final controller = ref.read(listsControllerProvider.notifier);
-    final updated = item.copyWith(listId: selected, forceCompletedAtNull: true);
-    await controller.removeListItem(widget.list.id, item.id);
-    await controller.addListItem(selected, updated);
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n?.listMoveSaved ?? "Élément déplacé."),
-        ),
-      );
-    }
+      ref: ref,
+      listId: widget.list.id,
+    ).showMoveItemDialog(item);
   }
 
   Future<void> _duplicateItem(ListItem item) async {

@@ -1,6 +1,6 @@
 # Story 7.1 : Corriger le schema mismatch habits.category et sécuriser avec un test d'intégration Supabase
 
-Status: review
+Status: done
 
 ## Story
 

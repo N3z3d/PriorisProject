@@ -194,55 +194,49 @@ class HabitFrequency {
   /// Convert back to RecurrenceType for backward compatibility
   RecurrenceType toRecurrenceType() {
     if (model == FrequencyModel.timesPerPeriod) {
-      switch (period) {
-        case FrequencyPeriod.hour:
-          return RecurrenceType.timesPerHour;
-        case FrequencyPeriod.day:
-          return RecurrenceType.timesPerDay;
-        case FrequencyPeriod.week:
-          return RecurrenceType.timesPerWeek;
-        case FrequencyPeriod.month:
-          // Map to timesPerWeek as closest approximation
-          return RecurrenceType.timesPerWeek;
-        case FrequencyPeriod.quarter:
-          return RecurrenceType.quarterly;
-        case FrequencyPeriod.semester:
-          return RecurrenceType.yearly;
-        case FrequencyPeriod.year:
-          // Map to yearly as closest approximation
-          return RecurrenceType.yearly;
-        case null:
-          return RecurrenceType.dailyInterval;
-      }
-    } else {
-      // Model B: everyXUnits
-      if (dayFilter == DayFilter.weekdays) {
-        return RecurrenceType.weekdays;
-      }
-      if (dayFilter == DayFilter.weekends) {
-        return RecurrenceType.weekends;
-      }
+      return _periodToRecurrenceType(period);
+    }
+    if (dayFilter == DayFilter.weekdays) return RecurrenceType.weekdays;
+    if (dayFilter == DayFilter.weekends) return RecurrenceType.weekends;
+    switch (unit) {
+      case FrequencyUnit.hours:
+        return RecurrenceType.hourlyInterval;
+      case FrequencyUnit.days:
+        return RecurrenceType.dailyInterval;
+      case FrequencyUnit.weeks:
+        return specificWeekdays != null
+            ? RecurrenceType.weeklyDays
+            : RecurrenceType.dailyInterval;
+      case FrequencyUnit.months:
+        return monthlyDay != null
+            ? RecurrenceType.monthlyDay
+            : RecurrenceType.monthly;
+      case FrequencyUnit.quarters:
+        return RecurrenceType.quarterly;
+      case FrequencyUnit.years:
+        return RecurrenceType.yearly;
+      case null:
+        return RecurrenceType.dailyInterval;
+    }
+  }
 
-      switch (unit) {
-        case FrequencyUnit.hours:
-          return RecurrenceType.hourlyInterval;
-        case FrequencyUnit.days:
-          return RecurrenceType.dailyInterval;
-        case FrequencyUnit.weeks:
-          return specificWeekdays != null
-              ? RecurrenceType.weeklyDays
-              : RecurrenceType.dailyInterval;
-        case FrequencyUnit.months:
-          return monthlyDay != null
-              ? RecurrenceType.monthlyDay
-              : RecurrenceType.monthly;
-        case FrequencyUnit.quarters:
-          return RecurrenceType.quarterly;
-        case FrequencyUnit.years:
-          return RecurrenceType.yearly;
-        case null:
-          return RecurrenceType.dailyInterval;
-      }
+  RecurrenceType _periodToRecurrenceType(FrequencyPeriod? period) {
+    switch (period) {
+      case FrequencyPeriod.hour:
+        return RecurrenceType.timesPerHour;
+      case FrequencyPeriod.day:
+        return RecurrenceType.timesPerDay;
+      case FrequencyPeriod.week:
+        return RecurrenceType.timesPerWeek;
+      case FrequencyPeriod.month:
+        return RecurrenceType.timesPerWeek;
+      case FrequencyPeriod.quarter:
+        return RecurrenceType.quarterly;
+      case FrequencyPeriod.semester:
+      case FrequencyPeriod.year:
+        return RecurrenceType.yearly;
+      case null:
+        return RecurrenceType.dailyInterval;
     }
   }
 

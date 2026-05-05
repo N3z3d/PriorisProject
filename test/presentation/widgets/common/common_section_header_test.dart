@@ -104,9 +104,10 @@ void main() {
 
     testWidgets('should handle action button tap', (WidgetTester tester) async {
       bool actionCalled = false;
-      
+
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: CommonSectionHeader(
               title: 'Test Title',

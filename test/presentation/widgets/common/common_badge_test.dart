@@ -116,7 +116,7 @@ void main() {
       ));
       final container = tester.widget<Container>(find.byType(Container));
       final decoration = container.decoration as BoxDecoration;
-      expect(decoration.borderRadius, BorderRadius.circular(16));
+      expect(decoration.borderRadius, BorderRadius.circular(4));
     });
 
     testWidgets('texte centré et gras', (WidgetTester tester) async {

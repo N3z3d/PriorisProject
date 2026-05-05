@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
 import 'package:prioris/domain/models/core/builders/custom_list_builder.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/widgets/dialogs/quick_add_dialog.dart';
 import 'package:prioris/presentation/widgets/dialogs/dialogs.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
@@ -24,10 +25,11 @@ class ListsDialogService {
 
   /// Affiche le dialogue de création rapide de liste
   Future<void> showCreateListDialog() async {
+    final l10n = AppLocalizations.of(context)!;
     return showDialog(
       context: context,
       builder: (dialogContext) => QuickAddDialog(
-        title: 'Nouvelle Liste',
+        title: l10n.listCreateDialogTitle,
         hintText: 'Nom de la liste...',
         onSubmit: (title) => _handleCreateList(title),
       ),
@@ -47,10 +49,11 @@ class ListsDialogService {
 
   /// Affiche le dialogue de confirmation de suppression
   Future<void> showDeleteConfirmationDialog(CustomList list) async {
+    final l10n = AppLocalizations.of(context)!;
     return showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Supprimer la liste'),
+        title: Text(l10n.listDeleteDialogTitle),
         content: Text(
           'Êtes-vous sûr de vouloir supprimer "${list.name}" ? '
           'Cette action est irréversible.',
@@ -58,7 +61,7 @@ class ListsDialogService {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Annuler'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () {
@@ -68,7 +71,7 @@ class ListsDialogService {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.errorColor,
             ),
-            child: const Text('Supprimer'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -91,7 +94,7 @@ class ListsDialogService {
       if (context.mounted) {
         messenger.showSnackBar(
           SnackBar(
-            content: Text('Liste "$title" créée ✅'),
+            content: Text(AppLocalizations.of(context)!.listCreatedSuccess(title)),
             backgroundColor: AppTheme.successColor,
           ),
         );
@@ -104,7 +107,7 @@ class ListsDialogService {
       if (context.mounted) {
         messenger.showSnackBar(
           SnackBar(
-            content: const Text('Impossible de créer la liste. Réessayez.'),
+            content: Text(AppLocalizations.of(context)!.listCreateError),
             backgroundColor: AppTheme.errorColor,
           ),
         );
@@ -124,7 +127,7 @@ class ListsDialogService {
         navigator.pop();
         messenger.showSnackBar(
           SnackBar(
-            content: Text('Liste "${updatedList.name}" modifiée avec succès !'),
+            content: Text(AppLocalizations.of(context)!.listUpdatedSuccess(updatedList.name)),
             backgroundColor: AppTheme.successColor,
           ),
         );
@@ -133,7 +136,7 @@ class ListsDialogService {
       if (context.mounted) {
         messenger.showSnackBar(
           SnackBar(
-            content: Text('Erreur lors de la modification : $e'),
+            content: Text(AppLocalizations.of(context)!.listEditError(e.toString())),
             backgroundColor: AppTheme.errorColor,
           ),
         );
@@ -151,7 +154,7 @@ class ListsDialogService {
       if (context.mounted) {
         messenger.showSnackBar(
           SnackBar(
-            content: Text('Liste "${list.name}" supprimée avec succès !'),
+            content: Text(AppLocalizations.of(context)!.listDeletedSuccess(list.name)),
             backgroundColor: AppTheme.successColor,
           ),
         );
@@ -160,7 +163,7 @@ class ListsDialogService {
       if (context.mounted) {
         messenger.showSnackBar(
           SnackBar(
-            content: Text('Erreur lors de la suppression : $e'),
+            content: Text(AppLocalizations.of(context)!.listDeleteError(e.toString())),
             backgroundColor: AppTheme.errorColor,
           ),
         );

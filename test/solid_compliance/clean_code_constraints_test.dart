@@ -197,6 +197,9 @@ bool _isGeneratedFile(String relativePath) {
   if (normalized.startsWith('lib/l10n/')) {
     return true;
   }
+  if (normalized.endsWith('.g.dart') || normalized.endsWith('.freezed.dart')) {
+    return true;
+  }
   return false;
 }
 
@@ -250,10 +253,17 @@ List<String> _findLongMethods(String content, String filePath) {
   for (var i = 0; i < lines.length; i++) {
     final line = lines[i].trim();
 
-    // Detect method start (simple heuristic)
+    // Detect method start (simple heuristic); skip switch/if/for/while/catch
     if (line.contains('(') && line.contains(')') &&
         (line.contains('async') || line.contains('=>') || line.endsWith('{')) &&
-        !line.startsWith('//') && !line.startsWith('/*')) {
+        !line.startsWith('//') && !line.startsWith('/*') &&
+        !line.startsWith('switch ') && !line.startsWith('switch(') &&
+        !line.startsWith('if ') && !line.startsWith('if(') &&
+        !line.startsWith('} else if') && !line.startsWith('else if') &&
+        !line.startsWith('for ') && !line.startsWith('for(') &&
+        !line.startsWith('while ') && !line.startsWith('while(') &&
+        !line.startsWith('catch ') && !line.startsWith('catch(') &&
+        !line.startsWith('return ')) {
 
       if (RegExp(r'\w+\s*\([^)]*\)\s*(async\s*)?\{?').hasMatch(line)) {
         currentMethod = line;

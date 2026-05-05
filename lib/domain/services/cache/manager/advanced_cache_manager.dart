@@ -184,117 +184,162 @@ class AdvancedCacheManager {
 
   Map<String, dynamic> getStatistics() {
     _ensureInitialized();
-    final cacheStats = <String, Map<String, dynamic>>{};
-    var aggregateHitRate = 0.0;
-    var aggregateMissRate = 0.0;
-    var totalOperations = 0;
-    var totalHits = 0;
-    var totalMisses = 0;
-    var totalWrites = 0;
-    var totalEvictions = 0;
-    var totalLatencyMicros = 0;
-    var totalItems = 0;
-    var totalMemoryBytes = 0;
-    var totalMemoryLimitBytes = 0;
-
-    for (final entry in _systems.entries) {
-      final stats = entry.value.getStatistics();
-      aggregateHitRate += stats.hitRate;
-      aggregateMissRate += stats.missRate;
-      totalOperations += stats.totalOperations;
-      totalHits += stats.hitCount;
-      totalMisses += stats.missCount;
-      totalWrites += stats.writeCount;
-      totalEvictions += stats.evictionCount;
-      totalLatencyMicros += stats.totalLatency.inMicroseconds;
-      totalItems += stats.totalItems;
-      totalMemoryBytes += stats.memoryUsage;
-      totalMemoryLimitBytes += stats.memoryLimit;
-
-      cacheStats[entry.key.name] = {
-        'totalItems': stats.totalItems,
-        'totalOperations': stats.totalOperations,
-        'hits': stats.hitCount,
-        'misses': stats.missCount,
-        'writes': stats.writeCount,
-        'evictions': stats.evictionCount,
-        'hitRate': stats.hitRate,
-        'missRate': stats.missRate,
-        'memoryUsageBytes': stats.memoryUsage,
-        'memoryLimitBytes': stats.memoryLimit,
-        'memoryUsagePercentage': stats.memoryUsagePercentage,
-        'averageLatencyMicros': stats.averageOperationTime.inMicroseconds,
-        'compressedItems': stats.totalCompressedItems,
-        'compressionSavingsBytes': stats.totalCompressionSavings,
-        'totalSizeBytes': stats.memoryUsage,
-      };
-    }
-
+    final agg = _accumulateSystems();
     final systemCount = _systems.length;
-    final totalAccesses = totalHits + totalMisses;
-    final averageLatencyMicros =
-        totalOperations == 0 ? 0 : totalLatencyMicros ~/ totalOperations;
-    final averageUtilization = totalMemoryLimitBytes == 0
+    final totalAccesses = agg.hits + agg.misses;
+    final avgLatencyMicros =
+        agg.ops == 0 ? 0 : agg.latency ~/ agg.ops;
+    final avgUtilization = agg.memLimit == 0
         ? 0.0
-        : (totalMemoryBytes / totalMemoryLimitBytes).clamp(0.0, 1.0);
-
-    final hasEntries = totalItems > 0;
-    final globalStats = <String, dynamic>{
-      'totalSystems': systemCount,
-      'strategiesActive': systemCount,
-      'totalAccesses': hasEntries ? totalAccesses : 0,
-      'hits': hasEntries ? totalHits : 0,
-      'misses': hasEntries ? totalMisses : 0,
-      'writes': totalWrites,
-      'evictions': totalEvictions,
-      'averageHitRate':
-          systemCount == 0 ? 0.0 : aggregateHitRate / systemCount,
-      'averageMissRate':
-          systemCount == 0 ? 0.0 : aggregateMissRate / systemCount,
-      'averageLatencyMicros': averageLatencyMicros,
-      'totalItems': totalItems,
-      'memoryUsageBytes': totalMemoryBytes,
-    };
-
+        : (agg.memory / agg.memLimit).clamp(0.0, 1.0);
+    final globalStats = _buildGlobalStats(
+      systemCount: systemCount,
+      totalAccesses: totalAccesses,
+      hits: agg.hits,
+      misses: agg.misses,
+      writes: agg.writes,
+      evictions: agg.evictions,
+      aggregateHitRate: agg.hitRate,
+      aggregateMissRate: agg.missRate,
+      avgLatencyMicros: avgLatencyMicros,
+      totalItems: agg.items,
+      memoryBytes: agg.memory,
+    );
     return {
       'configuration': _configuration.toMap(),
       'currentStrategy': _currentStrategy?.name,
       'globalStats': globalStats,
-      'cacheSystemStats': cacheStats,
+      'cacheSystemStats': agg.cacheStats,
       'cleanupStats': const {'lastCleanup': null},
       'performance': {
-        'averageLatencyMicros': averageLatencyMicros,
-        'totalEntries': totalItems,
-        'totalSizeBytes': totalMemoryBytes,
-        'averageUtilization': averageUtilization,
+        'averageLatencyMicros': avgLatencyMicros,
+        'totalEntries': agg.items,
+        'totalSizeBytes': agg.memory,
+        'averageUtilization': avgUtilization,
         'strategiesActive': systemCount,
         'lastUpdated': DateTime.now().toIso8601String(),
       },
-      'health': {
-        'status': () {
-          if (totalAccesses == 0) return 'healthy';
-          final hitRate = totalHits / totalAccesses;
-          if (hitRate < 0.3) return 'critical';
-          if (hitRate < 0.6) return 'warning';
-          return 'healthy';
-        }(),
-        'overallScore': totalAccesses == 0
-            ? 100
-            : (totalHits / totalAccesses * 100).clamp(0, 100).round(),
-        'issues': () {
-          final issues = <String>[];
-          if (totalAccesses > 0 &&
-              totalHits / totalAccesses < 0.3 &&
-              totalMisses > totalHits) {
-            issues.add('Low hit rate detected');
-          }
-          if (totalItems == 0) {
-            issues.add('Cache empty');
-          }
-          return issues;
-        }(),
-      },
+      'health': _buildHealthSection(
+        totalAccesses: totalAccesses,
+        hits: agg.hits,
+        misses: agg.misses,
+        totalItems: agg.items,
+      ),
     };
+  }
+
+  ({
+    Map<String, Map<String, dynamic>> cacheStats,
+    double hitRate, double missRate,
+    int ops, int hits, int misses, int writes, int evictions,
+    int latency, int items, int memory, int memLimit,
+  }) _accumulateSystems() {
+    final cacheStats = <String, Map<String, dynamic>>{};
+    var hitRate = 0.0;
+    var missRate = 0.0;
+    var ops = 0;
+    var hits = 0;
+    var misses = 0;
+    var writes = 0;
+    var evictions = 0;
+    var latency = 0;
+    var items = 0;
+    var memory = 0;
+    var memLimit = 0;
+    for (final entry in _systems.entries) {
+      final s = entry.value.getStatistics();
+      hitRate += s.hitRate;
+      missRate += s.missRate;
+      ops += s.totalOperations;
+      hits += s.hitCount;
+      misses += s.missCount;
+      writes += s.writeCount;
+      evictions += s.evictionCount;
+      latency += s.totalLatency.inMicroseconds;
+      items += s.totalItems;
+      memory += s.memoryUsage;
+      memLimit += s.memoryLimit;
+      cacheStats[entry.key.name] = {
+        'totalItems': s.totalItems,
+        'totalOperations': s.totalOperations,
+        'hits': s.hitCount,
+        'misses': s.missCount,
+        'writes': s.writeCount,
+        'evictions': s.evictionCount,
+        'hitRate': s.hitRate,
+        'missRate': s.missRate,
+        'memoryUsageBytes': s.memoryUsage,
+        'memoryLimitBytes': s.memoryLimit,
+        'memoryUsagePercentage': s.memoryUsagePercentage,
+        'averageLatencyMicros': s.averageOperationTime.inMicroseconds,
+        'compressedItems': s.totalCompressedItems,
+        'compressionSavingsBytes': s.totalCompressionSavings,
+        'totalSizeBytes': s.memoryUsage,
+      };
+    }
+    return (
+      cacheStats: cacheStats,
+      hitRate: hitRate, missRate: missRate,
+      ops: ops, hits: hits, misses: misses,
+      writes: writes, evictions: evictions,
+      latency: latency, items: items,
+      memory: memory, memLimit: memLimit,
+    );
+  }
+
+  Map<String, dynamic> _buildGlobalStats({
+    required int systemCount,
+    required int totalAccesses,
+    required int hits,
+    required int misses,
+    required int writes,
+    required int evictions,
+    required double aggregateHitRate,
+    required double aggregateMissRate,
+    required int avgLatencyMicros,
+    required int totalItems,
+    required int memoryBytes,
+  }) {
+    final hasEntries = totalItems > 0;
+    return {
+      'totalSystems': systemCount,
+      'strategiesActive': systemCount,
+      'totalAccesses': hasEntries ? totalAccesses : 0,
+      'hits': hasEntries ? hits : 0,
+      'misses': hasEntries ? misses : 0,
+      'writes': writes,
+      'evictions': evictions,
+      'averageHitRate': systemCount == 0 ? 0.0 : aggregateHitRate / systemCount,
+      'averageMissRate': systemCount == 0 ? 0.0 : aggregateMissRate / systemCount,
+      'averageLatencyMicros': avgLatencyMicros,
+      'totalItems': totalItems,
+      'memoryUsageBytes': memoryBytes,
+    };
+  }
+
+  Map<String, dynamic> _buildHealthSection({
+    required int totalAccesses,
+    required int hits,
+    required int misses,
+    required int totalItems,
+  }) {
+    final hitRate = totalAccesses == 0 ? 1.0 : hits / totalAccesses;
+    final status = totalAccesses == 0
+        ? 'healthy'
+        : hitRate < 0.3
+            ? 'critical'
+            : hitRate < 0.6
+                ? 'warning'
+                : 'healthy';
+    final overallScore = totalAccesses == 0
+        ? 100
+        : (hits / totalAccesses * 100).clamp(0, 100).round();
+    final issues = <String>[];
+    if (totalAccesses > 0 && hitRate < 0.3 && misses > hits) {
+      issues.add('Low hit rate detected');
+    }
+    if (totalItems == 0) issues.add('Cache empty');
+    return {'status': status, 'overallScore': overallScore, 'issues': issues};
   }
 
   Map<String, dynamic> getCacheReport() {

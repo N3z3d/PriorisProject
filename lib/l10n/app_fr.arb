@@ -154,9 +154,38 @@
   "hideEloScores": "Masquer scores ELO",
   "showEloScores": "Afficher scores ELO",
   "overview": "Vue d'ensemble",
+  "insightsTabOverview": "Aperçu",
+  "@insightsTabOverview": {
+    "description": "Libelle de l'onglet apercu de la page insights"
+  },
   "insightsTabTrends": "Tendances",
   "@insightsTabTrends": {
     "description": "Libelle de l'onglet tendances de la page insights"
+  },
+  "insightsCtaCreateHabit": "Créer une habitude",
+  "@insightsCtaCreateHabit": {
+    "description": "Bouton CTA principal de l'etat vide de la page insights"
+  },
+  "insightsTrendsSuccessRate": "Taux de réussite",
+  "@insightsTrendsSuccessRate": {
+    "description": "Label de la metrique taux de reussite dans l'onglet Tendances"
+  },
+  "insightsTrendsStreak": "Série actuelle",
+  "@insightsTrendsStreak": {
+    "description": "Label de la metrique serie actuelle dans l'onglet Tendances"
+  },
+  "insightsTrendsStreakDays": "{count} j.",
+  "@insightsTrendsStreakDays": {
+    "description": "Valeur formatee de la serie actuelle avec unite jour",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "insightsTrendsToday": "Complété aujourd'hui",
+  "@insightsTrendsToday": {
+    "description": "Label de la metrique completion du jour dans l'onglet Tendances"
   },
   "habitsTab": "Habitudes",
   "tasksTab": "Tâches",
@@ -1173,5 +1202,156 @@
   "noListsBody": "Créez votre première liste pour commencer.",
   "@noListsBody": {
     "description": "Corps état vide : invitation à créer une liste"
+  },
+  "settingsFeatureInDevelopment": "Fonctionnalité en cours de développement",
+  "@settingsFeatureInDevelopment": {
+    "description": "Message snackbar quand une fonctionnalité est encore en développement"
+  },
+  "archiveAction": "Archiver",
+  "@archiveAction": {
+    "description": "Action d'archivage d'un élément"
+  },
+  "listCreateDialogTitle": "Nouvelle liste",
+  "@listCreateDialogTitle": {
+    "description": "Titre du dialogue de création d'une nouvelle liste"
+  },
+  "listCreateError": "Impossible de créer la liste. Réessayez.",
+  "@listCreateError": {
+    "description": "Message d'erreur lors de l'échec de création d'une liste"
+  },
+  "listEditError": "Erreur lors de la modification : {error}",
+  "@listEditError": {
+    "description": "Message d'erreur lors de l'échec de modification d'une liste",
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "listDeleteError": "Erreur lors de la suppression : {error}",
+  "@listDeleteError": {
+    "description": "Message d'erreur lors de l'échec de suppression d'une liste",
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "logoutKeepDataAction": "Garder mes données",
+  "@logoutKeepDataAction": {
+    "description": "Bouton de déconnexion sans effacement des données locales"
+  },
+  "logoutClearDataAction": "Effacer mes données",
+  "@logoutClearDataAction": {
+    "description": "Bouton de déconnexion avec effacement des données locales"
+  },
+  "listCreatedSuccess": "Liste \"{title}\" créée avec succès",
+  "@listCreatedSuccess": {
+    "description": "Snackbar succès après création d'une liste",
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
+  "listUpdatedSuccess": "Liste \"{name}\" modifiée avec succès",
+  "@listUpdatedSuccess": {
+    "description": "Snackbar succès après modification d'une liste",
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "listDeletedSuccess": "Liste \"{name}\" supprimée avec succès",
+  "@listDeletedSuccess": {
+    "description": "Snackbar succès après suppression d'une liste",
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "logoutDataQuestion": "Que souhaitez-vous faire avec vos données locales ?",
+  "@logoutDataQuestion": {
+    "description": "Question sur les données dans le dialogue de déconnexion"
+  },
+  "logoutLocalDataInfo": "Vos listes sont stockées localement sur cet appareil",
+  "@logoutLocalDataInfo": {
+    "description": "Info sur le stockage local dans le dialogue de déconnexion"
+  },
+  "privacyConsentTitle": "Protection de vos données",
+  "@privacyConsentTitle": {
+    "description": "Titre de la page de consentement RGPD"
+  },
+  "privacyConsentBody": "Prioris collecte vos données personnelles (tâches, habitudes, profil) pour vous fournir le service. Vos données sont stockées de façon sécurisée et ne sont pas partagées avec des tiers à des fins publicitaires.",
+  "@privacyConsentBody": {
+    "description": "Texte d'explication du consentement RGPD"
+  },
+  "privacyConsentAcceptButton": "J'accepte et je continue",
+  "@privacyConsentAcceptButton": {
+    "description": "Bouton d'acceptation du consentement RGPD"
+  },
+  "privacyConsentReadPolicyLink": "Lire la politique de confidentialité",
+  "@privacyConsentReadPolicyLink": {
+    "description": "Lien vers la politique de confidentialité sur la page de consentement"
+  },
+  "privacyPolicyTitle": "Politique de confidentialité",
+  "@privacyPolicyTitle": {
+    "description": "Titre de la page de politique de confidentialité"
+  },
+  "settingsPrivacySectionTitle": "CONFIDENTIALITÉ ET DONNÉES",
+  "@settingsPrivacySectionTitle": {
+    "description": "Titre de la section Confidentialité dans Settings"
+  },
+  "settingsPrivacyPolicyTile": "Politique de confidentialité",
+  "@settingsPrivacyPolicyTile": {
+    "description": "Titre du tile Politique de confidentialité dans Settings"
+  },
+  "settingsPrivacyPolicySubtitle": "Consulter nos pratiques de confidentialité",
+  "@settingsPrivacyPolicySubtitle": {
+    "description": "Sous-titre du tile Politique de confidentialité"
+  },
+  "settingsRevokeConsentTile": "Retirer mon consentement",
+  "@settingsRevokeConsentTile": {
+    "description": "Titre du tile Retrait du consentement dans Settings"
+  },
+  "settingsRevokeConsentSubtitle": "Révoquer l'accès à vos données personnelles",
+  "@settingsRevokeConsentSubtitle": {
+    "description": "Sous-titre du tile Retrait du consentement"
+  },
+  "settingsRevokeConsentDialogTitle": "Retirer votre consentement",
+  "@settingsRevokeConsentDialogTitle": {
+    "description": "Titre du dialog de retrait du consentement"
+  },
+  "settingsRevokeConsentDialogBody": "Vous serez immédiatement redirigé vers la page de consentement. Vous pouvez accepter à nouveau à tout moment.",
+  "@settingsRevokeConsentDialogBody": {
+    "description": "Corps du dialog de retrait du consentement"
+  },
+  "settingsRevokeConsentDialogConfirm": "Retirer",
+  "@settingsRevokeConsentDialogConfirm": {
+    "description": "Bouton de confirmation du retrait du consentement"
+  },
+  "settingsRevokeConsentDialogCancel": "Annuler",
+  "@settingsRevokeConsentDialogCancel": {
+    "description": "Bouton d'annulation du retrait du consentement"
+  },
+  "settingsRevokeConsentError": "Erreur lors du retrait du consentement. Veuillez réessayer.",
+  "@settingsRevokeConsentError": {
+    "description": "Message d'erreur si le retrait du consentement échoue"
+  },
+  "settingsDeleteAccountTile": "Supprimer mon compte",
+  "@settingsDeleteAccountTile": {
+    "description": "Titre du tile Suppression de compte dans Settings"
+  },
+  "settingsDeleteAccountSubtitle": "Demander la suppression de vos données",
+  "@settingsDeleteAccountSubtitle": {
+    "description": "Sous-titre du tile Suppression de compte"
+  },
+  "settingsDeleteAccountDialogTitle": "Supprimer votre compte",
+  "@settingsDeleteAccountDialogTitle": {
+    "description": "Titre du dialog de suppression de compte"
+  },
+  "settingsDeleteAccountDialogBody": "Pour supprimer votre compte et toutes vos données personnelles, envoyez un email à :",
+  "@settingsDeleteAccountDialogBody": {
+    "description": "Corps du dialog de suppression de compte"
+  },
+  "settingsDeleteAccountDialogCopyEmail": "Copier l'adresse email",
+  "@settingsDeleteAccountDialogCopyEmail": {
+    "description": "Bouton pour copier l'email de contact dans le presse-papiers"
+  },
+  "settingsDeleteAccountEmailCopied": "Adresse email copiée",
+  "@settingsDeleteAccountEmailCopied": {
+    "description": "SnackBar confirmant la copie de l'email dans le presse-papiers"
   }
 }

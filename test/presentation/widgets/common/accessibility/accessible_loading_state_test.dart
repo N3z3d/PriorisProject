@@ -119,6 +119,7 @@ void main() {
       // ACT - Widget initial sans message
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: StatefulBuilder(
               builder: (context, setState) {
@@ -170,6 +171,7 @@ void main() {
       // ACT - Initial widget without message
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: StatefulBuilder(
               builder: (context, setState) {

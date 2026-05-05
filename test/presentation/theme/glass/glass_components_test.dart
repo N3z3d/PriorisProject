@@ -14,6 +14,7 @@ void main() {
       testWidgets('glassButton creates interactive button', (WidgetTester tester) async {
         var pressed = false;
         final testWidget = MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: glassComponents.glassButton(
               child: const Text('Button'),
@@ -34,6 +35,7 @@ void main() {
       testWidgets('glassFAB creates floating action button', (WidgetTester tester) async {
         var pressed = false;
         final testWidget = MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: glassComponents.glassFAB(
               child: const Icon(Icons.add),
@@ -73,6 +75,7 @@ void main() {
     group('Animation Tests', () {
       testWidgets('GlassButton responds to tap with animation', (WidgetTester tester) async {
         final testWidget = MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: GlassButton(
               child: const Text('Animated Button'),
@@ -104,6 +107,7 @@ void main() {
 
       testWidgets('GlassButton handles tap cancel', (WidgetTester tester) async {
         final testWidget = MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: GlassButton(
               child: const Text('Cancel Test'),
@@ -132,6 +136,7 @@ void main() {
     group('Parameter Validation Tests', () {
       testWidgets('GlassButton accepts custom styling parameters', (WidgetTester tester) async {
         final testWidget = MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: GlassButton(
               child: const Text('Custom Button'),
@@ -153,6 +158,7 @@ void main() {
 
       testWidgets('glassFAB accepts custom parameters', (WidgetTester tester) async {
         final testWidget = MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: glassComponents.glassFAB(
               child: const Icon(Icons.star),
@@ -176,6 +182,7 @@ void main() {
     group('Edge Cases Tests', () {
       testWidgets('GlassButton with null padding uses defaults', (WidgetTester tester) async {
         final testWidget = MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: GlassButton(
               child: const Text('Default Padding'),
@@ -193,6 +200,7 @@ void main() {
 
       testWidgets('glassFAB with null backgroundColor uses default', (WidgetTester tester) async {
         final testWidget = MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: glassComponents.glassFAB(
               child: const Icon(Icons.home),

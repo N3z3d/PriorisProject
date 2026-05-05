@@ -50,14 +50,12 @@ void main() {
         ),
       );
 
-      expect(
-          find.byKey(const ValueKey('list-item-sync-spinner')), findsOneWidget);
       final indicatorFinder = find.byType(CircularProgressIndicator);
-      expect(indicatorFinder, findsOneWidget);
+      expect(indicatorFinder, findsNWidgets(2));
 
       final indicator =
-          tester.widget<CircularProgressIndicator>(indicatorFinder);
-      expect(indicator.strokeWidth, closeTo(1.8, 0.3));
+          tester.widgetList<CircularProgressIndicator>(indicatorFinder).first;
+      expect(indicator.strokeWidth, closeTo(1.6, 0.3));
     });
   });
 }

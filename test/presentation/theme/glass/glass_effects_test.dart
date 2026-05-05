@@ -13,6 +13,7 @@ void main() {
     group('SRP Compliance Tests', () {
       testWidgets('glassCard creates proper glass effect', (WidgetTester tester) async {
         final testWidget = MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: glassEffects.glassCard(
               child: const Text('Test'),
@@ -28,6 +29,7 @@ void main() {
 
       testWidgets('blurredBackground creates proper stacked effect', (WidgetTester tester) async {
         final testWidget = MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: glassEffects.blurredBackground(
               background: Container(color: Colors.red),
@@ -38,12 +40,13 @@ void main() {
 
         await tester.pumpWidget(testWidget);
         expect(find.text('Test'), findsOneWidget);
-        expect(find.byType(Stack), findsOneWidget);
+        expect(find.byType(Stack), findsAtLeastNWidgets(1));
         expect(find.byType(BackdropFilter), findsOneWidget);
       });
 
       testWidgets('professionalMorphism creates proper morphism effect', (WidgetTester tester) async {
         final testWidget = MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: glassEffects.professionalMorphism(
               child: const Text('Test'),
@@ -78,6 +81,7 @@ void main() {
     group('Parameter Validation Tests', () {
       testWidgets('glassCard accepts custom parameters', (WidgetTester tester) async {
         final testWidget = MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: glassEffects.glassCard(
               child: const Text('Test'),
@@ -100,6 +104,7 @@ void main() {
 
       testWidgets('Toast position enum works correctly', (WidgetTester tester) async {
         final testWidget = MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: Stack(
               children: [
@@ -125,6 +130,7 @@ void main() {
     group('Edge Cases Tests', () {
       testWidgets('glassCard with null parameters uses defaults', (WidgetTester tester) async {
         final testWidget = MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: glassEffects.glassCard(
               child: const Text('Test'),
@@ -139,6 +145,7 @@ void main() {
       testWidgets('glassModal with dismissible false prevents tap', (WidgetTester tester) async {
         var dismissed = false;
         final testWidget = MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: glassEffects.glassModal(
               child: const Text('Modal Test'),

@@ -62,10 +62,11 @@ void main() {
       // Arrange
       bool tapped = false;
       final widget = MaterialApp(
+        theme: ThemeData(splashFactory: InkRipple.splashFactory),
         home: Scaffold(
           body: ListItemCard(
             item: testItem,
-            onToggleCompletion: () {
+            onEdit: () {
               tapped = true;
             },
           ),
@@ -76,7 +77,7 @@ void main() {
       await tester.pumpWidget(widget);
       await tester.tap(find.byType(ListItemCard));
 
-      // Assert
+      // Assert - onEdit is called when card is tapped
       expect(tapped, isTrue);
     });
 

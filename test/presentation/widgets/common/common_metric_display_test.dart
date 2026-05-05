@@ -95,6 +95,7 @@ void main() {
 
     testWidgets('applique la mise en évidence avec isHighlighted=true', (WidgetTester tester) async {
       await tester.pumpWidget(MaterialApp(
+        theme: ThemeData(splashFactory: InkRipple.splashFactory),
         home: Scaffold(
           body: CommonMetricDisplay(
             value: '42',
@@ -107,7 +108,7 @@ void main() {
 
       final container = tester.widget<Container>(find.byType(Container));
       final decoration = container.decoration as BoxDecoration;
-      expect(decoration.color, Colors.blue.withValues(alpha: 0.1));
+      expect(decoration.color, Colors.blue.withOpacity(0.1));
       expect(decoration.borderRadius, BorderRadius.circular(12));
     });
 

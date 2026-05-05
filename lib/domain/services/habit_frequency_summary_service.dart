@@ -88,7 +88,7 @@ class HabitFrequencySummaryService {
           monthName,
         );
       }
-      return l10n.habitFrequencyEveryYears(interval, interval);
+      return l10n.habitFrequencyEveryYears(interval);
     }
 
     // Standard interval patterns
@@ -102,9 +102,9 @@ class HabitFrequencySummaryService {
       case FrequencyUnit.months:
         return l10n.habitFrequencyEveryMonths(interval, interval);
       case FrequencyUnit.quarters:
-        return l10n.habitFrequencyEveryQuarters(interval, interval);
+        return l10n.habitFrequencyEveryQuarters(interval);
       case FrequencyUnit.years:
-        return l10n.habitFrequencyEveryYears(interval, interval);
+        return l10n.habitFrequencyEveryYears(interval);
       case null:
         return l10n.habitFrequencyEveryDays(interval, interval);
     }

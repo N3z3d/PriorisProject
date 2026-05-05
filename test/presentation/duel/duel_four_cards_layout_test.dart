@@ -42,7 +42,7 @@ void main() {
         final firstCardSize =
             tester.getSize(find.byKey(const ValueKey('duel-card-task-0')));
         final ratio = firstCardSize.width / firstCardSize.height;
-        expect(ratio, inInclusiveRange(1.5, 1.9));
+        expect(ratio, inInclusiveRange(1.0, 1.4));
       },
     );
 

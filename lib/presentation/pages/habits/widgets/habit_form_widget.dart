@@ -14,7 +14,6 @@ import 'package:prioris/presentation/pages/habits/widgets/helpers/habit_form_sta
 import 'package:prioris/presentation/styles/ui_color_utils.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/widgets/common/forms/common_text_field.dart';
-import 'package:uuid/uuid.dart';
 
 enum TrackingMode { period, interval, cycle, weekdays, specificDate }
 
@@ -362,53 +361,9 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
     _timesController.text = _timesCount.toString();
     _intervalCountController.text = _intervalCount.toString();
     _intervalEveryController.text = _intervalEvery.toString();
-    _trackingMode = _deriveMode(habit);
-    _period = _derivePeriod(habit.recurrenceType);
-    _intervalUnit = _deriveIntervalUnit(habit);
-  }
-
-  TrackingMode _deriveMode(Habit habit) {
-    if (habit.specificWeekdays != null && habit.specificWeekdays!.isNotEmpty) {
-      return TrackingMode.weekdays;
-    }
-    if (habit.daysCycle != null && habit.daysActive != null) {
-      return TrackingMode.cycle;
-    }
-    if (habit.specificDate != null) {
-      return TrackingMode.specificDate;
-    }
-    if (habit.recurrenceType == null) return TrackingMode.period;
-    final periodTypes = {
-      RecurrenceType.timesPerDay,
-      RecurrenceType.timesPerWeek,
-      RecurrenceType.monthly,
-      RecurrenceType.yearly,
-      RecurrenceType.quarterly,
-    };
-    return periodTypes.contains(habit.recurrenceType)
-        ? TrackingMode.period
-        : TrackingMode.interval;
-  }
-
-  TrackingPeriodOption _derivePeriod(RecurrenceType? recurrenceType) {
-    if (recurrenceType == null) return TrackingPeriodOption.day;
-    return switch (recurrenceType) {
-      RecurrenceType.timesPerWeek => TrackingPeriodOption.week,
-      RecurrenceType.monthly => TrackingPeriodOption.month,
-      RecurrenceType.quarterly => TrackingPeriodOption.quarter,
-      RecurrenceType.yearly => TrackingPeriodOption.year,
-      _ => TrackingPeriodOption.day,
-    };
-  }
-
-  TrackingIntervalUnit _deriveIntervalUnit(Habit habit) {
-    return switch (habit.recurrenceType) {
-      RecurrenceType.hourlyInterval => TrackingIntervalUnit.hours,
-      RecurrenceType.dailyInterval => TrackingIntervalUnit.days,
-      RecurrenceType.weeklyDays => TrackingIntervalUnit.weeks,
-      RecurrenceType.monthly => TrackingIntervalUnit.months,
-      _ => TrackingIntervalUnit.hours,
-    };
+    _trackingMode = _mapper.deriveMode(habit);
+    _period = _mapper.derivePeriod(habit.recurrenceType);
+    _intervalUnit = _mapper.deriveIntervalUnit(habit);
   }
 
   bool get _isFormValid {
@@ -478,70 +433,26 @@ class _HabitFormWidgetState extends State<HabitFormWidget> {
 
   Habit _buildHabitFromState(String name) {
     final currentUser = _safeCurrentUser();
-    final isBinary = _trackingMode == TrackingMode.period && _timesCount == 1;
-    return Habit(
-      id: widget.initialHabit?.id ?? const Uuid().v4(),
+    return _mapper.buildHabit(
+      initialHabit: widget.initialHabit,
       name: name,
-      category: _selectedCategory.isEmpty ? null : _selectedCategory,
-      type: isBinary ? HabitType.binary : HabitType.quantitative,
-      targetValue: isBinary ? null : _timesCount.toDouble(),
-      unit: null,
-      createdAt: widget.initialHabit?.createdAt ?? DateTime.now(),
-      recurrenceType: _mapRecurrenceType(),
-      intervalDays:
-          _trackingMode == TrackingMode.interval ? _mapIntervalDays() : null,
-      timesTarget:
-          _trackingMode == TrackingMode.period ? _timesCount : _intervalCount,
-      hourlyInterval: _trackingMode == TrackingMode.interval &&
-              _intervalUnit == TrackingIntervalUnit.hours
-          ? _intervalEvery
-          : null,
-      daysActive: _trackingMode == TrackingMode.cycle ? _cycleActive : null,
-      daysCycle: _trackingMode == TrackingMode.cycle ? _cycleLength : null,
-      cycleStartDate:
-          _trackingMode == TrackingMode.cycle ? _cycleStartDate : null,
-      specificWeekdays:
-          _trackingMode == TrackingMode.weekdays ? _selectedWeekdays : null,
-      specificDate:
-          _trackingMode == TrackingMode.specificDate ? _specificDate : null,
-      repeatEveryYear:
-          _trackingMode == TrackingMode.specificDate ? _repeatEveryYear : false,
+      selectedCategory: _selectedCategory,
+      isBinary: _trackingMode == TrackingMode.period && _timesCount == 1,
+      trackingMode: _trackingMode,
+      period: _period,
+      intervalUnit: _intervalUnit,
+      timesCount: _timesCount,
+      intervalCount: _intervalCount,
+      intervalEvery: _intervalEvery,
+      cycleActive: _cycleActive,
+      cycleLength: _cycleLength,
+      cycleStartDate: _cycleStartDate,
+      selectedWeekdays: _selectedWeekdays,
+      specificDate: _specificDate,
+      repeatEveryYear: _repeatEveryYear,
       userId: currentUser?.id ?? widget.initialHabit?.userId,
       userEmail: currentUser?.email ?? widget.initialHabit?.userEmail,
     );
-  }
-
-  RecurrenceType _mapRecurrenceType() {
-    switch (_trackingMode) {
-      case TrackingMode.period:
-        return switch (_period) {
-          TrackingPeriodOption.day => RecurrenceType.timesPerDay,
-          TrackingPeriodOption.week => RecurrenceType.timesPerWeek,
-          TrackingPeriodOption.month => RecurrenceType.monthly,
-          TrackingPeriodOption.quarter => RecurrenceType.quarterly,
-          TrackingPeriodOption.semester => RecurrenceType.yearly,
-          TrackingPeriodOption.year => RecurrenceType.yearly,
-        };
-      case TrackingMode.interval:
-        return _intervalUnit == TrackingIntervalUnit.hours
-            ? RecurrenceType.hourlyInterval
-            : RecurrenceType.dailyInterval;
-      case TrackingMode.weekdays:
-        return RecurrenceType.weeklyDays;
-      case TrackingMode.cycle:
-        return RecurrenceType.dailyInterval;
-      case TrackingMode.specificDate:
-        return RecurrenceType.yearly;
-    }
-  }
-
-  int? _mapIntervalDays() {
-    return switch (_intervalUnit) {
-      TrackingIntervalUnit.hours => null,
-      TrackingIntervalUnit.days => _intervalEvery,
-      TrackingIntervalUnit.weeks => _intervalEvery * 7,
-      TrackingIntervalUnit.months => _intervalEvery * 30,
-    };
   }
 
   void _handleNameChange() {

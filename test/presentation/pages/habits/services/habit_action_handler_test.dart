@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/pages/habits/services/habit_action_handler.dart';
 import 'package:prioris/presentation/pages/habits/widgets/habit_form_widget.dart';
 
@@ -12,6 +13,10 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
+            locale: const Locale('fr'),
+            theme: ThemeData(splashFactory: InkRipple.splashFactory),
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
             home: Scaffold(
               body: Consumer(
                 builder: (context, ref, _) {

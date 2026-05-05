@@ -28,11 +28,11 @@ void main() {
         // Act
         final json = testCustomList.toJson();
 
-        // Assert
+        // Assert — toJson() uses Supabase field names: 'title' and 'list_type'
         expect(json['id'], equals('list-123'));
-        expect(json['name'], equals('Test List'));
+        expect(json['title'], equals('Test List'));
         expect(json['description'], equals('Test Description'));
-        expect(json['type'], equals('CUSTOM'));
+        expect(json['list_type'], equals('CUSTOM'));
       });
 
       test('should create from JSON correctly', () {

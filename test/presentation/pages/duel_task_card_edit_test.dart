@@ -23,6 +23,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: SizedBox(
               height: 300,
@@ -38,16 +39,17 @@ void main() {
       );
 
       // Vérifier que le bouton d'édition est présent
-      expect(find.byIcon(Icons.edit), findsOneWidget);
+      expect(find.byIcon(Icons.edit_rounded), findsOneWidget);
       
       // Vérifier que le callback fonctionne
-      await tester.tap(find.byIcon(Icons.edit));
+      await tester.tap(find.byIcon(Icons.edit_rounded));
       expect(editButtonTapped, isTrue);
     });
 
     testWidgets('should not display edit button when onEdit is null', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: SizedBox(
               height: 300,
@@ -63,12 +65,13 @@ void main() {
       );
 
       // Vérifier que le bouton d'édition n'est pas présent
-      expect(find.byIcon(Icons.edit), findsNothing);
+      expect(find.byIcon(Icons.edit_rounded), findsNothing);
     });
 
     testWidgets('should display task content and edit button together', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: SizedBox(
               height: 300,
@@ -89,15 +92,16 @@ void main() {
       expect(find.text('Travail'), findsOneWidget);
       
       // Vérifier que le score ELO est affiché
-      expect(find.text('1400'), findsOneWidget);
+      expect(find.text('ELO 1400'), findsOneWidget);
       
       // Vérifier que le bouton d'édition est toujours présent
-      expect(find.byIcon(Icons.edit), findsOneWidget);
+      expect(find.byIcon(Icons.edit_rounded), findsOneWidget);
     });
 
     testWidgets('should hide ELO score but show edit button when hideElo is true', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: SizedBox(
               height: 300,
@@ -116,7 +120,7 @@ void main() {
       expect(find.text('1400'), findsNothing);
       
       // Vérifier que le bouton d'édition est toujours présent
-      expect(find.byIcon(Icons.edit), findsOneWidget);
+      expect(find.byIcon(Icons.edit_rounded), findsOneWidget);
     });
 
     testWidgets('should handle edit button tap without affecting main card tap', (tester) async {
@@ -125,6 +129,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: SizedBox(
               height: 300,
@@ -140,7 +145,7 @@ void main() {
       );
 
       // Taper sur le bouton d'édition
-      await tester.tap(find.byIcon(Icons.edit));
+      await tester.tap(find.byIcon(Icons.edit_rounded));
       await tester.pumpAndSettle();
 
       // Vérifier que seul le callback d'édition a été appelé
@@ -168,6 +173,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: SizedBox(
               height: 300,
@@ -186,7 +192,7 @@ void main() {
       expect(find.text('Tâche simple'), findsOneWidget);
       
       // Vérifier que le bouton d'édition est présent même avec des données minimales
-      expect(find.byIcon(Icons.edit), findsOneWidget);
+      expect(find.byIcon(Icons.edit_rounded), findsOneWidget);
     });
   });
 }

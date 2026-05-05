@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prioris/domain/models/core/entities/task.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import '../widgets/export.dart';
 
@@ -31,7 +32,7 @@ class DuelUIComponentsBuilder {
     required VoidCallback onRefreshDuel,
   }) {
     return AppBar(
-      title: const Text('Prioriser'),
+      title: Text(AppLocalizations.of(context)!.prioritize),
       flexibleSpace: _buildAppBarBackground(context),
       actions: _buildAppBarActions(
         context: context,
@@ -137,21 +138,22 @@ class DuelUIComponentsBuilder {
     required VoidCallback onShowListSettings,
     required VoidCallback onRefreshDuel,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     return [
       IconButton(
         onPressed: onToggleEloVisibility,
         icon: Icon(hideEloScores ? Icons.visibility : Icons.visibility_off),
-        tooltip: hideEloScores ? 'Afficher Elo' : 'Masquer Elo',
+        tooltip: hideEloScores ? l10n.duelShowElo : l10n.duelHideElo,
       ),
       IconButton(
         onPressed: onShowListSettings,
         icon: const Icon(Icons.tune),
-        tooltip: 'Parametres des listes',
+        tooltip: l10n.duelConfigureLists,
       ),
       IconButton(
         onPressed: onRefreshDuel,
         icon: const Icon(Icons.refresh),
-        tooltip: 'Nouveau duel',
+        tooltip: l10n.duelNewDuel,
       ),
     ];
   }
@@ -165,6 +167,7 @@ class DuelUIComponentsBuilder {
 
   /// Construit l'etat sans taches avec icone et message
   Widget _buildNoTasksState(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -176,12 +179,12 @@ class DuelUIComponentsBuilder {
           ),
           const SizedBox(height: 16),
           Text(
-            'Pas assez de taches',
+            l10n.duelNotEnoughTasksTitle,
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizedBox(height: 8),
           Text(
-            'Ajoutez au moins 2 taches pour commencer a les prioriser',
+            l10n.duelNotEnoughTasksMessage,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
@@ -262,12 +265,12 @@ class DuelUIComponentsBuilder {
         TextButton.icon(
           onPressed: onSkipDuel,
           icon: const Icon(Icons.skip_next),
-          label: const Text('Passer ce duel'),
+          label: Text(AppLocalizations.of(context)!.duelSkipAction),
         ),
         ElevatedButton.icon(
           onPressed: onRandomSelection,
           icon: const Icon(Icons.shuffle),
-          label: const Text('Aleatoire'),
+          label: Text(AppLocalizations.of(context)!.duelRandomAction),
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.secondary,
             foregroundColor: Theme.of(context).colorScheme.onSecondary,

@@ -311,14 +311,16 @@ void main() {
           habit.completions[dateKey] = true;
         }
 
+        // Tâche complétée aujourd'hui — garantit qu'elle est dans le mois en cours
+        // (completedAt: now.subtract(days: 5) échoue du 1er au 5 du mois)
         final task = Task(
           title: 'Task 1',
           isCompleted: true,
-          completedAt: now.subtract(const Duration(days: 5)),
+          completedAt: now,
         );
 
         final result = PointsCalculationService.calculateMonthlyPoints([habit], [task]);
-        
+
         // Habitude : 100% * 50 = 50 points
         // Tâche : 25 points
         // Total : 75 points

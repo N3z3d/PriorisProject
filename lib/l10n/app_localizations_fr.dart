@@ -367,7 +367,27 @@ class AppLocalizationsFr extends AppLocalizations {
   String get overview => 'Vue d\'ensemble';
 
   @override
+  String get insightsTabOverview => 'Aperçu';
+
+  @override
   String get insightsTabTrends => 'Tendances';
+
+  @override
+  String get insightsCtaCreateHabit => 'Créer une habitude';
+
+  @override
+  String get insightsTrendsSuccessRate => 'Taux de réussite';
+
+  @override
+  String get insightsTrendsStreak => 'Série actuelle';
+
+  @override
+  String insightsTrendsStreakDays(int count) {
+    return '$count j.';
+  }
+
+  @override
+  String get insightsTrendsToday => 'Complété aujourd\'hui';
 
   @override
   String get habitsTab => 'Habitudes';
@@ -1895,4 +1915,127 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get noListsBody => 'Créez votre première liste pour commencer.';
+
+  @override
+  String get settingsFeatureInDevelopment =>
+      'Fonctionnalité en cours de développement';
+
+  @override
+  String get archiveAction => 'Archiver';
+
+  @override
+  String get listCreateDialogTitle => 'Nouvelle liste';
+
+  @override
+  String get listCreateError => 'Impossible de créer la liste. Réessayez.';
+
+  @override
+  String listEditError(String error) {
+    return 'Erreur lors de la modification : $error';
+  }
+
+  @override
+  String listDeleteError(String error) {
+    return 'Erreur lors de la suppression : $error';
+  }
+
+  @override
+  String get logoutKeepDataAction => 'Garder mes données';
+
+  @override
+  String get logoutClearDataAction => 'Effacer mes données';
+
+  @override
+  String listCreatedSuccess(String title) {
+    return 'Liste \"$title\" créée avec succès';
+  }
+
+  @override
+  String listUpdatedSuccess(String name) {
+    return 'Liste \"$name\" modifiée avec succès';
+  }
+
+  @override
+  String listDeletedSuccess(String name) {
+    return 'Liste \"$name\" supprimée avec succès';
+  }
+
+  @override
+  String get logoutDataQuestion =>
+      'Que souhaitez-vous faire avec vos données locales ?';
+
+  @override
+  String get logoutLocalDataInfo =>
+      'Vos listes sont stockées localement sur cet appareil';
+
+  @override
+  String get privacyConsentTitle => 'Protection de vos données';
+
+  @override
+  String get privacyConsentBody =>
+      'Prioris collecte vos données personnelles (tâches, habitudes, profil) pour vous fournir le service. Vos données sont stockées de façon sécurisée et ne sont pas partagées avec des tiers à des fins publicitaires.';
+
+  @override
+  String get privacyConsentAcceptButton => 'J\'accepte et je continue';
+
+  @override
+  String get privacyConsentReadPolicyLink =>
+      'Lire la politique de confidentialité';
+
+  @override
+  String get privacyPolicyTitle => 'Politique de confidentialité';
+
+  @override
+  String get settingsPrivacySectionTitle => 'CONFIDENTIALITÉ ET DONNÉES';
+
+  @override
+  String get settingsPrivacyPolicyTile => 'Politique de confidentialité';
+
+  @override
+  String get settingsPrivacyPolicySubtitle =>
+      'Consulter nos pratiques de confidentialité';
+
+  @override
+  String get settingsRevokeConsentTile => 'Retirer mon consentement';
+
+  @override
+  String get settingsRevokeConsentSubtitle =>
+      'Révoquer l\'accès à vos données personnelles';
+
+  @override
+  String get settingsRevokeConsentDialogTitle => 'Retirer votre consentement';
+
+  @override
+  String get settingsRevokeConsentDialogBody =>
+      'Vous serez immédiatement redirigé vers la page de consentement. Vous pouvez accepter à nouveau à tout moment.';
+
+  @override
+  String get settingsRevokeConsentDialogConfirm => 'Retirer';
+
+  @override
+  String get settingsRevokeConsentDialogCancel => 'Annuler';
+
+  @override
+  String get settingsRevokeConsentError =>
+      'Erreur lors du retrait du consentement. Veuillez réessayer.';
+
+  @override
+  String get settingsDeleteAccountTile => 'Supprimer mon compte';
+
+  @override
+  String get settingsDeleteAccountSubtitle =>
+      'Demander la suppression de vos données';
+
+  @override
+  String get settingsDeleteAccountDialogTitle => 'Supprimer votre compte';
+
+  @override
+  String get settingsDeleteAccountDialogBody =>
+      'Pour supprimer votre compte et toutes vos données personnelles, envoyez un email à :';
+
+  @override
+  String get settingsDeleteAccountDialogCopyEmail => 'Copier l\'adresse email';
+
+  @override
+  String get settingsDeleteAccountEmailCopied => 'Adresse email copiée';
 }

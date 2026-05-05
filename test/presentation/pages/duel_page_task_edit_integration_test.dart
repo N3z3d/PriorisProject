@@ -1,3 +1,6 @@
+@Tags(['integration'])
+library;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,6 +8,7 @@ import 'package:prioris/domain/models/core/entities/task.dart';
 import 'package:prioris/presentation/pages/duel_page.dart';
 import 'package:prioris/presentation/widgets/dialogs/task_edit_dialog.dart';
 import 'package:prioris/data/repositories/task_repository.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 
 /// Tests d'intégration TDD pour l'édition de tâches dans le DuelPage
 /// Vérifie l'intégration complète du bouton d'édition et du dialog
@@ -43,6 +47,9 @@ void main() {
         UncontrolledProviderScope(
           container: container,
           child: MaterialApp(
+            locale: const Locale('fr'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             home: DuelPage(),
           ),
         ),
@@ -51,7 +58,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Chercher les boutons d'édition
-      final editButtons = find.byIcon(Icons.edit);
+      final editButtons = find.byIcon(Icons.edit_rounded);
       expect(editButtons, findsAtLeastNWidgets(1));
     });
 
@@ -66,6 +73,9 @@ void main() {
         UncontrolledProviderScope(
           container: container,
           child: MaterialApp(
+            locale: const Locale('fr'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             home: DuelPage(),
           ),
         ),
@@ -74,7 +84,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Trouver et taper sur le premier bouton d'édition
-      final firstEditButton = find.byIcon(Icons.edit).first;
+      final firstEditButton = find.byIcon(Icons.edit_rounded).first;
       await tester.tap(firstEditButton);
       await tester.pumpAndSettle();
 
@@ -96,6 +106,9 @@ void main() {
         UncontrolledProviderScope(
           container: container,
           child: MaterialApp(
+            locale: const Locale('fr'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             home: DuelPage(),
           ),
         ),
@@ -104,7 +117,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Ouvrir le dialog d'édition
-      final firstEditButton = find.byIcon(Icons.edit).first;
+      final firstEditButton = find.byIcon(Icons.edit_rounded).first;
       await tester.tap(firstEditButton);
       await tester.pumpAndSettle();
 
@@ -136,6 +149,9 @@ void main() {
         UncontrolledProviderScope(
           container: container,
           child: MaterialApp(
+            locale: const Locale('fr'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             home: DuelPage(),
           ),
         ),
@@ -144,7 +160,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Ouvrir le dialog d'édition
-      final firstEditButton = find.byIcon(Icons.edit).first;
+      final firstEditButton = find.byIcon(Icons.edit_rounded).first;
       await tester.tap(firstEditButton);
       await tester.pumpAndSettle();
 
@@ -172,6 +188,9 @@ void main() {
         UncontrolledProviderScope(
           container: container,
           child: MaterialApp(
+            locale: const Locale('fr'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             home: DuelPage(),
           ),
         ),
@@ -180,7 +199,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Ouvrir et fermer le dialog sans modifications
-      final firstEditButton = find.byIcon(Icons.edit).first;
+      final firstEditButton = find.byIcon(Icons.edit_rounded).first;
       await tester.tap(firstEditButton);
       await tester.pumpAndSettle();
 

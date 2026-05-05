@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/data/providers/lists_controller_provider.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/styles/ui_color_utils.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
@@ -21,38 +22,39 @@ class EnhancedLogoutDialog extends ConsumerWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadiusTokens.radiusLg,
       ),
-      title: _buildDialogTitle(),
-      content: _buildDialogContent(),
+      title: _buildDialogTitle(context),
+      content: _buildDialogContent(context),
       actions: _buildDialogActions(context),
     );
   }
 
-  Widget _buildDialogTitle() {
-    return const Row(
+  Widget _buildDialogTitle(BuildContext context) {
+    return Row(
       children: [
-        Icon(Icons.logout, color: AppTheme.primaryColor),
-        SizedBox(width: 12),
-        Text('Se déconnecter'),
+        const Icon(Icons.logout, color: AppTheme.primaryColor),
+        const SizedBox(width: 12),
+        Text(AppLocalizations.of(context)!.logout),
       ],
     );
   }
 
-  Widget _buildDialogContent() {
+  Widget _buildDialogContent(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Que souhaitez-vous faire avec vos données locales ?',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        Text(
+          l10n.logoutDataQuestion,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         ),
         const SizedBox(height: 16),
-        _buildInfoBox(),
+        _buildInfoBox(l10n),
       ],
     );
   }
 
-  Widget _buildInfoBox() {
+  Widget _buildInfoBox(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -60,14 +62,14 @@ class EnhancedLogoutDialog extends ConsumerWidget {
         borderRadius: BorderRadiusTokens.radiusMd,
         border: Border.all(color: Colors.blue.withOpacity(0.2)),
       ),
-      child: const Row(
+      child: Row(
         children: [
-          Icon(Icons.info_outline, color: Colors.blue, size: 20),
-          SizedBox(width: 8),
+          const Icon(Icons.info_outline, color: Colors.blue, size: 20),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
-              'Vos listes sont stockées localement sur cet appareil',
-              style: TextStyle(fontSize: 13, color: Colors.blue),
+              l10n.logoutLocalDataInfo,
+              style: const TextStyle(fontSize: 13, color: Colors.blue),
             ),
           ),
         ],
@@ -89,7 +91,7 @@ class EnhancedLogoutDialog extends ConsumerWidget {
     return TextButton.icon(
       onPressed: () => Navigator.of(context).pop(false),
       icon: const Icon(Icons.cancel_outlined, size: 18),
-      label: const Text('Annuler'),
+      label: Text(AppLocalizations.of(context)!.cancel),
       style: TextButton.styleFrom(
         foregroundColor: tone(neutralColor, level: 600),
       ),
@@ -100,7 +102,7 @@ class EnhancedLogoutDialog extends ConsumerWidget {
     return ElevatedButton.icon(
       onPressed: () => Navigator.of(context).pop('keep_data'),
       icon: const Icon(Icons.save_outlined, size: 18),
-      label: const Text('Garder mes données'),
+      label: Text(AppLocalizations.of(context)!.logoutKeepDataAction),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.green,
         foregroundColor: Colors.white,
@@ -116,7 +118,7 @@ class EnhancedLogoutDialog extends ConsumerWidget {
     return ElevatedButton.icon(
       onPressed: () => Navigator.of(context).pop('clear_data'),
       icon: const Icon(Icons.delete_sweep, size: 18),
-      label: const Text('Effacer mes données'),
+      label: Text(AppLocalizations.of(context)!.logoutClearDataAction),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.red,
         foregroundColor: Colors.white,

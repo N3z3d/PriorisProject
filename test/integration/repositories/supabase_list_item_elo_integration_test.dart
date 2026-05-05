@@ -1,31 +1,69 @@
-import 'package:flutter_test/flutter_test.dart';
-import 'package:prioris/data/repositories/supabase/supabase_list_item_repository.dart';
-import 'package:prioris/domain/models/core/entities/list_item.dart';
-import 'package:prioris/infrastructure/services/auth_service.dart';
-import 'package:prioris/infrastructure/services/supabase_service.dart';
-import 'package:uuid/uuid.dart';
+// ignore_for_file: avoid_print
 
 @Tags(['integration'])
+library;
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:prioris/data/repositories/supabase/supabase_custom_list_repository.dart';
+import 'package:prioris/data/repositories/supabase/supabase_list_item_repository.dart';
+import 'package:prioris/domain/models/core/entities/custom_list.dart';
+import 'package:prioris/domain/models/core/entities/list_item.dart';
+import 'package:prioris/domain/models/core/enums/list_enums.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
+
+import '../helpers/supabase_test_harness.dart';
+
 void main() {
   group('SupabaseListItemRepository — persistance ELO après duel', () {
     late SupabaseListItemRepository repository;
-    late String testItemId;
+    late SupabaseCustomListRepository listRepository;
+    String testListId = '';
 
     setUpAll(() async {
-      await SupabaseService.initialize();
-      await AuthService.instance.signIn(
-        email: 'test_1776892399910_958@example.com',
-        password: 'TestPassword123!',
-      );
+      await SupabaseTestHarness.setUp();
       repository = SupabaseListItemRepository();
-      testItemId = '';
+      listRepository = SupabaseCustomListRepository();
+      testListId = const Uuid().v4();
+
+      // Crée une liste de test réelle (FK requise par list_items.list_id)
+      final now = DateTime.now();
+      await listRepository.saveList(CustomList(
+        id: testListId,
+        name: 'Test ELO 7.9',
+        type: ListType.CUSTOM,
+        createdAt: now,
+        updatedAt: now,
+      ));
+      print('Setup: liste test $testListId créée');
     });
 
     tearDownAll(() async {
-      if (testItemId.isNotEmpty) {
-        await repository.delete(testItemId);
+      // Hard delete des items (soft-delete laisse les lignes → FK bloque la suppression de la liste)
+      try {
+        await Supabase.instance.client
+            .from('list_items')
+            .delete()
+            .eq('list_id', testListId);
+        print('Cleanup: items de la liste $testListId supprimés');
+      } catch (e) {
+        print('Cleanup warning items: $e');
       }
-      await AuthService.instance.signOut();
+      // Hard delete de la liste de test
+      try {
+        await Supabase.instance.client
+            .from('custom_lists')
+            .delete()
+            .eq('id', testListId);
+        print('Cleanup: liste test $testListId supprimée');
+      } catch (e) {
+        print('Cleanup warning liste: $e');
+      }
+      try {
+        await SupabaseTestHarness.tearDown();
+      } catch (e) {
+        print('Cleanup warning tearDown: $e');
+      }
     });
 
     test('update persiste le nouveau elo_score dans Supabase', () async {
@@ -34,10 +72,8 @@ void main() {
         title: 'Test ELO 7.2',
         eloScore: 1200.0,
         createdAt: DateTime.now(),
-        listId: 'test-list-7-2',
+        listId: testListId,
       );
-      testItemId = initialItem.id;
-
       await repository.add(initialItem);
 
       final updatedItem = ListItem(
@@ -62,7 +98,7 @@ void main() {
         title: 'Test ELO Loser 7.2',
         eloScore: 1200.0,
         createdAt: DateTime.now(),
-        listId: 'test-list-7-2',
+        listId: testListId,
       );
       final loserId = loserItem.id;
 

@@ -20,6 +20,7 @@ import '../../../helpers/localized_widget.dart';
 // Helper for tests that need DefaultTabController AND localization.
 Widget localizedTabApp(Widget body) {
   return MaterialApp(
+    theme: ThemeData(splashFactory: InkRipple.splashFactory),
     locale: const Locale('fr'),
     localizationsDelegates: const [
       AppLocalizations.delegate,

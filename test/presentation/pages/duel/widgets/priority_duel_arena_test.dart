@@ -33,11 +33,13 @@ void main() {
       bool hideElo = true,
       List<Task>? customTasks,
       Size? viewportSize,
+      int? cardsPerRound,
     }) {
       final tasks = customTasks ?? [taskA, taskB];
       return tester.pumpWidget(
         MaterialApp(
           locale: const Locale('fr'),
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           home: Scaffold(
@@ -48,6 +50,7 @@ void main() {
                 tasks: tasks,
                 hideEloScores: hideElo,
                 onSelectTask: onSelect,
+                cardsPerRound: cardsPerRound ?? DuelSettings.minCardsPerRound,
               ),
             ),
           ),
@@ -103,6 +106,7 @@ void main() {
         onSelect: (_, __) async {},
         customTasks: tasks,
         viewportSize: const Size(1280, 800),
+        cardsPerRound: 4,
       );
       await tester.pump();
 
@@ -127,6 +131,7 @@ void main() {
         onSelect: (_, __) async {},
         customTasks: tasks,
         viewportSize: const Size(1280, 800),
+        cardsPerRound: 3,
       );
       await tester.pump();
 
@@ -164,6 +169,7 @@ void main() {
         onSelect: (_, __) async {},
         customTasks: tasks,
         viewportSize: const Size(1200, 800),
+        cardsPerRound: 4,
       );
       await tester.pump();
 
@@ -203,6 +209,7 @@ void main() {
       return tester.pumpWidget(
         MaterialApp(
           locale: const Locale('fr'),
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           home: Scaffold(

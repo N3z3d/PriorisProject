@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/infrastructure/services/logger_service.dart';
 import 'package:prioris/infrastructure/services/web_auth_callback_stabilizer.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/pages/agents_monitoring_page.dart';
 import 'package:prioris/presentation/pages/auth/auth_wrapper.dart';
 import 'package:prioris/presentation/pages/home_page.dart';
 import 'package:prioris/presentation/pages/list_detail_loader_page.dart';
 import 'package:prioris/presentation/pages/list_detail_page.dart';
+import 'package:prioris/presentation/pages/privacy_policy_page.dart';
 
 /// Gestionnaire des routes de l'application
 class AppRoutes {
@@ -14,11 +16,13 @@ class AppRoutes {
   static const String home = '/';
   static const String listDetail = '/list-detail';
   static const String agentsMonitoring = '/agents-monitoring';
+  static const String privacyPolicy = '/privacy-policy';
 
   /// Tableau centralisé des routes statiques (sans arguments)
   static final Map<String, WidgetBuilder> routes = {
     home: (context) => const HomePage(),
     agentsMonitoring: (context) => const AgentsMonitoringPage(),
+    privacyPolicy: (context) => const PrivacyPolicyPage(),
   };
 
   /// Générateur de routes dynamique
@@ -93,34 +97,37 @@ class AppRoutes {
   /// Route d'erreur pour les routes non définies
   static Route<dynamic> _errorRoute(String message) {
     return MaterialPageRoute(
-      builder: (context) => Scaffold(
-        appBar: AppBar(
-          title: const Text('Erreur'),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.error_outline,
-                size: 64,
-                color: Colors.red,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                message,
-                style: const TextStyle(fontSize: 18),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Retour'),
-              ),
-            ],
+      builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(l10n.error),
           ),
-        ),
-      ),
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.error_outline,
+                  size: 64,
+                  color: Colors.red,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  message,
+                  style: const TextStyle(fontSize: 18),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(l10n.back),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
   

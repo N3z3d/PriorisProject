@@ -364,7 +364,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get overview => 'Overview';
 
   @override
+  String get insightsTabOverview => 'Overview';
+
+  @override
   String get insightsTabTrends => 'Trends';
+
+  @override
+  String get insightsCtaCreateHabit => 'Create a habit';
+
+  @override
+  String get insightsTrendsSuccessRate => 'Success rate';
+
+  @override
+  String get insightsTrendsStreak => 'Current streak';
+
+  @override
+  String insightsTrendsStreakDays(int count) {
+    return '$count d.';
+  }
+
+  @override
+  String get insightsTrendsToday => 'Completed today';
 
   @override
   String get habitsTab => 'Habits';
@@ -1884,4 +1904,123 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noListsBody => 'Create your first list to get started.';
+
+  @override
+  String get settingsFeatureInDevelopment => 'Feature in development';
+
+  @override
+  String get archiveAction => 'Archive';
+
+  @override
+  String get listCreateDialogTitle => 'New list';
+
+  @override
+  String get listCreateError => 'Unable to create the list. Try again.';
+
+  @override
+  String listEditError(String error) {
+    return 'Error while editing: $error';
+  }
+
+  @override
+  String listDeleteError(String error) {
+    return 'Error while deleting: $error';
+  }
+
+  @override
+  String get logoutKeepDataAction => 'Keep my data';
+
+  @override
+  String get logoutClearDataAction => 'Clear my data';
+
+  @override
+  String listCreatedSuccess(String title) {
+    return 'List \"$title\" created successfully';
+  }
+
+  @override
+  String listUpdatedSuccess(String name) {
+    return 'List \"$name\" updated successfully';
+  }
+
+  @override
+  String listDeletedSuccess(String name) {
+    return 'List \"$name\" deleted successfully';
+  }
+
+  @override
+  String get logoutDataQuestion =>
+      'What would you like to do with your local data?';
+
+  @override
+  String get logoutLocalDataInfo =>
+      'Your lists are stored locally on this device';
+
+  @override
+  String get privacyConsentTitle => 'Data Protection';
+
+  @override
+  String get privacyConsentBody =>
+      'Prioris collects your personal data (tasks, habits, profile) to provide the service. Your data is stored securely and is not shared with third parties for advertising purposes.';
+
+  @override
+  String get privacyConsentAcceptButton => 'I accept and continue';
+
+  @override
+  String get privacyConsentReadPolicyLink => 'Read the privacy policy';
+
+  @override
+  String get privacyPolicyTitle => 'Privacy Policy';
+
+  @override
+  String get settingsPrivacySectionTitle => 'PRIVACY & DATA';
+
+  @override
+  String get settingsPrivacyPolicyTile => 'Privacy Policy';
+
+  @override
+  String get settingsPrivacyPolicySubtitle => 'View our privacy practices';
+
+  @override
+  String get settingsRevokeConsentTile => 'Withdraw my consent';
+
+  @override
+  String get settingsRevokeConsentSubtitle =>
+      'Revoke access to your personal data';
+
+  @override
+  String get settingsRevokeConsentDialogTitle => 'Withdraw your consent';
+
+  @override
+  String get settingsRevokeConsentDialogBody =>
+      'You will be immediately redirected to the consent page. You can accept again at any time.';
+
+  @override
+  String get settingsRevokeConsentDialogConfirm => 'Withdraw';
+
+  @override
+  String get settingsRevokeConsentDialogCancel => 'Cancel';
+
+  @override
+  String get settingsRevokeConsentError =>
+      'Error withdrawing consent. Please try again.';
+
+  @override
+  String get settingsDeleteAccountTile => 'Delete my account';
+
+  @override
+  String get settingsDeleteAccountSubtitle => 'Request deletion of your data';
+
+  @override
+  String get settingsDeleteAccountDialogTitle => 'Delete your account';
+
+  @override
+  String get settingsDeleteAccountDialogBody =>
+      'To delete your account and all your personal data, send an email to:';
+
+  @override
+  String get settingsDeleteAccountDialogCopyEmail => 'Copy email address';
+
+  @override
+  String get settingsDeleteAccountEmailCopied => 'Email address copied';
 }

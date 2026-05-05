@@ -47,34 +47,7 @@ class HabitCategoryDropdown extends StatelessWidget {
             child: Text(category),
           ),
         ),
-        DropdownMenuItem<String>(
-          key: const ValueKey('habit-category-create-item'),
-          value: createCategoryValue,
-          child: Text.rich(
-            TextSpan(
-              children: [
-                WidgetSpan(
-                  alignment: PlaceholderAlignment.middle,
-                  child: Icon(
-                    Icons.add,
-                    size: 18,
-                    color: AppTheme.accentColor,
-                  ),
-                ),
-                const WidgetSpan(
-                  child: SizedBox(width: 8),
-                ),
-                TextSpan(
-                  text: l10n.habitFormCategoryCreate,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.accentColor,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+        _buildCreateItem(theme, l10n),
       ],
       onChanged: (value) async {
         if (value == null) {
@@ -89,6 +62,31 @@ class HabitCategoryDropdown extends StatelessWidget {
           onCategorySelected(value);
         }
       },
+    );
+  }
+
+  DropdownMenuItem<String> _buildCreateItem(ThemeData theme, AppLocalizations l10n) {
+    return DropdownMenuItem<String>(
+      key: const ValueKey('habit-category-create-item'),
+      value: createCategoryValue,
+      child: Text.rich(
+        TextSpan(
+          children: [
+            WidgetSpan(
+              alignment: PlaceholderAlignment.middle,
+              child: Icon(Icons.add, size: 18, color: AppTheme.accentColor),
+            ),
+            const WidgetSpan(child: SizedBox(width: 8)),
+            TextSpan(
+              text: l10n.habitFormCategoryCreate,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: AppTheme.accentColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

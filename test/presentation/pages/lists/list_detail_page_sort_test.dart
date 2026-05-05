@@ -7,6 +7,7 @@ import 'package:prioris/data/providers/lists_controller_provider.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/pages/list_detail_page.dart';
 import 'package:prioris/presentation/pages/lists/models/lists_state.dart';
 import 'package:prioris/presentation/pages/lists/widgets/list_item_card.dart';
@@ -62,6 +63,10 @@ void main() {
 
     testWidgets('applies deterministic shuffle when random sort selected',
         (tester) async {
+      tester.view.physicalSize = const Size(800, 1600);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
       final controller = StubListsController(seededState: seededState);
 
       await tester.pumpWidget(
@@ -70,6 +75,10 @@ void main() {
             listsControllerProvider.overrideWith((ref) => controller),
           ],
           child: MaterialApp(
+            locale: const Locale('fr'),
+            theme: ThemeData(splashFactory: InkRipple.splashFactory),
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
             home: ListDetailPage(list: seedList),
           ),
         ),

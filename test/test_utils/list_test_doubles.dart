@@ -41,7 +41,8 @@ class NoopListsPersistenceManager implements IListsPersistenceManager {
   Future<void> saveListItem(ListItem item) async {}
 
   @override
-  Future<void> saveMultipleItems(List<ListItem> items) async {}
+  Future<void> saveMultipleItems(
+      List<ListItem> items, {void Function(int, int)? onProgress}) async {}
 
   @override
   Future<void> updateList(CustomList list) async {}

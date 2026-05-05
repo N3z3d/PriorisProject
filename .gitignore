@@ -62,6 +62,7 @@ app.*.map.json
 .env.production
 
 # Test artifacts and temporary files
+test/manual/test_credentials.txt
 test_output.txt
 test_results*.txt
 test_all_fixed.txt

@@ -26,6 +26,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Builder(
             builder: (context) => ElevatedButton(
               onPressed: () {
@@ -78,6 +79,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Builder(
             builder: (context) => ElevatedButton(
               onPressed: () {
@@ -126,6 +128,7 @@ void main() {
     testWidgets('should validate required fields', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Builder(
             builder: (context) => ElevatedButton(
               onPressed: () {
@@ -164,6 +167,7 @@ void main() {
     testWidgets('should cancel dialog', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Builder(
             builder: (context) => ElevatedButton(
               onPressed: () {
@@ -195,6 +199,7 @@ void main() {
     testWidgets('should handle long text inputs', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Builder(
             builder: (context) => ElevatedButton(
               onPressed: () {

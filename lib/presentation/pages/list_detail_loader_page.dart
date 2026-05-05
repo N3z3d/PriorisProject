@@ -73,10 +73,10 @@ class ListDetailLoaderPage extends ConsumerWidget {
         return ListDetailPage(list: list);
       },
       loading: () => _buildLoadingState(context),
-      error: (error, stack) => _buildErrorState(context, error),
+      error: (error, stack) => _buildErrorState(context, ref, error),
     );
   }
-  
+
   Widget _buildLoadingState(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
@@ -112,12 +112,16 @@ class ListDetailLoaderPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildErrorState(BuildContext context, Object error) {
+  Widget _buildErrorState(BuildContext context, WidgetRef ref, Object error) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.error)),
       body: Center(
-        child: AppErrorWidget.fromError(context: context, error: error),
+        child: AppErrorWidget.fromError(
+          context: context,
+          error: error,
+          onRetry: () => ref.invalidate(listsInitializationManagerProvider),
+        ),
       ),
     );
   }

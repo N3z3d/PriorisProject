@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 
 /// Action menu component for list card
 ///
@@ -26,7 +27,7 @@ class ListCardActionMenu extends StatelessWidget {
     return PopupMenuButton<String>(
       icon: const Icon(Icons.more_vert, size: 20),
       onSelected: _handleMenuSelection,
-      itemBuilder: (context) => _buildMenuItems(),
+      itemBuilder: (context) => _buildMenuItems(context),
     );
   }
 
@@ -44,48 +45,49 @@ class ListCardActionMenu extends StatelessWidget {
     }
   }
 
-  List<PopupMenuEntry<String>> _buildMenuItems() {
+  List<PopupMenuEntry<String>> _buildMenuItems(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return [
-      if (onEdit != null) _buildEditMenuItem(),
-      if (onArchive != null) _buildArchiveMenuItem(),
-      if (onDelete != null) _buildDeleteMenuItem(),
+      if (onEdit != null) _buildEditMenuItem(l10n),
+      if (onArchive != null) _buildArchiveMenuItem(l10n),
+      if (onDelete != null) _buildDeleteMenuItem(l10n),
     ];
   }
 
-  PopupMenuItem<String> _buildEditMenuItem() {
-    return const PopupMenuItem(
+  PopupMenuItem<String> _buildEditMenuItem(AppLocalizations l10n) {
+    return PopupMenuItem(
       value: 'edit',
       child: Row(
         children: [
-          Icon(Icons.edit, size: 16),
-          SizedBox(width: 8),
-          Text('Modifier'),
+          const Icon(Icons.edit, size: 16),
+          const SizedBox(width: 8),
+          Text(l10n.edit),
         ],
       ),
     );
   }
 
-  PopupMenuItem<String> _buildArchiveMenuItem() {
-    return const PopupMenuItem(
+  PopupMenuItem<String> _buildArchiveMenuItem(AppLocalizations l10n) {
+    return PopupMenuItem(
       value: 'archive',
       child: Row(
         children: [
-          Icon(Icons.archive, size: 16),
-          SizedBox(width: 8),
-          Text('Archiver'),
+          const Icon(Icons.archive, size: 16),
+          const SizedBox(width: 8),
+          Text(l10n.archiveAction),
         ],
       ),
     );
   }
 
-  PopupMenuItem<String> _buildDeleteMenuItem() {
-    return const PopupMenuItem(
+  PopupMenuItem<String> _buildDeleteMenuItem(AppLocalizations l10n) {
+    return PopupMenuItem(
       value: 'delete',
       child: Row(
         children: [
-          Icon(Icons.delete, size: 16, color: Colors.red),
-          SizedBox(width: 8),
-          Text('Supprimer', style: TextStyle(color: Colors.red)),
+          const Icon(Icons.delete, size: 16, color: Colors.red),
+          const SizedBox(width: 8),
+          Text(l10n.delete, style: const TextStyle(color: Colors.red)),
         ],
       ),
     );

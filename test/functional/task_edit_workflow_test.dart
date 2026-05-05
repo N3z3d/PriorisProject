@@ -23,6 +23,7 @@ void main() {
       // Interface utilisateur simplifiée
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: SizedBox(
               height: 400,
@@ -51,10 +52,10 @@ void main() {
       expect(find.text('Tâche originale'), findsOneWidget);
       expect(find.text('Description originale'), findsOneWidget);
       expect(find.text('Test'), findsOneWidget);
-      expect(find.byIcon(Icons.edit), findsOneWidget);
+      expect(find.byIcon(Icons.edit_rounded), findsOneWidget);
 
       // ÉTAPE 2: Cliquer sur le bouton d'édition
-      await tester.tap(find.byIcon(Icons.edit));
+      await tester.tap(find.byIcon(Icons.edit_rounded));
       await tester.pumpAndSettle();
 
       // ÉTAPE 3: Vérifier que le dialog s'est ouvert avec les bonnes données
@@ -94,6 +95,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: Center(
               child: ElevatedButton(
@@ -136,6 +138,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: Center(
               child: ElevatedButton(
@@ -200,6 +203,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Scaffold(
             body: Center(
               child: ElevatedButton(

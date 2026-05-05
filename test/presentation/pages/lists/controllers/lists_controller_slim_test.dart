@@ -255,7 +255,8 @@ class _InMemoryPersistence implements IListsPersistenceManager {
   }
 
   @override
-  Future<void> saveMultipleItems(List<ListItem> items) async {
+  Future<void> saveMultipleItems(
+      List<ListItem> items, {void Function(int, int)? onProgress}) async {
     for (final item in items) {
       await saveListItem(item);
     }

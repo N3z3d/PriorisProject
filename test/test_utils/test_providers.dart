@@ -19,9 +19,11 @@ class MockListsController extends Mock implements ListsController {
   );
 
   @override
-  Future<void> addMultipleItemsToList(String listId, List<dynamic> entries) {
+  Future<void> addMultipleItemsToList(String listId, List<dynamic> entries,
+      {void Function(int, int)? onProgress}) {
     return super.noSuchMethod(
-      Invocation.method(#addMultipleItemsToList, [listId, entries]),
+      Invocation.method(
+          #addMultipleItemsToList, [listId, entries], {#onProgress: onProgress}),
       returnValue: Future<void>.value(),
       returnValueForMissingStub: Future<void>.value(),
     );
