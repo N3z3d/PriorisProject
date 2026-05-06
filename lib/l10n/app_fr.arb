@@ -1353,5 +1353,12 @@
   "settingsDeleteAccountEmailCopied": "Adresse email copiée",
   "@settingsDeleteAccountEmailCopied": {
     "description": "SnackBar confirmant la copie de l'email dans le presse-papiers"
+  },
+  "importInterruptedBanner": "Import interrompu — {current}/{total} éléments ajoutés",
+  "@importInterruptedBanner": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
   }
 }

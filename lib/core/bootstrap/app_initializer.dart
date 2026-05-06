@@ -5,6 +5,7 @@ import 'package:prioris/domain/models/core/enums/list_enums.dart';
 import 'package:prioris/domain/services/ui/cross_browser_compatibility_service.dart';
 import 'package:prioris/domain/services/core/language_service.dart';
 import 'package:prioris/core/config/app_config.dart';
+import 'package:prioris/infrastructure/services/import_interrupt_service.dart';
 import 'package:prioris/infrastructure/services/supabase_service.dart';
 import 'package:prioris/presentation/services/debug/overflow_audit_service.dart';
 import 'package:prioris/infrastructure/services/logger_service.dart';
@@ -85,7 +86,10 @@ class AppInitializer {
     // Initialize language service
     final languageService = LanguageService();
     await languageService.initialize();
-    
+
+    await ImportInterruptService.instance.checkAndLoadPersistedState();
+    logger.debug('Import interrupt state checked', context: _context);
+
     logger.debug('External services initialized', context: _context);
   }
 

@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:prioris/infrastructure/services/import_interrupt_service.dart';
 import 'package:prioris/presentation/widgets/dialogs/bulk_add_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../helpers/localized_widget.dart';
 
 /// Tests d'integration pour BulkAddDialog
 /// Objectif: Reproduire le bug "rien ne se passe" lors de l'ajout
 void main() {
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    await ImportInterruptService.instance.onComplete();
+  });
+
   group('BulkAddDialog - Single Item Addition', () {
     testWidgets(
       'REPRO: should call onSubmit when adding single item',

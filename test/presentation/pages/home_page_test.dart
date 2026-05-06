@@ -6,11 +6,13 @@ import 'package:prioris/data/providers/duel_settings_provider.dart';
 import 'package:prioris/data/providers/lists_controller_provider.dart';
 import 'package:prioris/data/repositories/habit_repository.dart';
 import 'package:prioris/domain/core/value_objects/duel_settings.dart';
+import 'package:prioris/infrastructure/services/import_interrupt_service.dart';
 import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/pages/home/widgets/desktop_sidebar.dart';
 import 'package:prioris/presentation/pages/home/widgets/premium_bottom_nav.dart';
 import 'package:prioris/presentation/pages/home_page.dart';
 import 'package:prioris/presentation/pages/lists/models/lists_state.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../test_utils/list_test_doubles.dart';
 
@@ -73,6 +75,45 @@ void main() {
       expect(find.text(_l10n(locale).settingsPilotStatusBody), findsNothing);
       expect(find.text(_l10n(locale).settingsPilotLimitsBody), findsNothing);
       expect(find.text('Prioris Pilot Invite'), findsNothing);
+    });
+  });
+
+  group('HomePage — banniere import interrompu', () {
+    setUp(() async {
+      _setBaseAppConfig();
+      SharedPreferences.setMockInitialValues({});
+      await ImportInterruptService.instance.onComplete();
+    });
+
+    tearDown(() async {
+      await ImportInterruptService.instance.onComplete();
+    });
+
+    testWidgets('affiche le SnackBar si import precedent interrompu',
+        (tester) async {
+      const locale = Locale('fr');
+
+      SharedPreferences.setMockInitialValues({
+        'import_interrupt_current_v1': 7,
+        'import_interrupt_total_v1': 20,
+      });
+      await ImportInterruptService.instance.checkAndLoadPersistedState();
+
+      await _pumpHomePage(tester, locale: locale);
+
+      expect(
+        find.text(_l10n(locale).importInterruptedBanner(7, 20)),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('n\'affiche pas de SnackBar sans import interrompu',
+        (tester) async {
+      // setUp a reinitialise le singleton — aucun etat persiste
+
+      await _pumpHomePage(tester, locale: const Locale('fr'));
+
+      expect(find.byType(SnackBar), findsNothing);
     });
   });
 }

@@ -2038,4 +2038,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settingsDeleteAccountEmailCopied => 'Adresse email copiée';
+
+  @override
+  String importInterruptedBanner(int current, int total) {
+    return 'Import interrompu — $current/$total éléments ajoutés';
+  }
 }

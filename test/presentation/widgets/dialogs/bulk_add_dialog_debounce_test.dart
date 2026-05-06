@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:prioris/infrastructure/services/import_interrupt_service.dart';
 import 'package:prioris/presentation/widgets/dialogs/bulk_add_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../helpers/localized_widget.dart';
 
 /// Tests for debounce protection in BulkAddDialog
 /// Prevents duplicate submissions on rapid double-clicks
 void main() {
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    await ImportInterruptService.instance.onComplete();
+  });
+
   group('BulkAddDialog - Debounce Protection (Keep Open Mode)', () {
     testWidgets(
       'REPRO: should not submit twice on rapid double-click when keep open enabled',

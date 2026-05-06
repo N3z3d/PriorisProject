@@ -9,7 +9,9 @@ import 'package:prioris/presentation/pages/lists_page.dart';
 import 'package:prioris/presentation/pages/settings_page.dart';
 import 'package:prioris/domain/services/ui/accessibility_service.dart';
 import 'package:prioris/data/providers/auth_providers.dart';
+import 'package:prioris/infrastructure/services/import_interrupt_service.dart';
 import 'package:prioris/infrastructure/services/logger_service.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/pages/home/models/navigation_item.dart';
 import 'package:prioris/presentation/pages/home/widgets/desktop_sidebar.dart';
 import 'package:prioris/presentation/pages/home/widgets/premium_bottom_nav.dart';
@@ -18,11 +20,42 @@ import 'package:prioris/presentation/widgets/pilot/pilot_instance_notice.dart';
 final currentPageProvider = StateProvider<int>((ref) => 0);
 
 /// Page d'accueil principale avec navigation adaptative
-class HomePage extends ConsumerWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends ConsumerState<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    _checkForInterruptedImport();
+  }
+
+  void _checkForInterruptedImport() {
+    final interruptState =
+        ImportInterruptService.instance.consumeStartupInterrupt();
+    if (interruptState == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.importInterruptedBanner(
+            interruptState.current,
+            interruptState.total,
+          )),
+          duration: const Duration(seconds: 6),
+          backgroundColor: AppTheme.warningColor,
+        ),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final currentPage = ref.watch(currentPageProvider);
     final pages = _buildPages();
     final navigationItems = _getNavigationItems();
@@ -291,4 +324,4 @@ class HomePage extends ConsumerWidget {
     accessibilityService.announceToScreenReader('Navigation vers ${item.label}');
     ref.read(currentPageProvider.notifier).state = index;
   }
-} 
+}

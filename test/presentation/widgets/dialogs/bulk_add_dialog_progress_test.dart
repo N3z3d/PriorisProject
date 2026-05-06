@@ -2,13 +2,20 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:prioris/infrastructure/services/import_interrupt_service.dart';
 import 'package:prioris/presentation/widgets/dialogs/bulk_add_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../helpers/localized_widget.dart';
 
 /// Story 7.3 — Tests widget pour les 5 états de progression du BulkAddDialog
 ///
 /// RED phase: ces tests doivent échouer avant l'implémentation
 void main() {
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    await ImportInterruptService.instance.onComplete();
+  });
+
   group('BulkAddDialog - AC1: indicateur de progression', () {
     testWidgets(
       'affiche un LinearProgressIndicator dès que onSubmit démarre',

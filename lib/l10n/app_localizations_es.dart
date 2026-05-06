@@ -1999,4 +1999,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settingsDeleteAccountEmailCopied => 'Email address copied';
+
+  @override
+  String importInterruptedBanner(int current, int total) {
+    return 'Importación interrumpida — $current/$total elementos añadidos';
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prioris/infrastructure/services/import_interrupt_service.dart';
 import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'components/bulk_add_header.dart';
@@ -49,7 +50,8 @@ class BulkAddDialog extends StatefulWidget {
   State<BulkAddDialog> createState() => _BulkAddDialogState();
 }
 
-class _BulkAddDialogState extends State<BulkAddDialog> with TickerProviderStateMixin {
+class _BulkAddDialogState extends State<BulkAddDialog>
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   late TextEditingController _controller;
   final FocusNode _focusNode = FocusNode();
   bool _isValid = false;
@@ -64,6 +66,7 @@ class _BulkAddDialogState extends State<BulkAddDialog> with TickerProviderStateM
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _controller = TextEditingController();
     _controller.addListener(_validateInput);
     _tabController = TabController(length: 2, vsync: this);
@@ -79,10 +82,23 @@ class _BulkAddDialogState extends State<BulkAddDialog> with TickerProviderStateM
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _controller.dispose();
     _focusNode.dispose();
     _tabController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (_isSubmitting &&
+        (state == AppLifecycleState.paused ||
+            state == AppLifecycleState.detached ||
+            state == AppLifecycleState.hidden)) {
+      ImportInterruptService.instance
+          .onProgress(_processedCount, _totalCount)
+          .ignore();
+    }
   }
 
   void _validateInput() {
@@ -111,6 +127,7 @@ class _BulkAddDialogState extends State<BulkAddDialog> with TickerProviderStateM
     try {
       final submitFuture = widget.onSubmit(items, (current, total) {
         if (mounted) setState(() { _processedCount = current; _totalCount = total; });
+        ImportInterruptService.instance.onProgress(current, total).ignore();
       });
 
       if (_keepOpen) {
@@ -119,6 +136,7 @@ class _BulkAddDialogState extends State<BulkAddDialog> with TickerProviderStateM
           submitFuture,
           Future.delayed(const Duration(milliseconds: 300)),
         ]);
+        await ImportInterruptService.instance.onComplete();
         if (mounted) {
           setState(() { _isSubmitting = false; _processedCount = 0; _totalCount = 0; });
           _controller.clear();
@@ -126,13 +144,16 @@ class _BulkAddDialogState extends State<BulkAddDialog> with TickerProviderStateM
         }
       } else {
         await submitFuture;
+        await ImportInterruptService.instance.onComplete();
         if (mounted) {
           Navigator.of(context).pop(_processedCount > 0 ? _processedCount : items.length);
         }
       }
     } on BulkAddCancelException {
+      await ImportInterruptService.instance.onComplete();
       if (mounted) setState(() { _isSubmitting = false; _submitError = null; });
     } catch (e) {
+      await ImportInterruptService.instance.onComplete();
       if (mounted) setState(() { _isSubmitting = false; _submitError = e.toString(); });
     }
   }

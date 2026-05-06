@@ -1185,5 +1185,12 @@
   "settingsDeleteAccountEmailCopied": "Email address copied",
   "@settingsDeleteAccountEmailCopied": {
     "description": "Snackbar confirming email copied to clipboard"
+  },
+  "importInterruptedBanner": "Importación interrumpida — {current}/{total} elementos añadidos",
+  "@importInterruptedBanner": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
   }
 }

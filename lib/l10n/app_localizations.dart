@@ -3539,6 +3539,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Email address copied'**
   String get settingsDeleteAccountEmailCopied;
+
+  /// No description provided for @importInterruptedBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Import interrupted — {current}/{total} items added'**
+  String importInterruptedBanner(int current, int total);
 }
 
 class _AppLocalizationsDelegate

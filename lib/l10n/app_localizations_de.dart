@@ -2017,4 +2017,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsDeleteAccountEmailCopied => 'Email address copied';
+
+  @override
+  String importInterruptedBanner(int current, int total) {
+    return 'Import unterbrochen — $current/$total Elemente hinzugefügt';
+  }
 }

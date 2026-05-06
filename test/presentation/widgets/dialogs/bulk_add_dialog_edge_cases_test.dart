@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:prioris/infrastructure/services/import_interrupt_service.dart';
 import 'package:prioris/presentation/widgets/dialogs/bulk_add_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../helpers/localized_widget.dart';
 
 /// Non-regression tests for BulkAddDialog edge cases
 /// Ensures robustness for bulk add operations
 void main() {
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    await ImportInterruptService.instance.onComplete();
+  });
+
   group('BulkAddDialog - Edge Cases: Empty Lines', () {
     testWidgets(
       'should filter out empty lines in multiple mode',
