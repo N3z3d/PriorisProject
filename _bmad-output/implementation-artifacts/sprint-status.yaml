@@ -92,6 +92,7 @@ development_status:
   8-6-mettre-a-jour-architecture-md-et-template-story: done
   8-7-polish-ux-snackbar-import-et-avertissement-fermeture: ready-for-dev
   8-8-reprendre-import-interrompu-depuis-liste: ready-for-dev
+  8-9-corriger-value-as-double-latent-services-et-presentation: backlog
   epic-8-retrospective: optional
 
   epic-9: in-progress
