@@ -57,7 +57,7 @@ class HabitAvatar extends StatelessWidget {
       case 'sociale':
         return Icons.people;
       default:
-        return Icons.star;
+        return Icons.track_changes_rounded;
     }
   }
 }

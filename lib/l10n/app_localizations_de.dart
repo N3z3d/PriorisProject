@@ -1329,7 +1329,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String habitProgressSuccessfulDays(Object successful, Object total) {
-    return 'Erfolgreiche Tage';
+    return '$successful/$total erfolgreiche Tage';
   }
 
   @override

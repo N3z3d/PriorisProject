@@ -192,9 +192,9 @@ class Habit extends HiveObject {
     if (type == HabitType.binary) {
       return value == true;
     } else {
-      return value != null && 
-             targetValue != null && 
-             (value as double) >= targetValue!;
+      return value != null &&
+             targetValue != null &&
+             (value as num).toDouble() >= targetValue!;
     }
   }
 
@@ -216,10 +216,10 @@ class Habit extends HiveObject {
       
       if (type == HabitType.binary && value == true) {
         successfulDays++;
-      } else if (type == HabitType.quantitative && 
-                 value != null && 
-                 targetValue != null && 
-                 (value as double) >= targetValue!) {
+      } else if (type == HabitType.quantitative &&
+                 value != null &&
+                 targetValue != null &&
+                 (value as num).toDouble() >= targetValue!) {
         successfulDays++;
       }
     }
@@ -240,10 +240,10 @@ class Habit extends HiveObject {
       bool isSuccess = false;
       if (type == HabitType.binary && value == true) {
         isSuccess = true;
-      } else if (type == HabitType.quantitative && 
-                 value != null && 
-                 targetValue != null && 
-                 (value as double) >= targetValue!) {
+      } else if (type == HabitType.quantitative &&
+                 value != null &&
+                 targetValue != null &&
+                 (value as num).toDouble() >= targetValue!) {
         isSuccess = true;
       }
       
@@ -356,7 +356,7 @@ class Habit extends HiveObject {
         orElse: () => HabitType.binary,
       ),
       category: json['category'] as String?,
-      targetValue: json['target_value'] as double?,
+      targetValue: (json['target_value'] as num?)?.toDouble(),
       unit: json['unit'] as String?,
       createdAt: DateTime.parse(json['created_at'] as String),
       completions: Map<String, dynamic>.from(json['completions'] as Map? ?? {}),

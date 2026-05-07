@@ -94,6 +94,21 @@ Aucun item différé au 2026-04-22.
 - **addMultipleItemsToList alias vide** [lists_controller_slim.dart] : méthode qui délègue à `addMultipleItems` sans valeur ajoutée. Pré-existant, supprimable lors du prochain nettoyage du controller.
 - **verifyItemPersistence dans la boucle de sauvegarde** [lists_persistence_manager.dart] : appel `await verifyItemPersistence(items[i].id)` après chaque item ajoute un aller-retour non spécifié dans la story. Comportement pré-existant — à évaluer si les performances sur grands imports posent problème.
 
+## Deferred from: code review of 8-4-corriger-bugs-connus-ui-encodage-etoile-cartes (2026-05-07)
+
+- **Fallback `'Général'` non matché dans `_getHabitIcon`** [habit_avatar.dart:38] : `habit.category ?? 'Général'` → `'général'` ne correspond à aucun `case` du switch → tombe en `default`. Design smell pré-existant, intention opaque.
+- **`_getHabitIcon` dupliqué** [habit_avatar.dart:45 + habit_card_builder.dart:434] : deux implémentations indépendantes, switch axis différent. DRY violation pré-existante, hors scope story 8.4.
+- **`FractionallySizedBox.widthFactor` non borné** [habit_progress_display.dart `_buildProgressBar`] : `widthFactor: progress` sans `.clamp(0.0, 1.0)`. Flutter lance une assertion si la valeur dépasse 1.0 ou est négative. Pré-existant, non touché par le diff.
+- **Streak stale** [habit_progress_display.dart `_buildStatsHeader`] : `habit.getCurrentStreak()` (calcul live) peut diverger du champ persisté `currentStreak` (HiveField 20) sur des données importées ou après crash. Pré-existant.
+
+## Deferred from: code review of 8-5-corriger-formule-calculateaverageperday-et-cast-int-double-supabase (2026-05-07)
+
+- **7 fichiers production conservent `(value as double)` non corrigés** [lib/domain/habit/services/habit_streak_calculator.dart:147, habit_progress_calculator.dart:111, habit_completion_service.dart:113, analytics/habit_pattern_analyzer.dart:89, analytics/habit_consistency_calculator.dart:72, lib/domain/services/calculation/progress_calculation_service.dart:310, lib/data/providers/list_providers.dart:229-231] : mêmes `CastError` latents que le bug corrigé en 8-5. À traiter en lot dans une story dédiée.
+- **Hive adapter `habit.g.dart:25` — `targetValue: fields[5] as double?`** : le path désérialisation Hive n'est pas couvert par le fix `fromJson`. Si une habitude est relue depuis Hive avec un `targetValue` entier, `CastError` possible. Généré — à corriger manuellement ou en regénérant l'adaptateur après modification du modèle.
+- **Présentation — silent null cast `as double?`** [habit_card.dart:91, habit_progress_bar.dart:88-104, habit_record_dialog.dart:34] : `todayValue as double? ?? 0.0` retourne silencieusement `null` (cast rate) quand la valeur est un `int` Supabase — la barre de progression et le champ pré-rempli affichent toujours 0. Pré-existant.
+- **Hardcoded `7` en double occurrence dans `habit_progress_display.dart`** [ligne 17 `getSuccessRate(days:7)` et ligne 145 `habitProgressSuccessfulDays(successfulDays, 7)`] : les deux occurrences ne partagent pas une constante — si la fenêtre change d'un côté, l'autre reste à 7. Pré-existant.
+- **ARB `@habitProgressSuccessfulDays` placeholders sans `"type": "int"`** [lib/l10n/app_de.arb, app_es.arb] : déclarés comme `{}` (type implicite `Object`) — cohérent avec le reste du projet mais empêche la validation de type ICU. Pré-existant.
+
 ## Deferred from: code review of 8-3-detecter-quit-refresh-pendant-import-massif (2026-05-06)
 
 - **Race condition écritures `onProgress` concurrentes** [import_interrupt_service.dart:28] : fire-and-forget par design, dernière écriture gagne — les valeurs `current`/`total` sont idempotentes (la dernière valeur est toujours la plus récente). Tradeoff documenté en spec.

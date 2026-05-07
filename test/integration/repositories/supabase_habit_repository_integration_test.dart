@@ -112,5 +112,29 @@ void main() {
         returnsNormally,
       );
     });
+
+    test('getSuccessRate() ne crashe pas apres lecture depuis Supabase', () async {
+      final habit = Habit(
+        name: 'Test 8.5 Cast Int-Double',
+        type: HabitType.quantitative,
+        targetValue: 3.0,
+      );
+      testHabitId = habit.id;
+
+      await repository.saveHabit(habit);
+
+      final allHabits = await repository.getAllHabits();
+      final saved = allHabits.where((h) => h.name == 'Test 8.5 Cast Int-Double').toList();
+      expect(saved.isNotEmpty, isTrue);
+      testHabitId = saved.first.id;
+
+      // getSuccessRate(), getCurrentStreak() et isCompletedToday() ne doivent pas lever CastError
+      expect(() => saved.first.getSuccessRate(), returnsNormally);
+      expect(() => saved.first.getCurrentStreak(), returnsNormally);
+      expect(() => saved.first.isCompletedToday(), returnsNormally);
+
+      await repository.deleteHabit(testHabitId);
+      testHabitId = '';
+    });
   });
 }

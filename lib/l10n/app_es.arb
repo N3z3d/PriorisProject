@@ -708,7 +708,13 @@
   "habitsCategoryDefault": "General",
   "habitProgressThisWeek": "Esta semana",
   "habitProgressStreakDays": "{count, plural, one {{count} día de racha} other {{count} días de racha}}",
-  "habitProgressSuccessfulDays": "Días con éxito",
+  "habitProgressSuccessfulDays": "{successful}/{total} días con éxito",
+  "@habitProgressSuccessfulDays": {
+    "placeholders": {
+      "successful": {},
+      "total": {}
+    }
+  },
   "habitProgressCompletedToday": "Completado hoy",
   "habitsErrorNetwork": "Problema de red",
   "habitsErrorTimeout": "Tiempo de espera agotado",

@@ -43,7 +43,7 @@ class HabitCalculationService {
         .map((habit) => habit.getSuccessRate())
         .reduce((a, b) => a + b);
     
-    return (totalCompletions / habits.length) * habits.length;
+    return totalCompletions / habits.length;
   }
 
   /// Calcule la performance par catégorie pour les habitudes uniquement

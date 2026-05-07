@@ -98,4 +98,59 @@ void main() {
       expect(habit.getCurrentStreak(), 1);
     });
   });
+
+  group('Habit quantitative — cast int→double Supabase', () {
+    test('getSuccessRate ne crashe pas si la completion est un int', () {
+      final habit = Habit(
+        name: 'Quantitative',
+        type: HabitType.quantitative,
+        targetValue: 3.0,
+        completions: {
+          dateKey(DateTime.now()): 5, // int, pas double
+        },
+      );
+      expect(() => habit.getSuccessRate(), returnsNormally);
+      expect(habit.getSuccessRate(), closeTo(1.0 / 7, 1e-9)); // 1 jour réussi sur 7
+    });
+
+    test('getCurrentStreak ne crashe pas si la completion est un int', () {
+      final habit = Habit(
+        name: 'Quantitative',
+        type: HabitType.quantitative,
+        targetValue: 3.0,
+        completions: {
+          dateKey(DateTime.now()): 5, // int
+        },
+      );
+      expect(() => habit.getCurrentStreak(), returnsNormally);
+      expect(habit.getCurrentStreak(), 1);
+    });
+
+    test('isCompletedToday ne crashe pas si la completion est un int', () {
+      final habit = Habit(
+        name: 'Quantitative',
+        type: HabitType.quantitative,
+        targetValue: 3.0,
+        completions: {
+          dateKey(DateTime.now()): 5, // int
+        },
+      );
+      expect(() => habit.isCompletedToday(), returnsNormally);
+      expect(habit.isCompletedToday(), isTrue);
+    });
+
+    test('fromJson ne crashe pas si target_value est un int JSON', () {
+      final json = {
+        'id': 'test-id',
+        'name': 'Test',
+        'type': 'quantitative',
+        'target_value': 5, // int JSON, pas 5.0
+        'created_at': DateTime.now().toIso8601String(),
+        'completions': <String, dynamic>{},
+      };
+      final habit = Habit.fromJson(json);
+      expect(habit.targetValue, equals(5.0));
+      expect(habit.targetValue, isA<double>());
+    });
+  });
 }

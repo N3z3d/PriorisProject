@@ -82,7 +82,51 @@ void main() {
         }
 
         final result = HabitCalculationService.calculateAveragePerDay([habit1, habit2]);
-        expect(result, equals(1.0)); // (1.0 + 0.0) / 2 * 2 = 1.0
+        expect(result, equals(0.5)); // (1.0 + 0.0) / 2 = 0.5
+      });
+
+      test('une seule habitude à 100% retourne 1.0', () {
+        final now = DateTime.now();
+        final habit = Habit(name: 'Habit 1', type: HabitType.binary);
+        for (int i = 0; i < 7; i++) {
+          final date = now.subtract(Duration(days: i));
+          final dateKey = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+          habit.completions[dateKey] = true;
+        }
+        expect(HabitCalculationService.calculateAveragePerDay([habit]), equals(1.0));
+      });
+
+      test('trois habitudes avec taux différents retourne la moyenne correcte', () {
+        final now = DateTime.now();
+        final habit0 = Habit(name: 'H0', type: HabitType.binary);
+        final habit1 = Habit(name: 'H1', type: HabitType.binary);
+        final habit2 = Habit(name: 'H2', type: HabitType.binary);
+        for (int i = 0; i < 7; i++) {
+          final date = now.subtract(Duration(days: i));
+          final dateKey = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+          habit0.completions[dateKey] = false;
+          if (i < 4) habit1.completions[dateKey] = true;
+          habit2.completions[dateKey] = true;
+        }
+        final result = HabitCalculationService.calculateAveragePerDay([habit0, habit1, habit2]);
+        // (0 + 4/7 + 1) / 3 = (11/7) / 3 ≈ 0.524
+        expect(result, closeTo((4.0 / 7 + 1.0) / 3.0, 0.001));
+      });
+
+      test('completion entière négative ne gonfle pas le score', () {
+        // Les completions négatives ne sont pas un cas d'usage normal (une habitude
+        // non faite vaut 0, pas négatif), mais on vérifie que le cast int→double
+        // ne crashe pas et que -1 < targetValue 3.0 ne compte pas comme succès.
+        final now = DateTime.now();
+        final dateKey = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+        final habit = Habit(
+          name: 'Quantitative',
+          type: HabitType.quantitative,
+          targetValue: 3.0,
+          completions: {dateKey: -1},
+        );
+        final result = HabitCalculationService.calculateAveragePerDay([habit]);
+        expect(result, equals(0.0)); // -1 < 3.0 → aucun jour réussi → 0/7 = 0.0
       });
     });
 

@@ -1324,7 +1324,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String habitProgressSuccessfulDays(Object successful, Object total) {
-    return 'Días con éxito';
+    return '$successful/$total días con éxito';
   }
 
   @override

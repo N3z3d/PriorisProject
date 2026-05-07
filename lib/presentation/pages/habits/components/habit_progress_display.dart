@@ -21,9 +21,10 @@ class HabitProgressDisplay extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: _buildContainerDecoration(),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           _buildStatsHeader(progress, streak, l10n),
           const SizedBox(height: 12),
@@ -141,7 +142,7 @@ class HabitProgressDisplay extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          '$successfulDays/7 jours rÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©ussis',
+          l10n.habitProgressSuccessfulDays(successfulDays, 7),
           style: TextStyle(
             fontSize: 12,
             color: AppTheme.textTertiary,

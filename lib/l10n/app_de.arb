@@ -714,7 +714,13 @@
   "habitsCategoryDefault": "Allgemein",
   "habitProgressThisWeek": "Diese Woche",
   "habitProgressStreakDays": "{count, plural, one {{count} Tag Serie} other {{count} Tage Serie}}",
-  "habitProgressSuccessfulDays": "Erfolgreiche Tage",
+  "habitProgressSuccessfulDays": "{successful}/{total} erfolgreiche Tage",
+  "@habitProgressSuccessfulDays": {
+    "placeholders": {
+      "successful": {},
+      "total": {}
+    }
+  },
   "habitProgressCompletedToday": "Heute erledigt",
   "habitsErrorNetwork": "Netzwerkproblem",
   "habitsErrorTimeout": "Zeitüberschreitung",
