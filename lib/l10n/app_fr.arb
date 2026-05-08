@@ -1360,5 +1360,30 @@
       "current": { "type": "int" },
       "total": { "type": "int" }
     }
+  },
+  "ok": "OK",
+  "@ok": {
+    "description": "Label générique bouton de confirmation/fermeture"
+  },
+  "importDoNotClose": "Ne fermez pas l'application pendant l'import",
+  "@importDoNotClose": {
+    "description": "Avertissement affiché pendant un import massif en cours"
+  },
+  "importResumeBanner": "Import interrompu — {current}/{total} ajoutés · {remaining} en attente",
+  "@importResumeBanner": {
+    "description": "Bannière de reprise d'import sur la page liste",
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" },
+      "remaining": { "type": "int" }
+    }
+  },
+  "importResumeConfirm": "Reprendre",
+  "@importResumeConfirm": {
+    "description": "Bouton pour reprendre l'import interrompu"
+  },
+  "importResumeIgnore": "Ignorer",
+  "@importResumeIgnore": {
+    "description": "Bouton pour ignorer et effacer l'import interrompu"
   }
 }

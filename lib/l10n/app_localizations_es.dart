@@ -2004,4 +2004,22 @@ class AppLocalizationsEs extends AppLocalizations {
   String importInterruptedBanner(int current, int total) {
     return 'Importación interrumpida — $current/$total elementos añadidos';
   }
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get importDoNotClose =>
+      'No cierre la aplicación durante la importación';
+
+  @override
+  String importResumeBanner(int current, int total, int remaining) {
+    return 'Importación interrumpida — $current/$total añadidos · $remaining pendientes';
+  }
+
+  @override
+  String get importResumeConfirm => 'Reanudar';
+
+  @override
+  String get importResumeIgnore => 'Descartar';
 }

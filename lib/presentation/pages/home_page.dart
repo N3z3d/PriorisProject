@@ -36,7 +36,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   void _checkForInterruptedImport() {
     final interruptState =
-        ImportInterruptService.instance.consumeStartupInterrupt();
+        ImportInterruptService.instance.peekStartupInterrupt();
     if (interruptState == null) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -47,8 +47,9 @@ class _HomePageState extends ConsumerState<HomePage> {
             interruptState.current,
             interruptState.total,
           )),
-          duration: const Duration(seconds: 6),
+          duration: const Duration(days: 1),
           backgroundColor: AppTheme.warningColor,
+          action: SnackBarAction(label: l10n.ok, onPressed: () {}),
         ),
       );
     });

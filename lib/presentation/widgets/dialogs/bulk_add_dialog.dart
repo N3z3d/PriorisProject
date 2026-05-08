@@ -28,12 +28,18 @@ class BulkAddDialog extends StatefulWidget {
   final String title;
   final String hintText;
   final BulkAddOnSubmit onSubmit;
+  final String? listId;
+  final String? listName;
+  final List<String>? initialItems;
 
   const BulkAddDialog({
     super.key,
     this.title = '',
     this.hintText = '',
     required this.onSubmit,
+    this.listId,
+    this.listName,
+    this.initialItems,
   });
 
   factory BulkAddDialog.create({
@@ -68,8 +74,13 @@ class _BulkAddDialogState extends State<BulkAddDialog>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _controller = TextEditingController();
+    if (widget.initialItems != null && widget.initialItems!.isNotEmpty) {
+      _controller.text = widget.initialItems!.join('\n');
+      _currentMode = BulkAddMode.multiple;
+      _isValid = _controller.text.trim().isNotEmpty;
+    }
     _controller.addListener(_validateInput);
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 2, vsync: this, initialIndex: _currentMode.index);
     _tabController.addListener(() {
       setState(() {
         _currentMode = BulkAddMode.values[_tabController.index];
@@ -123,6 +134,11 @@ class _BulkAddDialogState extends State<BulkAddDialog>
       _totalCount = items.length;
       _submitError = null;
     });
+
+    if (widget.listId != null && widget.initialItems == null) {
+      await ImportInterruptService.instance.onImportStarted(
+          widget.listId!, widget.listName ?? '', items);
+    }
 
     try {
       final submitFuture = widget.onSubmit(items, (current, total) {
@@ -251,6 +267,16 @@ class _BulkAddDialogState extends State<BulkAddDialog>
               style: const TextStyle(
                 color: AppTheme.textSecondary,
                 fontSize: 14,
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Center(
+            child: Text(
+              l10n.importDoNotClose,
+              style: const TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 12,
               ),
             ),
           ),

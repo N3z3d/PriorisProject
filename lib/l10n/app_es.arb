@@ -1198,5 +1198,22 @@
       "current": { "type": "int" },
       "total": { "type": "int" }
     }
-  }
+  },
+  "ok": "OK",
+  "@ok": { "description": "Etiqueta genérica de botón de confirmación" },
+  "importDoNotClose": "No cierre la aplicación durante la importación",
+  "@importDoNotClose": { "description": "Advertencia mostrada durante una importación masiva" },
+  "importResumeBanner": "Importación interrumpida — {current}/{total} añadidos · {remaining} pendientes",
+  "@importResumeBanner": {
+    "description": "Banner de reanudación en la página de lista",
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" },
+      "remaining": { "type": "int" }
+    }
+  },
+  "importResumeConfirm": "Reanudar",
+  "@importResumeConfirm": { "description": "Botón para reanudar la importación interrumpida" },
+  "importResumeIgnore": "Descartar",
+  "@importResumeIgnore": { "description": "Botón para descartar la importación interrumpida" }
 }

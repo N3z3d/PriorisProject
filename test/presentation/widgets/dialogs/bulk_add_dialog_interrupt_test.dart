@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:prioris/infrastructure/services/import_interrupt_service.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/widgets/dialogs/bulk_add_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -172,6 +173,66 @@ void main() {
 
       completer.complete();
       await tester.pumpAndSettle();
+    });
+
+    testWidgets('avertissement importDoNotClose visible pendant _isSubmitting',
+        (tester) async {
+      final completer = Completer<void>();
+      final l10n = lookupAppLocalizations(const Locale('fr'));
+
+      await tester.pumpWidget(localizedApp(
+        BulkAddDialog(
+          onSubmit: (items, onProgress) => completer.future,
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), 'Item');
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Ajouter'));
+      await tester.pump();
+
+      expect(find.text(l10n.importDoNotClose), findsOneWidget);
+
+      completer.complete();
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10n.importDoNotClose), findsNothing);
+    });
+
+    // --- Nouveaux tests story 8.8 ---
+
+    testWidgets('initialItems pré-remplit le champ texte en mode multiple',
+        (tester) async {
+      await tester.pumpWidget(localizedApp(
+        BulkAddDialog(
+          initialItems: const ['Item A', 'Item B', 'Item C'],
+          onSubmit: (items, onProgress) async {},
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      final textField = find.byType(TextField);
+      expect(textField, findsOneWidget);
+      final controller =
+          (tester.widget<TextField>(textField)).controller!;
+      expect(controller.text, equals('Item A\nItem B\nItem C'));
+    });
+
+    testWidgets(
+        'initialItems null : champ vide, mode single par défaut',
+        (tester) async {
+      await tester.pumpWidget(localizedApp(
+        BulkAddDialog(
+          onSubmit: (items, onProgress) async {},
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      final textField = find.byType(TextField);
+      final controller =
+          (tester.widget<TextField>(textField)).controller!;
+      expect(controller.text, isEmpty);
     });
   });
 }

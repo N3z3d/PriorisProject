@@ -1227,5 +1227,22 @@
       "current": { "type": "int" },
       "total": { "type": "int" }
     }
-  }
+  },
+  "ok": "OK",
+  "@ok": { "description": "Generische Schaltflächenbeschriftung" },
+  "importDoNotClose": "Schließen Sie die App nicht während des Imports",
+  "@importDoNotClose": { "description": "Warnung während des laufenden Imports" },
+  "importResumeBanner": "Import unterbrochen — {current}/{total} hinzugefügt · {remaining} ausstehend",
+  "@importResumeBanner": {
+    "description": "Wiederaufnahme-Banner auf der Listenseite",
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" },
+      "remaining": { "type": "int" }
+    }
+  },
+  "importResumeConfirm": "Fortsetzen",
+  "@importResumeConfirm": { "description": "Schaltfläche zum Fortsetzen des unterbrochenen Imports" },
+  "importResumeIgnore": "Verwerfen",
+  "@importResumeIgnore": { "description": "Schaltfläche zum Verwerfen des unterbrochenen Imports" }
 }

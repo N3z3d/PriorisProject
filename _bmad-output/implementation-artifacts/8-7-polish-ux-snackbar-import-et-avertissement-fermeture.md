@@ -1,6 +1,6 @@
 # Story 8.7 : Polish UX — snackbar import dismissible et avertissement pendant l'import
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -19,27 +19,27 @@ afin de ne pas manquer l'information et de comprendre le risque de quitter en co
 
 ## Tasks / Subtasks
 
-- [ ] **T1 — Modifier `HomePage._checkForInterruptedImport`** (AC: 1)
-  - [ ] T1.1 — Supprimer `duration: const Duration(seconds: 6)` du `SnackBar` (la durée par défaut Flutter est suffisante, mais on veut dismiss explicite)
-  - [ ] T1.2 — Ajouter `duration: const Duration(days: 1)` pour forcer un affichage "permanent" jusqu'au dismiss (pattern Flutter recommandé pour snackbars actionnables)
-  - [ ] T1.3 — Ajouter `action: SnackBarAction(label: l10n.ok, onPressed: () {})` au `SnackBar`
+- [x] **T1 — Modifier `HomePage._checkForInterruptedImport`** (AC: 1)
+  - [x] T1.1 — Supprimer `duration: const Duration(seconds: 6)` du `SnackBar` (la durée par défaut Flutter est suffisante, mais on veut dismiss explicite)
+  - [x] T1.2 — Ajouter `duration: const Duration(days: 1)` pour forcer un affichage "permanent" jusqu'au dismiss (pattern Flutter recommandé pour snackbars actionnables)
+  - [x] T1.3 — Ajouter `action: SnackBarAction(label: l10n.ok, onPressed: () {})` au `SnackBar`
 
-- [ ] **T2 — Ajouter avertissement dans `BulkAddDialog`** (AC: 2)
-  - [ ] T2.1 — Dans `_buildProgressSection`, ajouter sous le compteur `_processedCount / _totalCount` un `Text` avec `l10n.importDoNotClose`, style `textSecondary`, taille 12, centré
-  - [ ] T2.2 — L'avertissement ne doit s'afficher que quand `_isSubmitting = true` (il est déjà dans `_buildProgressSection` qui est conditionnel)
+- [x] **T2 — Ajouter avertissement dans `BulkAddDialog`** (AC: 2)
+  - [x] T2.1 — Dans `_buildProgressSection`, ajouter sous le compteur `_processedCount / _totalCount` un `Text` avec `l10n.importDoNotClose`, style `textSecondary`, taille 12, centré
+  - [x] T2.2 — L'avertissement ne doit s'afficher que quand `_isSubmitting = true` (il est déjà dans `_buildProgressSection` qui est conditionnel)
 
-- [ ] **T3 — Ajouter clés i18n** (AC: 3)
-  - [ ] T3.1 — Ajouter `ok` dans les 4 ARBs (clé générique réutilisable)
-  - [ ] T3.2 — Ajouter `importDoNotClose` dans les 4 ARBs
-  - [ ] T3.3 — Régénérer : `puro flutter gen-l10n`
+- [x] **T3 — Ajouter clés i18n** (AC: 3)
+  - [x] T3.1 — Ajouter `ok` dans les 4 ARBs (clé générique réutilisable)
+  - [x] T3.2 — Ajouter `importDoNotClose` dans les 4 ARBs
+  - [x] T3.3 — Régénérer : `puro flutter gen-l10n`
 
-- [ ] **T4 — Tests** (AC: 4)
-  - [ ] T4.1 — Dans `test/presentation/pages/home_page_test.dart` : vérifier que le SnackBar contient un `SnackBarAction` avec label "OK"
-  - [ ] T4.2 — Dans `test/presentation/widgets/dialogs/bulk_add_dialog_interrupt_test.dart` : vérifier que le texte `importDoNotClose` est visible pendant `_isSubmitting`
+- [x] **T4 — Tests** (AC: 4)
+  - [x] T4.1 — Dans `test/presentation/pages/home_page_test.dart` : vérifier que le SnackBar contient un `SnackBarAction` avec label "OK"
+  - [x] T4.2 — Dans `test/presentation/widgets/dialogs/bulk_add_dialog_interrupt_test.dart` : vérifier que le texte `importDoNotClose` est visible pendant `_isSubmitting`
 
-- [ ] **T5 — Validation finale** (AC: 4)
-  - [ ] T5.1 — `puro flutter analyze --no-pub` → 0 erreur dans les fichiers modifiés
-  - [ ] T5.2 — `puro flutter test --exclude-tags integration --no-pub` → 0 régression
+- [x] **T5 — Validation finale** (AC: 4)
+  - [x] T5.1 — `puro flutter analyze --no-pub` → 0 erreur dans les fichiers modifiés
+  - [x] T5.2 — `puro flutter test --exclude-tags integration --no-pub` → 0 régression
 
 ---
 
@@ -169,4 +169,32 @@ claude-sonnet-4-6
 
 ### Completion Notes List
 
+- SnackBar import interrompu : `duration` changée de 6 s → 1 jour, `SnackBarAction(label: l10n.ok)` ajoutée (dismiss manuel).
+- BulkAddDialog `_buildProgressSection` : `Text(l10n.importDoNotClose)` ajouté sous le compteur, `textSecondary` taille 12, centré.
+- 4 ARBs (fr/en/de/es) mis à jour avec clés `ok` et `importDoNotClose`. `gen-l10n` régénéré.
+- 2 nouveaux tests : `SnackBarAction` "OK" dans `home_page_test.dart` ; `importDoNotClose` visible pendant `_isSubmitting` dans `bulk_add_dialog_interrupt_test.dart`.
+- Suite complète : 1974 tests, 0 régression. `flutter analyze` : 0 erreur dans les fichiers modifiés.
+
+### Review Findings
+
+- [x] [Review][Patch] Assertion manquante : `importDoNotClose` non vérifié absent après fin du submit [test/presentation/widgets/dialogs/bulk_add_dialog_interrupt_test.dart:197] — **corrigé** : `expect(find.text(l10n.importDoNotClose), findsNothing)` ajouté après `pumpAndSettle()`
+- [x] [Review][Defer] Multiple SnackBars en file derrière `duration: days(1)` — deferred, pre-existing
+- [x] [Review][Defer] Warning `importDoNotClose` figé si widget unmounted pendant debounce keep-open — deferred, pre-existing
+- [x] [Review][Defer] Race `_totalCount == 0` + keep-open mode — deferred, pre-existing
+- [x] [Review][Defer] `AppLocalizations.of(context)!` null-deref sans delegate — deferred, pre-existing
+
 ### File List
+
+- `lib/presentation/pages/home_page.dart`
+- `lib/presentation/widgets/dialogs/bulk_add_dialog.dart`
+- `lib/l10n/app_fr.arb`
+- `lib/l10n/app_en.arb`
+- `lib/l10n/app_de.arb`
+- `lib/l10n/app_es.arb`
+- `lib/l10n/app_localizations.dart` (généré)
+- `lib/l10n/app_localizations_fr.dart` (généré)
+- `lib/l10n/app_localizations_en.dart` (généré)
+- `lib/l10n/app_localizations_de.dart` (généré)
+- `lib/l10n/app_localizations_es.dart` (généré)
+- `test/presentation/pages/home_page_test.dart`
+- `test/presentation/widgets/dialogs/bulk_add_dialog_interrupt_test.dart`

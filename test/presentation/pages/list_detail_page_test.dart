@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:prioris/data/providers/lists_controller_provider.dart';
+import 'package:prioris/infrastructure/services/import_interrupt_service.dart';
 import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/domain/core/interfaces/logger_interface.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
@@ -88,6 +90,15 @@ void main() {
 
   tearDownAll(() {
     ListContextualFab.animationsForcedDisabled = false;
+  });
+
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    await ImportInterruptService.instance.onComplete();
+  });
+
+  tearDown(() async {
+    await ImportInterruptService.instance.onComplete();
   });
 
   group('ListDetailPage', () {
@@ -205,6 +216,57 @@ void main() {
       );
       final IconButton sortIcon = tester.widget(sortIconFinder);
       expect(sortIcon.onPressed, isNotNull);
+    });
+
+    testWidgets(
+        'affiche la bannière de reprise si import interrompu pour cette liste',
+        (WidgetTester tester) async {
+      const locale = Locale('fr');
+      final l10n = lookupAppLocalizations(locale);
+
+      // Simule un import interrompu à current=2 sur 5 items pour testList
+      SharedPreferences.setMockInitialValues({
+        'import_interrupt_current_v1': 2,
+        'import_interrupt_total_v1': 5,
+        'import_interrupt_list_id_v1': 'test_list',
+        'import_interrupt_list_name_v1': 'Test List',
+        'import_interrupt_pending_items_v1': '["A","B","C","D","E"]',
+      });
+      await ImportInterruptService.instance.checkAndLoadPersistedState();
+
+      await _pumpListDetailPage(tester, list: testList);
+      // Premier pump : widget construit + addPostFrameCallback déclenche _checkForPendingImport
+      await tester.pump();
+      // Deuxième pump : inner addPostFrameCallback affiche le SnackBar
+      await tester.pump();
+
+      expect(
+        find.text(l10n.importResumeBanner(2, 5, 3)),
+        findsOneWidget,
+      );
+      expect(
+        find.widgetWithText(SnackBarAction, l10n.importResumeConfirm),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets(
+        'n\'affiche pas la bannière si import interrompu pour une autre liste',
+        (WidgetTester tester) async {
+      SharedPreferences.setMockInitialValues({
+        'import_interrupt_current_v1': 2,
+        'import_interrupt_total_v1': 5,
+        'import_interrupt_list_id_v1': 'autre-liste',
+        'import_interrupt_list_name_v1': 'Autre liste',
+        'import_interrupt_pending_items_v1': '["A","B","C","D","E"]',
+      });
+      await ImportInterruptService.instance.checkAndLoadPersistedState();
+
+      await _pumpListDetailPage(tester, list: testList);
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.byType(SnackBar), findsNothing);
     });
   });
 }

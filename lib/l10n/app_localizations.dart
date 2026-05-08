@@ -3545,6 +3545,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Import interrupted — {current}/{total} items added'**
   String importInterruptedBanner(int current, int total);
+
+  /// Generic confirmation/dismiss button label
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
+
+  /// Warning shown during an ongoing bulk import
+  ///
+  /// In en, this message translates to:
+  /// **'Do not close the application during import'**
+  String get importDoNotClose;
+
+  /// Resume banner on list detail page
+  ///
+  /// In en, this message translates to:
+  /// **'Import interrupted — {current}/{total} added · {remaining} pending'**
+  String importResumeBanner(int current, int total, int remaining);
+
+  /// Button to resume interrupted import
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get importResumeConfirm;
+
+  /// Button to dismiss and clear interrupted import
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get importResumeIgnore;
 }
 
 class _AppLocalizationsDelegate

@@ -2342,5 +2342,22 @@
       "current": { "type": "int" },
       "total": { "type": "int" }
     }
-  }
+  },
+  "ok": "OK",
+  "@ok": { "description": "Generic confirmation/dismiss button label" },
+  "importDoNotClose": "Do not close the application during import",
+  "@importDoNotClose": { "description": "Warning shown during an ongoing bulk import" },
+  "importResumeBanner": "Import interrupted — {current}/{total} added · {remaining} pending",
+  "@importResumeBanner": {
+    "description": "Resume banner on list detail page",
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" },
+      "remaining": { "type": "int" }
+    }
+  },
+  "importResumeConfirm": "Resume",
+  "@importResumeConfirm": { "description": "Button to resume interrupted import" },
+  "importResumeIgnore": "Dismiss",
+  "@importResumeIgnore": { "description": "Button to dismiss and clear interrupted import" }
 }

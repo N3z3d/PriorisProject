@@ -115,6 +115,24 @@ void main() {
 
       expect(find.byType(SnackBar), findsNothing);
     });
+
+    testWidgets('SnackBar contient un bouton OK (SnackBarAction)',
+        (tester) async {
+      const locale = Locale('fr');
+
+      SharedPreferences.setMockInitialValues({
+        'import_interrupt_current_v1': 7,
+        'import_interrupt_total_v1': 20,
+      });
+      await ImportInterruptService.instance.checkAndLoadPersistedState();
+
+      await _pumpHomePage(tester, locale: locale);
+
+      expect(
+        find.widgetWithText(SnackBarAction, _l10n(locale).ok),
+        findsOneWidget,
+      );
+    });
   });
 }
 

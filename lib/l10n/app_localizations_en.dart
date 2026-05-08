@@ -2028,4 +2028,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String importInterruptedBanner(int current, int total) {
     return 'Import interrupted — $current/$total items added';
   }
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get importDoNotClose => 'Do not close the application during import';
+
+  @override
+  String importResumeBanner(int current, int total, int remaining) {
+    return 'Import interrupted — $current/$total added · $remaining pending';
+  }
+
+  @override
+  String get importResumeConfirm => 'Resume';
+
+  @override
+  String get importResumeIgnore => 'Dismiss';
 }

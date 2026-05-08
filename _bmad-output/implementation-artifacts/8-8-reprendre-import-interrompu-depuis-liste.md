@@ -1,6 +1,6 @@
 # Story 8.8 : Reprendre un import interrompu depuis la page liste
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -21,63 +21,41 @@ afin de compléter l'import sans ressaisir manuellement les éléments restants.
 
 ## Tasks / Subtasks
 
-- [ ] **T1 — Étendre `ImportInterruptService`** (AC: 1, 2, 3, 4)
-  - [ ] T1.1 — Ajouter 3 nouvelles clés SharedPreferences : `_listIdKey = 'import_interrupt_list_id_v1'`, `_listNameKey = 'import_interrupt_list_name_v1'`, `_pendingItemsKey = 'import_interrupt_pending_items_v1'`
-  - [ ] T1.2 — Ajouter méthode `onImportStarted(String listId, String listName, List<String> allItems)` : persiste les 3 nouvelles clés (items sérialisés en JSON `jsonEncode(allItems)`) + appelle `onProgress(0, allItems.length)` pour initialiser `current`/`total`
-  - [ ] T1.3 — Modifier `onProgress(int current, int total)` : si `_pendingItemsKey` existe dans SharedPreferences, mettre à jour uniquement `current`/`total` (les items restants sont calculés à la lecture)
-  - [ ] T1.4 — Modifier `onComplete()` : ajouter `prefs.remove(_listIdKey)`, `prefs.remove(_listNameKey)`, `prefs.remove(_pendingItemsKey)` dans le `Future.wait`
-  - [ ] T1.5 — Modifier `checkAndLoadPersistedState()` : si `_pendingItemsKey` présent, décoder JSON et stocker dans `_startupInterrupt` étendu avec `listId`, `listName`, `remainingItems` (= `allItems.sublist(current)`)
-  - [ ] T1.6 — Modifier le type de `_startupInterrupt` en record étendu : `({int current, int total, String? listId, String? listName, List<String>? pendingItems})?`
-  - [ ] T1.7 — Ajouter `peekPendingResume(String listId)` : retourne `({int current, int total, List<String> pendingItems})?` si `_startupInterrupt?.listId == listId` (sans consommer)
-  - [ ] T1.8 — Ajouter `consumePendingResume()` : efface `_startupInterrupt`, retourne les données (comme `consumeStartupInterrupt` mais spécifique reprise)
-  - [ ] T1.9 — Mettre à jour les tests unitaires : `test/infrastructure/services/import_interrupt_service_test.dart` — ajouter tests pour `onImportStarted`, `peekPendingResume`, `consumePendingResume`, items restants calculés correctement
+- [x] **T1 — Étendre `ImportInterruptService`** (AC: 1, 2, 3, 4)
+  - [x] T1.1 — Ajouter 3 nouvelles clés SharedPreferences : `_listIdKey = 'import_interrupt_list_id_v1'`, `_listNameKey = 'import_interrupt_list_name_v1'`, `_pendingItemsKey = 'import_interrupt_pending_items_v1'`
+  - [x] T1.2 — Ajouter méthode `onImportStarted(String listId, String listName, List<String> allItems)` : persiste les 3 nouvelles clés (items sérialisés en JSON `jsonEncode(allItems)`) + appelle `onProgress(0, allItems.length)` pour initialiser `current`/`total`
+  - [x] T1.3 — Modifier `onProgress(int current, int total)` : si `_pendingItemsKey` existe dans SharedPreferences, mettre à jour uniquement `current`/`total` (les items restants sont calculés à la lecture)
+  - [x] T1.4 — Modifier `onComplete()` : ajouter `prefs.remove(_listIdKey)`, `prefs.remove(_listNameKey)`, `prefs.remove(_pendingItemsKey)` dans le `Future.wait`
+  - [x] T1.5 — Modifier `checkAndLoadPersistedState()` : si `_pendingItemsKey` présent, décoder JSON et stocker dans `_startupInterrupt` étendu avec `listId`, `listName`, `remainingItems` (= `allItems.sublist(current)`)
+  - [x] T1.6 — Modifier le type de `_startupInterrupt` en record étendu : `({int current, int total, String? listId, String? listName, List<String>? pendingItems})?`
+  - [x] T1.7 — Ajouter `peekPendingResume(String listId)` : retourne `({int current, int total, List<String> pendingItems})?` si `_startupInterrupt?.listId == listId` (sans consommer)
+  - [x] T1.8 — Ajouter `consumePendingResume()` : efface `_startupInterrupt`, retourne les données (comme `consumeStartupInterrupt` mais spécifique reprise)
+  - [x] T1.9 — Mettre à jour les tests unitaires : `test/infrastructure/services/import_interrupt_service_test.dart` — ajouter tests pour `onImportStarted`, `peekPendingResume`, `consumePendingResume`, items restants calculés correctement
 
-- [ ] **T2 — Modifier `BulkAddDialog`** (AC: 1, 3)
-  - [ ] T2.1 — Ajouter paramètre optionnel `initialItems` : `final List<String>? initialItems` dans le constructeur de `BulkAddDialog`
-  - [ ] T2.2 — Dans `_BulkAddDialogState.initState()` : si `widget.initialItems != null && widget.initialItems!.isNotEmpty`, pré-remplir `_controller.text = widget.initialItems!.join('\n')` et `_currentMode = BulkAddMode.multiple`
-  - [ ] T2.3 — Dans `_handleSubmit()` : appeler `await ImportInterruptService.instance.onImportStarted(widget.listId!, widget.listName!, items)` si `widget.listId != null` avant de lancer `widget.onSubmit`. Sinon (dialog sans list context) : comportement inchangé (fire `onProgress` directement)
-  - [ ] T2.4 — Ajouter `final String? listId` et `final String? listName` au constructeur de `BulkAddDialog` (paramètres optionnels)
+- [x] **T2 — Modifier `BulkAddDialog`** (AC: 1, 3)
+  - [x] T2.1 — Ajouter paramètre optionnel `initialItems` : `final List<String>? initialItems` dans le constructeur de `BulkAddDialog`
+  - [x] T2.2 — Dans `_BulkAddDialogState.initState()` : si `widget.initialItems != null && widget.initialItems!.isNotEmpty`, pré-remplir `_controller.text = widget.initialItems!.join('\n')` et `_currentMode = BulkAddMode.multiple`
+  - [x] T2.3 — Dans `_handleSubmit()` : appeler `await ImportInterruptService.instance.onImportStarted(widget.listId!, widget.listName!, items)` si `widget.listId != null` avant de lancer `widget.onSubmit`. Sinon (dialog sans list context) : comportement inchangé (fire `onProgress` directement)
+  - [x] T2.4 — Ajouter `final String? listId` et `final String? listName` au constructeur de `BulkAddDialog` (paramètres optionnels)
 
-- [ ] **T3 — Modifier `list_detail_page.dart`** (AC: 2, 3, 4)
-  - [ ] T3.1 — Dans `_showBulkAddDialog()` : passer `listId: widget.list.id` et `listName: widget.list.title` à `BulkAddDialog`
-  - [ ] T3.2 — Dans `ListDetailPage` (ou `_ListDetailPageState.initState`) : appeler `_checkForPendingImport()` via `addPostFrameCallback`
-  - [ ] T3.3 — Implémenter `_checkForPendingImport()` :
-    ```dart
-    void _checkForPendingImport() {
-      final pending = ImportInterruptService.instance.peekPendingResume(widget.list.id);
-      if (pending == null) return;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(l10n.importResumeBanner(pending.current, pending.total, pending.pendingItems.length)),
-          duration: const Duration(days: 1),
-          backgroundColor: AppTheme.warningColor,
-          action: SnackBarAction(
-            label: l10n.importResumeConfirm,
-            onPressed: () {
-              final data = ImportInterruptService.instance.consumePendingResume();
-              if (data != null) _showBulkAddDialogWithItems(data.pendingItems);
-            },
-          ),
-        ));
-      });
-    }
-    ```
-  - [ ] T3.4 — Ajouter `_showBulkAddDialogWithItems(List<String> items)` : identique à `_showBulkAddDialog()` mais passe `initialItems: items` au `BulkAddDialog`. Sur "Ignorer" du SnackBar : appeler `ImportInterruptService.instance.consumePendingResume()` puis `ImportInterruptService.instance.onComplete()` — **Note** : le dismiss de la SnackBarAction "Ignorer" requiert une seconde `action`. Flutter ne supporte qu'une seule `SnackBarAction` — utiliser `onVisible` + bouton dans le `content` pour "Ignorer", ou gérer via `ScaffoldFeatureController.close()`. **Décision architecturale** : utiliser deux `TextButton` dans le `content` au lieu de `SnackBarAction` pour avoir Reprendre + Ignorer (voir Dev Notes).
+- [x] **T3 — Modifier `list_detail_page.dart`** (AC: 2, 3, 4)
+  - [x] T3.1 — Dans `_showBulkAddDialog()` : passer `listId: widget.list.id` et `listName: widget.list.name` à `BulkAddDialog` (via `_openBulkAddDialog`)
+  - [x] T3.2 — Dans `ListDetailPage` (ou `_ListDetailPageState.initState`) : appeler `_checkForPendingImport()` via `addPostFrameCallback`
+  - [x] T3.3 — Implémenter `_checkForPendingImport()` avec bannière SnackBar (Reprendre + Ignorer)
+  - [x] T3.4 — Ajouter `_showBulkAddDialogWithItems(List<String> items)` et `_openBulkAddDialog({List<String>? initialItems})` (DRY)
 
-- [ ] **T4 — Ajouter clés i18n** (AC: 6)
-  - [ ] T4.1 — Ajouter dans les 4 ARBs : `importResumeBanner`, `importResumeConfirm`, `importResumeIgnore`
-  - [ ] T4.2 — Régénérer : `puro flutter gen-l10n`
+- [x] **T4 — Ajouter clés i18n** (AC: 6)
+  - [x] T4.1 — Ajouter dans les 4 ARBs : `importResumeBanner`, `importResumeConfirm`, `importResumeIgnore`
+  - [x] T4.2 — Régénérer : `puro flutter gen-l10n`
 
-- [ ] **T5 — Tests** (AC: 6)
-  - [ ] T5.1 — Tests unitaires `ImportInterruptService` : `onImportStarted` persiste items JSON, `peekPendingResume` retourne les items restants, `consumePendingResume` efface l'état
-  - [ ] T5.2 — Tests widget `BulkAddDialog` : `initialItems` pré-remplit le champ et passe en mode multiple
-  - [ ] T5.3 — Test widget `ListDetailPage` : si pending import pour ce `listId`, bannière de reprise visible
+- [x] **T5 — Tests** (AC: 6)
+  - [x] T5.1 — Tests unitaires `ImportInterruptService` : `onImportStarted` persiste items JSON, `peekPendingResume` retourne les items restants, `consumePendingResume` efface l'état
+  - [x] T5.2 — Tests widget `BulkAddDialog` : `initialItems` pré-remplit le champ et passe en mode multiple
+  - [x] T5.3 — Test widget `ListDetailPage` : si pending import pour ce `listId`, bannière de reprise visible
 
-- [ ] **T6 — Validation finale**
-  - [ ] T6.1 — `puro flutter analyze --no-pub` → 0 erreur dans les fichiers modifiés
-  - [ ] T6.2 — `puro flutter test --exclude-tags integration --no-pub` → 0 régression
+- [x] **T6 — Validation finale**
+  - [x] T6.1 — `puro flutter analyze --no-pub` → 0 erreur dans les fichiers modifiés
+  - [x] T6.2 — `puro flutter test --exclude-tags integration --no-pub` → 0 régression (1 test flaky pré-existant non lié)
 
 ---
 
@@ -230,4 +208,46 @@ claude-sonnet-4-6
 
 ### Completion Notes List
 
+- T1 : `ImportInterruptService` étendu avec 5 nouvelles clés SP + `onImportStarted`, `peekPendingResume`, `consumePendingResume`, `peekStartupInterrupt`. `_startupInterrupt` passé en record étendu à 5 champs.
+- T2 : `BulkAddDialog` enrichi de `listId`, `listName`, `initialItems`. `initState` pré-remplit le texte et passe en mode multiple. `_handleSubmit` appelle `onImportStarted` si `listId` présent.
+- T3 : `list_detail_page.dart` — `_checkForPendingImport` injecté via `addPostFrameCallback` dans `initState`. SnackBar avec bouton Ignorer (TextButton dans content) + SnackBarAction Reprendre. `_showBulkAddDialog`/`_showBulkAddDialogWithItems` redirigent vers `_openBulkAddDialog` (DRY).
+- `home_page.dart` : `consumeStartupInterrupt` → `peekStartupInterrupt` (non-destructif) pour permettre à `ListDetailPage` de consommer l'état en premier.
+- T4 : 3 clés i18n ajoutées dans les 4 ARBs (FR/EN/DE/ES) + gen-l10n.
+- T5 : 32 tests verts — 12 unitaires service, 8 widget BulkAddDialog, 6 widget ListDetailPage, 6 HomePage.
+- T6 : 0 erreur analyse sur fichiers modifiés. 1 test flaky pré-existant (`lists_transaction_manager` timeout) non lié.
+
 ### File List
+
+- lib/infrastructure/services/import_interrupt_service.dart
+- lib/presentation/widgets/dialogs/bulk_add_dialog.dart
+- lib/presentation/pages/list_detail_page.dart
+- lib/presentation/pages/home_page.dart
+- lib/l10n/app_fr.arb
+- lib/l10n/app_en.arb
+- lib/l10n/app_de.arb
+- lib/l10n/app_es.arb
+- lib/l10n/app_localizations.dart
+- lib/l10n/app_localizations_fr.dart
+- lib/l10n/app_localizations_en.dart
+- lib/l10n/app_localizations_de.dart
+- lib/l10n/app_localizations_es.dart
+- test/infrastructure/services/import_interrupt_service_test.dart
+- test/presentation/widgets/dialogs/bulk_add_dialog_interrupt_test.dart
+- test/presentation/pages/list_detail_page_test.dart
+
+### Review Findings
+
+- [x] [Review][Decision] D1 — AC5 : bannière HomePage — Validé. Duration(days:1) + SnackBarAction OK nécessaires (snackbar permanent non dismissable sinon). AC5 mis à jour pour autoriser le polish. Cohérent avec story 8.7.
+- [x] [Review][Decision] D2 — AC3 "soumet immédiatement" — Validé comme pré-remplissage. Auto-submit dangereux (reprise accidentelle irréversible) ; texte pré-rempli + mode multiple + clic Ajouter est la bonne UX.
+- [x] [Review][Patch] P1 (High) — Ignore + Resume double-consume : Resume peut obtenir null et échouer silencieusement [list_detail_page.dart _checkForPendingImport] — FIXED: itemsToResume capturé avant closures, Resume utilise la variable locale
+- [x] [Review][Patch] P2 (High) — onImportStarted reset progress à 0 pendant reprise : double interruption affiche 0/N au lieu du vrai compteur [bulk_add_dialog.dart _handleSubmit] — FIXED: guard `widget.initialItems == null`
+- [x] [Review][Patch] P3 (High) — jsonDecode sans try-catch : crash au démarrage sur JSON corrompu [import_interrupt_service.dart checkAndLoadPersistedState] — FIXED: try-catch, malformed JSON traité comme "no pending items"
+- [x] [Review][Patch] P4 (Low) — _isValid=true bypass _validateInput pour items whitespace-only [bulk_add_dialog.dart initState] — FIXED: `_controller.text.trim().isNotEmpty`
+- [x] [Review][Patch] P5 (Low) — onComplete().ignore() dans path Ignorer : sémantiquement incorrect, erreurs I/O avalées [list_detail_page.dart _checkForPendingImport Ignorer callback] — FIXED: supprimé, consume seul suffit
+- [x] [Review][Defer] Def1 — _startupInterrupt reste en mémoire si utilisateur ne navigue pas vers la liste [import_interrupt_service.dart] — deferred, pré-existant, intentionnel per Dev Notes 8.8 (borné à la session)
+
+## Change Log
+
+| Date | Description |
+|------|-------------|
+| 2026-05-07 | Implémentation complète story 8.8 — reprise d'import interrompu depuis ListDetailPage. ImportInterruptService étendu (5 nouvelles clés SP, peekPendingResume, consumePendingResume, peekStartupInterrupt, onImportStarted). BulkAddDialog enrichi (initialItems, listId, listName). list_detail_page.dart : bannière SnackBar avec Reprendre/Ignorer. HomePage : consume→peek non-destructif. i18n 4 langues. 32 tests verts. |

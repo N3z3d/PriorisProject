@@ -2,6 +2,13 @@
 
 Aucun item différé au 2026-04-22.
 
+## Deferred from: code review of 8-7-polish-ux-snackbar-import-et-avertissement-fermeture (2026-05-07)
+
+- **Multiple SnackBars en file derrière `duration: days(1)`** [home_page.dart] : si un autre snackbar est déjà affiché, la bannière d'import interrompu est bloquée derrière. Pas de `clearSnackBars()` ni de mécanisme de priorité. Pré-existant, non introduit par 8.7.
+- **Warning `importDoNotClose` figé si widget unmounted pendant debounce** [bulk_add_dialog.dart] : en mode keep-open, si le widget est démontré pendant les 300 ms de debounce après `await Future.wait`, le `if (mounted)` saute le `setState(_isSubmitting = false)` → avertissement visible indéfiniment. Pré-existant dans l'architecture keep-open.
+- **Race `_totalCount == 0` + keep-open mode** [bulk_add_dialog.dart] : si `_totalCount` est 0 lors d'une re-soumission en keep-open et `_isSubmitting` passe à `true`, la section de progression et l'avertissement sont affichés dans un état indéterminé. Très étroit, pré-existant.
+- **`AppLocalizations.of(context)!` null-deref sans delegate** [home_page.dart dans `addPostFrameCallback`] : si `HomePage` est pompée sans `localizationsDelegates`, le `!` provoque un crash. Pattern global pré-existant dans le projet (voir defer 7-6).
+
 ## Deferred from: code review of 7-0-dette-technique-differee-epic-6 (2026-04-22)
 
 - **Race stabilizer async / LoginPage mount** : `stabilizeFromCurrentOrIncomingSessionIfNeeded` est async (~5s timeout) ; si le callback se termine après que `LoginPage.initState()` ait lu le provider, le flag `_callbackWithoutSession` reste non consommé. Inhérent au design one-shot — acceptable pour MVP pilote.
@@ -108,6 +115,10 @@ Aucun item différé au 2026-04-22.
 - **Présentation — silent null cast `as double?`** [habit_card.dart:91, habit_progress_bar.dart:88-104, habit_record_dialog.dart:34] : `todayValue as double? ?? 0.0` retourne silencieusement `null` (cast rate) quand la valeur est un `int` Supabase — la barre de progression et le champ pré-rempli affichent toujours 0. Pré-existant.
 - **Hardcoded `7` en double occurrence dans `habit_progress_display.dart`** [ligne 17 `getSuccessRate(days:7)` et ligne 145 `habitProgressSuccessfulDays(successfulDays, 7)`] : les deux occurrences ne partagent pas une constante — si la fenêtre change d'un côté, l'autre reste à 7. Pré-existant.
 - **ARB `@habitProgressSuccessfulDays` placeholders sans `"type": "int"`** [lib/l10n/app_de.arb, app_es.arb] : déclarés comme `{}` (type implicite `Object`) — cohérent avec le reste du projet mais empêche la validation de type ICU. Pré-existant.
+
+## Deferred from: code review of 8-8-reprendre-import-interrompu-depuis-liste (2026-05-07)
+
+- **`_startupInterrupt` reste en mémoire si utilisateur ne navigue pas vers la liste** [import_interrupt_service.dart] : intentionnel per Dev Notes 8.8 — `peekStartupInterrupt()` est non-destructif, `_startupInterrupt` n'est effacé que par `consumePendingResume()`. Si l'utilisateur ne visite jamais la liste dans la session, la mémoire reste occupée jusqu'à la fermeture de l'app. Borné à la session (SharedPreferences déjà nettoyées au démarrage). Acceptable per design.
 
 ## Deferred from: code review of 8-3-detecter-quit-refresh-pendant-import-massif (2026-05-06)
 

@@ -16,6 +16,7 @@ import 'package:prioris/presentation/pages/lists/widgets/list_search_bar.dart';
 import 'package:prioris/presentation/pages/lists/widgets/list_sort_toolbar.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/domain/services/duplicate_detection_service.dart';
+import 'package:prioris/infrastructure/services/import_interrupt_service.dart';
 import 'package:prioris/presentation/pages/lists/services/list_detail_item_service.dart';
 import 'package:prioris/presentation/widgets/dialogs/bulk_add_dialog.dart';
 import 'package:prioris/presentation/widgets/dialogs/duplicate_warning_dialog.dart';
@@ -51,6 +52,7 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
     super.initState();
     _baseRandomSeed = _normalizeSeed(widget.list.id.hashCode);
     _randomSeed = _baseRandomSeed;
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkForPendingImport());
   }
 
   @override
@@ -219,8 +221,49 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
     });
   }
 
-  /// Affiche le dialogue d'ajout en lot avec feedback de progression et détection de doublons
-  Future<void> _showBulkAddDialog() async {
+  void _checkForPendingImport() {
+    final pending = ImportInterruptService.instance.peekPendingResume(widget.list.id);
+    if (pending == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      final itemsToResume = pending.pendingItems;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Row(
+          children: [
+            Expanded(
+              child: Text(l10n.importResumeBanner(
+                  pending.current, pending.total, itemsToResume.length)),
+            ),
+            TextButton(
+              onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ImportInterruptService.instance.consumePendingResume();
+              },
+              child: Text(l10n.importResumeIgnore,
+                  style: const TextStyle(color: Colors.white70)),
+            ),
+          ],
+        ),
+        action: SnackBarAction(
+          label: l10n.importResumeConfirm,
+          onPressed: () {
+            ImportInterruptService.instance.consumePendingResume();
+            _showBulkAddDialogWithItems(itemsToResume);
+          },
+        ),
+        duration: const Duration(days: 1),
+        backgroundColor: AppTheme.warningColor,
+      ));
+    });
+  }
+
+  Future<void> _showBulkAddDialog() => _openBulkAddDialog();
+
+  Future<void> _showBulkAddDialogWithItems(List<String> items) =>
+      _openBulkAddDialog(initialItems: items);
+
+  Future<void> _openBulkAddDialog({List<String>? initialItems}) async {
     final messenger = ScaffoldMessenger.of(context);
     final l10n = AppLocalizations.of(context)!;
     int skippedCount = 0;
@@ -229,6 +272,9 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => BulkAddDialog(
+        listId: widget.list.id,
+        listName: widget.list.name,
+        initialItems: initialItems,
         onSubmit: (itemTitles, onProgress) async {
           final stateList = ref.read(listsControllerProvider).findListById(widget.list.id);
           final existing = (stateList != null && stateList.items.isNotEmpty)
