@@ -110,7 +110,7 @@ class HabitCompletionService {
     } else {
       return value != null &&
              targetValue != null &&
-             (value as double) >= targetValue;
+             (value as num).toDouble() >= targetValue;
     }
   }
 

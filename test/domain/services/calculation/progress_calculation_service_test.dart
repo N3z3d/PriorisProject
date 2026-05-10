@@ -246,7 +246,7 @@ void main() {
       test('should find the worst day correctly', () {
         final now = DateTime.now();
         final habit = Habit(name: 'Test Habit', type: HabitType.binary);
-        
+
         // Simuler des données avec un creux
         for (int i = 0; i < 7; i++) {
           final date = now.subtract(Duration(days: i));
@@ -257,6 +257,47 @@ void main() {
         final result = ProgressCalculationService.calculateWorstDay('7_days', [habit], []);
         expect(result['index'], isA<int>());
         expect(result['value'], isA<double>());
+      });
+    });
+
+    // --- 8.9 int cast tests ---
+
+    group('calculateOverallProgress - int cast (story 8.9)', () {
+      test('should handle quantitative habit with int completion without CastError', () {
+        final now = DateTime.now();
+        final habit = Habit(
+          name: 'Drink water',
+          type: HabitType.quantitative,
+          targetValue: 8.0,
+          completions: {
+            for (int i = 0; i < 7; i++)
+              '${now.subtract(Duration(days: i)).year}-${now.subtract(Duration(days: i)).month.toString().padLeft(2, '0')}-${now.subtract(Duration(days: i)).day.toString().padLeft(2, '0')}': 10, // int
+          },
+        );
+
+        expect(
+          () => ProgressCalculationService.calculateOverallProgress([habit], []),
+          returnsNormally,
+        );
+
+        final progress = ProgressCalculationService.calculateOverallProgress([habit], []);
+        expect(progress, greaterThan(0.0));
+      });
+
+      test('should count zero progress for int below target', () {
+        final now = DateTime.now();
+        final dateKey = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+        final habit = Habit(
+          name: 'Drink water',
+          type: HabitType.quantitative,
+          targetValue: 8.0,
+          completions: {dateKey: 3}, // int below target
+        );
+
+        expect(
+          () => ProgressCalculationService.calculateOverallProgress([habit], []),
+          returnsNormally,
+        );
       });
     });
   });

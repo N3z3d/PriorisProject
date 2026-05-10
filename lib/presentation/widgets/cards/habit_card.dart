@@ -88,7 +88,7 @@ class _HabitCardState extends State<HabitCard>
       return widget.todayValue == true ? 1.0 : 0.0;
     } else {
       if (widget.habit.targetValue == null || widget.habit.targetValue == 0) return 0.0;
-      final currentValue = widget.todayValue as double? ?? 0.0;
+      final currentValue = (widget.todayValue as num?)?.toDouble() ?? 0.0;
       return (currentValue / widget.habit.targetValue!).clamp(0.0, 1.0);
     }
   }

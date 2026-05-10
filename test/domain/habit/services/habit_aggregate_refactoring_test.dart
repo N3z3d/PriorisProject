@@ -347,4 +347,98 @@ void main() {
       expect(true, true); // Verified manually during refactoring
     });
   });
+
+  // --- 8.9 int cast tests ---
+
+  group('HabitCompletionService - int cast (story 8.9)', () {
+    const service = HabitCompletionService();
+
+    test('should handle int quantitative value without CastError', () {
+      final completions = {'2024-01-01': 10}; // int, pas 10.0
+      final result = service.isCompletedOnDate(
+        date: DateTime(2024, 1, 1),
+        type: HabitType.quantitative,
+        completions: completions,
+        targetValue: 8.0,
+      );
+      expect(result, true);
+    });
+
+    test('should return false for int below target', () {
+      final completions = {'2024-01-01': 5}; // int below target
+      final result = service.isCompletedOnDate(
+        date: DateTime(2024, 1, 1),
+        type: HabitType.quantitative,
+        completions: completions,
+        targetValue: 8.0,
+      );
+      expect(result, false);
+    });
+
+    test('should return true for int exactly equal to target', () {
+      final completions = {'2024-01-01': 8}; // int equal to target
+      final result = service.isCompletedOnDate(
+        date: DateTime(2024, 1, 1),
+        type: HabitType.quantitative,
+        completions: completions,
+        targetValue: 8.0,
+      );
+      expect(result, true);
+    });
+  });
+
+  group('HabitStreakCalculator - int cast (story 8.9)', () {
+    const calculator = HabitStreakCalculator();
+
+    test('should handle int quantitative values in streak calculation', () {
+      final completions = {
+        '2024-01-05': 10, // int
+        '2024-01-04': 9,  // int
+        '2024-01-03': 8,  // int — exactly at target
+      };
+      final streak = calculator.calculateCurrentStreak(
+        fromDate: DateTime(2024, 1, 5),
+        type: HabitType.quantitative,
+        completions: completions,
+        targetValue: 8.0,
+      );
+      expect(streak, 3);
+    });
+
+    test('should break streak on int below target', () {
+      final completions = {
+        '2024-01-05': 10, // int, above target
+        '2024-01-04': 5,  // int, below target → breaks streak
+        '2024-01-03': 9,  // int, above target
+      };
+      final streak = calculator.calculateCurrentStreak(
+        fromDate: DateTime(2024, 1, 5),
+        type: HabitType.quantitative,
+        completions: completions,
+        targetValue: 8.0,
+      );
+      expect(streak, 1);
+    });
+  });
+
+  group('HabitProgressCalculator - int cast (story 8.9)', () {
+    const calculator = HabitProgressCalculator();
+
+    test('should count successful days with int quantitative values', () {
+      final completions = {
+        '2024-01-01': 10, // int, above target
+        '2024-01-02': 5,  // int, below target
+        '2024-01-03': 8,  // int, exactly at target
+        '2024-01-04': 12, // int, above target
+      };
+      final count = calculator.countSuccessfulDays(
+        fromDate: DateTime(2024, 1, 4),
+        type: HabitType.quantitative,
+        completions: completions,
+        targetValue: 8.0,
+        days: 4,
+      );
+      expect(count, 3);
+    });
+  });
 }

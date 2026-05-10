@@ -307,7 +307,7 @@ class ProgressCalculationService {
       final value = habit.completions[dateKey];
       final completed = habit.type == HabitType.binary
           ? value == true
-          : (value != null && habit.targetValue != null && (value as double) >= habit.targetValue!);
+          : (value != null && habit.targetValue != null && (value as num).toDouble() >= habit.targetValue!);
       if (completed) {
         completedHabits++;
       }

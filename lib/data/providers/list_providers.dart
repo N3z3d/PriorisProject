@@ -226,9 +226,9 @@ class ConsolidatedListsNotifier extends StateNotifier<ConsolidatedListsState> {
   List<CustomList> _applyAdvancedFilter(List<CustomList> lists, String filterType, dynamic value) {
     switch (filterType) {
       case 'minProgress':
-        return lists.where((l) => l.getProgress() >= (value as double)).toList();
+        return lists.where((l) => l.getProgress() >= (value as num).toDouble()).toList();
       case 'maxProgress':
-        return lists.where((l) => l.getProgress() <= (value as double)).toList();
+        return lists.where((l) => l.getProgress() <= (value as num).toDouble()).toList();
       case 'minItems':
         return lists.where((l) => l.itemCount >= (value as int)).toList();
       case 'maxItems':

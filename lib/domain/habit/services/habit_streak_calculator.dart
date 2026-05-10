@@ -144,7 +144,7 @@ class HabitStreakCalculator {
     } else if (type == HabitType.quantitative) {
       return value != null &&
              targetValue != null &&
-             (value as double) >= targetValue;
+             (value as num).toDouble() >= targetValue;
     }
     return false;
   }

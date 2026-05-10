@@ -85,7 +85,7 @@ class HabitProgressBar extends StatelessWidget {
     if (habit.targetValue == null || habit.targetValue == 0) {
       return 0.0;
     }
-    final currentValue = todayValue as double? ?? 0.0;
+    final currentValue = (todayValue as num?)?.toDouble() ?? 0.0;
     return (currentValue / habit.targetValue!).clamp(0.0, 1.0);
   }
 
@@ -101,7 +101,7 @@ class HabitProgressBar extends StatelessWidget {
     if (habit.type == HabitType.binary) {
       return todayValue == true ? 'Terminé' : 'En attente';
     }
-    final currentValue = todayValue as double? ?? 0.0;
+    final currentValue = (todayValue as num?)?.toDouble() ?? 0.0;
     final target = habit.targetValue ?? 0.0;
     final unit = habit.unit ?? '';
     return '$currentValue / $target $unit';

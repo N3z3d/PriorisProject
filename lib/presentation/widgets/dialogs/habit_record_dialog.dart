@@ -31,7 +31,7 @@ class _HabitRecordDialogState extends State<HabitRecordDialog> {
   void initState() {
     super.initState();
     _controller = TextEditingController(
-      text: (widget.currentValue as double?)?.toString() ?? '',
+      text: (widget.currentValue as num?)?.toDouble().toString() ?? '',
     );
   }
 

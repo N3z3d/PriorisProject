@@ -179,9 +179,64 @@ void main() {
       // Démarrer l'animation
       animationController.forward();
       await tester.pumpAndSettle();
-      
+
       // Vérifier que l'animation est terminée
       expect(animationController.status, AnimationStatus.completed);
+    });
+
+    // --- 8.9 int cast tests ---
+
+    testWidgets('should display correct status for int todayValue (story 8.9)', (WidgetTester tester) async {
+      final quantitativeHabit = Habit(
+        id: '4',
+        name: 'Drink water',
+        type: HabitType.quantitative,
+        targetValue: 10.0,
+        unit: 'units',
+        completions: {},
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HabitProgressBar(
+              habit: quantitativeHabit,
+              todayValue: 5, // int, not 5.0
+              progressAnimation: progressAnimation,
+            ),
+          ),
+        ),
+      );
+
+      // Should display correctly without CastError
+      expect(find.text('5.0 / 10.0 units'), findsOneWidget);
+    });
+
+    testWidgets('should compute non-zero progress for int todayValue (story 8.9)', (WidgetTester tester) async {
+      final quantitativeHabit = Habit(
+        id: '5',
+        name: 'Push-ups',
+        type: HabitType.quantitative,
+        targetValue: 20.0,
+        unit: 'reps',
+        completions: {},
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HabitProgressBar(
+              habit: quantitativeHabit,
+              todayValue: 10, // int — progress should be 0.5, not 0.0
+              progressAnimation: progressAnimation,
+            ),
+          ),
+        ),
+      );
+
+      // With (todayValue as double?) this would silently become 0.0 and display "0.0 / 20.0 reps"
+      // After fix it should display "10.0 / 20.0 reps"
+      expect(find.text('10.0 / 20.0 reps'), findsOneWidget);
     });
   });
 }

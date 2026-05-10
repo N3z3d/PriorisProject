@@ -86,7 +86,7 @@ class HabitPatternAnalyzer extends LoggableDomainService {
     if (habit.type == HabitType.quantitative &&
         value != null &&
         habit.targetValue != null &&
-        (value as double) >= habit.targetValue!) {
+        (value as num).toDouble() >= habit.targetValue!) {
       return true;
     }
     return false;

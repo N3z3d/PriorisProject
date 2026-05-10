@@ -126,16 +126,66 @@ void main() {
           createdAt: now,
           updatedAt: now,
         );
-        
+
         await repository.saveList(list);
-        
+
         // Forcer le rechargement du provider consolidé
         await container.read(consolidatedListsProvider.notifier).loadLists();
-        
+
         final state = container.read(consolidatedListsProvider);
         expect(state.rawLists.length, 1);
         expect(state.processedLists.length, 1);
         expect(state.rawLists.first.name, 'Test List');
+      });
+    });
+
+    // --- 8.9 int cast tests ---
+
+    group('Advanced Filters - int cast (story 8.9)', () {
+      test('should apply minProgress filter with int value without CastError', () async {
+        final c = _createContainer();
+        final repo = c.read(customListRepositoryProvider);
+        final list = CustomList(
+          id: 'int-filter-list',
+          name: 'Int Filter List',
+          type: ListType.SHOPPING,
+          createdAt: now,
+          updatedAt: now,
+        );
+        await repo.saveList(list);
+        await c.read(consolidatedListsProvider.notifier).loadLists();
+
+        final config = c.read(listsConfigProvider);
+        expect(
+          () => c.read(consolidatedListsProvider.notifier).updateConfig(
+            config.copyWith(advancedFilters: {'minProgress': 0}), // int, pas 0.0
+          ),
+          returnsNormally,
+        );
+        c.dispose();
+      });
+
+      test('should apply maxProgress filter with int value without CastError', () async {
+        final c = _createContainer();
+        final repo = c.read(customListRepositoryProvider);
+        final list = CustomList(
+          id: 'int-filter-list-max',
+          name: 'Int Filter List Max',
+          type: ListType.SHOPPING,
+          createdAt: now,
+          updatedAt: now,
+        );
+        await repo.saveList(list);
+        await c.read(consolidatedListsProvider.notifier).loadLists();
+
+        final config = c.read(listsConfigProvider);
+        expect(
+          () => c.read(consolidatedListsProvider.notifier).updateConfig(
+            config.copyWith(advancedFilters: {'maxProgress': 100}), // int, pas 100.0
+          ),
+          returnsNormally,
+        );
+        c.dispose();
       });
     });
   });

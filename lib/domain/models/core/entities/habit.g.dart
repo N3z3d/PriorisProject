@@ -22,7 +22,7 @@ class HabitAdapter extends TypeAdapter<Habit> {
       description: fields[2] as String?,
       type: fields[3] as HabitType,
       category: fields[4] as String?,
-      targetValue: fields[5] as double?,
+      targetValue: (fields[5] as num?)?.toDouble(),
       unit: fields[6] as String?,
       createdAt: fields[7] as DateTime?,
       completions: (fields[8] as Map?)?.cast<String, dynamic>(),
