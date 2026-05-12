@@ -109,4 +109,12 @@ development_status:
   10-4-corriger-violations-imports-domain-services: backlog
   10-5-tests-domaine-purs-sans-supabase: backlog
   10-6-nettoyage-dette-print-inmemory-isp: backlog
+  10-7-corriger-chargement-initial-duel: backlog
+  10-8-mise-a-jour-cards-apres-sauvegarde-listes: backlog
+  10-9-corriger-marquer-comme-fait-statistiques-habitudes: backlog
+  10-10-corriger-mise-a-jour-insights: backlog
+  10-11-remplacer-recochage-auto-listes-par-validation-ux: backlog
+  10-12-marquer-comme-fait-directement-accessible: backlog
+  10-13-alternative-desktop-valider-taches: backlog
+  10-14-completer-couverture-i18n: backlog
   epic-10-retrospective: optional

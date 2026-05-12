@@ -113,6 +113,216 @@
 
 ---
 
+---
+
+## Stories fonctionnelles — Bugs et UX (test utilisateur 2026-05-12)
+
+> Source : retour d'utilisation Thibaut en conditions réelles — Paramètres, Listes, Prioriser, Habitudes, Insights.
+
+---
+
+### Story 10.7 : Corriger le chargement initial du duel (fail au premier chargement)
+
+**As a** utilisateur,
+**I want** que la page Prioriser charge le duel directement sans afficher "Impossible de charger le duel, réessayer",
+**so that** je n'aie pas besoin de rafraîchir pour commencer à prioriser.
+
+**Contexte :** En allant sur Prioriser, l'application affiche parfois "Impossible de charger le duel — Pas assez de tâches éligibles", alors que des tâches existent. Après actualisation, ça fonctionne. Le duel se charge donc bien — c'est un problème de timing ou d'état initial.
+
+**Zones à investiguer :**
+- Timing entre la récupération des listes et des tâches au chargement
+- Conditions d'éligibilité évaluées avant que les données soient chargées
+- État sélectionné des listes non encore disponible au premier build
+- Race condition entre provider Riverpod et initialisation du duel
+- Cache éventuel non encore peuplé au premier chargement
+
+**Acceptance Criteria :**
+1. Si des tâches éligibles existent, le duel se charge directement — sans rafraîchissement manuel
+2. L'état de chargement (spinner/skeleton) est affiché pendant la récupération des données
+3. Le message d'erreur "Pas assez de tâches éligibles" n'apparaît que si aucune tâche éligible n'existe réellement
+4. `puro flutter test --exclude-tags integration` → 0 régression
+
+**Priorité :** 🔴 Haute — bug confirmé, impact direct sur le flux principal
+
+---
+
+### Story 10.8 : Mise à jour immédiate des cards après sauvegarde des listes sélectionnées
+
+**As a** utilisateur,
+**I want** que les cards de duel se recalculent immédiatement après avoir sauvegardé mes listes sélectionnées,
+**so that** je voie directement des duels cohérents avec ma sélection sans avoir à cliquer ailleurs.
+
+**Contexte :** Après avoir sélectionné uniquement la liste "Voyages à faire dans ma vie" et cliqué "Sauvegarder", les cards de Prioriser continuent de proposer des tâches d'autres listes. Ce n'est qu'après une interaction ultérieure que les cards se mettent à jour.
+
+**Acceptance Criteria :**
+1. Après sauvegarde des listes sélectionnées → les tâches éligibles sont immédiatement recalculées
+2. Le duel courant est regénéré avec les nouvelles listes
+3. Les cards obsolètes (hors listes sélectionnées) disparaissent immédiatement
+4. Aucune interaction supplémentaire (clic, navigation, refresh) n'est nécessaire
+5. `puro flutter test --exclude-tags integration` → 0 régression
+
+**Priorité :** 🔴 Haute — bug de cohérence UI confirmé
+
+---
+
+### Story 10.9 : Corriger la chaîne "Marquer comme fait" → statistiques habitudes
+
+**As a** utilisateur,
+**I want** que marquer une habitude comme faite mette à jour immédiatement le streak, le pourcentage et le nombre de jours réussis,
+**so that** je sache que mon action a été prise en compte et que mes progrès soient visibles.
+
+**Contexte :** Après avoir cliqué "Marquer comme fait" sur plusieurs habitudes (Boire de l'eau, Faire du sport, etc.) : le pourcentage ne change pas, le nombre de jours réussis ne change pas, les statistiques restent figées, aucun retour visuel ne confirme l'action. L'utilisateur ne sait pas si l'action a fonctionné.
+
+**Chaîne à vérifier :**
+- Appel "Marquer comme fait" → enregistrement en base
+- Mise à jour de l'état local Riverpod
+- Recalcul du streak
+- Recalcul du pourcentage de succès
+- Recalcul du nombre de jours réussis
+- Rafraîchissement de l'interface
+
+**Acceptance Criteria :**
+1. Après "Marquer comme fait" → le streak est recalculé et affiché immédiatement
+2. Le pourcentage de succès se met à jour immédiatement
+3. Le nombre de jours réussis se met à jour immédiatement
+4. Un retour visuel confirme l'action (snackbar, animation ou changement d'état de la carte)
+5. `puro flutter test --exclude-tags integration` → 0 régression
+
+**Priorité :** 🔴 Haute — bug critique, le cœur fonctionnel des habitudes est cassé
+
+---
+
+### Story 10.10 : Corriger la mise à jour de la page Insights
+
+**As a** utilisateur,
+**I want** que la page Insights reflète mes actions récentes (habitudes complétées, tâches terminées, duels effectués),
+**so that** j'aie une vision réelle de mes progrès.
+
+**Contexte :** Après avoir marqué des habitudes comme faites et réalisé des tâches, la page Insights ne bouge pas. Les données réalisées dans l'application ne semblent pas alimenter les statistiques.
+
+**Zones à investiguer :**
+- Absence de données en base (actions non persistées)
+- Mauvais calcul des métriques
+- Cache non invalidé
+- Refresh manquant sur la page Insights
+- Requête incorrecte ou état frontend non mis à jour
+
+**Données attendues dans Insights :**
+- Habitudes complétées (streak, pourcentage, jours réussis)
+- Tâches complétées
+- Duels effectués
+- Session quotidienne / hebdomadaire
+- Progression globale
+
+**Acceptance Criteria :**
+1. Après avoir marqué des habitudes comme faites → Insights reflète les nouvelles données
+2. Après avoir complété des tâches → Insights est mis à jour
+3. Les métriques (quotidien, hebdomadaire, global) sont calculées correctement
+4. `puro flutter test --exclude-tags integration` → 0 régression
+
+**Priorité :** 🔴 Haute — page centrale de l'app inutile si les données ne se mettent pas à jour
+
+---
+
+### Story 10.11 : Remplacer le recochage automatique des listes par une validation UX propre
+
+**As a** utilisateur,
+**I want** pouvoir décocher toutes les listes sans que l'application les recoche automatiquement,
+**so that** je puisse choisir librement ma sélection sans frustration.
+
+**Contexte :** Quand l'utilisateur décoche toutes les listes dans la sélection pour le duel, l'application recoche automatiquement toutes les listes. L'intention est d'éviter un état sans liste, mais l'UX est mauvaise — notamment quand on veut tout décocher pour sélectionner seulement 1 ou 2 listes spécifiques.
+
+**Comportement attendu :**
+- L'utilisateur peut décocher toutes les listes
+- Le bouton "Sauvegarder" devient désactivé (grisé) si aucune liste n'est cochée
+- Un message clair s'affiche : "Sélectionne au moins une liste pour pouvoir sauvegarder"
+- Le recochage automatique est supprimé
+
+**Acceptance Criteria :**
+1. Décocher toutes les listes → aucun recochage automatique
+2. Bouton "Sauvegarder" désactivé si 0 liste sélectionnée
+3. Message d'aide affiché : minimum 1 liste requise
+4. Sauvegarder avec ≥1 liste → comportement inchangé
+5. `puro flutter test --exclude-tags integration` → 0 régression
+
+**Priorité :** 🟡 Moyenne — UX gênante confirmée
+
+---
+
+### Story 10.12 : Rendre "Marquer comme fait" directement accessible sur la carte d'habitude
+
+**As a** utilisateur,
+**I want** pouvoir marquer une habitude comme faite directement depuis sa carte, sans passer par le menu 3 points,
+**so that** l'action la plus fréquente soit la plus rapide d'accès et que "Supprimer" ne soit pas au même niveau.
+
+**Contexte :** Actuellement "Marquer comme fait" est dans le menu 3 points avec "Modifier" et "Supprimer". Ce n'est pas pratique. Il y a aussi un risque de suppression accidentelle.
+
+**Comportement attendu :**
+- "Marquer comme fait" → bouton ou icône check visible directement sur la carte
+- "Supprimer" → dans le menu 3 points, avec un dialog de confirmation obligatoire
+- "Modifier" → dans le menu 3 points
+
+**Acceptance Criteria :**
+1. Bouton/icône "Marquer comme fait" visible directement sur la carte d'habitude
+2. "Supprimer" requiert une confirmation explicite avant exécution
+3. Actions fréquentes (marquer) séparées des actions dangereuses (supprimer)
+4. Compatible mobile et desktop
+5. `puro flutter test --exclude-tags integration` → 0 régression
+
+**Priorité :** 🟡 Moyenne — UX importante, risque de suppression accidentelle
+
+---
+
+### Story 10.13 : Alternative desktop-friendly pour valider les tâches (swipe → bouton/checkbox)
+
+**As a** utilisateur sur PC,
+**I want** pouvoir valider une tâche via un bouton ou une checkbox, sans avoir à faire un geste de swipe,
+**so that** l'application soit utilisable confortablement sur ordinateur.
+
+**Contexte :** Sur mobile, le swipe pour valider une tâche est naturel. Sur PC, c'est peu pratique. Il manque une méthode alternative desktop-friendly.
+
+**Comportement attendu :**
+- Sur mobile : swipe reste disponible
+- Sur desktop : bouton "Valider", checkbox ou icône check visible (au survol ou toujours visible)
+- Les deux méthodes coexistent — le swipe n'est pas la seule option
+
+**Acceptance Criteria :**
+1. Une action de validation est accessible au clic/hover sur desktop (pas seulement au swipe)
+2. Sur mobile, le swipe fonctionne toujours
+3. Le comportement est cohérent avec le reste de l'interface
+4. `puro flutter test --exclude-tags integration` → 0 régression
+
+**Priorité :** 🟡 Moyenne — UX desktop à améliorer
+
+---
+
+### Story 10.14 : Compléter la couverture i18n — tous les textes fixes (EN/ES/DE)
+
+**As a** utilisateur non francophone,
+**I want** que tous les textes fixes de l'interface soient dans ma langue (EN, ES, DE),
+**so that** l'application soit réellement utilisable dans toutes les langues supportées.
+
+**Contexte :** Même quand l'application est en anglais, certains textes restent en français (ex: Privacy Policy). Les langues disponibles sont : français, anglais, espagnol, allemand. Les textes fixes d'interface doivent passer par le système i18n existant. Les contenus créés par l'utilisateur (noms de listes, etc.) ne doivent pas être touchés.
+
+**Textes à vérifier dans toutes les langues :**
+- Boutons et labels
+- Messages d'erreur
+- Textes d'aide
+- Privacy Policy
+- Textes des paramètres
+- Toutes les pages (Habitudes, Prioriser, Listes, Insights, Settings)
+
+**Acceptance Criteria :**
+1. `grep -rn '"[A-Z]' lib/presentation/` → 0 chaîne hardcodée non localisée dans les fichiers modifiés
+2. Privacy Policy disponible en EN, ES, DE
+3. Tous les boutons, labels, messages d'erreur traduits dans les 4 langues
+4. Les contenus utilisateur (noms de listes, titres de tâches) ne sont pas touchés
+5. `puro flutter test --exclude-tags integration` → 0 régression
+
+**Priorité :** 🟡 Moyenne — qualité produit pour utilisateurs non francophones
+
+---
+
 ### Story 10.6 : Nettoyage dette technique — print(), InMemoryCustomListRepository, ISP
 
 **As a** développeur,
@@ -137,15 +347,37 @@
 
 ## Critères de clôture de l'Epic 10
 
+**Architecture hexagonale :**
 - [ ] `ConsentService` n'importe plus `shared_preferences` dans `lib/domain/`
 - [ ] `IConsentRepository` et `IAuthService` déclarés dans `lib/domain/ports/`
 - [ ] `grep -r "import.*data/" lib/domain/` → 0 résultat
-- [ ] Bugs `revokeConsent` corrigés et testés en production
 - [ ] Tests domaine purs exécutables sans réseau
+
+**RGPD / revokeConsent :**
+- [ ] Bugs revokeConsent (feedback visuel + redirection immédiate) corrigés et testés en production
+
+**Bugs fonctionnels :**
+- [ ] Chargement initial du duel fonctionne sans refresh
+- [ ] Cards mises à jour immédiatement après sauvegarde des listes sélectionnées
+- [ ] "Marquer comme fait" → statistiques habitudes (streak, %, jours) mises à jour immédiatement
+- [ ] Page Insights reflète les actions réalisées
+
+**UX :**
+- [ ] Recochage automatique des listes supprimé — remplacé par validation propre
+- [ ] "Marquer comme fait" directement accessible sur la carte d'habitude
+- [ ] Confirmation obligatoire avant suppression d'habitude
+- [ ] Alternative desktop pour valider les tâches
+
+**i18n :**
+- [ ] Tous les textes fixes traduits en EN, ES, DE (dont Privacy Policy)
+
+**Qualité :**
 - [ ] `puro flutter analyze --no-pub` propre
 - [ ] `puro flutter test --exclude-tags integration` → 0 régression
 - [ ] ADR-001 statut confirmé : "En cours (Epic 10 clôturé)"
 
 ---
 
-> **Note :** Cet épic est ouvert — d'autres stories peuvent être ajoutées avant le démarrage (cf. rétro Épic 9, Thibaut a confirmé des ajouts à venir).
+## Note — UX/UI globale (hors scope Epic 10)
+
+> Thibaut a noté que l'application n'est pas encore visuellement très soignée. Ce n'est **pas la priorité immédiate** — les bugs fonctionnels et les gros problèmes d'usage passent avant. Une refonte UX/UI complète est prévue dans un épic dédié ultérieur (Epic 11 ou 12) couvrant : apparence générale, cards, boutons, typographie, couleurs, animations, retours visuels, expérience desktop et mobile séparément.
