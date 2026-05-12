@@ -378,6 +378,49 @@
 
 ---
 
+### Story 10.15 : Onboarding actif — amener l'utilisateur à l'activation event (10 tâches + premier duel guidé + moment révélateur)
+
+**As a** nouvel utilisateur,
+**I want** être guidé activement vers mon premier moment de valeur dès l'ouverture de l'app,
+**so that** je comprenne en moins de 2 minutes ce que Prioris fait pour moi — sans avoir à théoriser la mécanique ELO.
+
+**Contexte — la barrière invisible :**
+La valeur de Prioris n'est pas dans l'outil, elle est dans le *moment* — quand une tâche émerge comme priorité sans effort conscient de classement. Ce moment se produit autour de 10 tâches + quelques duels. Sans onboarding, un nouvel utilisateur arrive sur une page vide, saisit 3-5 tâches, ne voit rien ressortir, et ferme l'app. Le seuil de valeur est invisible.
+
+**L'onboarding en trois actes :**
+
+**Acte 1 — Import rapide** (objectif : 10 tâches en < 90 secondes)
+- Écran d'accueil pour nouveaux utilisateurs : *"Tu penses à quoi en ce moment ?"*
+- Champ libre multi-lignes : une tâche par ligne, paste depuis Notes/Rappels accepté
+- Alternative : 8-10 tâches archétypes pré-proposées (ex: "Faire du sport", "Appeler X", "Terminer rapport") que l'utilisateur valide ou remplace en un tap
+- Objectif : atteindre le seuil de 10 tâches avec un minimum de friction
+
+**Acte 2 — Premier duel guidé** (déclenché automatiquement dès 5 tâches saisies)
+- Transition naturelle sans clic supplémentaire : *"C'est parti. Entre ces deux tâches, laquelle compte le plus maintenant ?"*
+- Interface épurée : deux cartes, un choix, pas de chiffres ni de catégories
+- Micro-indication de progression : "Duel 1/5" pour créer un sentiment d'avancement
+
+**Acte 3 — Moment révélateur** (après 5-7 duels)
+- La tâche qui remonte en tête est mise en avant avec une micro-animation
+- Message contextuel : *"Voici ce que tu veux vraiment faire en premier."*
+- Option directe : "Marquer comme fait quand c'est accompli" — ferme la boucle cognitive
+- L'utilisateur n'a pas *rangé* ses tâches. Il a *choisi*. La différence est énorme émotionnellement.
+
+**Acceptance Criteria :**
+1. Un nouvel utilisateur (0 tâche) voit l'onboarding actif à sa première connexion
+2. Le champ libre multi-lignes permet de saisir 10 tâches en < 90 secondes
+3. Le premier duel se déclenche automatiquement dès 5 tâches saisies — sans navigation manuelle
+4. Après 5-7 duels, la tâche prioritaire est mise en avant avec message contextuel
+5. Un utilisateur existant ne voit jamais l'onboarding (condition : ≥1 tâche existante)
+6. `puro flutter analyze --no-pub` → 0 nouvelle erreur
+7. `puro flutter test --exclude-tags integration` → 0 régression
+
+**Priorité :** 🔴 Haute — c'est la feature qui transforme un visiteur en utilisateur activé. Sans elle, la valeur différenciante de l'app est invisible.
+
+**Source :** Session party mode 2026-05-12 — convergence John (PM), Sally (UX), Mary (Analyst) sur le seuil d'activation et le design de l'onboarding.
+
+---
+
 ## Note — UX/UI globale (hors scope Epic 10)
 
 > Thibaut a noté que l'application n'est pas encore visuellement très soignée. Ce n'est **pas la priorité immédiate** — les bugs fonctionnels et les gros problèmes d'usage passent avant. Une refonte UX/UI complète est prévue dans un épic dédié ultérieur (Epic 11 ou 12) couvrant : apparence générale, cards, boutons, typographie, couleurs, animations, retours visuels, expérience desktop et mobile séparément.
