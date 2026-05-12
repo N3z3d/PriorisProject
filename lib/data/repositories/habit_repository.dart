@@ -1,19 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
+import 'package:prioris/domain/habit/repositories/habit_repository.dart';
 import 'package:prioris/data/repositories/supabase/supabase_habit_repository.dart';
 import 'package:prioris/infrastructure/services/auth_service.dart';
 import 'package:prioris/infrastructure/services/supabase_service.dart';
-
-/// Repository abstrait pour la gestion des habitudes
-abstract class HabitRepository {
-  Future<List<Habit>> getAllHabits();
-  Future<void> saveHabit(Habit habit);
-  Future<void> addHabit(Habit habit); // Ajouter cette méthode
-  Future<void> updateHabit(Habit habit);
-  Future<void> deleteHabit(String habitId);
-  Future<List<Habit>> getHabitsByCategory(String category);
-  Future<void> clearAllHabits();
-}
 
 /// Implémentation en mémoire du repository des habitudes
 class InMemoryHabitRepository implements HabitRepository {

@@ -1,5 +1,5 @@
 import 'package:prioris/core/exceptions/app_exception.dart';
-import 'package:prioris/data/repositories/list_item_repository.dart';
+import 'package:prioris/domain/list/repositories/list_item_repository.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
 import 'package:prioris/infrastructure/services/auth_service.dart';
 import 'package:prioris/infrastructure/services/supabase_service.dart';

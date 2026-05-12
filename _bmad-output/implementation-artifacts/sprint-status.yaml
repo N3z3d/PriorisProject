@@ -35,7 +35,7 @@
 # - Le developpeur passe la story a 'review', puis lance le workflow de code review
 
 generated: '2026-04-12T22:39:56.0084619+02:00'
-last_updated: '2026-05-10T00:30:00+02:00'
+last_updated: '2026-05-12T12:00:00+02:00'
 project: 'PriorisProject'
 project_key: 'NOKEY'
 tracking_system: 'file-system'
@@ -83,7 +83,7 @@ development_status:
   7-9-tests-integration-supabase-harness: done
   epic-7-retrospective: done
 
-  epic-8: in-progress
+  epic-8: done
   8-1-diagnostiquer-et-corriger-les-67-tests-en-echec: done
   8-2-implementer-revokeconsent-rgpd-art-7-3: done
   8-3-detecter-quit-refresh-pendant-import-massif: done
@@ -92,11 +92,21 @@ development_status:
   8-6-mettre-a-jour-architecture-md-et-template-story: done
   8-7-polish-ux-snackbar-import-et-avertissement-fermeture: done
   8-8-reprendre-import-interrompu-depuis-liste: done
-  8-9-corriger-value-as-double-latent-services-et-presentation: review
-  epic-8-retrospective: optional
+  8-9-corriger-value-as-double-latent-services-et-presentation: done
+  epic-8-retrospective: done
 
-  epic-9: in-progress
-  9-1-deplacement-port-habit-repository-vers-domaine: ready-for-dev
-  9-2-typer-providers-riverpod-sur-interface-domain-habit: backlog
-  9-3-deplacement-ports-customlist-et-listitem-vers-domaine: backlog
-  epic-9-retrospective: optional
+  epic-9: done
+  9-1-deplacement-port-habit-repository-vers-domaine: done
+  9-2-typer-providers-riverpod-sur-interface-domain-habit: done
+  9-3-deplacement-ports-customlist-et-listitem-vers-domaine: done
+  9-4-corriger-lsp-getstats-hive-supabase-custom-list-repository: done
+  epic-9-retrospective: done
+
+  epic-10: backlog
+  10-1-corriger-bugs-ux-revokeconsent: backlog
+  10-2-extraire-iconsentrepository-vers-domain-ports: backlog
+  10-3-extraire-port-iauthservice-vers-domain-ports: backlog
+  10-4-corriger-violations-imports-domain-services: backlog
+  10-5-tests-domaine-purs-sans-supabase: backlog
+  10-6-nettoyage-dette-print-inmemory-isp: backlog
+  epic-10-retrospective: optional

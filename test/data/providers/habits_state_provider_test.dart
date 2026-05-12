@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/data/providers/habits_state_provider.dart';
 import 'package:prioris/data/repositories/habit_repository.dart';
+import 'package:prioris/domain/habit/repositories/habit_repository.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
 import 'package:prioris/data/providers/repository_providers.dart';
 
@@ -214,6 +215,47 @@ void main() {
       expect(state.isLoading, isFalse);
 
       container.dispose();
+    });
+  });
+
+  group('HabitsStateProvider - Typage sur interface domain', () {
+    test('habitRepositoryProvider accepte HabitRepository (interface domain) comme override', () {
+      // Prouve que le provider est typé sur l'abstraction, pas sur SupabaseHabitRepository
+      final mockRepo = _MockHabitRepository();
+      final container = ProviderContainer(
+        overrides: [
+          habitRepositoryProvider.overrideWithValue(mockRepo),
+        ],
+      );
+      // Si le provider était inféré sur SupabaseHabitRepository,
+      // overrideWithValue(_MockHabitRepository()) ne compilerait pas
+      final repo = container.read(habitRepositoryProvider);
+      expect(repo, isA<HabitRepository>());
+      container.dispose();
+    });
+
+    test('HabitsNotifier.loadHabits() utilise HabitRepository (pas SupabaseHabitRepository)', () async {
+      // Vérifie que le notifier ne dépend que de l'interface
+      bool getAllHabitsCalled = false;
+      final mockRepo = _MockHabitRepository(
+        onGetAllHabits: () async {
+          getAllHabitsCalled = true;
+          return [];
+        },
+      );
+      final container = ProviderContainer(
+        overrides: [
+          habitRepositoryProvider.overrideWithValue(mockRepo),
+        ],
+      );
+      final keepAlive = container.listen(habitsStateProvider, (_, __) {});
+      try {
+        await container.read(habitsStateProvider.notifier).loadHabits();
+        expect(getAllHabitsCalled, isTrue);
+      } finally {
+        keepAlive.close();
+        container.dispose();
+      }
     });
   });
 }

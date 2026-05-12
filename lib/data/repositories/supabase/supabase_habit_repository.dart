@@ -4,7 +4,7 @@ import 'package:prioris/infrastructure/services/auth_service.dart';
 import 'package:prioris/infrastructure/services/supabase_service.dart';
 import 'package:prioris/infrastructure/services/supabase_table_adapter.dart';
 
-import '../habit_repository.dart';
+import 'package:prioris/domain/habit/repositories/habit_repository.dart';
 
 /// Supabase repository for habits with multi-user support
 /// DI-friendly: Dependencies injected via constructor

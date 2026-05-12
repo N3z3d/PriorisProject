@@ -4,11 +4,11 @@ import 'package:prioris/infrastructure/services/auth_service.dart';
 import 'package:prioris/infrastructure/services/supabase_service.dart';
 import 'package:prioris/infrastructure/services/supabase_table_adapter.dart';
 
-import '../custom_list_repository.dart';
+import 'package:prioris/domain/list/repositories/custom_list_repository.dart';
 
 /// Repository Supabase pour les listes personnalisées
 /// DI-friendly: Dependencies injected via constructor
-class SupabaseCustomListRepository implements CustomListRepository {
+class SupabaseCustomListRepository extends CustomListRepository {
   final SupabaseService _supabase;
   final AuthService _auth;
   final SupabaseTableAdapterFactory _tableFactory;
@@ -291,8 +291,8 @@ class SupabaseCustomListRepository implements CustomListRepository {
         );
   }
 
-  /// Obtient les statistiques de l'utilisateur
-  Future<Map<String, int>> getStats() async {
+  /// Distribution des listes par type pour l'utilisateur courant — non lié au contrat du port domaine
+  Future<Map<String, int>> getTypeDistribution() async {
     try {
       if (!_auth.isSignedIn) throw Exception('User not authenticated');
 
@@ -311,7 +311,7 @@ class SupabaseCustomListRepository implements CustomListRepository {
 
       return stats;
     } catch (e) {
-      throw Exception('Failed to get stats: $e');
+      throw Exception('Failed to get type distribution: $e');
     }
   }
 

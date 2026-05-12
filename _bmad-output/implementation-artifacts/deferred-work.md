@@ -116,6 +116,54 @@ Aucun item différé au 2026-04-22.
 - **Hardcoded `7` en double occurrence dans `habit_progress_display.dart`** [ligne 17 `getSuccessRate(days:7)` et ligne 145 `habitProgressSuccessfulDays(successfulDays, 7)`] : les deux occurrences ne partagent pas une constante — si la fenêtre change d'un côté, l'autre reste à 7. Pré-existant.
 - **ARB `@habitProgressSuccessfulDays` placeholders sans `"type": "int"`** [lib/l10n/app_de.arb, app_es.arb] : déclarés comme `{}` (type implicite `Object`) — cohérent avec le reste du projet mais empêche la validation de type ICU. Pré-existant.
 
+## Deferred from: code review of 9-4-corriger-lsp-getstats-hive-supabase-custom-list-repository (2026-05-12)
+
+- **`cleanOldData @override` sans méthode parente dans `CustomListRepository`** [test/test_utils/recording_list_repository.dart:226] : `@override` génère un lint warning `override_on_non_overriding_member` — pré-existant avant 9-4, non introduit par le diff.
+- **`getStats()` hérité appelle `getAllLists()` → throw si `getAllLists` configuré en échec sur `RecordingListRepository`** : changement comportemental silencieux — l'ancien override retournait des métriques directement. Aucun test affecté (grep confirmé), risque faible.
+- **Cast `(listRepo2 as HiveCustomListRepository)` dans `data_loss_diagnostic_test.dart:760`** : by design (T3.4 — registre type `CustomListRepository`) ; cast non gardé en test-code, échouera si le registre retourne un type différent.
+- **`supabase_integration_validation_test.dart:115` teste désormais le default domain plutôt que Supabase-specific `getStats()`** : dérive sémantique intentionnelle — analysée et acceptée dans Dev Notes 9-4.
+- **`HiveCustomListRepository.getStats()` retourne `items: 0`** : `getAllLists()` ne charge pas les items (design Hive intentionnel), la méthode `getStats()` héritée du domaine compte toujours 0 items. Latent pré-existant — personne n'appelle via le port.
+- **Méthodes `getDiagnostics()`/`getTypeDistribution()` publiques sur classes qui étendent le port domaine** : méthodes infrastructure publiques sur des subclasses du port — not a contract violation mais polluent la surface polymorphique. Non-breaking, design choice documenté.
+- **`implements` → `extends` couplage structurel plus fort que pure interface** : ADR-001 architecture hexagonale préconise des ports comme interfaces pures ; `extends` crée un couplage d'héritage. Décision d'architecture acceptée pour hériter du default `getStats()`.
+- **`InMemoryCustomListRepository` utilise encore `implements` (incohérence post-9-4)** : seul adapter restant avec `implements` — explicitement exclu du scope 9-4 (conforme, `getStats()` override sémantiquement correct).
+
+## Deferred from: code review of 9-3-deplacement-ports-customlist-et-listitem-vers-domaine (2026-05-11)
+
+- **Double méthodes génériques+domaine dans les 4 ISP sub-interfaces** [lib/domain/list/repositories/custom_list_repository.dart] : trade-off intentionnel T1.2 (éviter import domain←data) ; doublement de la surface contractuelle (10+4+2+2 au lieu de 5+2+1+1). À consolider en supprimant les alias génériques si tous les appelants migrent vers les noms domaine.
+- **`getStats()` retourne des structures sémantiquement incompatibles selon l'implémentation (LSP)** [supabase_custom_list_repository.dart:295, hive_custom_list_repository.dart:250] : SupabaseCustomListRepository retourne `Map<String,int>` avec les types de listes ; HiveCustomListRepository retourne les stats infra Hive ; InMemoryCustomListRepository retourne `{count, completed, items}`. Violation LSP sémantique pré-existante — non introduite par 9-3. Priorité HIGH.
+- **Constructeurs Supabase no-arg accèdent aux singletons sans initialisation explicite dans les tests contrat** [test/domain/list/repositories/*_contract_test.dart:15,14] : pattern identique à 9-1, tests passent en pratique, fragile en CI sans Supabase init.
+- **`HiveCustomListRepository.getStats()` shadow silencieux du default domaine sans `@override`** [hive_custom_list_repository.dart:250] : retourne métriques infra Hive au lieu des stats domaine ; appelant polymorphe obtient des clés inattendues. Pré-existant.
+- **`abstract class` au lieu de `abstract interface class` Dart 3+ pour les ports domaine** [custom_list_repository.dart, list_item_repository.dart domain] : `interface class` force l'implémentation explicite et empêche l'héritage de `getStats()`. À évaluer lors d'une story de consolidation des ports.
+- **`InMemoryCustomListRepository.save()` lève sur ID dupliqué via `saveList(isNew: true)`** [custom_list_repository.dart data] : comportement pré-existant — les appelants utilisant `save()` comme upsert obtiennent une exception après le premier appel.
+
+## Deferred from: code review of 9-2-typer-providers-riverpod-sur-interface-domain-habit (2026-05-11)
+
+- **`print()` debug en production dans `HabitsNotifier`** [lib/data/providers/habits_state_provider.dart:~58] : `print('[HabitsProvider] I: Fetched...')` pré-existant, non nettoyé dans le scope 9.2 (changements purement statiques de typage).
+- **Race autoDispose+StateNotifier entre `saveHabit`/`updateHabit` et `loadHabits()`** [lib/data/providers/habits_state_provider.dart:78-81,110-118] : si le notifier est disposé entre le `await repository.saveHabit()` et le `await loadHabits()` suivant (navigation away), `state = state.copyWith(...)` lève `StateError`. Pré-existant — hors scope typage pur de 9.2.
+- **`addHabit`, `deleteHabit`, `updateHabit` non couverts par tests de typage sur l'interface domain** [test/data/providers/habits_state_provider_test.dart] : spec 9.2 exigeait uniquement la preuve de typage sur `loadHabits()` et le provider. Les 3 méthodes restantes avec annotation `HabitRepository` sont non exercées sous l'interface domain. À ajouter dans une story de consolidation des tests.
+
+## Deferred from: code review of 9-1-deplacement-port-habit-repository-vers-domaine (2026-05-10)
+
+- **`SupabaseHabitRepository()` dans le test contrat — singleton fallback** [test/domain/habit/repositories/habit_repository_contract_test.dart:14] : constructeur tombe sur `SupabaseService.instance` si aucun argument passé. Fonctionnel (tests passent), mais fragile si le singleton n'est pas initialisé dans certains environnements CI. Spec approuvait explicitement l'approche nullable.
+- **`saveHabit` et `addHabit` identiques dans `InMemoryHabitRepository`** [lib/data/repositories/habit_repository.dart:27-35] : les deux méthodes appellent `_habits.add(habit)` sans distinction — pas de garde sur ID dupliqué. Sémantique du port ambiguë (upsert vs insert). Pré-existant.
+- **`allHabitsProvider` === `habitsWithStatsProvider`** [lib/data/repositories/habit_repository.dart:76-85] : deux providers identiques, aucune distinction sémantique. Pré-existant.
+- **`ref.read` dans `FutureProvider` au lieu de `ref.watch`** [lib/data/repositories/habit_repository.dart:77,83] : providers `allHabitsProvider` et `habitsWithStatsProvider` ne se recalculent pas lors d'une invalidation. Pré-existant.
+- **`updateHabit` no-op silencieux sur ID inexistant** [lib/data/repositories/habit_repository.dart:39-44] : `indexWhere` retourne -1 sans erreur ni signal au caller. Pré-existant dans `InMemoryHabitRepository`.
+- **`SupabaseHabitRepository` : `watchAllHabits`/`getStatsByCategory` hors port** [supabase_habit_repository.dart:185-225] : deux méthodes concrètes absentes du port `HabitRepository` — à supprimer ou intégrer au port dans une story dédiée. Pré-existant.
+- **`habits_state_provider.dart` résout `HabitRepository` transitivement via data layer** [lib/data/providers/habits_state_provider.dart] : n'importe pas directement depuis `lib/domain/`. Si le fichier data est refactorisé sans re-export, compile en erreur. Intentionnel per T4.1 — faible risque.
+
+## Deferred from: code review of 8-9-corriger-value-as-double-latent-services-et-presentation (2026-05-10)
+
+- **Valeur `bool` dans completions d'une habitude quantitative → `TypeError` sur `(value as num)`** [lib/domain/habit/services/ ×6] : si une habitude est passée de binary à quantitative sans migrer les completions, la valeur `true`/`false` déclenche une `TypeError`. Pré-existant — même comportement avec l'ancien `(value as double)`.
+- **`task.g.dart` / `list_item.g.dart` — `eloScore: fields[3|4] as double`** [lib/domain/models/core/entities/] : même classe de bug que le fix 8.9 sur `targetValue`. Hive peut désérialiser un `int` → `TypeError`. Hors scope 8.9 (spec exclut explicitement eloScore).
+- **`elo_score.dart` / `priority.dart` / `list_item.dart` — `as double` sur champs JSON** [lib/domain/core/value_objects/, lib/domain/list/value_objects/] : Supabase peut retourner un `int` JSON pour ces colonnes → `CastError`. Hors scope 8.9.
+- **`premium_habit_card.dart` — `widget.todayValue as num` (non-nullable) sans guard `bool`** [lib/presentation/widgets/cards/premium_habit_card.dart:173] : `HabitCard` a été corrigé, `PremiumHabitCard` ne l'a pas été. Si `todayValue` est un `bool` (habitude binary mal typée), `TypeError`. Pré-existant.
+- **`_applyAdvancedFilter` — `minItems`/`maxItems` utilisent encore `as int`** [lib/data/providers/list_providers.dart:233-235] : `minProgress`/`maxProgress` ont été corrigés en 8.9 mais `minItems`/`maxItems` restent en `as int` — `TypeError` si un `double` est passé. Pré-existant, hors scope.
+- **`_statusText` — espace trailing si `unit` null, `"0.0 / 0.0 "` si `targetValue` null** [lib/presentation/widgets/progress/habit_progress_bar.dart:107] : pré-existant, non introduit par 8.9.
+- **`habit_recommendation_engine.dart` — `value is double` exclut silencieusement les `int` Supabase** [lib/domain/habit/services/analytics/habit_recommendation_engine.dart:163] : asymétrie avec les 6 services corrigés en 8.9 qui utilisent désormais `as num`. Mauvaise moyenne silencieuse. Hors scope 8.9.
+- **Valeur `String` dans completions (JSONB round-trip) → `TypeError` sur `as num`** [lib/domain/habit/services/] : Supabase PostgREST peut retourner des nombres JSON comme strings dans certaines requêtes RPC. Pré-existant, hors scope.
+- **`double.nan` dans completions — cast silencieux, sous-comptage séries et pré-remplissage `"NaN"` dans le dialog** [lib/domain/habit/services/ + habit_record_dialog.dart:34] : `nan >= target` est toujours `false`, séries sous-comptées sans erreur. Pré-existant.
+
 ## Deferred from: code review of 8-8-reprendre-import-interrompu-depuis-liste (2026-05-07)
 
 - **`_startupInterrupt` reste en mémoire si utilisateur ne navigue pas vers la liste** [import_interrupt_service.dart] : intentionnel per Dev Notes 8.8 — `peekStartupInterrupt()` est non-destructif, `_startupInterrupt` n'est effacé que par `consumePendingResume()`. Si l'utilisateur ne visite jamais la liste dans la session, la mémoire reste occupée jusqu'à la fermeture de l'app. Borné à la session (SharedPreferences déjà nettoyées au démarrage). Acceptable per design.

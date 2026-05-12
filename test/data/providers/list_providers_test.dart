@@ -142,7 +142,7 @@ void main() {
     // --- 8.9 int cast tests ---
 
     group('Advanced Filters - int cast (story 8.9)', () {
-      test('should apply minProgress filter with int value without CastError', () async {
+      test('should apply minProgress filter with int value without CastError and include matching list', () async {
         final c = _createContainer();
         final repo = c.read(customListRepositoryProvider);
         final list = CustomList(
@@ -156,16 +156,19 @@ void main() {
         await c.read(consolidatedListsProvider.notifier).loadLists();
 
         final config = c.read(listsConfigProvider);
-        expect(
-          () => c.read(consolidatedListsProvider.notifier).updateConfig(
-            config.copyWith(advancedFilters: {'minProgress': 0}), // int, pas 0.0
-          ),
-          returnsNormally,
+        // Before fix: (value as double) throws CastError for int
+        // After fix: (value as num).toDouble() works — 0.0 >= 0.0 is true
+        c.read(consolidatedListsProvider.notifier).updateConfig(
+          config.copyWith(advancedFilters: {'minProgress': 0}), // int, pas 0.0
         );
+
+        final stateAfter = c.read(consolidatedListsProvider);
+        // List with getProgress() == 0.0 satisfies minProgress: 0 (0.0 >= 0.0)
+        expect(stateAfter.processedLists.length, 1);
         c.dispose();
       });
 
-      test('should apply maxProgress filter with int value without CastError', () async {
+      test('should apply maxProgress filter with int value without CastError and include matching list', () async {
         final c = _createContainer();
         final repo = c.read(customListRepositoryProvider);
         final list = CustomList(
@@ -179,12 +182,39 @@ void main() {
         await c.read(consolidatedListsProvider.notifier).loadLists();
 
         final config = c.read(listsConfigProvider);
-        expect(
-          () => c.read(consolidatedListsProvider.notifier).updateConfig(
-            config.copyWith(advancedFilters: {'maxProgress': 100}), // int, pas 100.0
-          ),
-          returnsNormally,
+        // Before fix: (value as double) throws CastError for int
+        // After fix: (value as num).toDouble() works — 0.0 <= 100.0 is true
+        c.read(consolidatedListsProvider.notifier).updateConfig(
+          config.copyWith(advancedFilters: {'maxProgress': 100}), // int, pas 100.0
         );
+
+        final stateAfter = c.read(consolidatedListsProvider);
+        // List with getProgress() == 0.0 satisfies maxProgress: 100 (0.0 <= 100.0)
+        expect(stateAfter.processedLists.length, 1);
+        c.dispose();
+      });
+
+      test('should exclude list when int minProgress filter exceeds list progress', () async {
+        final c = _createContainer();
+        final repo = c.read(customListRepositoryProvider);
+        final list = CustomList(
+          id: 'int-filter-list-exclude',
+          name: 'Int Filter List Exclude',
+          type: ListType.SHOPPING,
+          createdAt: now,
+          updatedAt: now,
+        );
+        await repo.saveList(list);
+        await c.read(consolidatedListsProvider.notifier).loadLists();
+
+        final config = c.read(listsConfigProvider);
+        c.read(consolidatedListsProvider.notifier).updateConfig(
+          config.copyWith(advancedFilters: {'minProgress': 50}), // int — empty list has 0% progress
+        );
+
+        final stateAfter = c.read(consolidatedListsProvider);
+        // List with getProgress() == 0.0 does NOT satisfy minProgress: 50 (0.0 >= 50.0 is false)
+        expect(stateAfter.processedLists.length, 0);
         c.dispose();
       });
     });

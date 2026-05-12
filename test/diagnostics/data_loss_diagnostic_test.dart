@@ -239,7 +239,7 @@ void main() {
 
         // Get box statistics before closing
 
-        final statsBefore = await listRepo1.getStats();
+        final statsBefore = await listRepo1.getDiagnostics();
 
         print('ð Stats before close: $statsBefore');
 
@@ -269,7 +269,7 @@ void main() {
 
         // Get box statistics after reopening
 
-        final statsAfter = await listRepo2.getStats();
+        final statsAfter = await listRepo2.getDiagnostics();
 
         print('ð Stats after reopen: $statsAfter');
 
@@ -297,7 +297,7 @@ void main() {
 
           // Check if box is empty
 
-          final finalStats = await listRepo2.getStats();
+          final finalStats = await listRepo2.getDiagnostics();
 
           print('ð Final stats: $finalStats');
 
@@ -757,7 +757,7 @@ void main() {
 
           
 
-          final listStats = await listRepo2.getStats();
+          final listStats = await (listRepo2 as HiveCustomListRepository).getDiagnostics();
 
           print('ð List box stats: $listStats');
 

@@ -1,6 +1,6 @@
 # Story 8.9 : Corriger les casts `(value as double)` latents dans services domaine et présentation
 
-Status: review
+Status: done
 
 ## Contexte
 
@@ -56,6 +56,21 @@ afin qu'aucune `CastError` ne puisse crasher l'app sur des données Supabase lé
   - [x] T4.2 Lancer `puro flutter analyze --no-pub`.
   - [x] T4.3 Lancer `puro flutter test --exclude-tags integration --no-pub`.
   - [x] T4.4 Refactor uniquement si duplication réelle dans les lignes touchées ; ne pas introduire helper global spéculatif.
+
+### Review Findings
+
+- [x] [Review][Patch] Aucun test pour le cast fix de `habit_card.dart:91` — `_getProgressValue()` non couvert par un test widget [lib/presentation/widgets/cards/habit_card.dart:91]
+- [x] [Review][Patch] Tests `minProgress`/`maxProgress` vérifient seulement l'absence de crash (`returnsNormally`) sans asserter le résultat filtré [test/data/providers/list_providers_test.dart]
+- [x] [Review][Patch] `habit_adapter_int_cast_test.dart` teste le pattern de cast en isolation (dynamic variable) et non via `HabitAdapter.read()` — si `build_runner` régénère le fichier, ce test continuerait à passer [test/domain/models/core/entities/habit_adapter_int_cast_test.dart]
+- [x] [Review][Defer] Valeur `bool` dans completions d'une habitude quantitative déclenche `TypeError` sur `(value as num)` — mêmes 6 services domaine [lib/domain/habit/services/] — deferred, pre-existing
+- [x] [Review][Defer] `task.g.dart` et `list_item.g.dart` utilisent encore `as double` pour `eloScore` dans l'adapter Hive — même classe de bug que le fix 8.9 [lib/domain/models/core/entities/task.g.dart, list_item.g.dart] — deferred, pre-existing, hors scope
+- [x] [Review][Defer] `elo_score.dart`, `priority.dart`, `list_item.dart` utilisent `as double` sur les champs JSON — `CastError` latent si Supabase retourne un int [lib/domain/core/value_objects/, lib/domain/list/value_objects/] — deferred, pre-existing, hors scope
+- [x] [Review][Defer] `premium_habit_card.dart` utilise `widget.todayValue as num` (non-nullable) sans guard pour `bool` — crash si habitude binary → quantitative sans migration [lib/presentation/widgets/cards/premium_habit_card.dart:173] — deferred, pre-existing
+- [x] [Review][Defer] `minItems`/`maxItems` dans `_applyAdvancedFilter` utilisent encore `as int` — `TypeError` si une valeur `double` ou `String` est passée [lib/data/providers/list_providers.dart:233-235] — deferred, pre-existing, hors scope
+- [x] [Review][Defer] `_statusText` affiche `"5.0 / 10.0 "` (espace trailing) si `unit` est null et `"0.0 / 0.0 "` si `targetValue` est null [lib/presentation/widgets/progress/habit_progress_bar.dart:107] — deferred, pre-existing
+- [x] [Review][Defer] `habit_recommendation_engine.dart` utilise `value is double` — les valeurs `int` Supabase sont silencieusement exclues du calcul de moyenne [lib/domain/habit/services/analytics/habit_recommendation_engine.dart:163] — deferred, pre-existing, hors scope
+- [x] [Review][Defer] Valeur `String` dans les completions (round-trip JSONB) déclenche `TypeError` sur `(value as num).toDouble()` — non testé, hors scope [lib/domain/habit/services/] — deferred, pre-existing
+- [x] [Review][Defer] `double.nan` comme valeur de completion passe le cast silencieusement et sous-compte les séries ; pré-remplit le dialog avec `"NaN"` [habit_record_dialog.dart:34, services] — deferred, pre-existing
 
 ## Fichiers à modifier
 

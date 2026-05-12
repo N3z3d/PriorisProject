@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
+import 'package:prioris/domain/habit/repositories/habit_repository.dart';
 import 'package:prioris/data/providers/repository_providers.dart';
 import 'package:prioris/data/repositories/habit_repository.dart';
 
@@ -52,7 +53,7 @@ class HabitsNotifier extends StateNotifier<HabitsState> {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
-      final repository = _ref.read(habitRepositoryProvider);
+      final HabitRepository repository = _ref.read(habitRepositoryProvider);
       final habits = await repository.getAllHabits();
 
       print('[HabitsProvider] I: Fetched ${habits.length} habits successfully');
@@ -73,7 +74,7 @@ class HabitsNotifier extends StateNotifier<HabitsState> {
   /// Ajoute une nouvelle habitude
   Future<void> addHabit(Habit habit) async {
     try {
-      final repository = _ref.read(habitRepositoryProvider);
+      final HabitRepository repository = _ref.read(habitRepositoryProvider);
       await repository.saveHabit(habit);
 
       // Recharge les habitudes pour avoir l'état le plus récent
@@ -87,7 +88,7 @@ class HabitsNotifier extends StateNotifier<HabitsState> {
   /// Supprime une habitude
   Future<void> deleteHabit(String habitId) async {
     try {
-      final repository = _ref.read(habitRepositoryProvider);
+      final HabitRepository repository = _ref.read(habitRepositoryProvider);
       await repository.deleteHabit(habitId);
 
       // Met à jour l'état local immédiatement
@@ -105,7 +106,7 @@ class HabitsNotifier extends StateNotifier<HabitsState> {
   /// Met à jour une habitude existante
   Future<void> updateHabit(Habit habit) async {
     try {
-      final repository = _ref.read(habitRepositoryProvider);
+      final HabitRepository repository = _ref.read(habitRepositoryProvider);
       await repository.updateHabit(habit);
 
       // Met à jour l'état local

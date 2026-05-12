@@ -2,13 +2,13 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
 import 'package:prioris/domain/services/core/error_handling_service.dart';
-import 'custom_list_repository.dart';
+import 'package:prioris/domain/list/repositories/custom_list_repository.dart';
 
 /// Implémentation Hive pour la persistance locale des listes personnalisées
 /// 
 /// Cette implémentation utilise les adapters Hive générés automatiquement
 /// pour offrir une persistance réelle des données entre les sessions.
-class HiveCustomListRepository implements CustomListRepository {
+class HiveCustomListRepository extends CustomListRepository {
   static const String _boxName = 'custom_lists';
   late Box<CustomList> _box;
   bool _isInitialized = false;
@@ -246,8 +246,8 @@ class HiveCustomListRepository implements CustomListRepository {
     }
   }
 
-  /// Statistiques de la box Hive (pour debug/monitoring)
-  Future<Map<String, dynamic>> getStats() async {
+  /// Métriques de diagnostic de la box Hive (debug/monitoring) — non lié au contrat du port domaine
+  Future<Map<String, dynamic>> getDiagnostics() async {
     await _ensureInitialized();
     
     return {

@@ -1,6 +1,6 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
-import 'package:prioris/data/repositories/list_item_repository.dart';
+import 'package:prioris/domain/list/repositories/list_item_repository.dart';
 
 /// Repository Hive pour la persistance des ListItem
 /// 

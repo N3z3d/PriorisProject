@@ -34,7 +34,7 @@ class OperationRecord {
 
 /// Deterministic fake repository that records all operations
 /// Enables verification of persistence behavior and rollback scenarios
-class RecordingListRepository implements CustomListRepository {
+class RecordingListRepository extends CustomListRepository {
   final Map<String, CustomList> _storage = {};
   final List<OperationRecord> _operationsLog = [];
 
@@ -239,13 +239,4 @@ class RecordingListRepository implements CustomListRepository {
     }
   }
 
-  // CustomListRepository methods
-  @override
-  Future<Map<String, dynamic>> getStats() async {
-    return {
-      'totalLists': _storage.length,
-      'totalWriteCount': _writeCount,
-      'operationsCount': _operationsLog.length,
-    };
-  }
 }

@@ -1,38 +1,7 @@
+export 'package:prioris/domain/list/repositories/custom_list_repository.dart';
+import 'package:prioris/domain/list/repositories/custom_list_repository.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
-import 'interfaces/repository_interfaces.dart';
-
-/// Repository unifié pour la gestion des listes personnalisées
-/// 
-/// Respecte le principe Interface Segregation en implémentant
-/// des interfaces séparées pour chaque responsabilité.
-abstract class CustomListRepository 
-    implements 
-      CustomListCrudRepositoryInterface,
-      CustomListSearchRepositoryInterface,
-      CustomListFilterRepositoryInterface,
-      CustomListCleanRepositoryInterface {
-  
-  // Toutes les méthodes sont déjà définies dans les interfaces parentes
-
-  /// Fournit des statistiques de base sur les listes stockées.
-  /// Retourne au minimum le nombre de listes, de listes complétées
-  /// ainsi que le total d'items agrégés.
-  Future<Map<String, dynamic>> getStats() async {
-    final lists = await getAllLists();
-    final completed = lists.where((list) => list.isCompleted).length;
-    final itemCount = lists.fold<int>(
-      0,
-      (count, list) => count + list.items.length,
-    );
-
-    return {
-      'count': lists.length,
-      'completed': completed,
-      'items': itemCount,
-    };
-  }
-}
 
 /// Implémentation en mémoire pour les tests
 class InMemoryCustomListRepository implements CustomListRepository {

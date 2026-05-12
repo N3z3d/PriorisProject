@@ -46,6 +46,7 @@ so that {{benefit}}.
 
 ### Completion Notes List
 
+- [ ] sprint-status mis à jour à `done` pour cette story
 - [ ] Test non-créateur : vérifier le flux avec un compte utilisateur non-créateur du projet Supabase
 
 ### File List

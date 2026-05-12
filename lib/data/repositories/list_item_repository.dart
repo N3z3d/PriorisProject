@@ -1,25 +1,6 @@
+export 'package:prioris/domain/list/repositories/list_item_repository.dart';
+import 'package:prioris/domain/list/repositories/list_item_repository.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
-
-/// Abstraction du repository pour la gestion des ListItem
-abstract class ListItemRepository {
-  /// Retourne tous les ListItem
-  Future<List<ListItem>> getAll();
-
-  /// Retourne un ListItem par son id
-  Future<ListItem?> getById(String id);
-
-  /// Ajoute un nouvel item
-  Future<ListItem> add(ListItem item);
-
-  /// Met à jour un item existant
-  Future<ListItem> update(ListItem item);
-
-  /// Supprime un item par son id
-  Future<void> delete(String id);
-  
-  /// Récupère les items par ID de liste
-  Future<List<ListItem>> getByListId(String listId);
-}
 
 /// Implémentation en mémoire du repository (pour tests/démo)
 class InMemoryListItemRepository implements ListItemRepository {

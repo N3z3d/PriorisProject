@@ -13,6 +13,10 @@
    - Étape 1 (rapport) : fichier | raison | références | décision.
    - Étape 2 (diff) : supprimer uniquement ce qui a été validé.
 4) Pas d’ajout de dépendances externes sans justification explicite.
+5) **Diagnostic exhaustif** : quand le bug est un pattern (cast, duplication d’interface, violation architecturale), grepper l’ensemble du codebase (`grep -r "pattern" lib/`) avant d’ouvrir le fichier cible. Ne corriger que le fichier immédiat sans grep global est insuffisant.
+6) **deferred-work.md comme source de stories** : les items `[Defer]` issus des reviews de code sont une source légitime de stories. Après clôture d’une story, consulter `deferred-work.md` pour identifier si des items nécessitent une story de suivi immédiate (priorité HIGH ou lien direct avec la story suivante planifiée).
+7) **Finding `[Review][HIGH]` → story automatique** : tout finding marqué HIGH lors d’une review de code génère une story dédiée dans le backlog courant — pas seulement un item `deferred-work.md`. La mécanique deferred est pour les items MEDIUM/LOW.
+8) **Décision HIGH de rétro → story créée avant clôture de la rétro** : toute décision ou item HIGH identifié pendant une rétrospective doit avoir une story créée dans l’epic suivant avant que le document de rétro soit sauvegardé. Une décision sans story est une intention, pas un engagement.
 
 ## Contraintes de taille
 - **Maximum 500 lignes par classe**.
