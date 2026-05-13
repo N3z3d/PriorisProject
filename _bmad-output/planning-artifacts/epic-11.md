@@ -173,9 +173,44 @@ Avant de basculer en production :
 
 ---
 
+### Story 11.6 : Corriger le workflow CI/CD cassé — Flutter 3.19 → 3.32.8
+
+**⚠️ URGENT — INCIDENT ACTIF** : Le workflow GitHub Actions déploie actuellement avec Flutter 3.19.0 alors que le projet tourne sur Flutter 3.32.8 (puro env `prioris-328`). Conséquence : le job de déploiement tourne dans le vide ou échoue silencieusement. Chaque push sur `main` depuis des semaines n'a pas réellement déployé l'app.
+
+**As a** développeur,
+**I want** que le workflow CI/CD utilise la même version Flutter que le projet local,
+**so that** chaque push sur `main` déploie réellement l'application sur GitHub Pages.
+
+**Contexte technique identifié :**
+- `.github/workflows/ci.yml` ligne `flutter-version: '3.19.0'` → doit être `'3.32.8'`
+- Le job `deploy` est vide (seulement des commentaires) → ajouter les étapes de build et déploiement
+- Ce bug a été identifié lors du gap analysis party mode 2026-05-13
+
+**Plan :**
+1. Modifier `.github/workflows/ci.yml` : `flutter-version: '3.19.0'` → `flutter-version: '3.32.8'`
+2. Compléter le job `deploy` avec les étapes manquantes :
+   - `flutter build web --release --base-href /PriorisProject/`
+   - Deploy vers GitHub Pages via `peaceiris/actions-gh-pages`
+3. Vérifier que le job de test (`flutter test --exclude-tags integration`) passe
+4. Vérifier que le job `flutter analyze --no-pub` passe
+5. Faire un push test → vérifier que le déploiement produit un artefact réel
+
+**Acceptance Criteria :**
+1. `flutter-version` dans `ci.yml` = `'3.32.8'`
+2. Push sur `main` → job deploy vert → `https://n3z3d.github.io/PriorisProject/` mis à jour
+3. Job test → vert (0 régression)
+4. Job analyze → vert (0 erreur fatale)
+5. Durée totale du pipeline < 10 minutes
+
+**Priorité :** 🔴 CRITIQUE — premier point du plan d'implémentation défini en party mode. Bloque TOUT le reste.
+**Effort estimé :** 1-2h
+
+---
+
 ## Critères de clôture de l'Épic 11
 
 - [ ] Les 5 gates de sortie du pilote (G1 → G5) sont tous verts
+- [ ] Story 11.6 terminée en premier — CI/CD fonctionnel vérifié
 - [ ] `https://app.prioris.fr` est l'URL officielle, documentée dans le README
 - [ ] Backup DB testé avec restauration réussie
 - [ ] CI/CD bloque les régressions (tests + analyze)
