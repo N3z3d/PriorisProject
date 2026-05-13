@@ -300,12 +300,6 @@ class AppConfig {
 
   /// Valide qu'une URL Supabase n'est pas un placeholder
   static void validateSupabaseUrl(String url) {
-    // Si c'est une vraie URL Supabase, pas de validation nécessaire
-    if (url.contains('huxddyqkjczckagkpzef.supabase.co') ||
-        url.contains('vgowxrktjzgwrfivtvse.supabase.co')) {
-      return; // URL valide trouvée
-    }
-
     // Liste des patterns de placeholder détectés
     final placeholderPatterns = [
       'your-project-id.supabase.co',
@@ -333,12 +327,6 @@ class AppConfig {
 
   /// Valide qu'une clé Supabase n'est pas un placeholder
   static void validateSupabaseKey(String key) {
-    // Si c'est une vraie clé JWT Supabase, pas de validation nécessaire
-    if (key.startsWith('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1eGRkeXFramN6Y2thZ2twemVm') ||
-        key.startsWith('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZnb3d4cmt0anpnd3JmaXZ0dnNl')) {
-      return; // Clé valide trouvée
-    }
-
     // Liste des patterns de placeholder détectés
     final placeholderPatterns = [
       'your-anon-key-here',

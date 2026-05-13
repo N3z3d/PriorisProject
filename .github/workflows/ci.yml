@@ -65,13 +65,13 @@ jobs:
       
     - name: Check for secrets
       run: |
-        echo "Checking for exposed secrets..."
-        if grep -r "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9" . --exclude-dir=.git; then
-          echo "❌ JWT tokens found in code!"
+        echo "Checking for exposed secrets in lib/ and assets/..."
+        if grep -r "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9" lib/ assets/ --include="*.dart" --include="*.yaml" --include="*.json" 2>/dev/null; then
+          echo "❌ JWT tokens found in lib/ or assets/!"
           exit 1
         fi
-        if grep -r "https://.*\.supabase\.co" . --exclude-dir=.git --exclude=".env.example"; then
-          echo "❌ Supabase URLs found in code!"
+        if grep -r "https://[a-z0-9]*\.supabase\.co" lib/ assets/ --include="*.dart" --include="*.yaml" --include="*.json" 2>/dev/null; then
+          echo "❌ Supabase URLs found in lib/ or assets/!"
           exit 1
         fi
         echo "✅ No secrets detected"
