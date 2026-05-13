@@ -77,9 +77,7 @@ jobs:
         echo "✅ No secrets detected"
         
     - name: Dependency vulnerability scan
-      run: |
-        flutter pub deps
-        # Add vulnerability scanning tool here if needed
+      run: echo "ℹ️ No vulnerability scanner configured yet"
 
   quality:
     name: Code Quality
