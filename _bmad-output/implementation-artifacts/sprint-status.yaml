@@ -35,7 +35,7 @@
 # - Le developpeur passe la story a 'review', puis lance le workflow de code review
 
 generated: '2026-04-12T22:39:56.0084619+02:00'
-last_updated: '2026-05-12T12:00:00+02:00'
+last_updated: '2026-05-13T10:00:00+02:00'
 project: 'PriorisProject'
 project_key: 'NOKEY'
 tracking_system: 'file-system'
@@ -119,3 +119,11 @@ development_status:
   10-14-completer-couverture-i18n: backlog
   10-15-onboarding-actif-activation-event: backlog
   epic-10-retrospective: optional
+
+  epic-11: backlog
+  11-1-configurer-domaine-personnalise-app-prioris-fr: backlog
+  11-2-renforcer-cicd-gates-test-et-analyse: backlog
+  11-3-sauvegardes-automatiques-postgresql-supabase: backlog
+  11-4-monitoring-uptime-et-alertes-production: backlog
+  11-5-strategie-branching-main-develop-protection-branches: backlog
+  epic-11-retrospective: optional
