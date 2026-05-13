@@ -2006,6 +2006,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Error withdrawing consent. Please try again.';
 
   @override
+  String get settingsRevokeConsentSuccess => 'Consent withdrawn. Signing out…';
+
+  @override
   String get settingsDeleteAccountTile => 'Delete my account';
 
   @override

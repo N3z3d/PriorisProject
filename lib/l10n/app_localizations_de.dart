@@ -2000,6 +2000,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Fehler beim Widerrufen der Einwilligung. Bitte versuchen Sie es erneut.';
 
   @override
+  String get settingsRevokeConsentSuccess =>
+      'Einwilligung widerrufen. Abmeldung läuft…';
+
+  @override
   String get settingsDeleteAccountTile => 'Delete my account';
 
   @override

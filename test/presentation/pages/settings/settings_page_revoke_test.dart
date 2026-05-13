@@ -55,5 +55,15 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
       expect(prefs.getBool('privacy_consent_v1'), isNull);
     });
+
+    testWidgets('tapper Retirer affiche le snackbar de succès', (tester) async {
+      await tester.pumpWidget(buildSubject());
+      await tester.pumpAndSettle();
+      await tester.tap(find.textContaining('Retirer mon consentement'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Retirer'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Consentement retiré'), findsOneWidget);
+    });
   });
 }

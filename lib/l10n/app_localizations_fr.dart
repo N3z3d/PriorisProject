@@ -2020,6 +2020,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Erreur lors du retrait du consentement. Veuillez réessayer.';
 
   @override
+  String get settingsRevokeConsentSuccess =>
+      'Consentement retiré. Déconnexion en cours…';
+
+  @override
   String get settingsDeleteAccountTile => 'Supprimer mon compte';
 
   @override

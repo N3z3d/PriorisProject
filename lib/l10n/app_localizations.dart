@@ -3504,6 +3504,12 @@ abstract class AppLocalizations {
   /// **'Error withdrawing consent. Please try again.'**
   String get settingsRevokeConsentError;
 
+  /// Success message after consent is withdrawn
+  ///
+  /// In en, this message translates to:
+  /// **'Consent withdrawn. Signing out…'**
+  String get settingsRevokeConsentSuccess;
+
   /// Delete account tile title in Settings
   ///
   /// In en, this message translates to:

@@ -1330,6 +1330,10 @@
   "@settingsRevokeConsentError": {
     "description": "Message d'erreur si le retrait du consentement échoue"
   },
+  "settingsRevokeConsentSuccess": "Consentement retiré. Déconnexion en cours…",
+  "@settingsRevokeConsentSuccess": {
+    "description": "Message de succès après le retrait du consentement"
+  },
   "settingsDeleteAccountTile": "Supprimer mon compte",
   "@settingsDeleteAccountTile": {
     "description": "Titre du tile Suppression de compte dans Settings"

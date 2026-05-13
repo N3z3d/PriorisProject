@@ -2312,6 +2312,10 @@
   "@settingsRevokeConsentError": {
     "description": "Error message if consent revocation fails"
   },
+  "settingsRevokeConsentSuccess": "Consent withdrawn. Signing out…",
+  "@settingsRevokeConsentSuccess": {
+    "description": "Success message after consent is withdrawn"
+  },
   "settingsDeleteAccountTile": "Delete my account",
   "@settingsDeleteAccountTile": {
     "description": "Delete account tile title in Settings"

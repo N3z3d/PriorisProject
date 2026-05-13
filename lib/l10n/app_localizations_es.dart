@@ -1982,6 +1982,10 @@ class AppLocalizationsEs extends AppLocalizations {
       'Error al retirar el consentimiento. Por favor, inténtelo de nuevo.';
 
   @override
+  String get settingsRevokeConsentSuccess =>
+      'Consentimiento retirado. Cerrando sesión…';
+
+  @override
   String get settingsDeleteAccountTile => 'Delete my account';
 
   @override

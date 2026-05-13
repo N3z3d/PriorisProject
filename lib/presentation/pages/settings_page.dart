@@ -146,6 +146,12 @@ class SettingsPage extends ConsumerWidget {
               if (dialogContext.mounted) Navigator.of(dialogContext).pop();
               try {
                 await ref.read(consentProvider.notifier).revoke();
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(l10n.settingsRevokeConsentSuccess)),
+                  );
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                }
               } catch (_) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(

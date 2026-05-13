@@ -1197,6 +1197,10 @@
   "@settingsRevokeConsentError": {
     "description": "Error message if consent revocation fails"
   },
+  "settingsRevokeConsentSuccess": "Einwilligung widerrufen. Abmeldung läuft…",
+  "@settingsRevokeConsentSuccess": {
+    "description": "Erfolgsmeldung nach dem Widerruf der Einwilligung"
+  },
   "settingsDeleteAccountTile": "Delete my account",
   "@settingsDeleteAccountTile": {
     "description": "Delete account tile title in Settings"
