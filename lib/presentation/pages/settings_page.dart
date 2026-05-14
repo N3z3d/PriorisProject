@@ -28,7 +28,10 @@ class SettingsPage extends ConsumerWidget {
               _buildSettingTile(
                 icon: Icons.info_outline,
                 title: l10n.version,
-                subtitle: '1.0.0',
+                subtitle: const String.fromEnvironment(
+                  'PRIORIS_APP_VERSION',
+                  defaultValue: '1.0.0-dev',
+                ),
                 onTap: () {},
               ),
               _buildSettingTile(
@@ -144,20 +147,18 @@ class SettingsPage extends ConsumerWidget {
           TextButton(
             onPressed: () async {
               if (dialogContext.mounted) Navigator.of(dialogContext).pop();
+              // Capturer avant le await : Riverpod rebuild dispose SettingsPage
+              // avant que revoke() retourne, rendant context.mounted=false.
+              final messenger = ScaffoldMessenger.of(context);
+              final nav = Navigator.of(context);
+              final successText = l10n.settingsRevokeConsentSuccess;
+              final errorText = l10n.settingsRevokeConsentError;
               try {
                 await ref.read(consentProvider.notifier).revoke();
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l10n.settingsRevokeConsentSuccess)),
-                  );
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                }
+                messenger.showSnackBar(SnackBar(content: Text(successText)));
+                nav.popUntil((route) => route.isFirst);
               } catch (_) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l10n.settingsRevokeConsentError)),
-                  );
-                }
+                messenger.showSnackBar(SnackBar(content: Text(errorText)));
               }
             },
             child: Text(
