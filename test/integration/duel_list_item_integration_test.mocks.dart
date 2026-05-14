@@ -6,9 +6,11 @@
 import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:prioris/data/repositories/custom_list_repository.dart' as _i6;
-import 'package:prioris/data/repositories/list_item_repository.dart' as _i9;
 import 'package:prioris/data/repositories/task_repository.dart' as _i3;
+import 'package:prioris/domain/list/repositories/custom_list_repository.dart'
+    as _i6;
+import 'package:prioris/domain/list/repositories/list_item_repository.dart'
+    as _i9;
 import 'package:prioris/domain/models/core/entities/custom_list.dart' as _i7;
 import 'package:prioris/domain/models/core/entities/list_item.dart' as _i2;
 import 'package:prioris/domain/models/core/entities/task.dart' as _i5;
@@ -195,20 +197,20 @@ class MockCustomListRepository extends _i1.Mock
       ) as _i4.Future<_i7.CustomList?>);
 
   @override
-  _i4.Future<void> save(_i7.CustomList? list) => (super.noSuchMethod(
+  _i4.Future<void> save(_i7.CustomList? entity) => (super.noSuchMethod(
         Invocation.method(
           #save,
-          [list],
+          [entity],
         ),
         returnValue: _i4.Future<void>.value(),
         returnValueForMissingStub: _i4.Future<void>.value(),
       ) as _i4.Future<void>);
 
   @override
-  _i4.Future<void> update(_i7.CustomList? list) => (super.noSuchMethod(
+  _i4.Future<void> update(_i7.CustomList? entity) => (super.noSuchMethod(
         Invocation.method(
           #update,
-          [list],
+          [entity],
         ),
         returnValue: _i4.Future<void>.value(),
         returnValueForMissingStub: _i4.Future<void>.value(),

@@ -79,8 +79,8 @@ supabase_*temp*.sql
 supabase_quick_fix.sql
 supabase_cleanup.sql
 
-# Generated mock files
-*.mocks.dart
+# Generated mock files — versionnés depuis story 10.2 (déterministes, safe à committer)
+# *.mocks.dart
 
 # Coverage reports (should be generated, not committed)
 coverage/ 

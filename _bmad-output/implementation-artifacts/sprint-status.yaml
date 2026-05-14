@@ -105,7 +105,7 @@ development_status:
   epic-10: in-progress
   10-1-corriger-bugs-ux-revokeconsent: done
   # --- Dette CI (débloque les gates avant tout autre travail) ---
-  10-2-versionner-mocks-corriger-compatibilite-dart-ci: ready-for-dev
+  10-2-versionner-mocks-corriger-compatibilite-dart-ci: in-progress
   10-3-supprimer-fichiers-orphelins-erreurs-analyse-dart: ready-for-dev
   10-4-nettoyage-dette-print-inmemory-isp: backlog
   # --- Architecture domain ports ---

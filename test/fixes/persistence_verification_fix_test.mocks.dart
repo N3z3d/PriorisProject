@@ -98,20 +98,20 @@ class MockCustomListRepository extends _i1.Mock
       ) as _i5.Future<_i6.CustomList?>);
 
   @override
-  _i5.Future<void> save(_i6.CustomList? list) => (super.noSuchMethod(
+  _i5.Future<void> save(_i6.CustomList? entity) => (super.noSuchMethod(
         Invocation.method(
           #save,
-          [list],
+          [entity],
         ),
         returnValue: _i5.Future<void>.value(),
         returnValueForMissingStub: _i5.Future<void>.value(),
       ) as _i5.Future<void>);
 
   @override
-  _i5.Future<void> update(_i6.CustomList? list) => (super.noSuchMethod(
+  _i5.Future<void> update(_i6.CustomList? entity) => (super.noSuchMethod(
         Invocation.method(
           #update,
-          [list],
+          [entity],
         ),
         returnValue: _i5.Future<void>.value(),
         returnValueForMissingStub: _i5.Future<void>.value(),
