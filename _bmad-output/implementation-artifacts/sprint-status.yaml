@@ -118,6 +118,8 @@ development_status:
   10-13-alternative-desktop-valider-taches: backlog
   10-14-completer-couverture-i18n: backlog
   10-15-onboarding-actif-activation-event: backlog
+  10-16-supprimer-fichiers-orphelins-erreurs-analyse-dart: backlog
+  10-17-versionner-mocks-corriger-compatibilite-dart-ci: backlog
   epic-10-retrospective: optional
 
   epic-11: backlog
