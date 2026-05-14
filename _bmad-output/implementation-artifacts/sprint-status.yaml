@@ -130,27 +130,35 @@ development_status:
   epic-10-retrospective: optional
 
   epic-11: backlog
-  11-6-corriger-cicd-casse-flutter-version: backlog
-  11-1-configurer-domaine-personnalise-app-prioris-fr: backlog
+  # --- CI/CD (urgent — pipeline cassé) ---
+  11-1-corriger-cicd-casse-flutter-version: backlog
   11-2-renforcer-cicd-gates-test-et-analyse: backlog
-  11-3-sauvegardes-automatiques-postgresql-supabase: backlog
-  11-4-monitoring-uptime-et-alertes-production: backlog
-  11-5-strategie-branching-main-develop-protection-branches: backlog
+  # --- Infrastructure production ---
+  11-3-strategie-branching-main-develop-protection-branches: backlog
+  11-4-configurer-domaine-personnalise-app-prioris-fr: backlog
+  11-5-sauvegardes-automatiques-postgresql-supabase: backlog
+  11-6-monitoring-uptime-et-alertes-production: backlog
   epic-11-retrospective: optional
 
-  epic-12: backlog
-  12-1-sentry-error-tracking: backlog
-  12-2-sentry-alertes: backlog
-  12-3-posthog-sdk-events: backlog
-  12-4-funnel-activation: backlog
-  12-5-retention-d1-d7-d30: backlog
-  12-6-feature-adoption: backlog
-  12-7-admin-page-liste-utilisateurs: backlog
-  12-8-admin-fiche-utilisateur-customer-360: backlog
-  12-9-utilisateurs-actifs-temps-reel: backlog
-  12-10-metriques-operationnelles-supabase: backlog
-  12-11-alertes-anomalies: backlog
-  epic-12-retrospective: optional
+  epic-17: backlog
+  # --- Sécurité (blocant — secrets en repo) ---
+  17-1-gitleaks-detection-secrets-cicd: backlog
+  17-2-documentation-rotation-secrets: backlog
+  # --- Hygiène repo ---
+  17-3-supprimer-faux-documents-benchmarks: backlog
+  17-4-conventional-commits-commitlint: backlog
+  17-5-versioning-semver-changelog-tags: backlog
+  epic-17-retrospective: optional
+
+  epic-16: backlog
+  # --- Droits utilisateurs (user-facing, requis avant scale) ---
+  16-1-bouton-refuser-consent-gate-page: backlog
+  16-2-suppression-compte-art17-droit-oubli: backlog
+  16-3-export-donnees-art20-portabilite: backlog
+  # --- Obligations légales ---
+  16-4-dpa-supabase-data-processing-agreement: backlog
+  16-5-breach-notification-72h-cnil: backlog
+  epic-16-retrospective: optional
 
   epic-13: backlog
   13-1-migrations-hive-versionnees: backlog
@@ -158,6 +166,24 @@ development_status:
   13-3-tests-e2e-playwright-flux-critiques: backlog
   13-4-script-seed-teardown-fixtures: backlog
   epic-13-retrospective: optional
+
+  epic-12: backlog
+  # --- Tracking erreurs ---
+  12-1-sentry-error-tracking: backlog
+  12-2-sentry-alertes: backlog
+  # --- Analytics produit ---
+  12-3-posthog-sdk-events: backlog
+  12-4-funnel-activation: backlog
+  12-5-retention-d1-d7-d30: backlog
+  12-6-feature-adoption: backlog
+  # --- Admin ---
+  12-7-admin-page-liste-utilisateurs: backlog
+  12-8-admin-fiche-utilisateur-customer-360: backlog
+  12-9-utilisateurs-actifs-temps-reel: backlog
+  # --- Ops ---
+  12-10-metriques-operationnelles-supabase: backlog
+  12-11-alertes-anomalies: backlog
+  epic-12-retrospective: optional
 
   epic-14: backlog
   14-1-cache-lecture-seule-hive-offline: backlog
@@ -167,25 +193,14 @@ development_status:
   epic-14-retrospective: optional
 
   epic-15: backlog
+  # --- Infrastructure notifs ---
   15-1-integration-firebase-cloud-messaging: backlog
   15-2-background-isolate-notifications: backlog
-  15-3-rappel-quotidien-configurable: backlog
-  15-4-deep-links-notification-page-habitude: backlog
-  15-5-optin-push-rgpd-compliant: backlog
+  # --- RGPD obligatoire avant activation ---
+  15-3-optin-push-rgpd-compliant: backlog
+  # --- Features ---
+  15-4-rappel-quotidien-configurable: backlog
+  15-5-deep-links-notification-page-habitude: backlog
   epic-15-retrospective: optional
-
-  epic-16: backlog
-  16-1-dpa-supabase-data-processing-agreement: backlog
-  16-2-breach-notification-72h-cnil: backlog
-  16-3-suppression-compte-art17-droit-oubli: backlog
-  16-4-bouton-refuser-consent-gate-page: backlog
-  16-5-export-donnees-art20-portabilite: backlog
-  epic-16-retrospective: optional
-
-  epic-17: backlog
-  17-1-supprimer-faux-documents-benchmarks: backlog
-  17-2-conventional-commits-commitlint: backlog
-  17-3-versioning-semver-changelog-tags: backlog
-  17-4-gitleaks-detection-secrets-cicd: backlog
   17-5-documentation-rotation-secrets: backlog
   epic-17-retrospective: optional
