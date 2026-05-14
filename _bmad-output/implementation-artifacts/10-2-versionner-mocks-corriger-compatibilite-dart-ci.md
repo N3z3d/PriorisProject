@@ -36,8 +36,8 @@ afin que le gate CI de tests puisse être réactivé (story 11-2).
 - [x] **T4 — Retirer build_runner du ci.yml (devenu inutile)**
   - [x] T4.1 — Supprimer le step `Generate mocks` de ci.yml
 
-- [ ] **T5 — Validation CI**
-  - [ ] T5.1 — Push → vérifier que le job `Test & Analysis` passe avec des tests qui passent
+- [x] **T5 — Validation CI**
+  - [x] T5.1 — Push → vérifier que le job `Test & Analysis` passe avec des tests qui passent
   - [x] T5.2 — Compter les tests : doit être ≥ 2034 (état après story 10.1)
 
 ## Dev Notes
