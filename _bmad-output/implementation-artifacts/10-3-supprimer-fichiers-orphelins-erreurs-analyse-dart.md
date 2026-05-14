@@ -1,4 +1,4 @@
-# Story 10.16 : Supprimer les fichiers orphelins et corriger les 177 erreurs d'analyse Dart
+# Story 10.3 : Supprimer les fichiers orphelins et corriger les 177 erreurs d'analyse Dart
 
 Status: ready-for-dev
 

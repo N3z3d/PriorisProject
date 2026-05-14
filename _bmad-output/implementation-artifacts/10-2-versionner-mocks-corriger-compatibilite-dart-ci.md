@@ -1,4 +1,4 @@
-# Story 10.17 : Versionner les mocks et corriger la compatibilité Dart/CI
+# Story 10.2 : Versionner les mocks et corriger la compatibilité Dart/CI
 
 Status: ready-for-dev
 

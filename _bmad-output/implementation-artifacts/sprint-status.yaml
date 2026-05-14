@@ -104,22 +104,28 @@ development_status:
 
   epic-10: in-progress
   10-1-corriger-bugs-ux-revokeconsent: done
-  10-2-extraire-iconsentrepository-vers-domain-ports: backlog
-  10-3-extraire-port-iauthservice-vers-domain-ports: backlog
-  10-4-corriger-violations-imports-domain-services: backlog
-  10-5-tests-domaine-purs-sans-supabase: backlog
-  10-6-nettoyage-dette-print-inmemory-isp: backlog
-  10-7-corriger-chargement-initial-duel: backlog
-  10-8-mise-a-jour-cards-apres-sauvegarde-listes: backlog
-  10-9-corriger-marquer-comme-fait-statistiques-habitudes: backlog
-  10-10-corriger-mise-a-jour-insights: backlog
-  10-11-remplacer-recochage-auto-listes-par-validation-ux: backlog
-  10-12-marquer-comme-fait-directement-accessible: backlog
-  10-13-alternative-desktop-valider-taches: backlog
-  10-14-completer-couverture-i18n: backlog
-  10-15-onboarding-actif-activation-event: backlog
-  10-16-supprimer-fichiers-orphelins-erreurs-analyse-dart: backlog
-  10-17-versionner-mocks-corriger-compatibilite-dart-ci: backlog
+  # --- Dette CI (débloque les gates avant tout autre travail) ---
+  10-2-versionner-mocks-corriger-compatibilite-dart-ci: ready-for-dev
+  10-3-supprimer-fichiers-orphelins-erreurs-analyse-dart: ready-for-dev
+  10-4-nettoyage-dette-print-inmemory-isp: backlog
+  # --- Architecture domain ports ---
+  10-5-extraire-iconsentrepository-vers-domain-ports: backlog
+  10-6-extraire-port-iauthservice-vers-domain-ports: backlog
+  10-7-corriger-violations-imports-domain-services: backlog
+  10-8-tests-domaine-purs-sans-supabase: backlog
+  # --- Bugs ---
+  10-9-corriger-chargement-initial-duel: backlog
+  10-10-mise-a-jour-cards-apres-sauvegarde-listes: backlog
+  10-11-corriger-marquer-comme-fait-statistiques-habitudes: backlog
+  10-12-corriger-mise-a-jour-insights: backlog
+  # --- UX ---
+  10-13-remplacer-recochage-auto-listes-par-validation-ux: backlog
+  10-14-marquer-comme-fait-directement-accessible: backlog
+  10-15-alternative-desktop-valider-taches: backlog
+  # --- Polish ---
+  10-16-completer-couverture-i18n: backlog
+  10-17-onboarding-actif-activation-event: backlog
+  # --- Décision produit ---
   10-18-ux-retrait-consentement-3-choix: backlog
   epic-10-retrospective: optional
 
