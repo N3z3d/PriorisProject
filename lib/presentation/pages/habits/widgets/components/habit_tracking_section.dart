@@ -77,7 +77,7 @@ class HabitTrackingSection extends StatelessWidget {
           const SizedBox(height: 16),
           _buildModeChips(l10n),
           const SizedBox(height: 12),
-          _buildModeContent(l10n),
+          _buildModeContent(context, l10n),
           const SizedBox(height: 8),
           Text(
             l10n.habitTrackingTip,
@@ -128,18 +128,18 @@ class HabitTrackingSection extends StatelessWidget {
     );
   }
 
-  Widget _buildModeContent(AppLocalizations l10n) {
+  Widget _buildModeContent(BuildContext context, AppLocalizations l10n) {
     switch (trackingMode) {
       case TrackingMode.period:
         return _buildPeriodPhrase(l10n);
       case TrackingMode.interval:
         return _buildIntervalPhrase(l10n);
       case TrackingMode.cycle:
-        return _buildCycleFields(l10n);
+        return _buildCycleFields(context, l10n);
       case TrackingMode.weekdays:
         return _buildWeekdaysPicker(l10n);
       case TrackingMode.specificDate:
-        return _buildSpecificDatePicker(l10n);
+        return _buildSpecificDatePicker(context, l10n);
     }
   }
 
@@ -196,7 +196,7 @@ class HabitTrackingSection extends StatelessWidget {
     );
   }
 
-  Widget _buildCycleFields(AppLocalizations l10n) {
+  Widget _buildCycleFields(BuildContext context, AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -222,7 +222,7 @@ class HabitTrackingSection extends StatelessWidget {
         TextButton.icon(
           onPressed: () async {
             final picked = await showDatePicker(
-              context: timesController.context,
+              context: context,
               initialDate: cycleStartDate ?? DateTime.now(),
               firstDate: DateTime(2000),
               lastDate: DateTime(2100),
@@ -274,14 +274,14 @@ class HabitTrackingSection extends StatelessWidget {
     );
   }
 
-  Widget _buildSpecificDatePicker(AppLocalizations l10n) {
+  Widget _buildSpecificDatePicker(BuildContext context, AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TextButton.icon(
           onPressed: () async {
             final picked = await showDatePicker(
-              context: timesController.context,
+              context: context,
               initialDate: specificDate ?? DateTime.now(),
               firstDate: DateTime(2000),
               lastDate: DateTime(2100),

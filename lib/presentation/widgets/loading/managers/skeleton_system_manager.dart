@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:prioris/presentation/widgets/loading/interfaces/skeleton_system_interfaces.dart';
 import 'package:prioris/presentation/widgets/loading/systems/skeleton_system_slim.dart';
 import 'package:prioris/presentation/widgets/loading/components/skeleton_component_factory.dart';
-import 'package:prioris/presentation/widgets\loading\strategies\skeleton_layout_strategies.dart';
+import 'package:prioris/presentation/widgets/loading/strategies/skeleton_layout_strategies.dart';
 
 /// Manager that replaces ComplexLayoutSkeletonSystem with SOLID architecture
 /// SOLID COMPLIANCE: All principles - orchestrates SOLID components

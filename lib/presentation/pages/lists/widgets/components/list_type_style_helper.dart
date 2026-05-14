@@ -23,6 +23,10 @@ class ListTypeStyleHelper {
         return Icons.restaurant;
       case ListType.PROJECTS:
         return Icons.work;
+      case ListType.TODO:
+        return Icons.check_box;
+      case ListType.IDEAS:
+        return Icons.lightbulb;
       case ListType.CUSTOM:
         return Icons.list;
     }
@@ -43,6 +47,10 @@ class ListTypeStyleHelper {
         return Colors.red;
       case ListType.PROJECTS:
         return Colors.indigo;
+      case ListType.TODO:
+        return Colors.teal;
+      case ListType.IDEAS:
+        return Colors.amber;
       case ListType.CUSTOM:
         return AppTheme.primaryColor;
     }

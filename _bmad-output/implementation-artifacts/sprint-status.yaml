@@ -35,7 +35,7 @@
 # - Le developpeur passe la story a 'review', puis lance le workflow de code review
 
 generated: '2026-04-12T22:39:56.0084619+02:00'
-last_updated: '2026-05-14T00:00:00+02:00'
+last_updated: '2026-05-15T12:00:00+02:00'
 project: 'PriorisProject'
 project_key: 'NOKEY'
 tracking_system: 'file-system'
@@ -105,8 +105,8 @@ development_status:
   epic-10: in-progress
   10-1-corriger-bugs-ux-revokeconsent: done
   # --- Dette CI (débloque les gates avant tout autre travail) ---
-  10-2-versionner-mocks-corriger-compatibilite-dart-ci: review
-  10-3-supprimer-fichiers-orphelins-erreurs-analyse-dart: ready-for-dev
+  10-2-versionner-mocks-corriger-compatibilite-dart-ci: done
+  10-3-supprimer-fichiers-orphelins-erreurs-analyse-dart: done
   10-4-nettoyage-dette-print-inmemory-isp: backlog
   # --- Architecture domain ports ---
   10-5-extraire-iconsentrepository-vers-domain-ports: backlog
@@ -127,6 +127,8 @@ development_status:
   10-17-onboarding-actif-activation-event: backlog
   # --- Décision produit ---
   10-18-ux-retrait-consentement-3-choix: backlog
+  # --- Issu code review 10-3 (finding HIGH) ---
+  10-19-relier-habitaddform-aux-categories-existantes: backlog
   epic-10-retrospective: optional
 
   epic-11: backlog

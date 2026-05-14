@@ -80,7 +80,7 @@ class HabitsListView implements IHabitsListView {
         ),
         borderRadius: BorderRadius.circular(60),
       ),
-      child: const Icon(
+      child: Icon(
         Icons.track_changes_outlined,
         size: 48,
         color: Colors.grey[400],
@@ -205,7 +205,7 @@ class HabitsListView implements IHabitsListView {
         ),
         borderRadius: BorderRadius.circular(60),
       ),
-      child: const Icon(
+      child: Icon(
         Icons.error_outline_rounded,
         size: 48,
         color: Colors.red[400],

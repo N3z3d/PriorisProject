@@ -24,39 +24,34 @@ class ListTypeSelector extends StatelessWidget {
       showCustomType || type != ListType.CUSTOM
     ).toList();
 
-    return SizedBox(
-      height: 400, // Hauteur fixe pour éviter l'overflow
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Type de liste',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Type de liste',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
           ),
-          const SizedBox(height: 12),
-          Expanded(
-            child: GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 1.2,
-              ),
-              itemCount: types.length,
-              itemBuilder: (context, index) {
-                final type = types[index];
-                final isSelected = selectedType == type;
-                
-                return _buildTypeCard(context, type, isSelected);
-              },
-            ),
+        ),
+        const SizedBox(height: 12),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 1.2,
           ),
-        ],
-      ),
+          itemCount: types.length,
+          itemBuilder: (context, index) {
+            final type = types[index];
+            final isSelected = selectedType == type;
+
+            return _buildTypeCard(context, type, isSelected);
+          },
+        ),
+      ],
     );
   }
 
@@ -170,6 +165,10 @@ class ListTypeSelector extends StatelessWidget {
         return Icons.restaurant;
       case ListType.PROJECTS:
         return Icons.work;
+      case ListType.TODO:
+        return Icons.check_box;
+      case ListType.IDEAS:
+        return Icons.lightbulb;
       case ListType.CUSTOM:
         return Icons.list;
     }
@@ -190,6 +189,10 @@ class ListTypeSelector extends StatelessWidget {
         return Colors.red;
       case ListType.PROJECTS:
         return Colors.indigo;
+      case ListType.TODO:
+        return Colors.teal;
+      case ListType.IDEAS:
+        return Colors.amber;
       case ListType.CUSTOM:
         return Colors.grey;
     }

@@ -17,6 +17,7 @@ class HabitAddForm extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: HabitFormWidget(
         onSubmit: onSubmit,
+        availableCategories: const [],
       ),
     );
   }
