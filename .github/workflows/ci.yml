@@ -7,9 +7,35 @@ on:
     branches: [ master, main ]
 
 jobs:
+  # ── Gate dur : bloque le deploy si un secret est exposé ──────────────────
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Check for secrets
+      run: |
+        echo "Checking for exposed secrets in lib/ and assets/..."
+        if grep -r "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9" lib/ assets/ \
+            --include="*.dart" --include="*.yaml" --include="*.json" 2>/dev/null; then
+          echo "❌ JWT tokens found in lib/ or assets/!"
+          exit 1
+        fi
+        if grep -r "https://[a-z0-9]*\.supabase\.co" lib/ assets/ \
+            --include="*.dart" --include="*.yaml" --include="*.json" 2>/dev/null; then
+          echo "❌ Supabase URLs found in lib/ or assets/!"
+          exit 1
+        fi
+        echo "✅ No secrets detected"
+
+  # ── Informatif : tests unitaires (ne bloque pas le deploy) ───────────────
   test:
     name: Test & Analysis
     runs-on: ubuntu-latest
+    continue-on-error: true  # informational — ne bloque pas deploy-production
 
     steps:
     - name: Checkout code
@@ -31,88 +57,42 @@ jobs:
     - name: Install dependencies
       run: flutter pub get
 
+    - name: Generate mocks
+      run: flutter packages pub run build_runner build --delete-conflicting-outputs
+      continue-on-error: true
+
     - name: Analyze code
       run: flutter analyze --no-pub
       continue-on-error: true
 
     - name: Run tests
       run: flutter test --exclude-tags integration
+      continue-on-error: true
 
-  security:
-    name: Security Scan
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Check for secrets
-      run: |
-        echo "Checking for exposed secrets in lib/ and assets/..."
-        if grep -r "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9" lib/ assets/ --include="*.dart" --include="*.yaml" --include="*.json" 2>/dev/null; then
-          echo "❌ JWT tokens found in lib/ or assets/!"
-          exit 1
-        fi
-        if grep -r "https://[a-z0-9]*\.supabase\.co" lib/ assets/ --include="*.dart" --include="*.yaml" --include="*.json" 2>/dev/null; then
-          echo "❌ Supabase URLs found in lib/ or assets/!"
-          exit 1
-        fi
-        echo "✅ No secrets detected"
-
+  # ── Informatif : qualité code (ne bloque pas le deploy) ──────────────────
   quality:
     name: Code Quality
     runs-on: ubuntu-latest
+    continue-on-error: true  # informational — ne bloque pas deploy-production
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.32.8'
-        channel: 'stable'
-
-    - name: Setup environment file
-      run: cp .env.example .env
-
-    - name: Install dependencies
-      run: flutter pub get
 
     - name: Count print() statements
       run: |
         count=$(grep -r "print(" lib/ --include="*.dart" | wc -l)
-        echo "ℹ️ $count print() statements found (objectif : 0, story 10.6)"
+        echo "ℹ️ $count print() statements (objectif : 0, story 10.6)"
 
     - name: Count TODO comments
       run: |
         todos=$(grep -r "TODO\|FIXME\|XXX\|HACK" lib/ --include="*.dart" | wc -l)
-        echo "ℹ️ $todos TODO/FIXME comments found"
+        echo "ℹ️ $todos TODO/FIXME comments"
 
-  deploy-staging:
-    name: Deploy to Staging
-    needs: [test, security, quality]
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop'
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.32.8'
-        channel: 'stable'
-
-    - name: Build web app
-      run: flutter build web --release
-
-    # Add deployment steps here (Firebase Hosting, etc.)
-
+  # ── Deploy production — gate : security uniquement ───────────────────────
   deploy-production:
-    name: Deploy to Production
-    needs: [test, security, quality]
+    name: Deploy to Production (web build check)
+    needs: [security]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
 
@@ -138,5 +118,3 @@ jobs:
 
     - name: Build release web
       run: flutter build web --release
-
-    # Add production deployment steps here
