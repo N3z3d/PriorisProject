@@ -140,67 +140,67 @@ development_status:
   11-6-monitoring-uptime-et-alertes-production: backlog
   epic-11-retrospective: optional
 
-  epic-17: backlog
-  # --- Sécurité (blocant — secrets en repo) ---
-  17-1-gitleaks-detection-secrets-cicd: backlog
-  17-2-documentation-rotation-secrets: backlog
-  # --- Hygiène repo ---
-  17-3-supprimer-faux-documents-benchmarks: backlog
-  17-4-conventional-commits-commitlint: backlog
-  17-5-versioning-semver-changelog-tags: backlog
-  epic-17-retrospective: optional
-
-  epic-16: backlog
-  # --- Droits utilisateurs (user-facing, requis avant scale) ---
-  16-1-bouton-refuser-consent-gate-page: backlog
-  16-2-suppression-compte-art17-droit-oubli: backlog
-  16-3-export-donnees-art20-portabilite: backlog
-  # --- Obligations légales ---
-  16-4-dpa-supabase-data-processing-agreement: backlog
-  16-5-breach-notification-72h-cnil: backlog
-  epic-16-retrospective: optional
-
-  epic-13: backlog
-  13-1-migrations-hive-versionnees: backlog
-  13-2-strategie-mock-hive-tests-e2e: backlog
-  13-3-tests-e2e-playwright-flux-critiques: backlog
-  13-4-script-seed-teardown-fixtures: backlog
-  epic-13-retrospective: optional
-
   epic-12: backlog
-  # --- Tracking erreurs ---
-  12-1-sentry-error-tracking: backlog
-  12-2-sentry-alertes: backlog
-  # --- Analytics produit ---
-  12-3-posthog-sdk-events: backlog
-  12-4-funnel-activation: backlog
-  12-5-retention-d1-d7-d30: backlog
-  12-6-feature-adoption: backlog
-  # --- Admin ---
-  12-7-admin-page-liste-utilisateurs: backlog
-  12-8-admin-fiche-utilisateur-customer-360: backlog
-  12-9-utilisateurs-actifs-temps-reel: backlog
-  # --- Ops ---
-  12-10-metriques-operationnelles-supabase: backlog
-  12-11-alertes-anomalies: backlog
+  # --- Sécurité (blocant — secrets en repo) ---
+  12-1-gitleaks-detection-secrets-cicd: backlog
+  12-2-documentation-rotation-secrets: backlog
+  # --- Hygiène repo ---
+  12-3-supprimer-faux-documents-benchmarks: backlog
+  12-4-conventional-commits-commitlint: backlog
+  12-5-versioning-semver-changelog-tags: backlog
   epic-12-retrospective: optional
 
+  epic-13: backlog
+  # --- Droits utilisateurs (user-facing, requis avant scale) ---
+  13-1-bouton-refuser-consent-gate-page: backlog
+  13-2-suppression-compte-art17-droit-oubli: backlog
+  13-3-export-donnees-art20-portabilite: backlog
+  # --- Obligations légales ---
+  13-4-dpa-supabase-data-processing-agreement: backlog
+  13-5-breach-notification-72h-cnil: backlog
+  epic-13-retrospective: optional
+
   epic-14: backlog
-  14-1-cache-lecture-seule-hive-offline: backlog
-  14-2-indicateur-visuel-connectivite: backlog
-  14-3-file-attente-actions-offline-sync: backlog
-  14-4-gestion-conflits-sync-local: backlog
+  14-1-migrations-hive-versionnees: backlog
+  14-2-strategie-mock-hive-tests-e2e: backlog
+  14-3-tests-e2e-playwright-flux-critiques: backlog
+  14-4-script-seed-teardown-fixtures: backlog
   epic-14-retrospective: optional
 
   epic-15: backlog
-  # --- Infrastructure notifs ---
-  15-1-integration-firebase-cloud-messaging: backlog
-  15-2-background-isolate-notifications: backlog
-  # --- RGPD obligatoire avant activation ---
-  15-3-optin-push-rgpd-compliant: backlog
-  # --- Features ---
-  15-4-rappel-quotidien-configurable: backlog
-  15-5-deep-links-notification-page-habitude: backlog
+  # --- Tracking erreurs ---
+  15-1-sentry-error-tracking: backlog
+  15-2-sentry-alertes: backlog
+  # --- Analytics produit ---
+  15-3-posthog-sdk-events: backlog
+  15-4-funnel-activation: backlog
+  15-5-retention-d1-d7-d30: backlog
+  15-6-feature-adoption: backlog
+  # --- Admin ---
+  15-7-admin-page-liste-utilisateurs: backlog
+  15-8-admin-fiche-utilisateur-customer-360: backlog
+  15-9-utilisateurs-actifs-temps-reel: backlog
+  # --- Ops ---
+  15-10-metriques-operationnelles-supabase: backlog
+  15-11-alertes-anomalies: backlog
   epic-15-retrospective: optional
+
+  epic-16: backlog
+  16-1-cache-lecture-seule-hive-offline: backlog
+  16-2-indicateur-visuel-connectivite: backlog
+  16-3-file-attente-actions-offline-sync: backlog
+  16-4-gestion-conflits-sync-local: backlog
+  epic-16-retrospective: optional
+
+  epic-17: backlog
+  # --- Infrastructure notifs ---
+  17-1-integration-firebase-cloud-messaging: backlog
+  17-2-background-isolate-notifications: backlog
+  # --- RGPD obligatoire avant activation ---
+  17-3-optin-push-rgpd-compliant: backlog
+  # --- Features ---
+  17-4-rappel-quotidien-configurable: backlog
+  17-5-deep-links-notification-page-habitude: backlog
+  epic-17-retrospective: optional
   17-5-documentation-rotation-secrets: backlog
   epic-17-retrospective: optional

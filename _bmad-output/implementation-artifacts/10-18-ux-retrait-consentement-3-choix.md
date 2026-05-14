@@ -63,7 +63,7 @@ Cette story remplace le `popUntil` par la navigation vers l'écran 3 choix.
 
 ### Lien avec RGPD
 
-Les stories 16-3 (suppression compte Art.17) et 16-4 (bouton Refuser consent gate) traitent
+Les stories 13-2 (suppression compte Art.17) et 13-1 (bouton Refuser consent gate) traitent
 le cas "utilisateur qui refuse définitivement". La story 10.18 traite le cas "utilisateur qui
 a déjà consenti mais veut retirer son consentement depuis Settings".
 
