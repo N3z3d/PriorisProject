@@ -149,13 +149,13 @@ class SettingsPage extends ConsumerWidget {
               if (dialogContext.mounted) Navigator.of(dialogContext).pop();
               // Capturer avant le await : Riverpod rebuild dispose SettingsPage
               // avant que revoke() retourne, rendant context.mounted=false.
+              // Capturer avant le await : Riverpod rebuild dispose SettingsPage
+              // avant que revoke() retourne, rendant context.mounted=false.
               final messenger = ScaffoldMessenger.of(context);
               final nav = Navigator.of(context);
-              final successText = l10n.settingsRevokeConsentSuccess;
               final errorText = l10n.settingsRevokeConsentError;
               try {
                 await ref.read(consentProvider.notifier).revoke();
-                messenger.showSnackBar(SnackBar(content: Text(successText)));
                 nav.popUntil((route) => route.isFirst);
               } catch (_) {
                 messenger.showSnackBar(SnackBar(content: Text(errorText)));

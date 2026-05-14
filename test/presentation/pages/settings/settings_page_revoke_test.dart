@@ -56,14 +56,14 @@ void main() {
       expect(prefs.getBool('privacy_consent_v1'), isNull);
     });
 
-    testWidgets('tapper Retirer affiche le snackbar de succès', (tester) async {
+    testWidgets('tapper Retirer ne laisse aucun snackbar visible', (tester) async {
       await tester.pumpWidget(buildSubject());
       await tester.pumpAndSettle();
       await tester.tap(find.textContaining('Retirer mon consentement'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Retirer'));
       await tester.pumpAndSettle();
-      expect(find.textContaining('Consentement retiré'), findsOneWidget);
+      expect(find.textContaining('Consentement retiré'), findsNothing);
     });
   });
 }
