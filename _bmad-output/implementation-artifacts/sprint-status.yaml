@@ -103,7 +103,7 @@ development_status:
   epic-9-retrospective: done
 
   epic-10: in-progress
-  10-1-corriger-bugs-ux-revokeconsent: review
+  10-1-corriger-bugs-ux-revokeconsent: done
   10-2-extraire-iconsentrepository-vers-domain-ports: backlog
   10-3-extraire-port-iauthservice-vers-domain-ports: backlog
   10-4-corriger-violations-imports-domain-services: backlog
