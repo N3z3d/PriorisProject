@@ -72,12 +72,35 @@ class HabitsController extends StateNotifier<HabitsControllerState> {
     }
   }
 
-  void recordHabit(Habit habit) {
+  Future<void> recordHabit(Habit habit) async {
+    if (habit.type != HabitType.binary) return;
+    if (state.recordingHabitIds.contains(habit.id)) return;
+    final wasCompletedToday = habit.isCompletedToday();
     state = state.copyWith(
-      lastAction: HabitAction.recorded,
-      lastActionMessage: _l10n.habitsActionRecordSuccess(habit.name),
-      actionResult: ActionResult.success,
+      recordingHabitIds: {...state.recordingHabitIds, habit.id},
     );
+    try {
+      habit.markCompleted(!wasCompletedToday);
+      await _ref.read(habitsStateProvider.notifier).updateHabit(habit);
+      if (!mounted) return;
+      state = state.copyWith(
+        lastAction: HabitAction.recorded,
+        lastActionMessage: _l10n.habitsActionRecordSuccess(habit.name),
+        actionResult: ActionResult.success,
+        recordingHabitIds: state.recordingHabitIds.difference({habit.id}),
+      );
+    } catch (error) {
+      habit.markCompleted(wasCompletedToday);
+      if (!mounted) return;
+      state = state.copyWith(
+        lastAction: HabitAction.recorded,
+        lastActionMessage: _l10n.habitsActionUpdateError(
+          ExceptionHandler.handle(error).displayMessage,
+        ),
+        actionResult: ActionResult.error,
+        recordingHabitIds: state.recordingHabitIds.difference({habit.id}),
+      );
+    }
   }
 
   void clearLastAction() {
@@ -94,11 +117,13 @@ class HabitsControllerState {
     this.lastAction,
     this.lastActionMessage,
     this.actionResult,
+    this.recordingHabitIds = const {},
   });
 
   final HabitAction? lastAction;
   final String? lastActionMessage;
   final ActionResult? actionResult;
+  final Set<String> recordingHabitIds;
 
   static const _sentinel = Object();
 
@@ -106,6 +131,7 @@ class HabitsControllerState {
     Object? lastAction = _sentinel,
     Object? lastActionMessage = _sentinel,
     Object? actionResult = _sentinel,
+    Set<String>? recordingHabitIds,
   }) {
     return HabitsControllerState(
       lastAction: identical(lastAction, _sentinel)
@@ -117,6 +143,7 @@ class HabitsControllerState {
       actionResult: identical(actionResult, _sentinel)
           ? this.actionResult
           : actionResult as ActionResult?,
+      recordingHabitIds: recordingHabitIds ?? this.recordingHabitIds,
     );
   }
 }

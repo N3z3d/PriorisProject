@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
 import 'package:prioris/presentation/widgets/dialogs/habit_record_dialog.dart';
 
@@ -18,6 +19,9 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('fr'),
           theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Builder(
             builder: (context) => ElevatedButton(
@@ -65,6 +69,9 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('fr'),
           theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Builder(
             builder: (context) => ElevatedButton(

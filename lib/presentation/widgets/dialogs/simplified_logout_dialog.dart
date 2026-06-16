@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 import 'package:prioris/presentation/widgets/common/forms/common_button.dart';
 import 'package:prioris/presentation/widgets/dialogs/components/data_clear_confirmation_dialog.dart';
@@ -47,14 +48,14 @@ class SimplifiedLogoutDialog extends ConsumerWidget {
     return [
       TextButton(
         onPressed: () => Navigator.of(context).pop(false),
-        child: const Text('Annuler'),
+        child: Text(AppLocalizations.of(context)!.cancel),
       ),
       const SizedBox(width: 8),
       Focus(
         autofocus: true,
         child: CommonButton(
           onPressed: () => Navigator.of(context).pop('logout_keep_data'),
-          text: 'Se déconnecter',
+          text: AppLocalizations.of(context)!.logout,
         ),
       ),
     ];
@@ -117,9 +118,10 @@ class SimplifiedLogoutHelper {
   }
 
   static void _showLogoutSuccess(BuildContext context, {required bool dataCleared}) {
-    String message = dataCleared 
-        ? 'Déconnecté et données effacées'
-        : 'Déconnecté - vos listes restent disponibles';
+    final l10n = AppLocalizations.of(context)!;
+    String message = dataCleared
+        ? l10n.logoutSuccessCleared
+        : l10n.logoutSuccessKept;
         
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

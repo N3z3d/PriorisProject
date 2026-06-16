@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/styles/ui_color_utils.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
@@ -16,6 +17,7 @@ class DataClearConfirmationDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Semantics(
       scopesRoute: true,
       namesRoute: true,
@@ -24,14 +26,14 @@ class DataClearConfirmationDialog extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadiusTokens.modal,
         ),
-        title: _buildTitle(),
-        content: _buildContent(),
+        title: _buildTitle(l10n),
+        content: _buildContent(l10n),
         actions: _buildActions(context),
       ),
     );
   }
 
-  Widget _buildTitle() {
+  Widget _buildTitle(AppLocalizations l10n) {
     return Semantics(
       header: true,
       child: Row(
@@ -40,13 +42,13 @@ class DataClearConfirmationDialog extends StatelessWidget {
             Icons.warning_amber_rounded,
             color: tone(warningColor, level: 600),
             size: 24,
-            semanticLabel: 'Avertissement - Action destructive',
+            semanticLabel: l10n.clearConfirmWarningLabel,
           ),
           const SizedBox(width: 12),
-          const Expanded(
+          Expanded(
             child: Text(
-              'Effacer les données',
-              style: TextStyle(
+              l10n.clearConfirmTitle,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
@@ -57,22 +59,22 @@ class DataClearConfirmationDialog extends StatelessWidget {
     );
   }
 
-  Widget _buildContent() {
-    return const Column(
+  Widget _buildContent(AppLocalizations l10n) {
+    return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Cette action supprimera définitivement toutes vos listes de cet appareil.',
-          style: TextStyle(
+          l10n.clearConfirmBody1,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
           ),
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         Text(
-          'Vous ne pourrez pas annuler cette action.',
-          style: TextStyle(
+          l10n.clearConfirmBody2,
+          style: const TextStyle(
             fontSize: 14,
             color: AppTheme.textSecondary,
           ),
@@ -94,14 +96,14 @@ class DataClearConfirmationDialog extends StatelessWidget {
       autofocus: true,
       child: TextButton(
         onPressed: () => Navigator.of(context).pop(),
-        child: const Text('Annuler'),
+        child: Text(AppLocalizations.of(context)!.cancel),
       ),
     );
   }
 
   Widget _buildConfirmButton(BuildContext context) {
     return Semantics(
-      hint: 'Action irréversible - confirmez pour effacer définitivement toutes les données',
+      hint: AppLocalizations.of(context)!.clearConfirmHint,
       child: ElevatedButton(
         onPressed: () {
           Navigator.of(context).pop(); // Fermer cette dialog
@@ -112,7 +114,7 @@ class DataClearConfirmationDialog extends StatelessWidget {
           foregroundColor: Colors.white,
           minimumSize: const Size(44, 44),
         ),
-        child: const Text('Effacer et se déconnecter'),
+        child: Text(AppLocalizations.of(context)!.clearDataAndSignOut),
       ),
     );
   }

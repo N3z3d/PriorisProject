@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/infrastructure/services/user_data_service.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/styles/ui_color_utils.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/widgets/common/forms/common_button.dart';
@@ -49,21 +50,25 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
     try {
       final stats = await _userDataService.getUserDataStats();
       final integrity = await _userDataService.checkDataIntegrity();
-      
+
+      if (!mounted) return;
       setState(() {
         _stats = stats;
         _integrity = integrity;
         _isLoadingStats = false;
       });
     } catch (e) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       setState(() {
-        _errorMessage = 'Erreur lors du chargement: $e';
+        _errorMessage = '${l10n.error}: $e';
         _isLoadingStats = false;
       });
     }
   }
 
   Future<void> _handleClearData() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -71,14 +76,14 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
 
     try {
       await _userDataService.softDeleteAllUserData();
-      
+
       setState(() {
         _dataCleared = true;
       });
-      
+
     } catch (e) {
       setState(() {
-        _errorMessage = 'Erreur: $e';
+        _errorMessage = '${l10n.error}: $e';
       });
     } finally {
       setState(() {
@@ -88,6 +93,7 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
   }
 
   Future<void> _handleCleanOrphans() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -96,10 +102,10 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
     try {
       await _userDataService.cleanOrphanData();
       await _loadStats(); // Recharger les stats
-      
+
     } catch (e) {
       setState(() {
-        _errorMessage = 'Erreur: $e';
+        _errorMessage = '${l10n.error}: $e';
       });
     } finally {
       setState(() {
@@ -110,9 +116,10 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
       title: Text(
-        _dataCleared ? 'Données supprimées !' : 'Nettoyer les données',
+        _dataCleared ? l10n.clearDataDoneTitle : l10n.clearDataTitle,
         style: const TextStyle(
           fontWeight: FontWeight.bold,
           color: AppTheme.textPrimary,
@@ -156,9 +163,9 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
   }
 
   Widget _buildStatsHeader() {
-    return const Text(
-      'État actuel de vos données :',
-      style: TextStyle(
+    return Text(
+      AppLocalizations.of(context)!.clearDataStatsHeader,
+      style: const TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w600,
         color: AppTheme.textPrimary,
@@ -167,11 +174,12 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
   }
 
   Widget _buildStatsSection() {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
-        _buildStatCard('Listes personnalisées', _stats!['lists']!, Icons.list_alt),
-        _buildStatCard('Éléments de liste', _stats!['items']!, Icons.check_circle_outline),
-        _buildStatCard('Habitudes', _stats!['habits']!, Icons.track_changes),
+        _buildStatCard(l10n.clearDataStatLists, _stats!['lists']!, Icons.list_alt),
+        _buildStatCard(l10n.clearDataStatItems, _stats!['items']!, Icons.check_circle_outline),
+        _buildStatCard(l10n.habits, _stats!['habits']!, Icons.track_changes),
       ],
     );
   }
@@ -191,7 +199,7 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
           const SizedBox(height: 8),
           CommonButton(
             onPressed: _isLoading ? null : _handleCleanOrphans,
-            text: 'Nettoyer les données orphelines',
+            text: AppLocalizations.of(context)!.clearDataCleanOrphans,
             isLoading: _isLoading,
           ),
         ],
@@ -205,7 +213,7 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
         Icon(Icons.warning, color: _warningTone(600), size: 20),
         const SizedBox(width: 8),
         Text(
-          '${_integrity!['orphanItems']} données orphelines détectées',
+          AppLocalizations.of(context)!.clearDataOrphansDetected(_integrity!['orphanItems'] as int),
           style: TextStyle(
             color: _warningTone(700),
             fontWeight: FontWeight.w600,
@@ -240,7 +248,7 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
         Icon(Icons.warning, color: _dangerTone(600)),
         const SizedBox(width: 8),
         Text(
-          'Zone de danger',
+          AppLocalizations.of(context)!.clearDataDangerZone,
           style: TextStyle(
             color: _dangerTone(700),
             fontWeight: FontWeight.bold,
@@ -253,7 +261,7 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
 
   Widget _buildDangerZoneMessage() {
     return Text(
-      'Cette action supprimera TOUTES vos données (listes, éléments, habitudes). Cette action est irréversible.',
+      AppLocalizations.of(context)!.clearDataDangerMessage,
       style: TextStyle(
         color: _dangerTone(700),
         fontSize: 14,
@@ -321,9 +329,9 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
           color: _successTone(600),
         ),
         const SizedBox(height: 16),
-        const Text(
-          'Toutes vos données ont été supprimées avec succès.',
-          style: TextStyle(
+        Text(
+          AppLocalizations.of(context)!.clearDataSuccessMessage,
+          style: const TextStyle(
             fontSize: 16,
             color: AppTheme.textPrimary,
           ),
@@ -331,7 +339,7 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Vous pouvez maintenant recommencer avec une ardoise vierge.',
+          AppLocalizations.of(context)!.clearDataSuccessSubtext,
           style: TextStyle(
             fontSize: 14,
             color: _neutralTone(600),
@@ -346,7 +354,7 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
     return [
       TextButton(
         onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-        child: const Text('Annuler'),
+        child: Text(AppLocalizations.of(context)!.cancel),
       ),
       if (_stats != null && (_stats!['lists']! > 0 || _stats!['items']! > 0 || _stats!['habits']! > 0))
         ElevatedButton(
@@ -364,7 +372,7 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
               )
-            : const Text('Tout supprimer'),
+            : Text(AppLocalizations.of(context)!.clearAllDataAction),
         ),
     ];
   }
@@ -373,7 +381,7 @@ class _ClearDataDialogState extends ConsumerState<ClearDataDialog> {
     return [
       CommonButton(
         onPressed: () => Navigator.of(context).pop(),
-        text: 'Fermer',
+        text: AppLocalizations.of(context)!.close,
       ),
     ];
   }

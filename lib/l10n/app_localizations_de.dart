@@ -368,19 +368,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get overview => 'Übersicht';
 
   @override
-  String get insightsTabOverview => 'Overview';
+  String get insightsTabOverview => 'Übersicht';
 
   @override
   String get insightsTabTrends => 'Trends';
 
   @override
-  String get insightsCtaCreateHabit => 'Create a habit';
+  String get insightsCtaCreateHabit => 'Eine Gewohnheit erstellen';
 
   @override
-  String get insightsTrendsSuccessRate => 'Success rate';
+  String get insightsTrendsSuccessRate => 'Erfolgsrate';
 
   @override
-  String get insightsTrendsStreak => 'Current streak';
+  String get insightsTrendsStreak => 'Aktuelle Serie';
 
   @override
   String insightsTrendsStreakDays(int count) {
@@ -388,7 +388,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get insightsTrendsToday => 'Completed today';
+  String get insightsTrendsToday => 'Heute abgeschlossen';
 
   @override
   String get habitsTab => 'Gewohnheiten';
@@ -1200,82 +1200,83 @@ class AppLocalizationsDe extends AppLocalizations {
       'Duell konnte nicht geladen werden. Bitte erneut versuchen.';
 
   @override
-  String get habitsActionCreateSuccess => 'Habit created ✅';
+  String get habitsActionCreateSuccess => 'Gewohnheit erstellt ✅';
 
   @override
   String habitsActionCreateError(String error) {
-    return 'Error while creating: $error';
+    return 'Fehler beim Erstellen: $error';
   }
 
   @override
   String habitsActionUpdateSuccess(String habitName) {
-    return 'Habit \"$habitName\" updated';
+    return 'Gewohnheit \"$habitName\" aktualisiert';
   }
 
   @override
   String habitsActionUpdateError(String error) {
-    return 'Error while updating: $error';
+    return 'Fehler beim Aktualisieren: $error';
   }
 
   @override
   String habitsActionDeleteSuccess(String habitName) {
-    return 'Habit \"$habitName\" deleted';
+    return 'Gewohnheit \"$habitName\" gelöscht';
   }
 
   @override
   String habitsActionDeleteError(String error) {
-    return 'Unable to delete habit: $error';
+    return 'Gewohnheit konnte nicht gelöscht werden: $error';
   }
 
   @override
   String habitsActionRecordSuccess(String habitName) {
-    return 'Habit \"$habitName\" recorded';
+    return 'Gewohnheit \"$habitName\" eingetragen';
   }
 
   @override
   String habitsActionRecordError(String error) {
-    return 'Error while recording: $error';
+    return 'Fehler beim Eintragen: $error';
   }
 
   @override
-  String get habitsLoadingRecord => 'Recording...';
+  String get habitsLoadingRecord => 'Wird eingetragen...';
 
   @override
-  String get habitsLoadingDelete => 'Deleting...';
+  String get habitsLoadingDelete => 'Wird gelöscht...';
 
   @override
   String habitsActionUnsupported(String action) {
-    return 'Unsupported action: $action';
+    return 'Nicht unterstützte Aktion: $action';
   }
 
   @override
-  String get habitsDialogDeleteTitle => 'Delete habit';
+  String get habitsDialogDeleteTitle => 'Gewohnheit löschen';
 
   @override
   String habitsDialogDeleteMessage(String habitName) {
-    return 'Are you sure you want to delete \"$habitName\"?\nThis action is irreversible and removes historical data.';
+    return 'Gewohnheit \"$habitName\" löschen?\nDiese Aktion ist unwiderruflich und löscht auch den Verlauf.';
   }
 
   @override
   String get habitsButtonCreate => 'Eine Gewohnheit erstellen';
 
   @override
-  String get habitsHeaderTitle => 'My habits';
+  String get habitsHeaderTitle => 'Meine Gewohnheiten';
 
   @override
-  String get habitsHeaderSubtitle => 'Track your progress every day';
+  String get habitsHeaderSubtitle => 'Verfolge deinen Fortschritt täglich';
 
   @override
-  String get habitsHeroTitle => 'My Habits';
+  String get habitsHeroTitle => 'Meine Gewohnheiten';
 
   @override
-  String get habitsHeroSubtitle => 'Create and track your daily habits';
+  String get habitsHeroSubtitle =>
+      'Erstelle und verfolge deine täglichen Gewohnheiten';
 
   @override
-  String get habitsTabHabits => 'Habits';
+  String get habitsTabHabits => 'Gewohnheiten';
 
   @override
-  String get habitsTabAdd => 'Add';
+  String get habitsTabAdd => 'Hinzufügen';
 
   @override
   String get habitCategoryDialogTitle => 'Neue Kategorie';
@@ -1509,8 +1510,8 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       interval,
       locale: localeName,
-      other: 'every $interval hours',
-      one: 'every hour',
+      other: 'alle $interval Stunden',
+      one: 'stündlich',
     );
     return '$_temp0';
   }
@@ -1520,8 +1521,8 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       interval,
       locale: localeName,
-      other: 'every $interval days',
-      one: 'daily',
+      other: 'alle $interval Tage',
+      one: 'täglich',
     );
     return '$_temp0';
   }
@@ -1828,11 +1829,11 @@ class AppLocalizationsDe extends AppLocalizations {
       'Dein Anmelde-Link ist abgelaufen oder wurde in einem anderen Browser geöffnet. Bitte melde dich erneut an.';
 
   @override
-  String get duplicateWarningTitle => 'Duplicate detected';
+  String get duplicateWarningTitle => 'Duplikat erkannt';
 
   @override
   String duplicateWarningSingle(String title) {
-    return 'The item \"$title\" is already in your list.';
+    return 'Das Element \"$title\" ist bereits in deiner Liste.';
   }
 
   @override
@@ -1840,23 +1841,23 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       duplicateCount,
       locale: localeName,
-      other: '$duplicateCount items are already',
-      one: '$duplicateCount item is already',
+      other: '$duplicateCount Elemente sind bereits',
+      one: '$duplicateCount Element ist bereits',
     );
-    return '$_temp0 in your list (out of $total).';
+    return '$_temp0 in deiner Liste (von $total).';
   }
 
   @override
   String duplicateWarningSkipAction(int uniqueCount) {
-    return 'Skip duplicates ($uniqueCount to add)';
+    return 'Duplikate überspringen ($uniqueCount hinzufügen)';
   }
 
   @override
-  String get duplicateWarningAddAllSingle => 'Add anyway';
+  String get duplicateWarningAddAllSingle => 'Trotzdem hinzufügen';
 
   @override
   String duplicateWarningAddAllBulk(int count) {
-    return 'Add all ($count)';
+    return 'Alle hinzufügen ($count)';
   }
 
   @override
@@ -1864,116 +1865,118 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count items imported',
-      one: '$count item imported',
+      other: '$count Elemente importiert',
+      one: '$count Element importiert',
     );
     String _temp1 = intl.Intl.pluralLogic(
       skipped,
       locale: localeName,
-      other: '$skipped duplicates skipped',
-      one: '$skipped duplicate skipped',
+      other: '$skipped Duplikate übersprungen',
+      one: '$skipped Duplikat übersprungen',
     );
     return '$_temp0, $_temp1';
   }
 
   @override
-  String get errorGenericTitle => 'An error occurred';
+  String get errorGenericTitle => 'Ein Fehler ist aufgetreten';
 
   @override
-  String get errorNetworkTitle => 'Connection issue';
+  String get errorNetworkTitle => 'Verbindungsproblem';
 
   @override
   String get errorNetworkMessage =>
-      'Check your internet connection and try again.';
+      'Überprüfe deine Internetverbindung und versuche es erneut.';
 
   @override
   String get errorGenericMessage =>
-      'An unexpected error occurred. Please try again.';
+      'Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es erneut.';
 
   @override
-  String get loadingListDetail => 'Loading your list...';
+  String get loadingListDetail => 'Deine Liste wird geladen...';
 
   @override
-  String get noListsTitle => 'No lists available';
+  String get noListsTitle => 'Keine Listen verfügbar';
 
   @override
-  String get noListsBody => 'Create your first list to get started.';
+  String get noListsBody => 'Erstelle deine erste Liste, um loszulegen.';
 
   @override
-  String get settingsFeatureInDevelopment => 'Feature in development';
+  String get settingsFeatureInDevelopment => 'Funktion in Entwicklung';
 
   @override
-  String get archiveAction => 'Archive';
+  String get archiveAction => 'Archivieren';
 
   @override
-  String get listCreateDialogTitle => 'New list';
+  String get listCreateDialogTitle => 'Neue Liste';
 
   @override
-  String get listCreateError => 'Unable to create the list. Try again.';
+  String get listCreateError =>
+      'Liste konnte nicht erstellt werden. Versuche es erneut.';
 
   @override
   String listEditError(String error) {
-    return 'Error while editing: $error';
+    return 'Fehler beim Bearbeiten: $error';
   }
 
   @override
   String listDeleteError(String error) {
-    return 'Error while deleting: $error';
+    return 'Fehler beim Löschen: $error';
   }
 
   @override
-  String get logoutKeepDataAction => 'Keep my data';
+  String get logoutKeepDataAction => 'Daten behalten';
 
   @override
-  String get logoutClearDataAction => 'Clear my data';
+  String get logoutClearDataAction => 'Daten löschen';
 
   @override
   String listCreatedSuccess(String title) {
-    return 'List \"$title\" created successfully';
+    return 'Liste \"$title\" erfolgreich erstellt';
   }
 
   @override
   String listUpdatedSuccess(String name) {
-    return 'List \"$name\" updated successfully';
+    return 'Liste \"$name\" erfolgreich aktualisiert';
   }
 
   @override
   String listDeletedSuccess(String name) {
-    return 'List \"$name\" deleted successfully';
+    return 'Liste \"$name\" erfolgreich gelöscht';
   }
 
   @override
   String get logoutDataQuestion =>
-      'What would you like to do with your local data?';
+      'Was möchtest du mit deinen lokalen Daten tun?';
 
   @override
   String get logoutLocalDataInfo =>
-      'Your lists are stored locally on this device';
+      'Deine Listen sind lokal auf diesem Gerät gespeichert';
 
   @override
-  String get privacyConsentTitle => 'Data Protection';
+  String get privacyConsentTitle => 'Datenschutz';
 
   @override
   String get privacyConsentBody =>
-      'Prioris collects your personal data (tasks, habits, profile) to provide the service. Your data is stored securely and is not shared with third parties for advertising purposes.';
+      'Prioris erfasst deine persönlichen Daten (Aufgaben, Gewohnheiten, Profil), um den Dienst bereitzustellen. Deine Daten werden sicher gespeichert und nicht zu Werbezwecken an Dritte weitergegeben.';
 
   @override
-  String get privacyConsentAcceptButton => 'I accept and continue';
+  String get privacyConsentAcceptButton => 'Ich stimme zu und fahre fort';
 
   @override
-  String get privacyConsentReadPolicyLink => 'Read the privacy policy';
+  String get privacyConsentReadPolicyLink => 'Datenschutzrichtlinie lesen';
 
   @override
-  String get privacyPolicyTitle => 'Privacy Policy';
+  String get privacyPolicyTitle => 'Datenschutzrichtlinie';
 
   @override
-  String get settingsPrivacySectionTitle => 'PRIVACY & DATA';
+  String get settingsPrivacySectionTitle => 'DATENSCHUTZ UND DATEN';
 
   @override
-  String get settingsPrivacyPolicyTile => 'Privacy Policy';
+  String get settingsPrivacyPolicyTile => 'Datenschutzrichtlinie';
 
   @override
-  String get settingsPrivacyPolicySubtitle => 'View our privacy practices';
+  String get settingsPrivacyPolicySubtitle =>
+      'Unsere Datenschutzpraktiken ansehen';
 
   @override
   String get settingsRevokeConsentTile => 'Einwilligung widerrufen';
@@ -2004,23 +2007,24 @@ class AppLocalizationsDe extends AppLocalizations {
       'Einwilligung widerrufen. Abmeldung läuft…';
 
   @override
-  String get settingsDeleteAccountTile => 'Delete my account';
+  String get settingsDeleteAccountTile => 'Mein Konto löschen';
 
   @override
-  String get settingsDeleteAccountSubtitle => 'Request deletion of your data';
+  String get settingsDeleteAccountSubtitle =>
+      'Löschung deiner Daten beantragen';
 
   @override
-  String get settingsDeleteAccountDialogTitle => 'Delete your account';
+  String get settingsDeleteAccountDialogTitle => 'Konto löschen';
 
   @override
   String get settingsDeleteAccountDialogBody =>
-      'To delete your account and all your personal data, send an email to:';
+      'Um dein Konto und alle deine persönlichen Daten zu löschen, sende eine E-Mail an:';
 
   @override
-  String get settingsDeleteAccountDialogCopyEmail => 'Copy email address';
+  String get settingsDeleteAccountDialogCopyEmail => 'E-Mail-Adresse kopieren';
 
   @override
-  String get settingsDeleteAccountEmailCopied => 'Email address copied';
+  String get settingsDeleteAccountEmailCopied => 'E-Mail-Adresse kopiert';
 
   @override
   String importInterruptedBanner(int current, int total) {
@@ -2044,4 +2048,337 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get importResumeIgnore => 'Verwerfen';
+
+  @override
+  String get taskNewDialogTitle => 'Neue Aufgabe';
+
+  @override
+  String get taskAddedSuccess => 'Aufgabe erfolgreich hinzugefügt';
+
+  @override
+  String get taskTitleFieldLabel => 'Titel';
+
+  @override
+  String get taskDescriptionFieldLabel => 'Beschreibung (optional)';
+
+  @override
+  String get clearAllDataAction => 'Alles löschen';
+
+  @override
+  String get clearDataAndSignOut => 'Daten löschen und abmelden';
+
+  @override
+  String get tasksPageTitle => 'Meine Aufgaben';
+
+  @override
+  String get tasksFabAddLabel => 'Eine neue Aufgabe hinzufügen';
+
+  @override
+  String get tasksFabAddHint =>
+      'Öffnet ein Formular zum Erstellen einer neuen Aufgabe';
+
+  @override
+  String get tasksFabAddTooltip => 'Aufgabe hinzufügen';
+
+  @override
+  String get tasksEmptyStateLabel => 'Leerer Zustand: keine Aufgaben';
+
+  @override
+  String get tasksEmptyStateHint =>
+      'Nutze die Hinzufügen-Schaltfläche, um deine erste Aufgabe zu erstellen';
+
+  @override
+  String get tasksIconLabel => 'Aufgabensymbol';
+
+  @override
+  String get tasksEmptyTitle => 'Keine Aufgaben';
+
+  @override
+  String get tasksEmptyBody => 'Füge deine erste Aufgabe hinzu, um zu beginnen';
+
+  @override
+  String tasksItemLabel(String title) {
+    return 'Aufgabe: $title';
+  }
+
+  @override
+  String get tasksStatusCompleted => 'Abgeschlossen';
+
+  @override
+  String get tasksStatusInProgress => 'Laufend';
+
+  @override
+  String get tasksItemHintCompleted =>
+      'Aufgabe abgeschlossen. Tippen für weitere Aktionen';
+
+  @override
+  String get tasksItemHintInProgress =>
+      'Aufgabe läuft. Tippen für weitere Aktionen';
+
+  @override
+  String get tasksMarkDone => 'Als erledigt markieren';
+
+  @override
+  String get tasksMarkUndone => 'Als nicht erledigt markieren';
+
+  @override
+  String get tasksToggleHint =>
+      'Direkt tippen, um den Aufgabenstatus umzuschalten';
+
+  @override
+  String tasksActionsLabel(String title) {
+    return 'Aktionen für Aufgabe $title';
+  }
+
+  @override
+  String get tasksActionsHint => 'Menü der verfügbaren Aktionen';
+
+  @override
+  String get tasksActionsTooltip => 'Aufgabenaktionen';
+
+  @override
+  String get tasksMarkDoneLong => 'Als abgeschlossen markieren';
+
+  @override
+  String get tasksMarkUndoneLong => 'Als nicht abgeschlossen markieren';
+
+  @override
+  String get tasksDeleteLabel => 'Aufgabe löschen';
+
+  @override
+  String get tasksDialogOpenAnnounce =>
+      'Formular zur Aufgabenerstellung wird geöffnet';
+
+  @override
+  String get tasksCreateTooltip => 'Neue Aufgabe erstellen';
+
+  @override
+  String get taskDeletedAnnounce => 'Aufgabe gelöscht';
+
+  @override
+  String get taskUpdatedAnnounce => 'Aufgabe aktualisiert';
+
+  @override
+  String get habitCategoryDefault => 'Allgemein';
+
+  @override
+  String get habitActionCompleteLabel => 'Als abgeschlossen markieren';
+
+  @override
+  String get habitActionCompleteSubtitle => 'Hält deine Serie am Leben';
+
+  @override
+  String get habitActionSkipLabel => 'Verschieben';
+
+  @override
+  String get habitActionSkipSubtitle => 'Auf später verschieben';
+
+  @override
+  String habitStreakDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days Tage',
+      one: '$days Tag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String habitWeeklyCompletions(int count) {
+    return '$count/7 diese Woche';
+  }
+
+  @override
+  String get listFormCreateTitle => 'Neue Liste erstellen';
+
+  @override
+  String get listFormEditTitle => 'Liste bearbeiten';
+
+  @override
+  String get listNameHint => 'z. B. Einkaufsliste, Paris-Reise…';
+
+  @override
+  String get listNameRequired =>
+      'Der Listenname ist erforderlich, um sie zu identifizieren';
+
+  @override
+  String get listNameMinLength =>
+      'Der Name muss mindestens 2 Zeichen enthalten';
+
+  @override
+  String listNameMaxLength(int count) {
+    return 'Der Name darf 100 Zeichen nicht überschreiten (aktuell $count)';
+  }
+
+  @override
+  String get listTypeLabel => 'Listentyp';
+
+  @override
+  String get listItemAddTitle => 'Element hinzufügen';
+
+  @override
+  String get listItemEditTitle => 'Element bearbeiten';
+
+  @override
+  String get listItemTitleHint =>
+      'z. B. Projektbericht fertigstellen, Besprechungsraum buchen…';
+
+  @override
+  String get listItemTitleRequired =>
+      'Der Titel ist erforderlich, um dieses Element zu identifizieren';
+
+  @override
+  String get listItemTitleMinLength =>
+      'Der Titel muss mindestens 2 Zeichen enthalten';
+
+  @override
+  String listItemTitleMaxLength(int count) {
+    return 'Der Titel darf 200 Zeichen nicht überschreiten (aktuell $count)';
+  }
+
+  @override
+  String get categoryOptionalLabel => 'Kategorie (optional)';
+
+  @override
+  String get listItemCategoryHint => 'z. B. Arbeit, Persönlich, Dringend…';
+
+  @override
+  String get listNameRequiredLabel => 'Listenname *';
+
+  @override
+  String get customListNameHint => 'z. B. Wochenendeinkauf';
+
+  @override
+  String get customListDescriptionHint => 'Beschreibe den Inhalt dieser Liste…';
+
+  @override
+  String get listSelectionTitle => 'Listen zum Priorisieren auswählen';
+
+  @override
+  String get listSelectionEnabled => 'Nimmt an Duellen teil';
+
+  @override
+  String get listSelectionDisabled => 'Von Duellen ausgeschlossen';
+
+  @override
+  String get listSelectionRequireOne =>
+      'Wähle mindestens eine Liste aus, um speichern zu können';
+
+  @override
+  String get habitDialogEditTitle => 'Gewohnheit bearbeiten';
+
+  @override
+  String get habitDialogNewTitle => 'Neue Gewohnheit';
+
+  @override
+  String habitRecordTitle(String habitName) {
+    return '$habitName eintragen';
+  }
+
+  @override
+  String get habitRecordCurrentValueLabel => 'Aktueller Wert für heute';
+
+  @override
+  String get habitRecordValueLabel => 'Wert';
+
+  @override
+  String habitRecordTarget(String target, String unit) {
+    return 'Ziel: $target $unit';
+  }
+
+  @override
+  String get logoutSuccessCleared => 'Abgemeldet und Daten gelöscht';
+
+  @override
+  String get logoutSuccessKept => 'Abgemeldet — deine Listen bleiben verfügbar';
+
+  @override
+  String get clearDataDoneTitle => 'Daten gelöscht!';
+
+  @override
+  String get clearDataTitle => 'Daten bereinigen';
+
+  @override
+  String get clearDataStatsHeader => 'Aktueller Stand deiner Daten:';
+
+  @override
+  String get clearDataStatLists => 'Benutzerdefinierte Listen';
+
+  @override
+  String get clearDataStatItems => 'Listenelemente';
+
+  @override
+  String get clearDataCleanOrphans => 'Verwaiste Daten bereinigen';
+
+  @override
+  String clearDataOrphansDetected(int count) {
+    return '$count verwaiste Daten erkannt';
+  }
+
+  @override
+  String get clearDataDangerZone => 'Gefahrenzone';
+
+  @override
+  String get clearDataDangerMessage =>
+      'Diese Aktion löscht ALLE deine Daten (Listen, Elemente, Gewohnheiten). Diese Aktion ist unwiderruflich.';
+
+  @override
+  String get clearDataSuccessMessage =>
+      'Alle deine Daten wurden erfolgreich gelöscht.';
+
+  @override
+  String get clearDataSuccessSubtext =>
+      'Du kannst jetzt mit einem sauberen Neuanfang starten.';
+
+  @override
+  String get clearConfirmWarningLabel => 'Warnung - Destruktive Aktion';
+
+  @override
+  String get clearConfirmTitle => 'Daten löschen';
+
+  @override
+  String get clearConfirmBody1 =>
+      'Diese Aktion löscht alle deine Listen dauerhaft von diesem Gerät.';
+
+  @override
+  String get clearConfirmBody2 =>
+      'Du kannst diese Aktion nicht rückgängig machen.';
+
+  @override
+  String get clearConfirmHint =>
+      'Unwiderrufliche Aktion - bestätige, um alle Daten dauerhaft zu löschen';
+
+  @override
+  String get forgotPasswordSentTitle => 'E-Mail gesendet!';
+
+  @override
+  String get forgotPasswordTitle => 'Passwort vergessen';
+
+  @override
+  String get emailAddressLabel => 'E-Mail-Adresse';
+
+  @override
+  String get emailRequired => 'E-Mail erforderlich';
+
+  @override
+  String get emailInvalid => 'Ungültige E-Mail';
+
+  @override
+  String get forgotPasswordSentTo =>
+      'Eine E-Mail zum Zurücksetzen wurde gesendet an:';
+
+  @override
+  String get forgotPasswordCheckInbox =>
+      'Überprüfe deinen Posteingang und folge den Anweisungen, um dein Passwort zurückzusetzen.';
+
+  @override
+  String get send => 'Senden';
+
+  @override
+  String get forgotPasswordIntro =>
+      'Gib deine E-Mail-Adresse ein, um einen Link zum Zurücksetzen deines Passworts zu erhalten.';
+
+  @override
+  String get duelRankingSaved => 'Rangliste gespeichert';
 }

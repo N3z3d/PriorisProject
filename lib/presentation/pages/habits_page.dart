@@ -72,6 +72,7 @@ class _HabitsPageState extends ConsumerState<HabitsPage> {
                     _showCreateHabitModal(initialHabit: habit),
                 onRetry: () =>
                     ref.read(habitsStateProvider.notifier).loadHabits(),
+                recordingHabitIds: controllerState.recordingHabitIds,
               ),
             ),
           ],

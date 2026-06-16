@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
 import 'package:prioris/presentation/widgets/dialogs/list_item_form_dialog.dart';
 
@@ -10,6 +11,9 @@ void main() {
       // Variable inutilisée supprimée
       
       await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('fr'),
         theme: ThemeData(splashFactory: InkRipple.splashFactory),
         home: Scaffold(
           body: Builder(
@@ -47,6 +51,9 @@ void main() {
       ListItem? result;
       
       await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('fr'),
         theme: ThemeData(splashFactory: InkRipple.splashFactory),
         home: Scaffold(
           body: Builder(
@@ -91,6 +98,9 @@ void main() {
     testWidgets('valide le titre obligatoire', (WidgetTester tester) async {
       // Arrange
       await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('fr'),
         theme: ThemeData(splashFactory: InkRipple.splashFactory),
         home: Scaffold(
           body: Builder(
@@ -137,6 +147,9 @@ void main() {
       ListItem? result;
       
       await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('fr'),
         theme: ThemeData(splashFactory: InkRipple.splashFactory),
         home: Scaffold(
           body: Builder(
@@ -186,6 +199,9 @@ void main() {
       ListItem? result;
       
       await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('fr'),
         theme: ThemeData(splashFactory: InkRipple.splashFactory),
         home: Scaffold(
           body: Builder(
@@ -223,6 +239,9 @@ void main() {
       final longTitle = 'a' * 250; // Titre trop long
       
       await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('fr'),
         theme: ThemeData(splashFactory: InkRipple.splashFactory),
         home: Scaffold(
           body: Builder(
@@ -259,6 +278,9 @@ void main() {
       ListItem? result;
       
       await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('fr'),
         theme: ThemeData(splashFactory: InkRipple.splashFactory),
         home: Scaffold(
           body: Builder(

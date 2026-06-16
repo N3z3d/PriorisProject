@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 
@@ -37,6 +38,7 @@ class _ListItemFormDialogState extends State<ListItemFormDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadiusTokens.modal),
       child: ConstrainedBox(
@@ -51,63 +53,63 @@ class _ListItemFormDialogState extends State<ListItemFormDialog> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildDialogHeader(context),
+                  _buildDialogHeader(context, l10n),
                   const SizedBox(height: 16),
-                  _buildTitleField(),
+                  _buildTitleField(l10n),
                   const SizedBox(height: 16),
-                  _buildDescriptionField(),
+                  _buildDescriptionField(l10n),
                   const SizedBox(height: 16),
-                  _buildCategoryField(),
+                  _buildCategoryField(l10n),
                 ],
               ),
             ),
             const SizedBox(height: 24),
-            _buildActionButtons(context),
+            _buildActionButtons(context, l10n),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildDialogHeader(BuildContext context) {
+  Widget _buildDialogHeader(BuildContext context, AppLocalizations l10n) {
     return Text(
-      widget.initialItem == null ? 'Ajouter un élément' : 'Modifier l\'élément',
+      widget.initialItem == null ? l10n.listItemAddTitle : l10n.listItemEditTitle,
       style: Theme.of(context).textTheme.headlineSmall,
     );
   }
 
-  Widget _buildTitleField() {
+  Widget _buildTitleField(AppLocalizations l10n) {
     return TextFormField(
       initialValue: _title,
-      decoration: const InputDecoration(
-        labelText: 'Titre',
-        border: OutlineInputBorder(),
-        hintText: 'Ex: Terminer rapport projet, Réserver salle réunion...',
+      decoration: InputDecoration(
+        labelText: l10n.taskTitleFieldLabel,
+        border: const OutlineInputBorder(),
+        hintText: l10n.listItemTitleHint,
       ),
-      validator: _validateTitle,
+      validator: (value) => _validateTitle(value, l10n),
       onSaved: (value) => _title = value!.trim(),
     );
   }
 
-  String? _validateTitle(String? value) {
+  String? _validateTitle(String? value, AppLocalizations l10n) {
     if (value == null || value.trim().isEmpty) {
-      return 'Le titre est obligatoire pour identifier cet élément';
+      return l10n.listItemTitleRequired;
     }
     if (value.trim().length < 2) {
-      return 'Le titre doit contenir au moins 2 caractères';
+      return l10n.listItemTitleMinLength;
     }
     if (value.length > 200) {
-      return 'Le titre ne peut pas dépasser 200 caractères (actuellement ${value.length})';
+      return l10n.listItemTitleMaxLength(value.length);
     }
     return null;
   }
 
-  Widget _buildDescriptionField() {
+  Widget _buildDescriptionField(AppLocalizations l10n) {
     return TextFormField(
       initialValue: _description,
-      decoration: const InputDecoration(
-        labelText: 'Description (optionnel)',
-        border: OutlineInputBorder(),
+      decoration: InputDecoration(
+        labelText: l10n.taskDescriptionFieldLabel,
+        border: const OutlineInputBorder(),
       ),
       maxLines: 3,
       maxLength: 1000,
@@ -115,30 +117,30 @@ class _ListItemFormDialogState extends State<ListItemFormDialog> {
     );
   }
 
-  Widget _buildCategoryField() {
+  Widget _buildCategoryField(AppLocalizations l10n) {
     return TextFormField(
       initialValue: _category,
-      decoration: const InputDecoration(
-        labelText: 'Catégorie (optionnel)',
-        border: OutlineInputBorder(),
-        hintText: 'Ex: Travail, Personnel, Urgent...',
+      decoration: InputDecoration(
+        labelText: l10n.categoryOptionalLabel,
+        border: const OutlineInputBorder(),
+        hintText: l10n.listItemCategoryHint,
       ),
       onSaved: (value) => _category = value?.trim() ?? '',
     );
   }
 
-  Widget _buildActionButtons(BuildContext context) {
+  Widget _buildActionButtons(BuildContext context, AppLocalizations l10n) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Annuler'),
+          child: Text(l10n.cancel),
         ),
         const SizedBox(width: 8),
         ElevatedButton(
           onPressed: _handleSubmit,
-          child: Text(widget.initialItem == null ? 'Ajouter' : 'Modifier'),
+          child: Text(widget.initialItem == null ? l10n.add : l10n.edit),
         ),
       ],
     );

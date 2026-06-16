@@ -9,10 +9,11 @@ class HabitsBody extends StatelessWidget {
   final bool isLoading;
   final String? error;
   final void Function(String, String) onDeleteHabit;
-  final void Function(Habit) onRecordHabit;
+  final Future<void> Function(Habit) onRecordHabit;
   final VoidCallback onCreateHabit;
   final void Function(Habit) onEditHabit;
   final VoidCallback onRetry;
+  final Set<String> recordingHabitIds;
 
   const HabitsBody({
     super.key,
@@ -24,6 +25,7 @@ class HabitsBody extends StatelessWidget {
     required this.onCreateHabit,
     required this.onEditHabit,
     required this.onRetry,
+    this.recordingHabitIds = const {},
   });
 
   @override
@@ -54,6 +56,7 @@ class HabitsBody extends StatelessWidget {
       onRecordHabit: onRecordHabit,
       onCreateHabit: onCreateHabit,
       onEditHabit: onEditHabit,
+      recordingHabitIds: recordingHabitIds,
     );
   }
 }

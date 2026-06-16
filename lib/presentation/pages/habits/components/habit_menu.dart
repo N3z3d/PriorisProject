@@ -3,13 +3,11 @@ import 'package:prioris/l10n/app_localizations.dart';
 
 /// Menu component for habit actions following SRP
 class HabitMenu extends StatelessWidget {
-  final VoidCallback onRecord;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
   const HabitMenu({
     super.key,
-    required this.onRecord,
     required this.onEdit,
     required this.onDelete,
   });
@@ -21,7 +19,6 @@ class HabitMenu extends StatelessWidget {
       tooltip: l10n.habitsMenuTooltip,
       onSelected: (value) => _handleAction(value),
       itemBuilder: (context) => [
-        _buildMenuItem('record', Icons.check_circle, l10n.habitsMenuRecord),
         _buildMenuItem('edit', Icons.edit, l10n.habitsMenuEdit),
         _buildMenuItem(
           'delete',
@@ -56,9 +53,6 @@ class HabitMenu extends StatelessWidget {
 
   void _handleAction(String action) {
     switch (action) {
-      case 'record':
-        onRecord();
-        break;
       case 'edit':
         onEdit();
         break;

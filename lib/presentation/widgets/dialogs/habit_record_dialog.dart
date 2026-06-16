@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 
 /// Widget dialog pour enregistrer une valeur d'habitude quantitative
@@ -57,11 +58,11 @@ class _HabitRecordDialogState extends State<HabitRecordDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Annuler'),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
         ElevatedButton(
           onPressed: _saveValue,
-          child: const Text('Enregistrer'),
+          child: Text(AppLocalizations.of(context)!.save),
         ),
       ],
     );
@@ -85,7 +86,7 @@ class _HabitRecordDialogState extends State<HabitRecordDialog> {
         const SizedBox(width: AppTheme.spacingMD),
         Expanded(
           child: Text(
-            'Enregistrer ${widget.habit.name}',
+            AppLocalizations.of(context)!.habitRecordTitle(widget.habit.name),
             style: Theme.of(context).textTheme.titleLarge,
           ),
         ),
@@ -99,7 +100,7 @@ class _HabitRecordDialogState extends State<HabitRecordDialog> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Valeur actuelle pour aujourd\'hui',
+          AppLocalizations.of(context)!.habitRecordCurrentValueLabel,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         const SizedBox(height: AppTheme.spacingMD),
@@ -108,7 +109,7 @@ class _HabitRecordDialogState extends State<HabitRecordDialog> {
           keyboardType: TextInputType.number,
           autofocus: true,
           decoration: InputDecoration(
-            labelText: 'Valeur',
+            labelText: AppLocalizations.of(context)!.habitRecordValueLabel,
             suffixText: widget.habit.unit,
             prefixIcon: const Icon(Icons.numbers),
           ),
@@ -141,7 +142,10 @@ class _HabitRecordDialogState extends State<HabitRecordDialog> {
           ),
           const SizedBox(width: AppTheme.spacingSM),
           Text(
-            'Objectif : ${widget.habit.targetValue} ${widget.habit.unit ?? ''}',
+            AppLocalizations.of(context)!.habitRecordTarget(
+              '${widget.habit.targetValue}',
+              widget.habit.unit ?? '',
+            ),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: AppTheme.infoColor,
               fontWeight: FontWeight.w500,

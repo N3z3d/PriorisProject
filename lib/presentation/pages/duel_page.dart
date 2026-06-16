@@ -122,7 +122,7 @@ class _DuelPageState extends ConsumerState<DuelPage>
   Future<void> _submitRanking(List<Task> orderedTasks) async {
     await ref.read(duelControllerProvider.notifier).submitRanking(orderedTasks);
     if (!mounted) return;
-    _showToast('Classement enregistré');
+    _showToast(_l10n.duelRankingSaved);
   }
 
   Future<void> _changeMode(DuelMode mode) {
@@ -158,6 +158,7 @@ class _DuelPageState extends ConsumerState<DuelPage>
       availableLists: availableLists,
       onSettingsChanged: (updatedSettings) async {
         await notifier.update(updatedSettings);
+        await _loadNewDuel();
         if (mounted) {
           _showToast(_l10n.duelListsUpdated);
         }

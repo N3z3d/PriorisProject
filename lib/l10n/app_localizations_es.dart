@@ -27,40 +27,40 @@ class AppLocalizationsEs extends AppLocalizations {
   String get habitFormTitleNew => 'Nuevo hábito';
 
   @override
-  String get habitFormTitleEdit => 'Editar h?bito';
+  String get habitFormTitleEdit => 'Editar hábito';
 
   @override
   String get habitFormIntro =>
-      'Ponle a este h?bito un nombre claro, asigna una categor?a y elige c?mo seguir?s tu progreso.';
+      'Ponle a este hábito un nombre claro, asigna una categoría y elige cómo seguirás tu progreso.';
 
   @override
-  String get habitFormNameLabel => 'Nombre del h?bito';
+  String get habitFormNameLabel => 'Nombre del hábito';
 
   @override
   String get habitFormNameHint => 'Ej.: Beber 8 vasos de agua';
 
   @override
-  String get habitFormCategoryLabel => 'Categor?a';
+  String get habitFormCategoryLabel => 'Categoría';
 
   @override
-  String get habitFormCategoryHint => 'Seleccionar una categor?a';
+  String get habitFormCategoryHint => 'Seleccionar una categoría';
 
   @override
-  String get habitFormCategoryNone => 'Sin categor?a';
+  String get habitFormCategoryNone => 'Sin categoría';
 
   @override
-  String get habitFormCategoryCreate => '+ Crear una nueva categor?a?';
+  String get habitFormCategoryCreate => '+ Crear una nueva categoría…';
 
   @override
   String get habitCategoryHelper =>
-      'Recomendado: elige una categor?a para mejores estad?sticas.';
+      'Recomendado: elige una categoría para mejores estadísticas.';
 
   @override
-  String get habitCategoryWarningTitle => 'Categor?a no elegida';
+  String get habitCategoryWarningTitle => 'Categoría no elegida';
 
   @override
   String get habitCategoryWarningMessage =>
-      'No has elegido categor?a, ?continuar de todos modos?';
+      'No has elegido categoría, ¿continuar de todos modos?';
 
   @override
   String get habitFormQuantTargetLabel => 'Objetivo';
@@ -453,7 +453,7 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get logout => 'Cerrar sesion';
+  String get logout => 'Cerrar sesión';
 
   @override
   String get homeLogoutHint => 'Cierra la sesion del usuario actual';
@@ -2026,4 +2026,337 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get importResumeIgnore => 'Descartar';
+
+  @override
+  String get taskNewDialogTitle => 'Nueva tarea';
+
+  @override
+  String get taskAddedSuccess => 'Tarea añadida con éxito';
+
+  @override
+  String get taskTitleFieldLabel => 'Título';
+
+  @override
+  String get taskDescriptionFieldLabel => 'Descripción (opcional)';
+
+  @override
+  String get clearAllDataAction => 'Eliminar todo';
+
+  @override
+  String get clearDataAndSignOut => 'Borrar datos y cerrar sesión';
+
+  @override
+  String get tasksPageTitle => 'Mis tareas';
+
+  @override
+  String get tasksFabAddLabel => 'Añadir una nueva tarea';
+
+  @override
+  String get tasksFabAddHint => 'Abre un formulario para crear una nueva tarea';
+
+  @override
+  String get tasksFabAddTooltip => 'Añadir una tarea';
+
+  @override
+  String get tasksEmptyStateLabel => 'Estado vacío: sin tareas';
+
+  @override
+  String get tasksEmptyStateHint =>
+      'Usa el botón de añadir para crear tu primera tarea';
+
+  @override
+  String get tasksIconLabel => 'Icono de tarea';
+
+  @override
+  String get tasksEmptyTitle => 'Sin tareas';
+
+  @override
+  String get tasksEmptyBody => 'Añade tu primera tarea para empezar';
+
+  @override
+  String tasksItemLabel(String title) {
+    return 'Tarea: $title';
+  }
+
+  @override
+  String get tasksStatusCompleted => 'Completada';
+
+  @override
+  String get tasksStatusInProgress => 'En curso';
+
+  @override
+  String get tasksItemHintCompleted =>
+      'Tarea completada. Toca para más acciones';
+
+  @override
+  String get tasksItemHintInProgress =>
+      'Tarea en curso. Toca para más acciones';
+
+  @override
+  String get tasksMarkDone => 'Marcar como hecha';
+
+  @override
+  String get tasksMarkUndone => 'Marcar como no hecha';
+
+  @override
+  String get tasksToggleHint =>
+      'Toca directamente para cambiar el estado de la tarea';
+
+  @override
+  String tasksActionsLabel(String title) {
+    return 'Acciones para la tarea $title';
+  }
+
+  @override
+  String get tasksActionsHint => 'Menú de acciones disponibles';
+
+  @override
+  String get tasksActionsTooltip => 'Acciones de la tarea';
+
+  @override
+  String get tasksMarkDoneLong => 'Marcar como completada';
+
+  @override
+  String get tasksMarkUndoneLong => 'Marcar como no completada';
+
+  @override
+  String get tasksDeleteLabel => 'Eliminar tarea';
+
+  @override
+  String get tasksDialogOpenAnnounce =>
+      'Abriendo el formulario de creación de tarea';
+
+  @override
+  String get tasksCreateTooltip => 'Crear la nueva tarea';
+
+  @override
+  String get taskDeletedAnnounce => 'Tarea eliminada';
+
+  @override
+  String get taskUpdatedAnnounce => 'Tarea actualizada';
+
+  @override
+  String get habitCategoryDefault => 'General';
+
+  @override
+  String get habitActionCompleteLabel => 'Marcar como completada';
+
+  @override
+  String get habitActionCompleteSubtitle => 'Mantén tu racha activa';
+
+  @override
+  String get habitActionSkipLabel => 'Posponer';
+
+  @override
+  String get habitActionSkipSubtitle => 'Mover para más tarde';
+
+  @override
+  String habitStreakDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days días',
+      one: '$days día',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String habitWeeklyCompletions(int count) {
+    return '$count/7 esta semana';
+  }
+
+  @override
+  String get listFormCreateTitle => 'Crear una nueva lista';
+
+  @override
+  String get listFormEditTitle => 'Editar lista';
+
+  @override
+  String get listNameHint => 'Ej.: Lista de compras, Viaje a París…';
+
+  @override
+  String get listNameRequired =>
+      'El nombre de la lista es obligatorio para identificarla';
+
+  @override
+  String get listNameMinLength =>
+      'El nombre debe contener al menos 2 caracteres';
+
+  @override
+  String listNameMaxLength(int count) {
+    return 'El nombre no puede superar los 100 caracteres (actualmente $count)';
+  }
+
+  @override
+  String get listTypeLabel => 'Tipo de lista';
+
+  @override
+  String get listItemAddTitle => 'Añadir un elemento';
+
+  @override
+  String get listItemEditTitle => 'Editar elemento';
+
+  @override
+  String get listItemTitleHint =>
+      'Ej.: Terminar informe del proyecto, Reservar sala de reunión…';
+
+  @override
+  String get listItemTitleRequired =>
+      'El título es obligatorio para identificar este elemento';
+
+  @override
+  String get listItemTitleMinLength =>
+      'El título debe contener al menos 2 caracteres';
+
+  @override
+  String listItemTitleMaxLength(int count) {
+    return 'El título no puede superar los 200 caracteres (actualmente $count)';
+  }
+
+  @override
+  String get categoryOptionalLabel => 'Categoría (opcional)';
+
+  @override
+  String get listItemCategoryHint => 'Ej.: Trabajo, Personal, Urgente…';
+
+  @override
+  String get listNameRequiredLabel => 'Nombre de la lista *';
+
+  @override
+  String get customListNameHint => 'Ej.: Compras del fin de semana';
+
+  @override
+  String get customListDescriptionHint =>
+      'Describe el contenido de esta lista…';
+
+  @override
+  String get listSelectionTitle => 'Selecciona las listas a priorizar';
+
+  @override
+  String get listSelectionEnabled => 'Participará en los duelos';
+
+  @override
+  String get listSelectionDisabled => 'Excluida de los duelos';
+
+  @override
+  String get listSelectionRequireOne =>
+      'Selecciona al menos una lista para poder guardar';
+
+  @override
+  String get habitDialogEditTitle => 'Editar hábito';
+
+  @override
+  String get habitDialogNewTitle => 'Nuevo hábito';
+
+  @override
+  String habitRecordTitle(String habitName) {
+    return 'Registrar $habitName';
+  }
+
+  @override
+  String get habitRecordCurrentValueLabel => 'Valor actual para hoy';
+
+  @override
+  String get habitRecordValueLabel => 'Valor';
+
+  @override
+  String habitRecordTarget(String target, String unit) {
+    return 'Objetivo: $target $unit';
+  }
+
+  @override
+  String get logoutSuccessCleared => 'Sesión cerrada y datos borrados';
+
+  @override
+  String get logoutSuccessKept =>
+      'Sesión cerrada — tus listas siguen disponibles';
+
+  @override
+  String get clearDataDoneTitle => '¡Datos eliminados!';
+
+  @override
+  String get clearDataTitle => 'Limpiar datos';
+
+  @override
+  String get clearDataStatsHeader => 'Estado actual de tus datos:';
+
+  @override
+  String get clearDataStatLists => 'Listas personalizadas';
+
+  @override
+  String get clearDataStatItems => 'Elementos de lista';
+
+  @override
+  String get clearDataCleanOrphans => 'Limpiar datos huérfanos';
+
+  @override
+  String clearDataOrphansDetected(int count) {
+    return '$count datos huérfanos detectados';
+  }
+
+  @override
+  String get clearDataDangerZone => 'Zona de peligro';
+
+  @override
+  String get clearDataDangerMessage =>
+      'Esta acción eliminará TODOS tus datos (listas, elementos, hábitos). Esta acción es irreversible.';
+
+  @override
+  String get clearDataSuccessMessage =>
+      'Todos tus datos se han eliminado correctamente.';
+
+  @override
+  String get clearDataSuccessSubtext =>
+      'Ahora puedes empezar de nuevo desde cero.';
+
+  @override
+  String get clearConfirmWarningLabel => 'Advertencia - Acción destructiva';
+
+  @override
+  String get clearConfirmTitle => 'Borrar datos';
+
+  @override
+  String get clearConfirmBody1 =>
+      'Esta acción eliminará permanentemente todas tus listas de este dispositivo.';
+
+  @override
+  String get clearConfirmBody2 => 'No podrás deshacer esta acción.';
+
+  @override
+  String get clearConfirmHint =>
+      'Acción irreversible - confirma para borrar permanentemente todos los datos';
+
+  @override
+  String get forgotPasswordSentTitle => '¡Correo enviado!';
+
+  @override
+  String get forgotPasswordTitle => 'Contraseña olvidada';
+
+  @override
+  String get emailAddressLabel => 'Correo electrónico';
+
+  @override
+  String get emailRequired => 'Correo obligatorio';
+
+  @override
+  String get emailInvalid => 'Correo no válido';
+
+  @override
+  String get forgotPasswordSentTo =>
+      'Se ha enviado un correo de restablecimiento a:';
+
+  @override
+  String get forgotPasswordCheckInbox =>
+      'Revisa tu bandeja de entrada y sigue las instrucciones para restablecer tu contraseña.';
+
+  @override
+  String get send => 'Enviar';
+
+  @override
+  String get forgotPasswordIntro =>
+      'Introduce tu correo electrónico para recibir un enlace para restablecer tu contraseña.';
+
+  @override
+  String get duelRankingSaved => 'Clasificación guardada';
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 import 'package:prioris/presentation/pages/lists/utils/list_type_helpers.dart';
@@ -106,16 +107,13 @@ class SimpleListCard extends StatelessWidget {
   Widget _buildActions() {
     return PopupMenuButton<String>(
       onSelected: onAction,
-      itemBuilder: (context) => const [
-        PopupMenuItem(
-          value: 'edit',
-          child: Text('Modifier'),
-        ),
-        PopupMenuItem(
-          value: 'delete',
-          child: Text('Supprimer'),
-        ),
-      ],
+      itemBuilder: (context) {
+        final l10n = AppLocalizations.of(context)!;
+        return [
+          PopupMenuItem(value: 'edit', child: Text(l10n.edit)),
+          PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
+        ];
+      },
     );
   }
 

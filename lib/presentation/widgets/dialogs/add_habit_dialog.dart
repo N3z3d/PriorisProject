@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
 import 'package:prioris/data/repositories/habit_repository.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import '../forms/habit_basic_info_form.dart';
 import '../forms/habit_quantitative_form.dart';
 import '../forms/habit_recurrence_form.dart';
@@ -77,9 +78,10 @@ class _AddHabitDialogState extends ConsumerState<AddHabitDialog> {
   @override
   Widget build(BuildContext context) {
     final isEdit = widget.habit != null;
+    final l10n = AppLocalizations.of(context)!;
 
     return AlertDialog(
-      title: Text(isEdit ? "Modifier l'habitude" : "Nouvelle habitude"),
+      title: Text(isEdit ? l10n.habitDialogEditTitle : l10n.habitDialogNewTitle),
       content: _buildDialogContent(),
       actions: _buildDialogActions(isEdit),
     );
@@ -125,14 +127,15 @@ class _AddHabitDialogState extends ConsumerState<AddHabitDialog> {
   }
 
   List<Widget> _buildDialogActions(bool isEdit) {
+    final l10n = AppLocalizations.of(context)!;
     return [
       TextButton(
         onPressed: () => Navigator.of(context).pop(),
-        child: const Text('Annuler'),
+        child: Text(l10n.cancel),
       ),
       ElevatedButton(
         onPressed: _saveHabit,
-        child: Text(isEdit ? 'Modifier' : 'Ajouter'),
+        child: Text(isEdit ? l10n.edit : l10n.add),
       ),
     ];
   }

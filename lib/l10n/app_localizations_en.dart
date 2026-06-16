@@ -2048,4 +2048,329 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get importResumeIgnore => 'Dismiss';
+
+  @override
+  String get taskNewDialogTitle => 'New task';
+
+  @override
+  String get taskAddedSuccess => 'Task added successfully';
+
+  @override
+  String get taskTitleFieldLabel => 'Title';
+
+  @override
+  String get taskDescriptionFieldLabel => 'Description (optional)';
+
+  @override
+  String get clearAllDataAction => 'Delete all';
+
+  @override
+  String get clearDataAndSignOut => 'Clear data and sign out';
+
+  @override
+  String get tasksPageTitle => 'My Tasks';
+
+  @override
+  String get tasksFabAddLabel => 'Add a new task';
+
+  @override
+  String get tasksFabAddHint => 'Opens a form to create a new task';
+
+  @override
+  String get tasksFabAddTooltip => 'Add a task';
+
+  @override
+  String get tasksEmptyStateLabel => 'Empty state: no tasks';
+
+  @override
+  String get tasksEmptyStateHint =>
+      'Use the add button to create your first task';
+
+  @override
+  String get tasksIconLabel => 'Task icon';
+
+  @override
+  String get tasksEmptyTitle => 'No tasks';
+
+  @override
+  String get tasksEmptyBody => 'Add your first task to get started';
+
+  @override
+  String tasksItemLabel(String title) {
+    return 'Task: $title';
+  }
+
+  @override
+  String get tasksStatusCompleted => 'Completed';
+
+  @override
+  String get tasksStatusInProgress => 'In progress';
+
+  @override
+  String get tasksItemHintCompleted => 'Task completed. Tap for more actions';
+
+  @override
+  String get tasksItemHintInProgress =>
+      'Task in progress. Tap for more actions';
+
+  @override
+  String get tasksMarkDone => 'Mark done';
+
+  @override
+  String get tasksMarkUndone => 'Mark not done';
+
+  @override
+  String get tasksToggleHint => 'Direct tap to toggle the task state';
+
+  @override
+  String tasksActionsLabel(String title) {
+    return 'Actions for task $title';
+  }
+
+  @override
+  String get tasksActionsHint => 'Menu of available actions';
+
+  @override
+  String get tasksActionsTooltip => 'Task actions';
+
+  @override
+  String get tasksMarkDoneLong => 'Mark as completed';
+
+  @override
+  String get tasksMarkUndoneLong => 'Mark as not completed';
+
+  @override
+  String get tasksDeleteLabel => 'Delete task';
+
+  @override
+  String get tasksDialogOpenAnnounce => 'Opening the task creation form';
+
+  @override
+  String get tasksCreateTooltip => 'Create the new task';
+
+  @override
+  String get taskDeletedAnnounce => 'Task deleted';
+
+  @override
+  String get taskUpdatedAnnounce => 'Task updated';
+
+  @override
+  String get habitCategoryDefault => 'General';
+
+  @override
+  String get habitActionCompleteLabel => 'Mark as completed';
+
+  @override
+  String get habitActionCompleteSubtitle => 'Keeps your streak alive';
+
+  @override
+  String get habitActionSkipLabel => 'Postpone';
+
+  @override
+  String get habitActionSkipSubtitle => 'Move to later';
+
+  @override
+  String habitStreakDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days',
+      one: '$days day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String habitWeeklyCompletions(int count) {
+    return '$count/7 this week';
+  }
+
+  @override
+  String get listFormCreateTitle => 'Create a new list';
+
+  @override
+  String get listFormEditTitle => 'Edit list';
+
+  @override
+  String get listNameHint => 'E.g. Shopping list, Paris trip…';
+
+  @override
+  String get listNameRequired => 'The list name is required to identify it';
+
+  @override
+  String get listNameMinLength => 'The name must contain at least 2 characters';
+
+  @override
+  String listNameMaxLength(int count) {
+    return 'The name cannot exceed 100 characters (currently $count)';
+  }
+
+  @override
+  String get listTypeLabel => 'List type';
+
+  @override
+  String get listItemAddTitle => 'Add an item';
+
+  @override
+  String get listItemEditTitle => 'Edit item';
+
+  @override
+  String get listItemTitleHint =>
+      'E.g. Finish project report, Book meeting room…';
+
+  @override
+  String get listItemTitleRequired =>
+      'The title is required to identify this item';
+
+  @override
+  String get listItemTitleMinLength =>
+      'The title must contain at least 2 characters';
+
+  @override
+  String listItemTitleMaxLength(int count) {
+    return 'The title cannot exceed 200 characters (currently $count)';
+  }
+
+  @override
+  String get categoryOptionalLabel => 'Category (optional)';
+
+  @override
+  String get listItemCategoryHint => 'E.g. Work, Personal, Urgent…';
+
+  @override
+  String get listNameRequiredLabel => 'List name *';
+
+  @override
+  String get customListNameHint => 'E.g. Weekend shopping';
+
+  @override
+  String get customListDescriptionHint => 'Describe the content of this list…';
+
+  @override
+  String get listSelectionTitle => 'Select the lists to prioritize';
+
+  @override
+  String get listSelectionEnabled => 'Will take part in duels';
+
+  @override
+  String get listSelectionDisabled => 'Excluded from duels';
+
+  @override
+  String get listSelectionRequireOne =>
+      'Select at least one list to be able to save';
+
+  @override
+  String get habitDialogEditTitle => 'Edit habit';
+
+  @override
+  String get habitDialogNewTitle => 'New habit';
+
+  @override
+  String habitRecordTitle(String habitName) {
+    return 'Record $habitName';
+  }
+
+  @override
+  String get habitRecordCurrentValueLabel => 'Current value for today';
+
+  @override
+  String get habitRecordValueLabel => 'Value';
+
+  @override
+  String habitRecordTarget(String target, String unit) {
+    return 'Goal: $target $unit';
+  }
+
+  @override
+  String get logoutSuccessCleared => 'Signed out and data cleared';
+
+  @override
+  String get logoutSuccessKept => 'Signed out — your lists remain available';
+
+  @override
+  String get clearDataDoneTitle => 'Data deleted!';
+
+  @override
+  String get clearDataTitle => 'Clear data';
+
+  @override
+  String get clearDataStatsHeader => 'Current state of your data:';
+
+  @override
+  String get clearDataStatLists => 'Custom lists';
+
+  @override
+  String get clearDataStatItems => 'List items';
+
+  @override
+  String get clearDataCleanOrphans => 'Clean orphan data';
+
+  @override
+  String clearDataOrphansDetected(int count) {
+    return '$count orphan data detected';
+  }
+
+  @override
+  String get clearDataDangerZone => 'Danger zone';
+
+  @override
+  String get clearDataDangerMessage =>
+      'This action will delete ALL your data (lists, items, habits). This action is irreversible.';
+
+  @override
+  String get clearDataSuccessMessage =>
+      'All your data has been successfully deleted.';
+
+  @override
+  String get clearDataSuccessSubtext =>
+      'You can now start fresh with a clean slate.';
+
+  @override
+  String get clearConfirmWarningLabel => 'Warning - Destructive action';
+
+  @override
+  String get clearConfirmTitle => 'Clear data';
+
+  @override
+  String get clearConfirmBody1 =>
+      'This action will permanently delete all your lists from this device.';
+
+  @override
+  String get clearConfirmBody2 => 'You will not be able to undo this action.';
+
+  @override
+  String get clearConfirmHint =>
+      'Irreversible action - confirm to permanently clear all data';
+
+  @override
+  String get forgotPasswordSentTitle => 'Email sent!';
+
+  @override
+  String get forgotPasswordTitle => 'Forgot password';
+
+  @override
+  String get emailAddressLabel => 'Email address';
+
+  @override
+  String get emailRequired => 'Email required';
+
+  @override
+  String get emailInvalid => 'Invalid email';
+
+  @override
+  String get forgotPasswordSentTo => 'A reset email has been sent to:';
+
+  @override
+  String get forgotPasswordCheckInbox =>
+      'Check your inbox and follow the instructions to reset your password.';
+
+  @override
+  String get send => 'Send';
+
+  @override
+  String get forgotPasswordIntro =>
+      'Enter your email address to receive a link to reset your password.';
+
+  @override
+  String get duelRankingSaved => 'Ranking saved';
 }

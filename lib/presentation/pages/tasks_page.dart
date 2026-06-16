@@ -46,8 +46,8 @@ class _TasksPageState extends ConsumerState<TasksPage> {
     final tasksAsync = ref.watch(allTasksProvider);
 
     return Scaffold(
-      appBar: const PageHeader(
-        title: 'Mes Tâches',
+      appBar: PageHeader(
+        title: l10n.tasksPageTitle,
         elevated: true,
       ),
       body: tasksAsync.when(
@@ -74,17 +74,17 @@ class _TasksPageState extends ConsumerState<TasksPage> {
       ),
       floatingActionButton: Semantics(
         button: true,
-        label: 'Ajouter une nouvelle tâche',
-        hint: 'Ouvre un formulaire pour créer une nouvelle tâche',
+        label: l10n.tasksFabAddLabel,
+        hint: l10n.tasksFabAddHint,
         child: FloatingActionButton(
           heroTag: "tasks_fab",
           onPressed: _showAddTaskDialog,
           backgroundColor: Theme.of(context).colorScheme.primary,
           foregroundColor: Colors.white,
-          tooltip: 'Ajouter une tâche',
-          child: const Icon(
+          tooltip: l10n.tasksFabAddTooltip,
+          child: Icon(
             Icons.add,
-            semanticLabel: 'Ajouter',
+            semanticLabel: l10n.add,
           ),
         ),
       ),
@@ -92,16 +92,17 @@ class _TasksPageState extends ConsumerState<TasksPage> {
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context)!;
     return Semantics(
-      label: 'État vide: Aucune tâche',
-      hint: 'Utilisez le bouton d\'ajout pour créer votre première tâche',
+      label: l10n.tasksEmptyStateLabel,
+      hint: l10n.tasksEmptyStateHint,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Semantics(
               image: true,
-              label: 'Icône de tâche',
+              label: l10n.tasksIconLabel,
               child: Icon(
                 Icons.task_alt_outlined,
                 size: 80,
@@ -112,7 +113,7 @@ class _TasksPageState extends ConsumerState<TasksPage> {
             Semantics(
               header: true,
               child: Text(
-                'Aucune tâche',
+                l10n.tasksEmptyTitle,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   color: Colors.grey[600],
                 ),
@@ -120,7 +121,7 @@ class _TasksPageState extends ConsumerState<TasksPage> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Ajoutez votre première tâche pour commencer',
+              l10n.tasksEmptyBody,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: Colors.grey[500],
               ),
@@ -145,13 +146,14 @@ class _TasksPageState extends ConsumerState<TasksPage> {
   }
 
   Widget _buildTaskCard(Task task) {
+    final l10n = AppLocalizations.of(context)!;
     return Semantics(
       button: true,
-      label: 'Tâche: ${task.title}',
-      value: task.isCompleted ? 'Terminée' : 'En cours',
+      label: l10n.tasksItemLabel(task.title),
+      value: task.isCompleted ? l10n.tasksStatusCompleted : l10n.tasksStatusInProgress,
       hint: task.isCompleted
-          ? 'Tâche terminée. Appuyez pour plus d\'actions'
-          : 'Tâche en cours. Appuyez pour plus d\'actions',
+          ? l10n.tasksItemHintCompleted
+          : l10n.tasksItemHintInProgress,
       child: Card(
         margin: const EdgeInsets.only(bottom: 12),
         elevation: 2,
@@ -186,17 +188,36 @@ class _TasksPageState extends ConsumerState<TasksPage> {
   }
 
   Widget _buildTaskLeadingIcon(Task task) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: task.isCompleted ? AppTheme.successColor : AppTheme.primaryColor,
-      ),
-      child: CircleAvatar(
-        backgroundColor: Colors.transparent,
-        child: Icon(
-          task.isCompleted ? Icons.check : Icons.task_alt,
-          color: Colors.white,
+    final l10n = AppLocalizations.of(context)!;
+    final label = task.isCompleted ? l10n.tasksMarkUndone : l10n.tasksMarkDone;
+    return Tooltip(
+      message: label,
+      child: Semantics(
+        button: true,
+        label: label,
+        hint: l10n.tasksToggleHint,
+        child: InkWell(
+          onTap: () => _handleTaskAction(
+            task.isCompleted ? 'uncomplete' : 'complete',
+            task,
+          ),
+          borderRadius: BorderRadius.circular(999),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: task.isCompleted
+                  ? AppTheme.successColor
+                  : AppTheme.primaryColor,
+            ),
+            child: CircleAvatar(
+              backgroundColor: Colors.transparent,
+              child: Icon(
+                task.isCompleted ? Icons.check : Icons.task_alt,
+                color: Colors.white,
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -238,28 +259,29 @@ class _TasksPageState extends ConsumerState<TasksPage> {
   }
 
   Widget _buildTaskActionsMenu(Task task) {
+    final l10n = AppLocalizations.of(context)!;
     return Semantics(
       button: true,
-      label: 'Actions pour la tâche ${task.title}',
-      hint: 'Menu des actions disponibles',
+      label: l10n.tasksActionsLabel(task.title),
+      hint: l10n.tasksActionsHint,
       child: PopupMenuButton<String>(
         onSelected: (value) => _handleTaskAction(value, task),
-        tooltip: 'Actions de la tâche',
+        tooltip: l10n.tasksActionsTooltip,
         itemBuilder: (context) => [
           PopupMenuItem(
             value: task.isCompleted ? 'uncomplete' : 'complete',
             child: Semantics(
               button: true,
-              label: task.isCompleted ? 'Marquer comme non terminée' : 'Marquer comme terminée',
-              child: Text(task.isCompleted ? 'Marquer non fait' : 'Marquer fait'),
+              label: task.isCompleted ? l10n.tasksMarkUndoneLong : l10n.tasksMarkDoneLong,
+              child: Text(task.isCompleted ? l10n.tasksMarkUndone : l10n.tasksMarkDone),
             ),
           ),
           PopupMenuItem(
             value: 'delete',
             child: Semantics(
               button: true,
-              label: 'Supprimer la tâche',
-              child: const Text('Supprimer'),
+              label: l10n.tasksDeleteLabel,
+              child: Text(l10n.delete),
             ),
           ),
         ],
@@ -315,8 +337,9 @@ class _TasksPageState extends ConsumerState<TasksPage> {
   }
 
   void _showAddTaskDialog() {
+    final l10n = AppLocalizations.of(context)!;
     final accessibilityService = AccessibilityService();
-    accessibilityService.announceToScreenReader('Ouverture du formulaire de création de tâche');
+    accessibilityService.announceToScreenReader(l10n.tasksDialogOpenAnnounce);
 
     showDialog(
       context: context,
@@ -324,40 +347,40 @@ class _TasksPageState extends ConsumerState<TasksPage> {
       builder: (context) => AlertDialog(
         title: Semantics(
           header: true,
-          child: const Text('Nouvelle tâche'),
+          child: Text(l10n.taskNewDialogTitle),
         ),
-        content: _buildDialogContent(),
-        actions: _buildDialogActions(),
+        content: _buildDialogContent(l10n),
+        actions: _buildDialogActions(l10n),
       ),
     );
   }
 
-  Widget _buildDialogContent() {
+  Widget _buildDialogContent(AppLocalizations l10n) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         CommonTextField(
           controller: _titleController,
-          label: 'Titre',
+          label: l10n.taskTitleFieldLabel,
         ),
         const SizedBox(height: 16),
         CommonTextField(
           controller: _descriptionController,
-          label: 'Description (optionnel)',
+          label: l10n.taskDescriptionFieldLabel,
           maxLines: 3,
         ),
         const SizedBox(height: 16),
-        _buildCategoryDropdown(),
+        _buildCategoryDropdown(l10n),
       ],
     );
   }
 
-  Widget _buildCategoryDropdown() {
+  Widget _buildCategoryDropdown(AppLocalizations l10n) {
     return DropdownButtonFormField<String>(
       value: _selectedCategory,
-      decoration: const InputDecoration(
-        labelText: 'Catégorie',
-        border: OutlineInputBorder(),
+      decoration: InputDecoration(
+        labelText: l10n.category,
+        border: const OutlineInputBorder(),
       ),
       items: _categories.map((category) {
         return DropdownMenuItem(
@@ -373,19 +396,19 @@ class _TasksPageState extends ConsumerState<TasksPage> {
     );
   }
 
-  List<Widget> _buildDialogActions() {
+  List<Widget> _buildDialogActions(AppLocalizations l10n) {
     return [
       Semantics(
         button: true,
-        label: 'Annuler la création de tâche',
+        label: l10n.cancel,
         child: TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Annuler'),
+          child: Text(l10n.cancel),
         ),
       ),
       CommonButton(
-        text: 'Ajouter',
-        tooltip: 'Créer la nouvelle tâche',
+        text: l10n.add,
+        tooltip: l10n.tasksCreateTooltip,
         onPressed: _addTask,
       ),
     ];
@@ -396,33 +419,34 @@ class _TasksPageState extends ConsumerState<TasksPage> {
 
     final task = Task(
       title: _titleController.text.trim(),
-      description: _descriptionController.text.trim().isEmpty 
-          ? null 
+      description: _descriptionController.text.trim().isEmpty
+          ? null
           : _descriptionController.text.trim(),
       category: _selectedCategory,
     );
 
     final repository = ref.read(taskRepositoryProvider);
     await repository.saveTask(task);
-    
+
     // Rafraîchir la liste
     ref.invalidate(allTasksProvider);
-    
+
     // Nettoyer les champs
     _titleController.clear();
     _descriptionController.clear();
-    
+
     if (mounted) {
+      final l10n = AppLocalizations.of(context)!;
       Navigator.of(context).pop();
-      
+
       final accessibilityService = AccessibilityService();
-      accessibilityService.announceToScreenReader('Tâche ajoutée avec succès');
-      
+      accessibilityService.announceToScreenReader(l10n.taskAddedSuccess);
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Semantics(
             liveRegion: true,
-            child: const Text('Tâche ajoutée avec succès'),
+            child: Text(l10n.taskAddedSuccess),
           ),
         ),
       );
@@ -450,9 +474,10 @@ class _TasksPageState extends ConsumerState<TasksPage> {
     ref.invalidate(allTasksProvider);
     
     if (mounted) {
+      final l10n = AppLocalizations.of(context)!;
       final accessibilityService = AccessibilityService();
-      final message = 'Tâche ${action == 'delete' ? 'supprimée' : 'mise à jour'}';
-      
+      final message = action == 'delete' ? l10n.taskDeletedAnnounce : l10n.taskUpdatedAnnounce;
+
       accessibilityService.announceToScreenReader(message);
       
       ScaffoldMessenger.of(context).showSnackBar(

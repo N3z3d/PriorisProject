@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/presentation/widgets/dialogs/list_form_dialog.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
@@ -9,6 +10,9 @@ void main() {
     testWidgets('affiche le titre de création', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('fr'),
           theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Builder(
             builder: (context) => ElevatedButton(
@@ -30,6 +34,9 @@ void main() {
       bool submitted = false;
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('fr'),
           theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Builder(
             builder: (context) => ElevatedButton(
@@ -54,6 +61,9 @@ void main() {
       CustomList? result;
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('fr'),
           theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Builder(
             builder: (context) => ElevatedButton(
@@ -87,6 +97,9 @@ void main() {
       );
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('fr'),
           theme: ThemeData(splashFactory: InkRipple.splashFactory),
           home: Builder(
             builder: (context) => ElevatedButton(

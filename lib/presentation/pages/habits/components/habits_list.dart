@@ -9,9 +9,10 @@ import 'package:prioris/presentation/widgets/common/lists/virtualized_list.dart'
 class HabitsList extends StatelessWidget {
   final List<Habit> habits;
   final Function(String, String) onDeleteHabit;
-  final Function(Habit) onRecordHabit;
+  final Future<void> Function(Habit) onRecordHabit;
   final VoidCallback onCreateHabit;
   final Function(Habit) onEditHabit;
+  final Set<String> recordingHabitIds;
 
   const HabitsList({
     super.key,
@@ -20,6 +21,7 @@ class HabitsList extends StatelessWidget {
     required this.onRecordHabit,
     required this.onCreateHabit,
     required this.onEditHabit,
+    this.recordingHabitIds = const {},
   });
 
   @override
@@ -37,9 +39,10 @@ class HabitsList extends StatelessWidget {
       itemBuilder: (context, habit, index) => HabitCard(
         habit: habit,
         onDelete: () => onDeleteHabit(habit.id, habit.name),
-        onRecord: () => onRecordHabit(habit),
+        onRecord: () async { await onRecordHabit(habit); },
         onEdit: () => onEditHabit(habit),
         onTap: () => _handleTap(context, habit),
+        isRecording: recordingHabitIds.contains(habit.id),
       ),
       emptyWidget: HabitsEmptyState(
         onCreateHabit: onCreateHabit,

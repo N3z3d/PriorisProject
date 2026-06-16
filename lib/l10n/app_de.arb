@@ -154,7 +154,7 @@
   "hideEloScores": "ELO-Punkte ausblenden",
   "showEloScores": "ELO-Punkte anzeigen",
   "overview": "Übersicht",
-  "insightsTabOverview": "Overview",
+  "insightsTabOverview": "Übersicht",
   "@insightsTabOverview": {
     "description": "Label for the overview tab on the insights page"
   },
@@ -162,15 +162,15 @@
   "@insightsTabTrends": {
     "description": "Bezeichnung fur den Trends-Tab in Insights"
   },
-  "insightsCtaCreateHabit": "Create a habit",
+  "insightsCtaCreateHabit": "Eine Gewohnheit erstellen",
   "@insightsCtaCreateHabit": {
     "description": "Primary CTA button in the insights empty state"
   },
-  "insightsTrendsSuccessRate": "Success rate",
+  "insightsTrendsSuccessRate": "Erfolgsrate",
   "@insightsTrendsSuccessRate": {
     "description": "Success rate metric label in Trends tab"
   },
-  "insightsTrendsStreak": "Current streak",
+  "insightsTrendsStreak": "Aktuelle Serie",
   "@insightsTrendsStreak": {
     "description": "Current streak metric label in Trends tab"
   },
@@ -183,7 +183,7 @@
       }
     }
   },
-  "insightsTrendsToday": "Completed today",
+  "insightsTrendsToday": "Heute abgeschlossen",
   "@insightsTrendsToday": {
     "description": "Today completion metric label in Trends tab"
   },
@@ -576,11 +576,11 @@
   "duelNotEnoughTasksTitle": "Nicht genügend Aufgaben",
   "duelNotEnoughTasksMessage": "Füge mindestens zwei Aufgaben hinzu, um zu priorisieren.",
   "duelErrorMessage": "Duell konnte nicht geladen werden. Bitte erneut versuchen.",
-  "habitsActionCreateSuccess": "Habit created ✅",
+  "habitsActionCreateSuccess": "Gewohnheit erstellt ✅",
   "@habitsActionCreateSuccess": {
     "description": "Snackbar message when a habit is created successfully"
   },
-  "habitsActionCreateError": "Error while creating: {error}",
+  "habitsActionCreateError": "Fehler beim Erstellen: {error}",
   "@habitsActionCreateError": {
     "description": "Error message when creating a habit fails",
     "placeholders": {
@@ -589,7 +589,7 @@
       }
     }
   },
-  "habitsActionUpdateSuccess": "Habit \"{habitName}\" updated",
+  "habitsActionUpdateSuccess": "Gewohnheit \"{habitName}\" aktualisiert",
   "@habitsActionUpdateSuccess": {
     "description": "Snackbar message when a habit is updated",
     "placeholders": {
@@ -598,7 +598,7 @@
       }
     }
   },
-  "habitsActionUpdateError": "Error while updating: {error}",
+  "habitsActionUpdateError": "Fehler beim Aktualisieren: {error}",
   "@habitsActionUpdateError": {
     "description": "Error message when updating a habit fails",
     "placeholders": {
@@ -607,7 +607,7 @@
       }
     }
   },
-  "habitsActionDeleteSuccess": "Habit \"{habitName}\" deleted",
+  "habitsActionDeleteSuccess": "Gewohnheit \"{habitName}\" gelöscht",
   "@habitsActionDeleteSuccess": {
     "description": "Snackbar when a habit is deleted",
     "placeholders": {
@@ -616,7 +616,7 @@
       }
     }
   },
-  "habitsActionDeleteError": "Unable to delete habit: {error}",
+  "habitsActionDeleteError": "Gewohnheit konnte nicht gelöscht werden: {error}",
   "@habitsActionDeleteError": {
     "description": "Error message when deleting a habit fails",
     "placeholders": {
@@ -625,7 +625,7 @@
       }
     }
   },
-  "habitsActionRecordSuccess": "Habit \"{habitName}\" recorded",
+  "habitsActionRecordSuccess": "Gewohnheit \"{habitName}\" eingetragen",
   "@habitsActionRecordSuccess": {
     "description": "Snackbar when a habit is recorded",
     "placeholders": {
@@ -634,7 +634,7 @@
       }
     }
   },
-  "habitsActionRecordError": "Error while recording: {error}",
+  "habitsActionRecordError": "Fehler beim Eintragen: {error}",
   "@habitsActionRecordError": {
     "description": "Error message when recording a habit fails",
     "placeholders": {
@@ -643,15 +643,15 @@
       }
     }
   },
-  "habitsLoadingRecord": "Recording...",
+  "habitsLoadingRecord": "Wird eingetragen...",
   "@habitsLoadingRecord": {
     "description": "Loading dialog text when recording a habit"
   },
-  "habitsLoadingDelete": "Deleting...",
+  "habitsLoadingDelete": "Wird gelöscht...",
   "@habitsLoadingDelete": {
     "description": "Loading dialog text when deleting a habit"
   },
-  "habitsActionUnsupported": "Unsupported action: {action}",
+  "habitsActionUnsupported": "Nicht unterstützte Aktion: {action}",
   "@habitsActionUnsupported": {
     "description": "Error shown when an unknown habit action is requested",
     "placeholders": {
@@ -660,11 +660,11 @@
       }
     }
   },
-  "habitsDialogDeleteTitle": "Delete habit",
+  "habitsDialogDeleteTitle": "Gewohnheit löschen",
   "@habitsDialogDeleteTitle": {
     "description": "Title of the delete habit confirmation dialog"
   },
-  "habitsDialogDeleteMessage": "Are you sure you want to delete \"{habitName}\"?\nThis action is irreversible and removes historical data.",
+  "habitsDialogDeleteMessage": "Gewohnheit \"{habitName}\" löschen?\nDiese Aktion ist unwiderruflich und löscht auch den Verlauf.",
   "@habitsDialogDeleteMessage": {
     "description": "Warning message in delete habit dialog",
     "placeholders": {
@@ -677,27 +677,27 @@
   "@habitsButtonCreate": {
     "description": "CTA button to create a habit"
   },
-  "habitsHeaderTitle": "My habits",
+  "habitsHeaderTitle": "Meine Gewohnheiten",
   "@habitsHeaderTitle": {
     "description": "Header title for habits page"
   },
-  "habitsHeaderSubtitle": "Track your progress every day",
+  "habitsHeaderSubtitle": "Verfolge deinen Fortschritt täglich",
   "@habitsHeaderSubtitle": {
     "description": "Header subtitle for habits page"
   },
-  "habitsHeroTitle": "My Habits",
+  "habitsHeroTitle": "Meine Gewohnheiten",
   "@habitsHeroTitle": {
     "description": "Hero title in premium header"
   },
-  "habitsHeroSubtitle": "Create and track your daily habits",
+  "habitsHeroSubtitle": "Erstelle und verfolge deine täglichen Gewohnheiten",
   "@habitsHeroSubtitle": {
     "description": "Hero subtitle in premium header"
   },
-  "habitsTabHabits": "Habits",
+  "habitsTabHabits": "Gewohnheiten",
   "@habitsTabHabits": {
     "description": "Label for habits tab"
   },
-  "habitsTabAdd": "Add",
+  "habitsTabAdd": "Hinzufügen",
   "@habitsTabAdd": {
     "description": "Label for add habit tab"
   },
@@ -894,14 +894,16 @@
       "interval": {}
     }
   },
+  "habitFrequencyEveryDays": "{interval, plural, one {täglich} other {alle {interval} Tage}}",
   "@habitFrequencyEveryDays": {
     "placeholders": {
-      "count": {}
+      "interval": {}
     }
   },
+  "habitFrequencyEveryHours": "{interval, plural, one {stündlich} other {alle {interval} Stunden}}",
   "@habitFrequencyEveryHours": {
     "placeholders": {
-      "count": {}
+      "interval": {}
     }
   },
   "@habitFrequencyDaysPerCycle": {
@@ -997,18 +999,18 @@
   "@authCallbackExpiredMessage": {
     "description": "Snackbar angezeigt, wenn ein Supabase-Callback erkannt wird, aber keine Sitzung hergestellt werden konnte"
   },
-  "duplicateWarningTitle": "Duplicate detected",
+  "duplicateWarningTitle": "Duplikat erkannt",
   "@duplicateWarningTitle": {
     "description": "Title of the duplicate warning dialog"
   },
-  "duplicateWarningSingle": "The item \"{title}\" is already in your list.",
+  "duplicateWarningSingle": "Das Element \"{title}\" ist bereits in deiner Liste.",
   "@duplicateWarningSingle": {
     "description": "Single duplicate warning message",
     "placeholders": {
       "title": { "type": "String" }
     }
   },
-  "duplicateWarningMultiple": "{duplicateCount, plural, one {{duplicateCount} item is already} other {{duplicateCount} items are already}} in your list (out of {total}).",
+  "duplicateWarningMultiple": "{duplicateCount, plural, one {{duplicateCount} Element ist bereits} other {{duplicateCount} Elemente sind bereits}} in deiner Liste (von {total}).",
   "@duplicateWarningMultiple": {
     "description": "Multiple duplicates warning message",
     "placeholders": {
@@ -1016,25 +1018,25 @@
       "total": { "type": "int" }
     }
   },
-  "duplicateWarningSkipAction": "Skip duplicates ({uniqueCount} to add)",
+  "duplicateWarningSkipAction": "Duplikate überspringen ({uniqueCount} hinzufügen)",
   "@duplicateWarningSkipAction": {
     "description": "Button: skip duplicates and add only unique items",
     "placeholders": {
       "uniqueCount": { "type": "int" }
     }
   },
-  "duplicateWarningAddAllSingle": "Add anyway",
+  "duplicateWarningAddAllSingle": "Trotzdem hinzufügen",
   "@duplicateWarningAddAllSingle": {
     "description": "Button: add the item despite the duplicate (single mode)"
   },
-  "duplicateWarningAddAllBulk": "Add all ({count})",
+  "duplicateWarningAddAllBulk": "Alle hinzufügen ({count})",
   "@duplicateWarningAddAllBulk": {
     "description": "Button: add all items including duplicates (bulk mode)",
     "placeholders": {
       "count": { "type": "int" }
     }
   },
-  "bulkAddImportSuccessWithSkipped": "{count, plural, one {{count} item imported} other {{count} items imported}}, {skipped, plural, one {{skipped} duplicate skipped} other {{skipped} duplicates skipped}}",
+  "bulkAddImportSuccessWithSkipped": "{count, plural, one {{count} Element importiert} other {{count} Elemente importiert}}, {skipped, plural, one {{skipped} Duplikat übersprungen} other {{skipped} Duplikate übersprungen}}",
   "@bulkAddImportSuccessWithSkipped": {
     "description": "SnackBar after bulk import with duplicates skipped",
     "placeholders": {
@@ -1042,130 +1044,130 @@
       "skipped": { "type": "int" }
     }
   },
-  "errorGenericTitle": "An error occurred",
+  "errorGenericTitle": "Ein Fehler ist aufgetreten",
   "@errorGenericTitle": {
     "description": "Generic error state title"
   },
-  "errorNetworkTitle": "Connection issue",
+  "errorNetworkTitle": "Verbindungsproblem",
   "@errorNetworkTitle": {
     "description": "Network error state title"
   },
-  "errorNetworkMessage": "Check your internet connection and try again.",
+  "errorNetworkMessage": "Überprüfe deine Internetverbindung und versuche es erneut.",
   "@errorNetworkMessage": {
     "description": "Network error message with retry invitation"
   },
-  "errorGenericMessage": "An unexpected error occurred. Please try again.",
+  "errorGenericMessage": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es erneut.",
   "@errorGenericMessage": {
     "description": "Generic error message with retry invitation"
   },
-  "loadingListDetail": "Loading your list...",
+  "loadingListDetail": "Deine Liste wird geladen...",
   "@loadingListDetail": {
     "description": "Loading text shown on the list detail page"
   },
-  "noListsTitle": "No lists available",
+  "noListsTitle": "Keine Listen verfügbar",
   "@noListsTitle": {
     "description": "Empty state title: no lists"
   },
-  "noListsBody": "Create your first list to get started.",
+  "noListsBody": "Erstelle deine erste Liste, um loszulegen.",
   "@noListsBody": {
     "description": "Empty state body: invitation to create a list"
   },
-  "settingsFeatureInDevelopment": "Feature in development",
+  "settingsFeatureInDevelopment": "Funktion in Entwicklung",
   "@settingsFeatureInDevelopment": {
     "description": "Snackbar message when a feature is still in development"
   },
-  "archiveAction": "Archive",
+  "archiveAction": "Archivieren",
   "@archiveAction": {
     "description": "Archive action for an item"
   },
-  "listCreateDialogTitle": "New list",
+  "listCreateDialogTitle": "Neue Liste",
   "@listCreateDialogTitle": {
     "description": "Title of the create list dialog"
   },
-  "listCreateError": "Unable to create the list. Try again.",
+  "listCreateError": "Liste konnte nicht erstellt werden. Versuche es erneut.",
   "@listCreateError": {
     "description": "Error message when list creation fails"
   },
-  "listEditError": "Error while editing: {error}",
+  "listEditError": "Fehler beim Bearbeiten: {error}",
   "@listEditError": {
     "description": "Error message when list edit fails",
     "placeholders": {
       "error": { "type": "String" }
     }
   },
-  "listDeleteError": "Error while deleting: {error}",
+  "listDeleteError": "Fehler beim Löschen: {error}",
   "@listDeleteError": {
     "description": "Error message when list deletion fails",
     "placeholders": {
       "error": { "type": "String" }
     }
   },
-  "logoutKeepDataAction": "Keep my data",
+  "logoutKeepDataAction": "Daten behalten",
   "@logoutKeepDataAction": {
     "description": "Sign-out without clearing local data"
   },
-  "logoutClearDataAction": "Clear my data",
+  "logoutClearDataAction": "Daten löschen",
   "@logoutClearDataAction": {
     "description": "Sign-out with local data cleared"
   },
-  "listCreatedSuccess": "List \"{title}\" created successfully",
+  "listCreatedSuccess": "Liste \"{title}\" erfolgreich erstellt",
   "@listCreatedSuccess": {
     "description": "Success snackbar when a list is created",
     "placeholders": {
       "title": { "type": "String" }
     }
   },
-  "listUpdatedSuccess": "List \"{name}\" updated successfully",
+  "listUpdatedSuccess": "Liste \"{name}\" erfolgreich aktualisiert",
   "@listUpdatedSuccess": {
     "description": "Success snackbar when a list is updated",
     "placeholders": {
       "name": { "type": "String" }
     }
   },
-  "listDeletedSuccess": "List \"{name}\" deleted successfully",
+  "listDeletedSuccess": "Liste \"{name}\" erfolgreich gelöscht",
   "@listDeletedSuccess": {
     "description": "Success snackbar when a list is deleted",
     "placeholders": {
       "name": { "type": "String" }
     }
   },
-  "logoutDataQuestion": "What would you like to do with your local data?",
+  "logoutDataQuestion": "Was möchtest du mit deinen lokalen Daten tun?",
   "@logoutDataQuestion": {
     "description": "Question about data handling in logout dialog"
   },
-  "logoutLocalDataInfo": "Your lists are stored locally on this device",
+  "logoutLocalDataInfo": "Deine Listen sind lokal auf diesem Gerät gespeichert",
   "@logoutLocalDataInfo": {
     "description": "Info about local data storage in logout dialog"
   },
-  "privacyConsentTitle": "Data Protection",
+  "privacyConsentTitle": "Datenschutz",
   "@privacyConsentTitle": {
     "description": "Title of the GDPR consent page"
   },
-  "privacyConsentBody": "Prioris collects your personal data (tasks, habits, profile) to provide the service. Your data is stored securely and is not shared with third parties for advertising purposes.",
+  "privacyConsentBody": "Prioris erfasst deine persönlichen Daten (Aufgaben, Gewohnheiten, Profil), um den Dienst bereitzustellen. Deine Daten werden sicher gespeichert und nicht zu Werbezwecken an Dritte weitergegeben.",
   "@privacyConsentBody": {
     "description": "Explanation text for GDPR consent"
   },
-  "privacyConsentAcceptButton": "I accept and continue",
+  "privacyConsentAcceptButton": "Ich stimme zu und fahre fort",
   "@privacyConsentAcceptButton": {
     "description": "GDPR consent accept button"
   },
-  "privacyConsentReadPolicyLink": "Read the privacy policy",
+  "privacyConsentReadPolicyLink": "Datenschutzrichtlinie lesen",
   "@privacyConsentReadPolicyLink": {
     "description": "Link to privacy policy on consent page"
   },
-  "privacyPolicyTitle": "Privacy Policy",
+  "privacyPolicyTitle": "Datenschutzrichtlinie",
   "@privacyPolicyTitle": {
     "description": "Title of the privacy policy page"
   },
-  "settingsPrivacySectionTitle": "PRIVACY & DATA",
+  "settingsPrivacySectionTitle": "DATENSCHUTZ UND DATEN",
   "@settingsPrivacySectionTitle": {
     "description": "Privacy section title in Settings"
   },
-  "settingsPrivacyPolicyTile": "Privacy Policy",
+  "settingsPrivacyPolicyTile": "Datenschutzrichtlinie",
   "@settingsPrivacyPolicyTile": {
     "description": "Privacy policy tile title in Settings"
   },
-  "settingsPrivacyPolicySubtitle": "View our privacy practices",
+  "settingsPrivacyPolicySubtitle": "Unsere Datenschutzpraktiken ansehen",
   "@settingsPrivacyPolicySubtitle": {
     "description": "Privacy policy tile subtitle"
   },
@@ -1201,27 +1203,27 @@
   "@settingsRevokeConsentSuccess": {
     "description": "Erfolgsmeldung nach dem Widerruf der Einwilligung"
   },
-  "settingsDeleteAccountTile": "Delete my account",
+  "settingsDeleteAccountTile": "Mein Konto löschen",
   "@settingsDeleteAccountTile": {
     "description": "Delete account tile title in Settings"
   },
-  "settingsDeleteAccountSubtitle": "Request deletion of your data",
+  "settingsDeleteAccountSubtitle": "Löschung deiner Daten beantragen",
   "@settingsDeleteAccountSubtitle": {
     "description": "Delete account tile subtitle"
   },
-  "settingsDeleteAccountDialogTitle": "Delete your account",
+  "settingsDeleteAccountDialogTitle": "Konto löschen",
   "@settingsDeleteAccountDialogTitle": {
     "description": "Account deletion dialog title"
   },
-  "settingsDeleteAccountDialogBody": "To delete your account and all your personal data, send an email to:",
+  "settingsDeleteAccountDialogBody": "Um dein Konto und alle deine persönlichen Daten zu löschen, sende eine E-Mail an:",
   "@settingsDeleteAccountDialogBody": {
     "description": "Account deletion dialog body"
   },
-  "settingsDeleteAccountDialogCopyEmail": "Copy email address",
+  "settingsDeleteAccountDialogCopyEmail": "E-Mail-Adresse kopieren",
   "@settingsDeleteAccountDialogCopyEmail": {
     "description": "Button to copy contact email to clipboard"
   },
-  "settingsDeleteAccountEmailCopied": "Email address copied",
+  "settingsDeleteAccountEmailCopied": "E-Mail-Adresse kopiert",
   "@settingsDeleteAccountEmailCopied": {
     "description": "Snackbar confirming email copied to clipboard"
   },
@@ -1248,5 +1250,101 @@
   "importResumeConfirm": "Fortsetzen",
   "@importResumeConfirm": { "description": "Schaltfläche zum Fortsetzen des unterbrochenen Imports" },
   "importResumeIgnore": "Verwerfen",
-  "@importResumeIgnore": { "description": "Schaltfläche zum Verwerfen des unterbrochenen Imports" }
+  "@importResumeIgnore": { "description": "Schaltfläche zum Verwerfen des unterbrochenen Imports" },
+  "taskNewDialogTitle": "Neue Aufgabe",
+  "taskAddedSuccess": "Aufgabe erfolgreich hinzugefügt",
+  "taskTitleFieldLabel": "Titel",
+  "taskDescriptionFieldLabel": "Beschreibung (optional)",
+  "clearAllDataAction": "Alles löschen",
+  "clearDataAndSignOut": "Daten löschen und abmelden",
+  "tasksPageTitle": "Meine Aufgaben",
+  "tasksFabAddLabel": "Eine neue Aufgabe hinzufügen",
+  "tasksFabAddHint": "Öffnet ein Formular zum Erstellen einer neuen Aufgabe",
+  "tasksFabAddTooltip": "Aufgabe hinzufügen",
+  "tasksEmptyStateLabel": "Leerer Zustand: keine Aufgaben",
+  "tasksEmptyStateHint": "Nutze die Hinzufügen-Schaltfläche, um deine erste Aufgabe zu erstellen",
+  "tasksIconLabel": "Aufgabensymbol",
+  "tasksEmptyTitle": "Keine Aufgaben",
+  "tasksEmptyBody": "Füge deine erste Aufgabe hinzu, um zu beginnen",
+  "tasksItemLabel": "Aufgabe: {title}",
+  "tasksStatusCompleted": "Abgeschlossen",
+  "tasksStatusInProgress": "Laufend",
+  "tasksItemHintCompleted": "Aufgabe abgeschlossen. Tippen für weitere Aktionen",
+  "tasksItemHintInProgress": "Aufgabe läuft. Tippen für weitere Aktionen",
+  "tasksMarkDone": "Als erledigt markieren",
+  "tasksMarkUndone": "Als nicht erledigt markieren",
+  "tasksToggleHint": "Direkt tippen, um den Aufgabenstatus umzuschalten",
+  "tasksActionsLabel": "Aktionen für Aufgabe {title}",
+  "tasksActionsHint": "Menü der verfügbaren Aktionen",
+  "tasksActionsTooltip": "Aufgabenaktionen",
+  "tasksMarkDoneLong": "Als abgeschlossen markieren",
+  "tasksMarkUndoneLong": "Als nicht abgeschlossen markieren",
+  "tasksDeleteLabel": "Aufgabe löschen",
+  "tasksDialogOpenAnnounce": "Formular zur Aufgabenerstellung wird geöffnet",
+  "tasksCreateTooltip": "Neue Aufgabe erstellen",
+  "taskDeletedAnnounce": "Aufgabe gelöscht",
+  "taskUpdatedAnnounce": "Aufgabe aktualisiert",
+  "habitCategoryDefault": "Allgemein",
+  "habitActionCompleteLabel": "Als abgeschlossen markieren",
+  "habitActionCompleteSubtitle": "Hält deine Serie am Leben",
+  "habitActionSkipLabel": "Verschieben",
+  "habitActionSkipSubtitle": "Auf später verschieben",
+  "habitStreakDays": "{days, plural, one {{days} Tag} other {{days} Tage}}",
+  "habitWeeklyCompletions": "{count}/7 diese Woche",
+  "listFormCreateTitle": "Neue Liste erstellen",
+  "listFormEditTitle": "Liste bearbeiten",
+  "listNameHint": "z. B. Einkaufsliste, Paris-Reise…",
+  "listNameRequired": "Der Listenname ist erforderlich, um sie zu identifizieren",
+  "listNameMinLength": "Der Name muss mindestens 2 Zeichen enthalten",
+  "listNameMaxLength": "Der Name darf 100 Zeichen nicht überschreiten (aktuell {count})",
+  "listTypeLabel": "Listentyp",
+  "listItemAddTitle": "Element hinzufügen",
+  "listItemEditTitle": "Element bearbeiten",
+  "listItemTitleHint": "z. B. Projektbericht fertigstellen, Besprechungsraum buchen…",
+  "listItemTitleRequired": "Der Titel ist erforderlich, um dieses Element zu identifizieren",
+  "listItemTitleMinLength": "Der Titel muss mindestens 2 Zeichen enthalten",
+  "listItemTitleMaxLength": "Der Titel darf 200 Zeichen nicht überschreiten (aktuell {count})",
+  "categoryOptionalLabel": "Kategorie (optional)",
+  "listItemCategoryHint": "z. B. Arbeit, Persönlich, Dringend…",
+  "listNameRequiredLabel": "Listenname *",
+  "customListNameHint": "z. B. Wochenendeinkauf",
+  "customListDescriptionHint": "Beschreibe den Inhalt dieser Liste…",
+  "listSelectionTitle": "Listen zum Priorisieren auswählen",
+  "listSelectionEnabled": "Nimmt an Duellen teil",
+  "listSelectionDisabled": "Von Duellen ausgeschlossen",
+  "listSelectionRequireOne": "Wähle mindestens eine Liste aus, um speichern zu können",
+  "habitDialogEditTitle": "Gewohnheit bearbeiten",
+  "habitDialogNewTitle": "Neue Gewohnheit",
+  "habitRecordTitle": "{habitName} eintragen",
+  "habitRecordCurrentValueLabel": "Aktueller Wert für heute",
+  "habitRecordValueLabel": "Wert",
+  "habitRecordTarget": "Ziel: {target} {unit}",
+  "logoutSuccessCleared": "Abgemeldet und Daten gelöscht",
+  "logoutSuccessKept": "Abgemeldet — deine Listen bleiben verfügbar",
+  "clearDataDoneTitle": "Daten gelöscht!",
+  "clearDataTitle": "Daten bereinigen",
+  "clearDataStatsHeader": "Aktueller Stand deiner Daten:",
+  "clearDataStatLists": "Benutzerdefinierte Listen",
+  "clearDataStatItems": "Listenelemente",
+  "clearDataCleanOrphans": "Verwaiste Daten bereinigen",
+  "clearDataOrphansDetected": "{count} verwaiste Daten erkannt",
+  "clearDataDangerZone": "Gefahrenzone",
+  "clearDataDangerMessage": "Diese Aktion löscht ALLE deine Daten (Listen, Elemente, Gewohnheiten). Diese Aktion ist unwiderruflich.",
+  "clearDataSuccessMessage": "Alle deine Daten wurden erfolgreich gelöscht.",
+  "clearDataSuccessSubtext": "Du kannst jetzt mit einem sauberen Neuanfang starten.",
+  "clearConfirmWarningLabel": "Warnung - Destruktive Aktion",
+  "clearConfirmTitle": "Daten löschen",
+  "clearConfirmBody1": "Diese Aktion löscht alle deine Listen dauerhaft von diesem Gerät.",
+  "clearConfirmBody2": "Du kannst diese Aktion nicht rückgängig machen.",
+  "clearConfirmHint": "Unwiderrufliche Aktion - bestätige, um alle Daten dauerhaft zu löschen",
+  "forgotPasswordSentTitle": "E-Mail gesendet!",
+  "forgotPasswordTitle": "Passwort vergessen",
+  "emailAddressLabel": "E-Mail-Adresse",
+  "emailRequired": "E-Mail erforderlich",
+  "emailInvalid": "Ungültige E-Mail",
+  "forgotPasswordSentTo": "Eine E-Mail zum Zurücksetzen wurde gesendet an:",
+  "forgotPasswordCheckInbox": "Überprüfe deinen Posteingang und folge den Anweisungen, um dein Passwort zurückzusetzen.",
+  "send": "Senden",
+  "forgotPasswordIntro": "Gib deine E-Mail-Adresse ein, um einen Link zum Zurücksetzen deines Passworts zu erhalten.",
+  "duelRankingSaved": "Rangliste gespeichert"
 }

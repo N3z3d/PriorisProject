@@ -3581,6 +3581,582 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dismiss'**
   String get importResumeIgnore;
+
+  /// No description provided for @taskNewDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New task'**
+  String get taskNewDialogTitle;
+
+  /// No description provided for @taskAddedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Task added successfully'**
+  String get taskAddedSuccess;
+
+  /// No description provided for @taskTitleFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get taskTitleFieldLabel;
+
+  /// No description provided for @taskDescriptionFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (optional)'**
+  String get taskDescriptionFieldLabel;
+
+  /// No description provided for @clearAllDataAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete all'**
+  String get clearAllDataAction;
+
+  /// No description provided for @clearDataAndSignOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear data and sign out'**
+  String get clearDataAndSignOut;
+
+  /// No description provided for @tasksPageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My Tasks'**
+  String get tasksPageTitle;
+
+  /// No description provided for @tasksFabAddLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a new task'**
+  String get tasksFabAddLabel;
+
+  /// No description provided for @tasksFabAddHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens a form to create a new task'**
+  String get tasksFabAddHint;
+
+  /// No description provided for @tasksFabAddTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a task'**
+  String get tasksFabAddTooltip;
+
+  /// No description provided for @tasksEmptyStateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty state: no tasks'**
+  String get tasksEmptyStateLabel;
+
+  /// No description provided for @tasksEmptyStateHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the add button to create your first task'**
+  String get tasksEmptyStateHint;
+
+  /// No description provided for @tasksIconLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Task icon'**
+  String get tasksIconLabel;
+
+  /// No description provided for @tasksEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No tasks'**
+  String get tasksEmptyTitle;
+
+  /// No description provided for @tasksEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first task to get started'**
+  String get tasksEmptyBody;
+
+  /// No description provided for @tasksItemLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Task: {title}'**
+  String tasksItemLabel(String title);
+
+  /// No description provided for @tasksStatusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get tasksStatusCompleted;
+
+  /// No description provided for @tasksStatusInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get tasksStatusInProgress;
+
+  /// No description provided for @tasksItemHintCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Task completed. Tap for more actions'**
+  String get tasksItemHintCompleted;
+
+  /// No description provided for @tasksItemHintInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Task in progress. Tap for more actions'**
+  String get tasksItemHintInProgress;
+
+  /// No description provided for @tasksMarkDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark done'**
+  String get tasksMarkDone;
+
+  /// No description provided for @tasksMarkUndone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark not done'**
+  String get tasksMarkUndone;
+
+  /// No description provided for @tasksToggleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct tap to toggle the task state'**
+  String get tasksToggleHint;
+
+  /// No description provided for @tasksActionsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions for task {title}'**
+  String tasksActionsLabel(String title);
+
+  /// No description provided for @tasksActionsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu of available actions'**
+  String get tasksActionsHint;
+
+  /// No description provided for @tasksActionsTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Task actions'**
+  String get tasksActionsTooltip;
+
+  /// No description provided for @tasksMarkDoneLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as completed'**
+  String get tasksMarkDoneLong;
+
+  /// No description provided for @tasksMarkUndoneLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as not completed'**
+  String get tasksMarkUndoneLong;
+
+  /// No description provided for @tasksDeleteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete task'**
+  String get tasksDeleteLabel;
+
+  /// No description provided for @tasksDialogOpenAnnounce.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening the task creation form'**
+  String get tasksDialogOpenAnnounce;
+
+  /// No description provided for @tasksCreateTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Create the new task'**
+  String get tasksCreateTooltip;
+
+  /// No description provided for @taskDeletedAnnounce.
+  ///
+  /// In en, this message translates to:
+  /// **'Task deleted'**
+  String get taskDeletedAnnounce;
+
+  /// No description provided for @taskUpdatedAnnounce.
+  ///
+  /// In en, this message translates to:
+  /// **'Task updated'**
+  String get taskUpdatedAnnounce;
+
+  /// No description provided for @habitCategoryDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get habitCategoryDefault;
+
+  /// No description provided for @habitActionCompleteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as completed'**
+  String get habitActionCompleteLabel;
+
+  /// No description provided for @habitActionCompleteSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Keeps your streak alive'**
+  String get habitActionCompleteSubtitle;
+
+  /// No description provided for @habitActionSkipLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Postpone'**
+  String get habitActionSkipLabel;
+
+  /// No description provided for @habitActionSkipSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Move to later'**
+  String get habitActionSkipSubtitle;
+
+  /// No description provided for @habitStreakDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{days, plural, one {{days} day} other {{days} days}}'**
+  String habitStreakDays(int days);
+
+  /// No description provided for @habitWeeklyCompletions.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}/7 this week'**
+  String habitWeeklyCompletions(int count);
+
+  /// No description provided for @listFormCreateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a new list'**
+  String get listFormCreateTitle;
+
+  /// No description provided for @listFormEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit list'**
+  String get listFormEditTitle;
+
+  /// No description provided for @listNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'E.g. Shopping list, Paris trip…'**
+  String get listNameHint;
+
+  /// No description provided for @listNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'The list name is required to identify it'**
+  String get listNameRequired;
+
+  /// No description provided for @listNameMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'The name must contain at least 2 characters'**
+  String get listNameMinLength;
+
+  /// No description provided for @listNameMaxLength.
+  ///
+  /// In en, this message translates to:
+  /// **'The name cannot exceed 100 characters (currently {count})'**
+  String listNameMaxLength(int count);
+
+  /// No description provided for @listTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'List type'**
+  String get listTypeLabel;
+
+  /// No description provided for @listItemAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an item'**
+  String get listItemAddTitle;
+
+  /// No description provided for @listItemEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit item'**
+  String get listItemEditTitle;
+
+  /// No description provided for @listItemTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'E.g. Finish project report, Book meeting room…'**
+  String get listItemTitleHint;
+
+  /// No description provided for @listItemTitleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'The title is required to identify this item'**
+  String get listItemTitleRequired;
+
+  /// No description provided for @listItemTitleMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'The title must contain at least 2 characters'**
+  String get listItemTitleMinLength;
+
+  /// No description provided for @listItemTitleMaxLength.
+  ///
+  /// In en, this message translates to:
+  /// **'The title cannot exceed 200 characters (currently {count})'**
+  String listItemTitleMaxLength(int count);
+
+  /// No description provided for @categoryOptionalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Category (optional)'**
+  String get categoryOptionalLabel;
+
+  /// No description provided for @listItemCategoryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'E.g. Work, Personal, Urgent…'**
+  String get listItemCategoryHint;
+
+  /// No description provided for @listNameRequiredLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'List name *'**
+  String get listNameRequiredLabel;
+
+  /// No description provided for @customListNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'E.g. Weekend shopping'**
+  String get customListNameHint;
+
+  /// No description provided for @customListDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the content of this list…'**
+  String get customListDescriptionHint;
+
+  /// No description provided for @listSelectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the lists to prioritize'**
+  String get listSelectionTitle;
+
+  /// No description provided for @listSelectionEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Will take part in duels'**
+  String get listSelectionEnabled;
+
+  /// No description provided for @listSelectionDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Excluded from duels'**
+  String get listSelectionDisabled;
+
+  /// No description provided for @listSelectionRequireOne.
+  ///
+  /// In en, this message translates to:
+  /// **'Select at least one list to be able to save'**
+  String get listSelectionRequireOne;
+
+  /// No description provided for @habitDialogEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit habit'**
+  String get habitDialogEditTitle;
+
+  /// No description provided for @habitDialogNewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New habit'**
+  String get habitDialogNewTitle;
+
+  /// No description provided for @habitRecordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Record {habitName}'**
+  String habitRecordTitle(String habitName);
+
+  /// No description provided for @habitRecordCurrentValueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Current value for today'**
+  String get habitRecordCurrentValueLabel;
+
+  /// No description provided for @habitRecordValueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Value'**
+  String get habitRecordValueLabel;
+
+  /// No description provided for @habitRecordTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal: {target} {unit}'**
+  String habitRecordTarget(String target, String unit);
+
+  /// No description provided for @logoutSuccessCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed out and data cleared'**
+  String get logoutSuccessCleared;
+
+  /// No description provided for @logoutSuccessKept.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed out — your lists remain available'**
+  String get logoutSuccessKept;
+
+  /// No description provided for @clearDataDoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Data deleted!'**
+  String get clearDataDoneTitle;
+
+  /// No description provided for @clearDataTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear data'**
+  String get clearDataTitle;
+
+  /// No description provided for @clearDataStatsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Current state of your data:'**
+  String get clearDataStatsHeader;
+
+  /// No description provided for @clearDataStatLists.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom lists'**
+  String get clearDataStatLists;
+
+  /// No description provided for @clearDataStatItems.
+  ///
+  /// In en, this message translates to:
+  /// **'List items'**
+  String get clearDataStatItems;
+
+  /// No description provided for @clearDataCleanOrphans.
+  ///
+  /// In en, this message translates to:
+  /// **'Clean orphan data'**
+  String get clearDataCleanOrphans;
+
+  /// No description provided for @clearDataOrphansDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} orphan data detected'**
+  String clearDataOrphansDetected(int count);
+
+  /// No description provided for @clearDataDangerZone.
+  ///
+  /// In en, this message translates to:
+  /// **'Danger zone'**
+  String get clearDataDangerZone;
+
+  /// No description provided for @clearDataDangerMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This action will delete ALL your data (lists, items, habits). This action is irreversible.'**
+  String get clearDataDangerMessage;
+
+  /// No description provided for @clearDataSuccessMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'All your data has been successfully deleted.'**
+  String get clearDataSuccessMessage;
+
+  /// No description provided for @clearDataSuccessSubtext.
+  ///
+  /// In en, this message translates to:
+  /// **'You can now start fresh with a clean slate.'**
+  String get clearDataSuccessSubtext;
+
+  /// No description provided for @clearConfirmWarningLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning - Destructive action'**
+  String get clearConfirmWarningLabel;
+
+  /// No description provided for @clearConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear data'**
+  String get clearConfirmTitle;
+
+  /// No description provided for @clearConfirmBody1.
+  ///
+  /// In en, this message translates to:
+  /// **'This action will permanently delete all your lists from this device.'**
+  String get clearConfirmBody1;
+
+  /// No description provided for @clearConfirmBody2.
+  ///
+  /// In en, this message translates to:
+  /// **'You will not be able to undo this action.'**
+  String get clearConfirmBody2;
+
+  /// No description provided for @clearConfirmHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Irreversible action - confirm to permanently clear all data'**
+  String get clearConfirmHint;
+
+  /// No description provided for @forgotPasswordSentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Email sent!'**
+  String get forgotPasswordSentTitle;
+
+  /// No description provided for @forgotPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password'**
+  String get forgotPasswordTitle;
+
+  /// No description provided for @emailAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address'**
+  String get emailAddressLabel;
+
+  /// No description provided for @emailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Email required'**
+  String get emailRequired;
+
+  /// No description provided for @emailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid email'**
+  String get emailInvalid;
+
+  /// No description provided for @forgotPasswordSentTo.
+  ///
+  /// In en, this message translates to:
+  /// **'A reset email has been sent to:'**
+  String get forgotPasswordSentTo;
+
+  /// No description provided for @forgotPasswordCheckInbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your inbox and follow the instructions to reset your password.'**
+  String get forgotPasswordCheckInbox;
+
+  /// No description provided for @send.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get send;
+
+  /// No description provided for @forgotPasswordIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email address to receive a link to reset your password.'**
+  String get forgotPasswordIntro;
+
+  /// No description provided for @duelRankingSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Ranking saved'**
+  String get duelRankingSaved;
 }
 
 class _AppLocalizationsDelegate

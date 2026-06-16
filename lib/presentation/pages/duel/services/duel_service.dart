@@ -41,8 +41,15 @@ class DuelService implements DuelFlowService {
   }
 
   /// Ensure lists are available before running duels.
+  ///
+  /// Awaits both FutureProviders before calling loadLists() to avoid the race
+  /// condition where listsControllerProvider still holds a _LoadingListsController.
   @override
   Future<void> ensureListsLoaded() async {
+    await Future.wait([
+      _ref.read(listsInitializationManagerProvider.future),
+      _ref.read(listsPersistenceManagerProvider.future),
+    ]);
     await _ref.read(listsControllerProvider.notifier).loadLists();
     await _waitForListsToFinishLoading();
   }

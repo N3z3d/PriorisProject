@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 import '../interfaces/habits_page_interfaces.dart';
 
@@ -90,18 +91,23 @@ class HabitCardBuilder implements IHabitCardBuilder {
 
   @override
   Widget buildHabitSubtitle(Habit habit) {
-    final frequency = _formatFrequency(habit);
-    final category = habit.category ?? 'Général';
+    return Builder(
+      builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
+        final frequency = _formatFrequency(l10n);
+        final category = habit.category ?? l10n.habitCategoryDefault;
 
-    return Text(
-      '$frequency • $category',
-      style: TextStyle(
-        fontSize: 12,
-        color: Colors.grey[600],
-        fontWeight: FontWeight.w500,
-      ),
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
+        return Text(
+          '$frequency • $category',
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey[600],
+            fontWeight: FontWeight.w500,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        );
+      },
     );
   }
 
@@ -116,28 +122,31 @@ class HabitCardBuilder implements IHabitCardBuilder {
       onSelected: (action) {
         _onActionCallback?.call(action, habit);
       },
-      itemBuilder: (context) => [
-        const PopupMenuItem(
-          value: 'edit',
-          child: Row(
-            children: [
-              Icon(Icons.edit_rounded, size: 18),
-              SizedBox(width: 12),
-              Text('Modifier'),
-            ],
+      itemBuilder: (context) {
+        final l10n = AppLocalizations.of(context)!;
+        return [
+          PopupMenuItem(
+            value: 'edit',
+            child: Row(
+              children: [
+                const Icon(Icons.edit_rounded, size: 18),
+                const SizedBox(width: 12),
+                Text(l10n.habitsMenuEdit),
+              ],
+            ),
           ),
-        ),
-        const PopupMenuItem(
-          value: 'delete',
-          child: Row(
-            children: [
-              Icon(Icons.delete_rounded, size: 18, color: Colors.red),
-              SizedBox(width: 12),
-              Text('Supprimer', style: TextStyle(color: Colors.red)),
-            ],
+          PopupMenuItem(
+            value: 'delete',
+            child: Row(
+              children: [
+                const Icon(Icons.delete_rounded, size: 18, color: Colors.red),
+                const SizedBox(width: 12),
+                Text(l10n.habitsMenuDelete, style: const TextStyle(color: Colors.red)),
+              ],
+            ),
           ),
-        ),
-      ],
+        ];
+      },
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -149,27 +158,32 @@ class HabitCardBuilder implements IHabitCardBuilder {
   Widget buildHabitProgress(Habit habit) {
     final progress = _calculateProgress(habit);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildProgressHeader(habit, progress),
-        const SizedBox(height: 8),
-        _buildProgressBarWidget(habit, progress),
-        const SizedBox(height: 8),
-        _buildProgressDetails(habit),
-      ],
+    return Builder(
+      builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildProgressHeader(habit, progress, l10n),
+            const SizedBox(height: 8),
+            _buildProgressBarWidget(habit, progress),
+            const SizedBox(height: 8),
+            _buildProgressDetails(habit, l10n),
+          ],
+        );
+      },
     );
   }
 
   /// Build progress header with label and percentage
-  Widget _buildProgressHeader(Habit habit, double progress) {
+  Widget _buildProgressHeader(Habit habit, double progress, AppLocalizations l10n) {
     final progressPercentage = (progress * 100).round();
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          'Progression',
+          l10n.progress,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
@@ -211,33 +225,38 @@ class HabitCardBuilder implements IHabitCardBuilder {
 
   /// Build action buttons for the habit card
   Widget _buildActionButtons(Habit habit) {
-    return Row(
-      children: [
-        Expanded(child: _buildCompleteAction(habit)),
-        const SizedBox(width: 12),
-        Expanded(child: _buildSkipAction(habit)),
-        const SizedBox(width: 12),
-        _buildQuickEditButton(habit),
-      ],
+    return Builder(
+      builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
+        return Row(
+          children: [
+            Expanded(child: _buildCompleteAction(habit, l10n)),
+            const SizedBox(width: 12),
+            Expanded(child: _buildSkipAction(habit, l10n)),
+            const SizedBox(width: 12),
+            _buildQuickEditButton(habit),
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildCompleteAction(Habit habit) {
+  Widget _buildCompleteAction(Habit habit, AppLocalizations l10n) {
     return _buildFilledActionButton(
       icon: Icons.check_circle_rounded,
-      label: 'Marquer comme terminee',
-      subtitle: 'Garde votre streak actif',
+      label: l10n.habitActionCompleteLabel,
+      subtitle: l10n.habitActionCompleteSubtitle,
       gradientColors: const [Color(0xFF4ADE80), Color(0xFF22C55E)],
       shadowColor: const Color(0x3322C55E),
       onTap: () => _onActionCallback?.call('complete', habit),
     );
   }
 
-  Widget _buildSkipAction(Habit habit) {
+  Widget _buildSkipAction(Habit habit, AppLocalizations l10n) {
     return _buildOutlinedActionButton(
       icon: Icons.skip_next_rounded,
-      label: 'Reporter',
-      subtitle: 'Deplacer a plus tard',
+      label: l10n.habitActionSkipLabel,
+      subtitle: l10n.habitActionSkipSubtitle,
       borderColor: const Color(0xFFCBD5F5),
       backgroundColor: const Color(0xFFF8FAFC),
       onTap: () => _onActionCallback?.call('skip', habit),
@@ -387,7 +406,7 @@ class HabitCardBuilder implements IHabitCardBuilder {
     );
   }
   /// Build detailed progress information
-  Widget _buildProgressDetails(Habit habit) {
+  Widget _buildProgressDetails(Habit habit, AppLocalizations l10n) {
     final streakDays = _calculateStreak(habit);
     final completionsThisWeek = _calculateWeeklyCompletions(habit);
 
@@ -401,7 +420,7 @@ class HabitCardBuilder implements IHabitCardBuilder {
         ),
         const SizedBox(width: 4),
         Text(
-          '$streakDays jours',
+          l10n.habitStreakDays(streakDays),
           style: TextStyle(
             fontSize: 12,
             color: Colors.grey[600],
@@ -419,7 +438,7 @@ class HabitCardBuilder implements IHabitCardBuilder {
         ),
         const SizedBox(width: 4),
         Text(
-          '$completionsThisWeek/7 cette semaine',
+          l10n.habitWeeklyCompletions(completionsThisWeek),
           style: TextStyle(
             fontSize: 12,
             color: Colors.grey[600],
@@ -449,9 +468,9 @@ class HabitCardBuilder implements IHabitCardBuilder {
   }
 
   /// Format frequency for display
-  String _formatFrequency(Habit habit) {
+  String _formatFrequency(AppLocalizations l10n) {
     // This would depend on your Habit model structure
-    return 'Quotidien'; // Placeholder
+    return l10n.daily; // Placeholder
   }
 
   /// Calculate habit progress over the last 7 days (0.0 to 1.0)

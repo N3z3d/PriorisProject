@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 import 'package:prioris/presentation/validators/form_validators.dart';
@@ -55,6 +56,7 @@ class _CustomListFormDialogState extends State<CustomListFormDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isEditing = widget.initialList != null;
 
     return Dialog(
@@ -68,11 +70,11 @@ class _CustomListFormDialogState extends State<CustomListFormDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildDialogTitle(isEditing),
+            _buildDialogTitle(isEditing, l10n),
             const SizedBox(height: 24),
-            _buildForm(),
+            _buildForm(l10n),
             const SizedBox(height: 24),
-            _buildActionButtons(context, isEditing),
+            _buildActionButtons(context, isEditing, l10n),
           ],
         ),
       ),
@@ -80,7 +82,7 @@ class _CustomListFormDialogState extends State<CustomListFormDialog> {
   }
 
   /// Construit le titre du dialogue
-  Widget _buildDialogTitle(bool isEditing) {
+  Widget _buildDialogTitle(bool isEditing, AppLocalizations l10n) {
     return Row(
       children: [
         Icon(
@@ -90,7 +92,7 @@ class _CustomListFormDialogState extends State<CustomListFormDialog> {
         ),
         const SizedBox(width: 12),
         Text(
-          isEditing ? 'Modifier la liste' : 'Créer une nouvelle liste',
+          isEditing ? l10n.listFormEditTitle : l10n.listFormCreateTitle,
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -101,31 +103,31 @@ class _CustomListFormDialogState extends State<CustomListFormDialog> {
   }
 
   /// Construit le formulaire complet
-  Widget _buildForm() {
+  Widget _buildForm(AppLocalizations l10n) {
     return Form(
       key: _formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildNameField(),
+          _buildNameField(l10n),
           const SizedBox(height: 16),
-          _buildTypeSelector(),
+          _buildTypeSelector(l10n),
           const SizedBox(height: 16),
-          _buildDescriptionField(),
+          _buildDescriptionField(l10n),
         ],
       ),
     );
   }
 
   /// Construit le champ nom de la liste
-  Widget _buildNameField() {
+  Widget _buildNameField(AppLocalizations l10n) {
     return TextFormField(
       controller: _nameController,
-      decoration: const InputDecoration(
-        labelText: 'Nom de la liste *',
-        hintText: 'Ex: Courses du week-end',
-        border: OutlineInputBorder(),
-        prefixIcon: Icon(Icons.list),
+      decoration: InputDecoration(
+        labelText: l10n.listNameRequiredLabel,
+        hintText: l10n.customListNameHint,
+        border: const OutlineInputBorder(),
+        prefixIcon: const Icon(Icons.list),
       ),
       textCapitalization: TextCapitalization.sentences,
       validator: (value) => FormValidators.requiredText(
@@ -137,13 +139,13 @@ class _CustomListFormDialogState extends State<CustomListFormDialog> {
   }
 
   /// Construit le sélecteur de type de liste
-  Widget _buildTypeSelector() {
+  Widget _buildTypeSelector(AppLocalizations l10n) {
     return DropdownButtonFormField<ListType>(
       value: _selectedType,
-      decoration: const InputDecoration(
-        labelText: 'Type de liste',
-        border: OutlineInputBorder(),
-        prefixIcon: Icon(Icons.category),
+      decoration: InputDecoration(
+        labelText: l10n.listTypeLabel,
+        border: const OutlineInputBorder(),
+        prefixIcon: const Icon(Icons.category),
       ),
       items: ListType.values.map((type) {
         return DropdownMenuItem(
@@ -172,14 +174,14 @@ class _CustomListFormDialogState extends State<CustomListFormDialog> {
   }
 
   /// Construit le champ description
-  Widget _buildDescriptionField() {
+  Widget _buildDescriptionField(AppLocalizations l10n) {
     return TextFormField(
       controller: _descriptionController,
-      decoration: const InputDecoration(
-        labelText: 'Description (optionnelle)',
-        hintText: 'Décrivez le contenu de cette liste...',
-        border: OutlineInputBorder(),
-        prefixIcon: Icon(Icons.description),
+      decoration: InputDecoration(
+        labelText: l10n.taskDescriptionFieldLabel,
+        hintText: l10n.customListDescriptionHint,
+        border: const OutlineInputBorder(),
+        prefixIcon: const Icon(Icons.description),
       ),
       maxLines: 3,
       textCapitalization: TextCapitalization.sentences,
@@ -191,17 +193,17 @@ class _CustomListFormDialogState extends State<CustomListFormDialog> {
   }
 
   /// Construit les boutons d'action
-  Widget _buildActionButtons(BuildContext context, bool isEditing) {
+  Widget _buildActionButtons(BuildContext context, bool isEditing, AppLocalizations l10n) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-          child: const Text('Annuler'),
+          child: Text(l10n.cancel),
         ),
         const SizedBox(width: 12),
         CommonButton(
-          text: isEditing ? 'Modifier' : 'Créer',
+          text: isEditing ? l10n.edit : l10n.create,
           onPressed: _isLoading ? null : _handleSubmit,
           type: ButtonType.primary,
           isLoading: _isLoading,
@@ -261,7 +263,7 @@ class _CustomListFormDialogState extends State<CustomListFormDialog> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Erreur: $error'),
+          content: Text('${AppLocalizations.of(context)!.error}: $error'),
           backgroundColor: Colors.red,
         ),
       );

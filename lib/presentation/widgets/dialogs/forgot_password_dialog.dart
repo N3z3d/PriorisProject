@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/data/providers/auth_providers.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/styles/ui_color_utils.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/widgets/common/forms/common_button.dart';
@@ -52,27 +53,33 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
     try {
       final authController = ref.read(authControllerProvider);
       await authController.resetPassword(_emailController.text.trim());
-      
+
+      if (!mounted) return;
       setState(() {
         _emailSent = true;
       });
-      
+
     } catch (e) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       setState(() {
-        _errorMessage = 'Erreur: ${e.toString()}';
+        _errorMessage = '${l10n.error}: ${e.toString()}';
       });
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
       title: Text(
-        _emailSent ? 'Email envoyé !' : 'Mot de passe oublié',
+        _emailSent ? l10n.forgotPasswordSentTitle : l10n.forgotPasswordTitle,
         style: const TextStyle(
           fontWeight: FontWeight.bold,
           color: AppTheme.textPrimary,
@@ -106,17 +113,18 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
   }
 
   Widget _buildEmailField() {
+    final l10n = AppLocalizations.of(context)!;
     return CommonTextField(
       controller: _emailController,
-      label: 'Adresse email',
+      label: l10n.emailAddressLabel,
       hint: 'votre@email.com',
       keyboardType: TextInputType.emailAddress,
       validator: (value) {
         if (value == null || value.trim().isEmpty) {
-          return 'Email requis';
+          return l10n.emailRequired;
         }
         if (!value.contains('@')) {
-          return 'Email invalide';
+          return l10n.emailInvalid;
         }
         return null;
       },
@@ -147,6 +155,7 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
   }
 
   Widget _buildSuccessContent() {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -157,7 +166,7 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
         ),
         const SizedBox(height: 16),
         Text(
-          'Un email de réinitialisation a été envoyé à :',
+          l10n.forgotPasswordSentTo,
           style: TextStyle(
             fontSize: 14,
             color: _neutralTone(600),
@@ -176,7 +185,7 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
         ),
         const SizedBox(height: 16),
         Text(
-          'Vérifiez votre boîte de réception et suivez les instructions pour réinitialiser votre mot de passe.',
+          l10n.forgotPasswordCheckInbox,
           style: TextStyle(
             fontSize: 14,
             color: _neutralTone(600),
@@ -188,14 +197,15 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
   }
 
   List<Widget> _buildFormActions() {
+    final l10n = AppLocalizations.of(context)!;
     return [
       TextButton(
         onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-        child: const Text('Annuler'),
+        child: Text(l10n.cancel),
       ),
       CommonButton(
         onPressed: _isLoading ? null : _handleResetPassword,
-        text: 'Envoyer',
+        text: l10n.send,
         isLoading: _isLoading,
       ),
     ];
@@ -205,7 +215,7 @@ class _ForgotPasswordDialogState extends ConsumerState<ForgotPasswordDialog> {
     return [
       CommonButton(
         onPressed: () => Navigator.of(context).pop(),
-        text: 'Fermer',
+        text: AppLocalizations.of(context)!.close,
       ),
     ];
   }
@@ -216,9 +226,9 @@ class _ForgotPasswordIntro extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text(
-      'Entrez votre adresse email pour recevoir un lien de réinitialisation de votre mot de passe.',
-      style: TextStyle(
+    return Text(
+      AppLocalizations.of(context)!.forgotPasswordIntro,
+      style: const TextStyle(
         fontSize: 14,
         color: AppTheme.textSecondary,
       ),

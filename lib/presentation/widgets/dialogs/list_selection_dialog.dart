@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:prioris/domain/core/value_objects/list_prioritization_settings.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 
 /// Dialog pour sélectionner quelles listes participent au mode prioriser
-/// 
-/// Permet aux utilisateurs d'activer/désactiver des listes entières
-/// (ex: désactiver une liste de courses qui ne nécessite pas de priorisation)
 class ListSelectionDialog extends StatefulWidget {
-  /// Paramètres actuels de priorisation
   final ListPrioritizationSettings currentSettings;
-  
-  /// Listes disponibles sous forme [{'id': String, 'title': String}]
   final List<Map<String, String>> availableLists;
-  
-  /// Callback appelé quand les paramètres changent
   final void Function(ListPrioritizationSettings) onSettingsChanged;
 
   const ListSelectionDialog({
@@ -29,19 +22,15 @@ class ListSelectionDialog extends StatefulWidget {
 }
 
 class _ListSelectionDialogState extends State<ListSelectionDialog> {
-  late ListPrioritizationSettings _workingSettings;
+  late Set<String> _checkedIds;
 
   @override
   void initState() {
     super.initState();
-    
-    // Si on est en mode "toutes activées", on initialise avec toutes les listes
-    if (widget.currentSettings.isAllListsEnabled) {
-      final allListIds = widget.availableLists.map((list) => list['id']!).toList();
-      _workingSettings = ListPrioritizationSettings.withAllLists(allListIds);
-    } else {
-      _workingSettings = widget.currentSettings;
-    }
+    final Set<String> allListIds = widget.availableLists.map((list) => list['id']!).toSet();
+    _checkedIds = widget.currentSettings.isAllListsEnabled
+        ? Set<String>.from(allListIds)
+        : Set<String>.from(widget.currentSettings.enabledListIds).intersection(allListIds);
   }
 
   @override
@@ -95,7 +84,7 @@ class _ListSelectionDialogState extends State<ListSelectionDialog> {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Sélectionner les listes à prioriser',
+              AppLocalizations.of(context)!.listSelectionTitle,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 color: AppTheme.primaryColor,
                 fontWeight: FontWeight.bold,
@@ -122,7 +111,7 @@ class _ListSelectionDialogState extends State<ListSelectionDialog> {
   Widget _buildListTile(BuildContext context, Map<String, String> listData) {
     final listId = listData['id']!;
     final listTitle = listData['title']!;
-    final isEnabled = _workingSettings.isListEnabled(listId);
+    final isEnabled = _checkedIds.contains(listId);
     final theme = Theme.of(context);
 
     return ListTile(
@@ -144,7 +133,9 @@ class _ListSelectionDialogState extends State<ListSelectionDialog> {
         ),
       ),
       subtitle: Text(
-        isEnabled ? 'Participera aux duels' : 'Exclue des duels',
+        isEnabled
+            ? AppLocalizations.of(context)!.listSelectionEnabled
+            : AppLocalizations.of(context)!.listSelectionDisabled,
         style: TextStyle(
           color: isEnabled
               ? AppTheme.primaryColor.withOpacity(0.7)
@@ -168,14 +159,16 @@ class _ListSelectionDialogState extends State<ListSelectionDialog> {
 
   void _toggleList(String listId, bool enable) {
     setState(() {
-      final allListIds = widget.availableLists.map((list) => list['id']!).toList();
-      _workingSettings = enable
-          ? _workingSettings.enableList(listId)
-          : _workingSettings.disableListWithContext(listId, allListIds);
+      if (enable) {
+        _checkedIds.add(listId);
+      } else {
+        _checkedIds.remove(listId);
+      }
     });
   }
 
   Widget _buildActions() {
+    final canSave = _checkedIds.isNotEmpty;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -186,21 +179,39 @@ class _ListSelectionDialogState extends State<ListSelectionDialog> {
           ),
         ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Annuler'),
-          ),
-          const SizedBox(width: 8),
-          ElevatedButton(
-            onPressed: _saveSettings,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryColor,
-              foregroundColor: Colors.white,
+          if (!canSave)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Text(
+                AppLocalizations.of(context)!.listSelectionRequireOne,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                  fontSize: 12,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
-            child: const Text('Sauvegarder'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(AppLocalizations.of(context)!.cancel),
+              ),
+              const SizedBox(width: 8),
+              ElevatedButton(
+                onPressed: canSave ? _saveSettings : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryColor,
+                  foregroundColor: Colors.white,
+                ),
+                child: Text(AppLocalizations.of(context)!.save),
+              ),
+            ],
           ),
         ],
       ),
@@ -208,7 +219,14 @@ class _ListSelectionDialogState extends State<ListSelectionDialog> {
   }
 
   void _saveSettings() {
-    widget.onSettingsChanged(_workingSettings);
+    final allListIds = widget.availableLists.map((list) => list['id']!).toSet();
+    final ListPrioritizationSettings newSettings;
+    if (_checkedIds.containsAll(allListIds)) {
+      newSettings = ListPrioritizationSettings.defaultSettings();
+    } else {
+      newSettings = ListPrioritizationSettings(enabledListIds: Set.from(_checkedIds));
+    }
+    widget.onSettingsChanged(newSettings);
     Navigator.of(context).pop();
   }
 }

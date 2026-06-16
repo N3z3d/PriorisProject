@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/presentation/theme/border_radius_tokens.dart';
 
@@ -35,6 +36,7 @@ class _ListFormDialogState extends State<ListFormDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadiusTokens.modal),
       child: Padding(
@@ -45,15 +47,15 @@ class _ListFormDialogState extends State<ListFormDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildDialogTitle(context),
+              _buildDialogTitle(context, l10n),
               const SizedBox(height: 16),
-              _buildNameField(),
+              _buildNameField(l10n),
               const SizedBox(height: 16),
-              _buildDescriptionField(),
+              _buildDescriptionField(l10n),
               const SizedBox(height: 16),
-              _buildTypeDropdown(),
+              _buildTypeDropdown(l10n),
               const SizedBox(height: 24),
-              _buildActionButtons(context),
+              _buildActionButtons(context, l10n),
             ],
           ),
         ),
@@ -61,30 +63,30 @@ class _ListFormDialogState extends State<ListFormDialog> {
     );
   }
 
-  Widget _buildDialogTitle(BuildContext context) {
+  Widget _buildDialogTitle(BuildContext context, AppLocalizations l10n) {
     return Text(
-      widget.initialList == null ? 'Créer une nouvelle liste' : 'Modifier la liste',
+      widget.initialList == null ? l10n.listFormCreateTitle : l10n.listFormEditTitle,
       style: Theme.of(context).textTheme.headlineSmall,
     );
   }
 
-  Widget _buildNameField() {
+  Widget _buildNameField(AppLocalizations l10n) {
     return TextFormField(
       initialValue: _name,
-      decoration: const InputDecoration(
-        labelText: 'Nom de la liste',
-        border: OutlineInputBorder(),
-        hintText: 'Ex: Liste de courses, Voyage Paris...',
+      decoration: InputDecoration(
+        labelText: l10n.listEditNameLabel,
+        border: const OutlineInputBorder(),
+        hintText: l10n.listNameHint,
       ),
       validator: (value) {
         if (value == null || value.trim().isEmpty) {
-          return 'Le nom de la liste est obligatoire pour l\'identifier';
+          return l10n.listNameRequired;
         }
         if (value.trim().length < 2) {
-          return 'Le nom doit contenir au moins 2 caractères';
+          return l10n.listNameMinLength;
         }
         if (value.length > 100) {
-          return 'Le nom ne peut pas dépasser 100 caractères (actuellement ${value.length})';
+          return l10n.listNameMaxLength(value.length);
         }
         return null;
       },
@@ -92,12 +94,12 @@ class _ListFormDialogState extends State<ListFormDialog> {
     );
   }
 
-  Widget _buildDescriptionField() {
+  Widget _buildDescriptionField(AppLocalizations l10n) {
     return TextFormField(
       initialValue: _description,
-      decoration: const InputDecoration(
-        labelText: 'Description (optionnel)',
-        border: OutlineInputBorder(),
+      decoration: InputDecoration(
+        labelText: l10n.taskDescriptionFieldLabel,
+        border: const OutlineInputBorder(),
       ),
       maxLines: 2,
       maxLength: 500,
@@ -105,12 +107,12 @@ class _ListFormDialogState extends State<ListFormDialog> {
     );
   }
 
-  Widget _buildTypeDropdown() {
+  Widget _buildTypeDropdown(AppLocalizations l10n) {
     return DropdownButtonFormField<ListType>(
       value: _type,
-      decoration: const InputDecoration(
-        labelText: 'Type de liste',
-        border: OutlineInputBorder(),
+      decoration: InputDecoration(
+        labelText: l10n.listTypeLabel,
+        border: const OutlineInputBorder(),
       ),
       items: ListType.values.map((type) {
         return DropdownMenuItem(
@@ -124,13 +126,13 @@ class _ListFormDialogState extends State<ListFormDialog> {
     );
   }
 
-  Widget _buildActionButtons(BuildContext context) {
+  Widget _buildActionButtons(BuildContext context, AppLocalizations l10n) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Annuler'),
+          child: Text(l10n.cancel),
         ),
         const SizedBox(width: 12),
         ElevatedButton(
@@ -141,7 +143,7 @@ class _ListFormDialogState extends State<ListFormDialog> {
               borderRadius: BorderRadiusTokens.button,
             ),
           ),
-          child: Text(widget.initialList == null ? 'Créer' : 'Enregistrer'),
+          child: Text(widget.initialList == null ? l10n.create : l10n.save),
         ),
       ],
     );

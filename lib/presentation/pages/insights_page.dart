@@ -39,6 +39,12 @@ class _InsightsPageState extends ConsumerState<InsightsPage>
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<int>(currentPageProvider, (previous, current) {
+      if (current == 3 && previous != 3) {
+        ref.read(habitsStateProvider.notifier).loadHabits();
+      }
+    });
+
     final habits = ref.watch(reactiveHabitsProvider);
     final isLoading = ref.watch(habitsLoadingProvider);
     final error = ref.watch(habitsErrorProvider);

@@ -5,14 +5,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:prioris/data/providers/auth_providers.dart';
 import 'package:prioris/data/providers/consent_providers.dart';
+import 'package:prioris/domain/ports/consent_repository.dart';
 import 'package:prioris/domain/services/core/consent_service.dart';
 import 'package:prioris/presentation/pages/auth/auth_wrapper.dart';
 import 'package:prioris/presentation/pages/consent_gate_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../helpers/localized_widget.dart';
 
+class _NullConsentRepository implements IConsentRepository {
+  const _NullConsentRepository();
+  @override Future<bool> hasAcceptedConsent() async => false;
+  @override Future<void> acceptConsent() async {}
+  @override Future<void> revokeConsent() async {}
+}
+
 // Service dont hasAcceptedConsent() ne se résout jamais — maintient l'état loading
 class _BlockingConsentService extends ConsentService {
+  _BlockingConsentService() : super(const _NullConsentRepository());
+
   @override
   Future<bool> hasAcceptedConsent() => Completer<bool>().future;
 }

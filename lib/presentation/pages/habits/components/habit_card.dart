@@ -16,6 +16,7 @@ class HabitCard extends StatelessWidget {
   final VoidCallback onRecord;
   final VoidCallback onEdit;
   final VoidCallback onTap;
+  final bool isRecording;
 
   const HabitCard({
     super.key,
@@ -24,6 +25,7 @@ class HabitCard extends StatelessWidget {
     required this.onRecord,
     required this.onEdit,
     required this.onTap,
+    this.isRecording = false,
   });
 
   @override
@@ -51,6 +53,7 @@ class HabitCard extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
+    final completedToday = habit.isCompletedToday();
     return Row(
       children: [
         HabitAvatar(habit: habit),
@@ -65,12 +68,27 @@ class HabitCard extends StatelessWidget {
             ],
           ),
         ),
+        _buildRecordButton(context, completedToday),
         HabitMenu(
-          onRecord: onRecord,
           onEdit: onEdit,
           onDelete: onDelete,
         ),
       ],
+    );
+  }
+
+  Widget _buildRecordButton(BuildContext context, bool completedToday) {
+    return IconButton(
+      onPressed: isRecording ? null : onRecord,
+      tooltip: AppLocalizations.of(context)!.habitsMenuRecord,
+      icon: Icon(
+        completedToday ? Icons.check_circle : Icons.check_circle_outline,
+        color: isRecording
+            ? null
+            : completedToday
+                ? AppTheme.successColor
+                : null,
+      ),
     );
   }
 
