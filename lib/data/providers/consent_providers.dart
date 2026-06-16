@@ -1,7 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:prioris/domain/ports/consent_repository.dart';
 import 'package:prioris/domain/services/core/consent_service.dart';
+import 'package:prioris/data/repositories/shared_preferences_consent_repository.dart';
 
-final consentServiceProvider = Provider<ConsentService>((ref) => ConsentService());
+final consentRepositoryProvider = Provider<IConsentRepository>(
+  (ref) => SharedPreferencesConsentRepository(),
+);
+
+final consentServiceProvider = Provider<ConsentService>(
+  (ref) => ConsentService(ref.watch(consentRepositoryProvider)),
+);
 
 class ConsentNotifier extends StateNotifier<AsyncValue<bool>> {
   ConsentNotifier(this._service) : super(const AsyncValue.loading()) {

@@ -45,25 +45,21 @@ class HabitsNotifier extends StateNotifier<HabitsState> {
   Future<void> loadHabits() async {
     // Reentrancy guard: don't fetch if already loading
     if (state.isLoading) {
-      print('[HabitsProvider] D: loadHabits() blocked - already loading');
       return;
     }
 
-    print('[HabitsProvider] I: Starting loadHabits() fetch');
     state = state.copyWith(isLoading: true, error: null);
 
     try {
       final HabitRepository repository = _ref.read(habitRepositoryProvider);
       final habits = await repository.getAllHabits();
 
-      print('[HabitsProvider] I: Fetched ${habits.length} habits successfully');
       state = state.copyWith(
         habits: habits,
         isLoading: false,
         lastUpdated: DateTime.now(),
       );
     } catch (e) {
-      print('[HabitsProvider] E: Failed to load habits - ${e.toString()}');
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),

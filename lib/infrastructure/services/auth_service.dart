@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:prioris/core/config/app_config.dart';
+import 'package:prioris/domain/ports/auth_service.dart';
 import 'package:prioris/core/exceptions/app_exception.dart';
 import 'package:prioris/infrastructure/security/signup_guard.dart';
 import 'package:prioris/infrastructure/services/logger_service.dart';
@@ -7,7 +8,7 @@ import 'package:prioris/infrastructure/services/supabase_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Service d'authentification avec Supabase.
-class AuthService {
+class AuthService implements IAuthService {
   AuthService._internal({
     required SupabaseService supabaseService,
     required LoggerService logger,
@@ -45,7 +46,14 @@ class AuthService {
   Stream<AuthState> get authStateChanges => _supabase.authStateChanges;
 
   /// Indique si un utilisateur est connecte.
+  @override
   bool get isSignedIn => currentUser != null;
+
+  @override
+  String? get currentUserId => currentUser?.id;
+
+  @override
+  String? get currentUserEmail => currentUser?.email;
 
   /// Inscription email / mot de passe avec garde anti-bot.
   Future<AuthResponse> signUp({
@@ -220,9 +228,9 @@ class AuthService {
     _logger.info('Debut deconnexion', context: 'AuthService.signOut');
 
     try {
-      final currentUserId = currentUser?.id;
-      if (currentUserId != null) {
-        _logger.info('Deconnexion de l\'utilisateur: $currentUserId',
+      final userId = currentUser?.id;
+      if (userId != null) {
+        _logger.info('Deconnexion de l\'utilisateur: $userId',
             context: 'AuthService.signOut');
       } else {
         _logger.info('Aucun utilisateur a deconnecter',

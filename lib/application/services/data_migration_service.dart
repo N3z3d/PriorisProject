@@ -4,7 +4,7 @@
 import '../ports/persistence_interfaces.dart';
 import '../../domain/models/core/entities/custom_list.dart';
 import '../../domain/models/core/entities/list_item.dart';
-import '../../data/repositories/custom_list_repository.dart';
+import '../../domain/list/repositories/custom_list_repository.dart';
 import '../../infrastructure/services/logger_service.dart';
 
 /// SOLID implementation of data migration

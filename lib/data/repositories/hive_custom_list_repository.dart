@@ -14,37 +14,6 @@ class HiveCustomListRepository extends CustomListRepository {
   bool _isInitialized = false;
   final ErrorHandlingService _errorService = ErrorHandlingService.defaultInstance();
 
-  // Méthodes de l'interface BasicCrudRepositoryInterface
-  @override
-  Future<List<CustomList>> getAll() async => getAllLists();
-
-  @override
-  Future<CustomList?> getById(String id) async => getListById(id);
-
-  @override
-  Future<void> save(CustomList entity) async => saveList(entity);
-
-  @override
-  Future<void> update(CustomList entity) async => updateList(entity);
-
-  @override
-  Future<void> delete(String id) async => deleteList(id);
-
-  // Méthodes de SearchableRepositoryInterface
-  @override
-  Future<List<CustomList>> searchByName(String query) async => searchListsByName(query);
-
-  @override
-  Future<List<CustomList>> searchByDescription(String query) async => searchListsByDescription(query);
-
-  // Méthodes de FilterableRepositoryInterface
-  @override
-  Future<List<CustomList>> getByType(ListType type) async => getListsByType(type);
-
-  // Méthodes de CleanableRepositoryInterface
-  @override
-  Future<void> clearAll() async => clearAllLists();
-
   /// Initialise la box Hive
   Future<void> initialize() async {
     if (_isInitialized && _box.isOpen) return;

@@ -3,11 +3,6 @@ import 'package:prioris/domain/models/core/enums/list_enums.dart';
 
 /// Port domaine — sous-interface CRUD pour les listes personnalisées (ISP)
 abstract class CustomListCrudRepositoryInterface {
-  Future<List<CustomList>> getAll();
-  Future<CustomList?> getById(String id);
-  Future<void> save(CustomList entity);
-  Future<void> update(CustomList entity);
-  Future<void> delete(String id);
   Future<List<CustomList>> getAllLists();
   Future<CustomList?> getListById(String id);
   Future<void> saveList(CustomList list);
@@ -17,21 +12,17 @@ abstract class CustomListCrudRepositoryInterface {
 
 /// Port domaine — sous-interface recherche (ISP)
 abstract class CustomListSearchRepositoryInterface {
-  Future<List<CustomList>> searchByName(String query);
-  Future<List<CustomList>> searchByDescription(String query);
   Future<List<CustomList>> searchListsByName(String query);
   Future<List<CustomList>> searchListsByDescription(String query);
 }
 
 /// Port domaine — sous-interface filtrage (ISP)
 abstract class CustomListFilterRepositoryInterface {
-  Future<List<CustomList>> getByType(ListType type);
   Future<List<CustomList>> getListsByType(ListType type);
 }
 
 /// Port domaine — sous-interface nettoyage (ISP)
 abstract class CustomListCleanRepositoryInterface {
-  Future<void> clearAll();
   Future<void> clearAllLists();
 }
 

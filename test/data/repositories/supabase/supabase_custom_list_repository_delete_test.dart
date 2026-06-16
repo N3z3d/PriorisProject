@@ -2,22 +2,19 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:prioris/data/repositories/supabase/supabase_custom_list_repository.dart';
-import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/infrastructure/services/auth_service.dart';
 import 'package:prioris/infrastructure/services/supabase_service.dart';
 import 'package:prioris/infrastructure/services/supabase_table_adapter.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'supabase_custom_list_repository_delete_test.mocks.dart';
 
-@GenerateMocks([SupabaseService, AuthService, User])
+@GenerateMocks([SupabaseService, AuthService])
 void main() {
   group('SupabaseCustomListRepository - Delete Tests', () {
     late SupabaseCustomListRepository repository;
     late MockSupabaseService mockSupabaseService;
     late MockAuthService mockAuthService;
     late _RecordingSupabaseTableAdapter tableAdapter;
-    late MockUser mockUser;
 
     const testUserId = 'da9670fc-6417-4a97-a29c-9cdf46c7bd2a';
     const testListId = '8705e0f2-775a-4b9a-9d17-59bd53e1e475';
@@ -27,12 +24,10 @@ void main() {
       mockSupabaseService = MockSupabaseService();
       mockAuthService = MockAuthService();
       tableAdapter = _RecordingSupabaseTableAdapter();
-      mockUser = MockUser();
 
       when(mockAuthService.isSignedIn).thenReturn(true);
-      when(mockAuthService.currentUser).thenReturn(mockUser);
-      when(mockUser.id).thenReturn(testUserId);
-      when(mockUser.email).thenReturn(testEmail);
+      when(mockAuthService.currentUserId).thenReturn(testUserId);
+      when(mockAuthService.currentUserEmail).thenReturn(testEmail);
 
       repository = SupabaseCustomListRepository(
         supabaseService: mockSupabaseService,
@@ -44,7 +39,6 @@ void main() {
     tearDown(() {
       reset(mockSupabaseService);
       reset(mockAuthService);
-      reset(mockUser);
     });
 
     group('deleteList - Tests de base', () {
@@ -84,9 +78,9 @@ void main() {
         expect(tableAdapter.lastValues, isNull);
       });
 
-      test('DOIT échouer quand currentUser est null', () async {
+      test('DOIT échouer quand currentUserId est null', () async {
         when(mockAuthService.isSignedIn).thenReturn(true);
-        when(mockAuthService.currentUser).thenReturn(null);
+        when(mockAuthService.currentUserId).thenReturn(null);
 
         await expectLater(
           repository.deleteList(testListId),

@@ -1,6 +1,6 @@
 import 'package:logger/logger.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
-import 'package:prioris/infrastructure/services/auth_service.dart';
+import 'package:prioris/domain/ports/auth_service.dart';
 import 'package:prioris/infrastructure/services/supabase_service.dart';
 import 'package:prioris/infrastructure/services/supabase_table_adapter.dart';
 
@@ -10,7 +10,7 @@ import 'package:prioris/domain/habit/repositories/habit_repository.dart';
 /// DI-friendly: Dependencies injected via constructor
 class SupabaseHabitRepository implements HabitRepository {
   final SupabaseService _supabase;
-  final AuthService _auth;
+  final IAuthService _auth;
   final SupabaseTableAdapterFactory _tableFactory;
   final Logger _logger;
 
@@ -19,11 +19,11 @@ class SupabaseHabitRepository implements HabitRepository {
   /// Constructor with dependency injection
   SupabaseHabitRepository({
     SupabaseService? supabaseService,
-    AuthService? authService,
+    IAuthService? authService,
     SupabaseTableAdapterFactory? tableFactory,
     Logger? logger,
   })  : _supabase = supabaseService ?? SupabaseService.instance,
-        _auth = authService ?? AuthService.instance,
+        _auth = authService ?? const NullAuthService(),
         _tableFactory = tableFactory ?? defaultSupabaseTableFactory,
         _logger = logger ?? Logger();
 
@@ -35,11 +35,11 @@ class SupabaseHabitRepository implements HabitRepository {
         throw Exception('User not authenticated');
       }
 
-      _logger.d('Fetching all habits for user: ${_auth.currentUser!.id}');
+      _logger.d('Fetching all habits for user: ${_auth.currentUserId}');
 
       final response = await _table().select(
         builder: (query) => query
-            .eq('user_id', _auth.currentUser!.id)
+            .eq('user_id', _auth.currentUserId!)
             .order('created_at', ascending: false),
       );
 
@@ -65,8 +65,8 @@ class SupabaseHabitRepository implements HabitRepository {
 
       final habitData = habit.toJson();
       // Ensure user_id and user_email are set (CRITICAL for multi-user)
-      habitData['user_id'] = _auth.currentUser!.id;
-      habitData['user_email'] = _auth.currentUser!.email;
+      habitData['user_id'] = _auth.currentUserId!;
+      habitData['user_email'] = _auth.currentUserEmail;
 
       await _table().insert(habitData);
 
@@ -99,7 +99,7 @@ class SupabaseHabitRepository implements HabitRepository {
         values: habitData,
         builder: (query) => query
             .eq('id', habit.id)
-            .eq('user_id', _auth.currentUser!.id), // Ensure user owns this habit
+            .eq('user_id', _auth.currentUserId!), // Ensure user owns this habit
       );
 
       _logger.i('Successfully updated habit: ${habit.name}');
@@ -123,7 +123,7 @@ class SupabaseHabitRepository implements HabitRepository {
       await _table().delete(
         builder: (query) => query
             .eq('id', habitId)
-            .eq('user_id', _auth.currentUser!.id), // Ensure user owns this habit
+            .eq('user_id', _auth.currentUserId!), // Ensure user owns this habit
       );
 
       _logger.i('Successfully deleted habit: $habitId');
@@ -145,7 +145,7 @@ class SupabaseHabitRepository implements HabitRepository {
 
       final response = await _table().select(
         builder: (query) => query
-            .eq('user_id', _auth.currentUser!.id)
+            .eq('user_id', _auth.currentUserId!)
             .eq('category', category)
             .order('created_at', ascending: false),
       );
@@ -168,11 +168,11 @@ class SupabaseHabitRepository implements HabitRepository {
         throw Exception('User not authenticated');
       }
 
-      _logger.d('Clearing all habits for user: ${_auth.currentUser!.id}');
+      _logger.d('Clearing all habits for user: ${_auth.currentUserId}');
 
       // Delete all habits for current user
       await _table().delete(
-        builder: (query) => query.eq('user_id', _auth.currentUser!.id),
+        builder: (query) => query.eq('user_id', _auth.currentUserId!),
       );
 
       _logger.i('Successfully cleared all habits');
@@ -194,7 +194,7 @@ class SupabaseHabitRepository implements HabitRepository {
     return _table()
         .stream(
           primaryKey: const ['id'],
-          builder: (query) => query.eq('user_id', _auth.currentUser!.id),
+          builder: (query) => query.eq('user_id', _auth.currentUserId!),
         )
         .map(
           (data) => data.map<Habit>((json) => Habit.fromJson(json)).toList(),
@@ -208,7 +208,7 @@ class SupabaseHabitRepository implements HabitRepository {
 
       final response = await _table().select(
         columns: 'category',
-        builder: (query) => query.eq('user_id', _auth.currentUser!.id),
+        builder: (query) => query.eq('user_id', _auth.currentUserId!),
       );
 
       final stats = <String, int>{};

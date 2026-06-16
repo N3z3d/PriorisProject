@@ -1,16 +1,17 @@
-import 'package:prioris/infrastructure/services/supabase_service.dart';
+import 'package:prioris/domain/ports/auth_service.dart';
 import 'package:prioris/infrastructure/services/auth_service.dart';
+import 'package:prioris/infrastructure/services/supabase_service.dart';
 
 /// Service pour gérer les données utilisateur
 /// DI-friendly: Dependencies injected via constructor
 class UserDataService {
   final SupabaseService _supabase;
-  final AuthService _auth;
+  final IAuthService _auth;
 
   /// Constructor with dependency injection
   const UserDataService({
     required SupabaseService supabaseService,
-    required AuthService authService,
+    required IAuthService authService,
   }) : _supabase = supabaseService,
        _auth = authService;
 
@@ -27,7 +28,7 @@ class UserDataService {
   Future<void> clearAllUserData() async {
     if (!_auth.isSignedIn) throw Exception('User not authenticated');
     
-    final userId = _auth.currentUser!.id;
+    final userId = _auth.currentUserId!;
     
     try {
       // Supprimer tous les éléments de liste de l'utilisateur
@@ -63,7 +64,7 @@ class UserDataService {
   Future<void> softDeleteAllUserData() async {
     if (!_auth.isSignedIn) throw Exception('User not authenticated');
     
-    final userId = _auth.currentUser!.id;
+    final userId = _auth.currentUserId!;
     final now = DateTime.now().toIso8601String();
     
     try {
@@ -103,7 +104,7 @@ class UserDataService {
   Future<Map<String, int>> getUserDataStats() async {
     if (!_auth.isSignedIn) throw Exception('User not authenticated');
     
-    final userId = _auth.currentUser!.id;
+    final userId = _auth.currentUserId!;
     
     try {
       // Compter les listes (sans filtre is_deleted d'abord pour voir s'il y en a)
@@ -147,7 +148,7 @@ class UserDataService {
   Future<Map<String, dynamic>> checkDataIntegrity() async {
     if (!_auth.isSignedIn) throw Exception('User not authenticated');
     
-    final userId = _auth.currentUser!.id;
+    final userId = _auth.currentUserId!;
     
     try {
       // Vérifier les listes de l'utilisateur

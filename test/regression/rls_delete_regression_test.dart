@@ -12,7 +12,6 @@ import 'rls_delete_regression_test.mocks.dart';
 @GenerateMocks([
   SupabaseService,
   AuthService,
-  User,
 ])
 void main() {
   group('🔒 Tests de Régression RLS - Bug jamais plus !', () {
@@ -159,11 +158,9 @@ class _DeleteListTestHarness {
     required String userId,
   })  : _mockSupabaseService = MockSupabaseService(),
         _mockAuthService = MockAuthService(),
-        _mockUser = MockUser(),
         _table = _FakeSupabaseTableAdapter() {
     when(_mockAuthService.isSignedIn).thenReturn(true);
-    when(_mockAuthService.currentUser).thenReturn(_mockUser);
-    when(_mockUser.id).thenReturn(userId);
+    when(_mockAuthService.currentUserId).thenReturn(userId);
 
     repository = SupabaseCustomListRepository(
       supabaseService: _mockSupabaseService,
@@ -174,7 +171,6 @@ class _DeleteListTestHarness {
 
   final MockSupabaseService _mockSupabaseService;
   final MockAuthService _mockAuthService;
-  final MockUser _mockUser;
   final _FakeSupabaseTableAdapter _table;
 
   late final SupabaseCustomListRepository repository;

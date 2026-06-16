@@ -1,5 +1,5 @@
-import 'package:prioris/data/repositories/custom_list_repository.dart';
-import 'package:prioris/data/repositories/list_item_repository.dart';
+import 'package:prioris/domain/list/repositories/custom_list_repository.dart';
+import 'package:prioris/domain/list/repositories/list_item_repository.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
 

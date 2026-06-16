@@ -5,8 +5,8 @@ import 'package:prioris/core/interfaces/lists_interfaces.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
 import 'package:prioris/domain/services/persistence/adaptive_persistence_service.dart';
-import 'package:prioris/data/repositories/custom_list_repository.dart';
-import 'package:prioris/data/repositories/list_item_repository.dart';
+import 'package:prioris/domain/list/repositories/custom_list_repository.dart';
+import 'package:prioris/domain/list/repositories/list_item_repository.dart';
 import 'package:prioris/infrastructure/services/logger_service.dart';
 
 /// Strategy pattern for different persistence modes

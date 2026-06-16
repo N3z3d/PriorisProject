@@ -1,7 +1,7 @@
 import 'package:prioris/core/exceptions/app_exception.dart';
 import 'package:prioris/domain/list/repositories/list_item_repository.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
-import 'package:prioris/infrastructure/services/auth_service.dart';
+import 'package:prioris/domain/ports/auth_service.dart';
 import 'package:prioris/infrastructure/services/supabase_service.dart';
 import 'package:prioris/infrastructure/services/supabase_table_adapter.dart';
 
@@ -9,7 +9,7 @@ import 'package:prioris/infrastructure/services/supabase_table_adapter.dart';
 /// DI-friendly: Dependencies injected via constructor
 class SupabaseListItemRepository implements ListItemRepository {
   final SupabaseService _supabase;
-  final AuthService _auth;
+  final IAuthService _auth;
   final SupabaseTableAdapterFactory _tableFactory;
 
   static const String _tableName = 'list_items';
@@ -17,18 +17,11 @@ class SupabaseListItemRepository implements ListItemRepository {
   /// Constructor with dependency injection
   SupabaseListItemRepository({
     SupabaseService? supabaseService,
-    AuthService? authService,
+    IAuthService? authService,
     SupabaseTableAdapterFactory? tableFactory,
   })  : _supabase = supabaseService ?? SupabaseService.instance,
-        _auth = authService ?? AuthService.instance,
+        _auth = authService ?? const NullAuthService(),
         _tableFactory = tableFactory ?? defaultSupabaseTableFactory;
-
-  /// Factory constructor for legacy compatibility (deprecated)
-  @Deprecated('Use constructor with DI instead')
-  factory SupabaseListItemRepository.withDefaults() => SupabaseListItemRepository(
-    supabaseService: SupabaseService.instance,
-    authService: AuthService.instance,
-  );
 
   @override
   Future<List<ListItem>> getAll() async {
@@ -40,7 +33,7 @@ class SupabaseListItemRepository implements ListItemRepository {
 
       final response = await _table().select(
         builder: (query) => query
-            .eq('user_id', _auth.currentUser!.id)
+            .eq('user_id', _auth.currentUserId!)
             .eq('is_deleted', false)
             .order('created_at', ascending: false),
       );
@@ -62,7 +55,7 @@ class SupabaseListItemRepository implements ListItemRepository {
       final response = await _table().selectSingle(
         builder: (query) => query
             .eq('id', id)
-            .eq('user_id', _auth.currentUser!.id)
+            .eq('user_id', _auth.currentUserId!)
             .eq('is_deleted', false),
       );
 
@@ -81,8 +74,8 @@ class SupabaseListItemRepository implements ListItemRepository {
       );
 
       final itemData = _toSupabaseJson(item);
-      itemData['user_id'] = _auth.currentUser!.id;
-      itemData['user_email'] = _auth.currentUser!.email;
+      itemData['user_id'] = _auth.currentUserId!;
+      itemData['user_email'] = _auth.currentUserEmail;
       itemData['created_at'] = DateTime.now().toIso8601String();
       itemData['updated_at'] = DateTime.now().toIso8601String();
       
@@ -109,7 +102,7 @@ class SupabaseListItemRepository implements ListItemRepository {
         values: itemData,
         builder: (query) => query
             .eq('id', item.id)
-            .eq('user_id', _auth.currentUser!.id),
+            .eq('user_id', _auth.currentUserId!),
       );
 
       return item;
@@ -134,7 +127,7 @@ class SupabaseListItemRepository implements ListItemRepository {
         },
         builder: (query) => query
             .eq('id', id)
-            .eq('user_id', _auth.currentUser!.id),
+            .eq('user_id', _auth.currentUserId!),
       );
     } catch (e) {
       throw Exception('Failed to delete list item: $e');
@@ -151,7 +144,7 @@ class SupabaseListItemRepository implements ListItemRepository {
 
       final response = await _table().select(
         builder: (query) => query
-            .eq('user_id', _auth.currentUser!.id)
+            .eq('user_id', _auth.currentUserId!)
             .eq('list_id', listId)
             .eq('is_deleted', false)
             .order('created_at', ascending: false),
@@ -175,7 +168,7 @@ class SupabaseListItemRepository implements ListItemRepository {
         .stream(
           primaryKey: const ['id'],
           builder: (query) => query
-              .eq('user_id', _auth.currentUser!.id)
+              .eq('user_id', _auth.currentUserId!)
               .eq('list_id', listId)
               .eq('is_deleted', false),
         )
@@ -197,7 +190,7 @@ class SupabaseListItemRepository implements ListItemRepository {
       final response = await _table().select(
         columns: 'is_completed, elo_score',
         builder: (query) => query
-            .eq('user_id', _auth.currentUser!.id)
+            .eq('user_id', _auth.currentUserId!)
             .eq('list_id', listId)
             .eq('is_deleted', false),
       );

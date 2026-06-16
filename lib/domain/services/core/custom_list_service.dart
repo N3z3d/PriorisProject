@@ -1,6 +1,6 @@
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
-import 'package:prioris/data/repositories/custom_list_repository.dart';
+import 'package:prioris/domain/list/repositories/custom_list_repository.dart';
 import 'interfaces/list_service_interface.dart';
 
 /// Service CRUD pour les listes personnalisées

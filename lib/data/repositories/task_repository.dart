@@ -1,8 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/domain/models/core/entities/task.dart';
+import 'package:prioris/domain/ports/task_repository.dart';
 
 /// Repository abstrait pour la gestion des tâches
-abstract class TaskRepository {
+abstract class TaskRepository implements ITaskRepository {
   Future<List<Task>> getAllTasks();
   Future<void> saveTask(Task task);
   Future<void> updateTask(Task task);

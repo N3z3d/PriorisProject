@@ -1,7 +1,7 @@
 import 'package:prioris/domain/models/core/entities/task.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
 import 'package:prioris/domain/task/services/list_item_task_converter.dart';
-import 'package:prioris/data/repositories/task_repository.dart';
+import 'package:prioris/domain/ports/task_repository.dart';
 
 /// Résultat d'un duel entre deux tâches
 class DuelResult {
@@ -16,7 +16,7 @@ class DuelResult {
 /// Ce service permet de faire la priorisation sur les éléments de listes
 /// en les convertissant temporairement en tâches.
 class UnifiedPrioritizationService {
-  final TaskRepository taskRepository;
+  final ITaskRepository taskRepository;
   final ListItemTaskConverter converter;
 
   const UnifiedPrioritizationService({

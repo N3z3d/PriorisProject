@@ -6,7 +6,6 @@
 import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i7;
 import 'package:prioris/infrastructure/security/signup_guard.dart' as _i6;
 import 'package:prioris/infrastructure/services/auth_service.dart' as _i5;
 import 'package:prioris/infrastructure/services/supabase_service.dart' as _i3;
@@ -127,6 +126,18 @@ class MockAuthService extends _i1.Mock implements _i5.AuthService {
         Invocation.getter(#isSignedIn),
         returnValue: false,
       ) as bool);
+
+  @override
+  String? get currentUserId => (super.noSuchMethod(
+        Invocation.getter(#currentUserId),
+        returnValue: null,
+      ) as String?);
+
+  @override
+  String? get currentUserEmail => (super.noSuchMethod(
+        Invocation.getter(#currentUserEmail),
+        returnValue: null,
+      ) as String?);
 
   @override
   bool get hasValidSession => (super.noSuchMethod(
@@ -266,59 +277,3 @@ class MockAuthService extends _i1.Mock implements _i5.AuthService {
       ) as _i4.Future<_i2.AuthResponse>);
 }
 
-/// A class which mocks [User].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockUser extends _i1.Mock implements _i2.User {
-  MockUser() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  String get id => (super.noSuchMethod(
-        Invocation.getter(#id),
-        returnValue: _i7.dummyValue<String>(
-          this,
-          Invocation.getter(#id),
-        ),
-      ) as String);
-
-  @override
-  Map<String, dynamic> get appMetadata => (super.noSuchMethod(
-        Invocation.getter(#appMetadata),
-        returnValue: <String, dynamic>{},
-      ) as Map<String, dynamic>);
-
-  @override
-  String get aud => (super.noSuchMethod(
-        Invocation.getter(#aud),
-        returnValue: _i7.dummyValue<String>(
-          this,
-          Invocation.getter(#aud),
-        ),
-      ) as String);
-
-  @override
-  String get createdAt => (super.noSuchMethod(
-        Invocation.getter(#createdAt),
-        returnValue: _i7.dummyValue<String>(
-          this,
-          Invocation.getter(#createdAt),
-        ),
-      ) as String);
-
-  @override
-  bool get isAnonymous => (super.noSuchMethod(
-        Invocation.getter(#isAnonymous),
-        returnValue: false,
-      ) as bool);
-
-  @override
-  Map<String, dynamic> toJson() => (super.noSuchMethod(
-        Invocation.method(
-          #toJson,
-          [],
-        ),
-        returnValue: <String, dynamic>{},
-      ) as Map<String, dynamic>);
-}

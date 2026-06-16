@@ -4,52 +4,8 @@ import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
 
 /// Implémentation en mémoire pour les tests
-class InMemoryCustomListRepository implements CustomListRepository {
+class InMemoryCustomListRepository extends CustomListRepository {
   final Map<String, CustomList> _lists = {};
-
-  // Méthodes de l'interface BasicCrudRepositoryInterface
-  @override
-  Future<List<CustomList>> getAll() async => getAllLists();
-
-  @override
-  Future<CustomList?> getById(String id) async => getListById(id);
-
-  @override
-  Future<void> save(CustomList entity) async => saveList(entity);
-
-  @override
-  Future<void> update(CustomList entity) async => updateList(entity);
-
-  @override
-  Future<void> delete(String id) async => deleteList(id);
-
-  // Méthodes de SearchableRepositoryInterface
-  @override
-  Future<List<CustomList>> searchByName(String query) async => searchListsByName(query);
-
-  @override
-  Future<List<CustomList>> searchByDescription(String query) async => searchListsByDescription(query);
-
-  // Méthodes de FilterableRepositoryInterface
-  @override
-  Future<List<CustomList>> getByType(ListType type) async => getListsByType(type);
-
-  // Méthodes de CleanableRepositoryInterface
-  @override
-  Future<void> clearAll() async => clearAllLists();
-
-  @override
-  Future<Map<String, dynamic>> getStats() async {
-    final lists = _lists.values.toList();
-    final completed = lists.where((list) => list.isCompleted).length;
-    final itemCount =
-        lists.fold<int>(0, (count, list) => count + list.items.length);
-    return {
-      'count': lists.length,
-      'completed': completed,
-      'items': itemCount,
-    };
-  }
 
   @override
   Future<List<CustomList>> getAllLists() async {

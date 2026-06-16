@@ -1,12 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:prioris/infrastructure/services/supabase_service.dart';
-import 'package:prioris/infrastructure/services/auth_service.dart';
-import 'package:prioris/infrastructure/services/user_data_service.dart';
-import 'package:prioris/infrastructure/services/logger_service.dart';
-import 'package:prioris/data/repositories/supabase/supabase_custom_list_repository.dart';
-import 'package:prioris/data/repositories/supabase/supabase_list_item_repository.dart';
+import 'package:prioris/data/providers/auth_providers.dart';
 import 'package:prioris/data/repositories/custom_list_repository.dart';
 import 'package:prioris/data/repositories/list_item_repository.dart';
+import 'package:prioris/data/repositories/supabase/supabase_custom_list_repository.dart';
+import 'package:prioris/data/repositories/supabase/supabase_list_item_repository.dart';
+import 'package:prioris/infrastructure/services/logger_service.dart';
+import 'package:prioris/infrastructure/services/supabase_service.dart';
+import 'package:prioris/infrastructure/services/user_data_service.dart';
 
 /// Service providers with proper dependency injection
 /// Eliminates hidden singletons and makes dependencies explicit
@@ -14,10 +14,6 @@ import 'package:prioris/data/repositories/list_item_repository.dart';
 /// Core infrastructure services
 final supabaseServiceProvider = Provider<SupabaseService>((ref) {
   return SupabaseService.instance; // Pending: Make this configurable too
-});
-
-final authServiceProvider = Provider<AuthService>((ref) {
-  return AuthService.instance; // Pending: Make this configurable too  
 });
 
 final loggerServiceProvider = Provider<LoggerService>((ref) {

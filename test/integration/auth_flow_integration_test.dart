@@ -1119,6 +1119,12 @@ class TestAuthService implements AuthService {
   @override
   bool get isSignedIn => _currentUser != null;
 
+  @override
+  String? get currentUserId => _currentUser?.id;
+
+  @override
+  String? get currentUserEmail => _currentUser?.email;
+
   Future<void> register({
     required String email,
     required String password,

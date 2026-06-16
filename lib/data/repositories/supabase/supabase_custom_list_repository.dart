@@ -1,6 +1,6 @@
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
-import 'package:prioris/infrastructure/services/auth_service.dart';
+import 'package:prioris/domain/ports/auth_service.dart';
 import 'package:prioris/infrastructure/services/supabase_service.dart';
 import 'package:prioris/infrastructure/services/supabase_table_adapter.dart';
 
@@ -10,7 +10,7 @@ import 'package:prioris/domain/list/repositories/custom_list_repository.dart';
 /// DI-friendly: Dependencies injected via constructor
 class SupabaseCustomListRepository extends CustomListRepository {
   final SupabaseService _supabase;
-  final AuthService _auth;
+  final IAuthService _auth;
   final SupabaseTableAdapterFactory _tableFactory;
 
   static const String _tableName = 'custom_lists';
@@ -18,34 +18,11 @@ class SupabaseCustomListRepository extends CustomListRepository {
   /// Constructor with dependency injection
   SupabaseCustomListRepository({
     SupabaseService? supabaseService,
-    AuthService? authService,
+    IAuthService? authService,
     SupabaseTableAdapterFactory? tableFactory,
   })  : _supabase = supabaseService ?? SupabaseService.instance,
-        _auth = authService ?? AuthService.instance,
+        _auth = authService ?? const NullAuthService(),
         _tableFactory = tableFactory ?? defaultSupabaseTableFactory;
-
-  /// Factory constructor for legacy compatibility (deprecated)
-  @Deprecated('Use constructor with DI instead')
-  factory SupabaseCustomListRepository.withDefaults() => SupabaseCustomListRepository(
-    supabaseService: SupabaseService.instance,
-    authService: AuthService.instance,
-  );
-
-  // Méthodes héritées de BasicCrudRepositoryInterface
-  @override
-  Future<List<CustomList>> getAll() => getAllLists();
-
-  @override
-  Future<CustomList?> getById(String id) => getListById(id);
-
-  @override
-  Future<void> save(CustomList entity) => saveList(entity);
-
-  @override
-  Future<void> update(CustomList entity) => updateList(entity);
-
-  @override
-  Future<void> delete(String id) => deleteList(id);
 
   @override
   Future<List<CustomList>> getAllLists() async {
@@ -54,7 +31,7 @@ class SupabaseCustomListRepository extends CustomListRepository {
 
       final response = await _table().select(
         builder: (query) => query
-            .eq('user_id', _auth.currentUser!.id)
+            .eq('user_id', _auth.currentUserId!)
             .eq('is_deleted', false)
             .order('created_at', ascending: false),
       );
@@ -73,7 +50,7 @@ class SupabaseCustomListRepository extends CustomListRepository {
       final response = await _table().selectSingle(
         builder: (query) => query
             .eq('id', id)
-            .eq('user_id', _auth.currentUser!.id)
+            .eq('user_id', _auth.currentUserId!)
             .eq('is_deleted', false),
       );
 
@@ -89,8 +66,8 @@ class SupabaseCustomListRepository extends CustomListRepository {
       if (!_auth.isSignedIn) throw Exception('User not authenticated');
 
       final listData = list.toJson();
-      listData['user_id'] = _auth.currentUser!.id;
-      listData['user_email'] = _auth.currentUser!.email;
+      listData['user_id'] = _auth.currentUserId!;
+      listData['user_email'] = _auth.currentUserEmail;
       // Remove items from JSON as they're stored separately in list_items table
       listData.remove('items');
       
@@ -113,7 +90,7 @@ class SupabaseCustomListRepository extends CustomListRepository {
         values: listData,
         builder: (query) => query
             .eq('id', list.id)
-            .eq('user_id', _auth.currentUser!.id),
+            .eq('user_id', _auth.currentUserId!),
       );
     } catch (e) {
       throw Exception('Failed to update list: $e');
@@ -132,7 +109,7 @@ class SupabaseCustomListRepository extends CustomListRepository {
         },
         builder: (query) => query
             .eq('id', id)
-            .eq('user_id', _auth.currentUser!.id),
+            .eq('user_id', _auth.currentUserId!),
       );
     } catch (e) {
       throw Exception('Failed to delete list: $e');
@@ -148,7 +125,7 @@ class SupabaseCustomListRepository extends CustomListRepository {
 
       final response = await _table().select(
         builder: (query) => query
-            .eq('user_id', _auth.currentUser!.id)
+            .eq('user_id', _auth.currentUserId!)
             .eq('list_type', type.name)
             .eq('is_deleted', false)
             .order('created_at', ascending: false),
@@ -170,7 +147,7 @@ class SupabaseCustomListRepository extends CustomListRepository {
 
       final response = await _table().select(
         builder: (query) => query
-            .eq('user_id', _auth.currentUser!.id)
+            .eq('user_id', _auth.currentUserId!)
             .eq('is_deleted', false)
             .ilike('name', '%$sanitizedQuery%')
             .order('created_at', ascending: false),
@@ -192,7 +169,7 @@ class SupabaseCustomListRepository extends CustomListRepository {
 
       final response = await _table().select(
         builder: (query) => query
-            .eq('user_id', _auth.currentUser!.id)
+            .eq('user_id', _auth.currentUserId!)
             .eq('is_deleted', false)
             .ilike('description', '%$sanitizedQuery%')
             .order('created_at', ascending: false),
@@ -203,18 +180,6 @@ class SupabaseCustomListRepository extends CustomListRepository {
       throw Exception('Failed to search lists by description: $e');
     }
   }
-
-  @override
-  Future<List<CustomList>> searchByName(String query) => searchListsByName(query);
-
-  @override
-  Future<List<CustomList>> searchByDescription(String query) => searchListsByDescription(query);
-
-  @override
-  Future<List<CustomList>> getByType(ListType type) => getListsByType(type);
-
-  @override
-  Future<void> clearAll() => clearAllLists();
 
   /// Sanitizes search query to prevent potential SQL injection via ilike
   String _sanitizeSearchQuery(String query) {
@@ -240,7 +205,7 @@ class SupabaseCustomListRepository extends CustomListRepository {
         values: {
           'is_deleted': true,
         },
-        builder: (query) => query.eq('user_id', _auth.currentUser!.id),
+        builder: (query) => query.eq('user_id', _auth.currentUserId!),
       );
     } catch (e) {
       throw Exception('Failed to clear all lists: $e');
@@ -254,7 +219,7 @@ class SupabaseCustomListRepository extends CustomListRepository {
 
       final response = await _table().select(
         builder: (query) => query
-            .eq('user_id', _auth.currentUser!.id)
+            .eq('user_id', _auth.currentUserId!)
             .eq('list_type', type)
             .eq('is_deleted', false)
             .order('created_at', ascending: false),
@@ -283,7 +248,7 @@ class SupabaseCustomListRepository extends CustomListRepository {
         .stream(
           primaryKey: const ['id'],
           builder: (query) => query
-              .eq('user_id', _auth.currentUser!.id)
+              .eq('user_id', _auth.currentUserId!)
               .eq('is_deleted', false),
         )
         .map(
@@ -299,7 +264,7 @@ class SupabaseCustomListRepository extends CustomListRepository {
       final response = await _table().select(
         columns: 'list_type',
         builder: (query) => query
-            .eq('user_id', _auth.currentUser!.id)
+            .eq('user_id', _auth.currentUserId!)
             .eq('is_deleted', false),
       );
 
