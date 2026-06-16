@@ -39,7 +39,14 @@
       "Bash(Select-String -Pattern \"(error|Error|ERROR|FAILED)\")",
       "Bash(Select-Object -First 10)",
       "Bash(python -m json.tool:*)",
-      "Bash(/dev/null)"
+      "Bash(/dev/null)",
+      "Bash(cd /c/Users/Thibaut/Desktop/PriorisProject)",
+      "Bash(python3 -)",
+      "Bash(rm -f tool_add_i18n_keys.py)",
+      "Bash(puro flutter *)",
+      "Bash(python3 _bmad/scripts/resolve_customization.py --skill .claude/skills/bmad-sprint-status --key workflow)",
+      "Bash(python3 \"C:/Users/Thibaut/Desktop/PriorisProject/_bmad/scripts/resolve_customization.py\" --skill \"C:/Users/Thibaut/Desktop/PriorisProject/.claude/skills/bmad-sprint-status\" --key workflow)",
+      "Bash(python3 \"C:/Users/Thibaut/Desktop/PriorisProject/_bmad/scripts/resolve_customization.py\" --skill \"C:/Users/Thibaut/Desktop/PriorisProject/.claude/skills/bmad-code-review\" --key workflow)"
     ],
     "deny": [],
     "ask": []

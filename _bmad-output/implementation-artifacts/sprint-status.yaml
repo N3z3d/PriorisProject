@@ -35,7 +35,7 @@
 # - Le developpeur passe la story a 'review', puis lance le workflow de code review
 
 generated: '2026-04-12T22:39:56.0084619+02:00'
-last_updated: '2026-05-15T12:00:00+02:00'
+last_updated: '2026-06-14T00:00:00+02:00'
 project: 'PriorisProject'
 project_key: 'NOKEY'
 tracking_system: 'file-system'
@@ -107,23 +107,23 @@ development_status:
   # --- Dette CI (débloque les gates avant tout autre travail) ---
   10-2-versionner-mocks-corriger-compatibilite-dart-ci: done
   10-3-supprimer-fichiers-orphelins-erreurs-analyse-dart: done
-  10-4-nettoyage-dette-print-inmemory-isp: backlog
+  10-4-nettoyage-dette-print-inmemory-isp: done
   # --- Architecture domain ports ---
-  10-5-extraire-iconsentrepository-vers-domain-ports: backlog
-  10-6-extraire-port-iauthservice-vers-domain-ports: backlog
-  10-7-corriger-violations-imports-domain-services: backlog
-  10-8-tests-domaine-purs-sans-supabase: backlog
+  10-5-extraire-iconsentrepository-vers-domain-ports: done
+  10-6-extraire-port-iauthservice-vers-domain-ports: done
+  10-7-corriger-violations-imports-domain-services: done
+  10-8-tests-domaine-purs-sans-supabase: done
   # --- Bugs ---
-  10-9-corriger-chargement-initial-duel: backlog
-  10-10-mise-a-jour-cards-apres-sauvegarde-listes: backlog
-  10-11-corriger-marquer-comme-fait-statistiques-habitudes: backlog
-  10-12-corriger-mise-a-jour-insights: backlog
+  10-9-corriger-chargement-initial-duel: done
+  10-10-mise-a-jour-cards-apres-sauvegarde-listes: done
+  10-11-corriger-marquer-comme-fait-statistiques-habitudes: done
+  10-12-corriger-mise-a-jour-insights: done
   # --- UX ---
-  10-13-remplacer-recochage-auto-listes-par-validation-ux: backlog
-  10-14-marquer-comme-fait-directement-accessible: backlog
-  10-15-alternative-desktop-valider-taches: backlog
+  10-13-remplacer-recochage-auto-listes-par-validation-ux: done
+  10-14-marquer-comme-fait-directement-accessible: done
+  10-15-alternative-desktop-valider-taches: done
   # --- Polish ---
-  10-16-completer-couverture-i18n: backlog
+  10-16-completer-couverture-i18n: done
   10-17-onboarding-actif-activation-event: backlog
   # --- Décision produit ---
   10-18-ux-retrait-consentement-3-choix: backlog
@@ -203,6 +203,5 @@ development_status:
   # --- Features ---
   17-4-rappel-quotidien-configurable: backlog
   17-5-deep-links-notification-page-habitude: backlog
-  epic-17-retrospective: optional
   17-5-documentation-rotation-secrets: backlog
   epic-17-retrospective: optional

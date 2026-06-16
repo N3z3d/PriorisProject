@@ -1,6 +1,6 @@
 # Story 10.2 : Versionner les mocks et corriger la compatibilité Dart/CI
 
-Status: review
+Status: done
 
 ## Story
 
@@ -10,7 +10,7 @@ afin que le gate CI de tests puisse être réactivé (story 11-2).
 
 ## Acceptance Criteria
 
-1. `flutter test --exclude-tags integration` passe en CI (GitHub Actions, Flutter 3.32.8) sans erreur `language version X is too high`
+1. Le workflow CI utilise Flutter 3.41.7 (Dart 3.11.5), `flutter test --exclude-tags integration` passe sans erreur `language version X is too high`
 2. Les fichiers `.mocks.dart` sont présents en CI sans nécessiter `build_runner` à chaque run
 3. `puro flutter test --exclude-tags integration` → résultat identique en local et en CI
 4. 0 régression de tests par rapport à l'état pré-story en local
@@ -128,3 +128,14 @@ claude-sonnet-4-6
 ### Change Log
 
 - 2026-05-14 : Corrigé compatibilité Dart CI (3.32.8→3.41.7), versionnés 19 mocks, supprimé step build_runner CI
+
+### Review Findings
+
+- [x] [Review][Decision→Patch] AC1 mis à jour pour refléter Flutter 3.41.7 — résolu party mode consensus
+- [x] [Review][Patch] `deploy-pilot-pages.yml` corrigé — `FLUTTER_VERSION: '3.41.7'` [`.github/workflows/deploy-pilot-pages.yml:24`]
+- [x] [Review][Defer] Aucune garde CI pour détecter des mocks stale (mocks commités peuvent dériver de la source sans détection) [`.github/workflows/ci.yml`] — deferred, pre-existing architectural limitation
+- [x] [Review][Defer] Nouveau fichier `@GenerateMocks` sans mock commité — aucun enforcement CI ni lint [`.gitignore`, `.github/workflows/ci.yml`] — deferred, governance/process gap
+- [x] [Review][Defer] `subosito/flutter-action@v2` non pinné par SHA — résolution non déterministe [`.github/workflows/ci.yml`] — deferred, pre-existing
+- [x] [Review][Defer] `continue-on-error: true` sur le job `test` masque tous les échecs — intentionnel (story 11-2 le réactivera) [`.github/workflows/ci.yml:38`] — deferred, pre-existing intentional design
+- [x] [Review][Defer] `dart --version` informatif seulement — aucune assertion bloquante sur la version [`.github/workflows/ci.yml`] — deferred, diagnostic intent is sufficient
+- [x] [Review][Defer] `dart --version` absent du second job CI [`.github/workflows/ci.yml:102`] — deferred, minor observability gap
