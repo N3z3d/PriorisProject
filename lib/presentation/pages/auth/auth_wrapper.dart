@@ -5,6 +5,7 @@ import 'package:prioris/data/providers/consent_providers.dart';
 import 'package:prioris/presentation/pages/auth/login_page.dart';
 import 'package:prioris/presentation/pages/consent_gate_page.dart';
 import 'package:prioris/presentation/pages/home_page.dart';
+import 'package:prioris/presentation/pages/onboarding/onboarding_gate.dart';
 
 /// Wrapper qui gère la navigation entre login et app principale
 class AuthWrapper extends ConsumerWidget {
@@ -25,7 +26,7 @@ class AuthWrapper extends ConsumerWidget {
       case AuthUIState.signedIn:
         final consentAsync = ref.watch(consentProvider);
         return consentAsync.when(
-          data: (hasConsent) => hasConsent ? const HomePage() : const ConsentGatePage(),
+          data: (hasConsent) => hasConsent ? const OnboardingGate() : const ConsentGatePage(),
           loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
           error: (_, __) => const HomePage(),
         );

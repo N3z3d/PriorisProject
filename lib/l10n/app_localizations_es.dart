@@ -2359,4 +2359,76 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get duelRankingSaved => 'Clasificación guardada';
+
+  @override
+  String get onboardingCaptureTitle => '¿En qué estás pensando ahora mismo?';
+
+  @override
+  String get onboardingCaptureHint =>
+      'Una tarea por línea. No le des muchas vueltas.';
+
+  @override
+  String get onboardingArchetypesLabel => 'Ideas rápidas';
+
+  @override
+  String onboardingTaskCounter(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tareas',
+      one: '1 tarea',
+      zero: 'Ninguna tarea',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get onboardingStartButton => '¡Vamos!';
+
+  @override
+  String get onboardingDuelQuestion =>
+      'Entre estas dos tareas, ¿cuál importa más ahora?';
+
+  @override
+  String onboardingDuelProgress(int index, int total) {
+    return 'Duelo $index/$total';
+  }
+
+  @override
+  String get onboardingRevealTitle =>
+      'Esto es lo que realmente quieres hacer primero.';
+
+  @override
+  String get onboardingRevealContinue => 'Continuar a la app';
+
+  @override
+  String get onboardingRevealMarkDone =>
+      'Marcar como hecho cuando esté logrado';
+
+  @override
+  String get onboardingSkip => 'Omitir';
+
+  @override
+  String get onboardingArchetypeSport => 'Hacer ejercicio';
+
+  @override
+  String get onboardingArchetypeCall => 'Llamar a un ser querido';
+
+  @override
+  String get onboardingArchetypeReport => 'Terminar el informe';
+
+  @override
+  String get onboardingArchetypeEmails => 'Ordenar mis correos';
+
+  @override
+  String get onboardingArchetypeGroceries => 'Hacer la compra';
+
+  @override
+  String get onboardingArchetypeRead => 'Leer 10 páginas';
+
+  @override
+  String get onboardingArchetypeTidy => 'Ordenar el escritorio';
+
+  @override
+  String get onboardingArchetypeWater => 'Beber agua';
 }

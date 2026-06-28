@@ -2373,4 +2373,74 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get duelRankingSaved => 'Ranking saved';
+
+  @override
+  String get onboardingCaptureTitle => 'What\'s on your mind right now?';
+
+  @override
+  String get onboardingCaptureHint => 'One task per line. Don\'t overthink it.';
+
+  @override
+  String get onboardingArchetypesLabel => 'Quick ideas';
+
+  @override
+  String onboardingTaskCounter(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tasks',
+      one: '1 task',
+      zero: 'No tasks yet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get onboardingStartButton => 'Let\'s go';
+
+  @override
+  String get onboardingDuelQuestion =>
+      'Between these two tasks, which one matters most right now?';
+
+  @override
+  String onboardingDuelProgress(int index, int total) {
+    return 'Duel $index/$total';
+  }
+
+  @override
+  String get onboardingRevealTitle =>
+      'Here\'s what you really want to do first.';
+
+  @override
+  String get onboardingRevealContinue => 'Continue to the app';
+
+  @override
+  String get onboardingRevealMarkDone => 'Mark as done when it\'s accomplished';
+
+  @override
+  String get onboardingSkip => 'Skip';
+
+  @override
+  String get onboardingArchetypeSport => 'Exercise';
+
+  @override
+  String get onboardingArchetypeCall => 'Call a loved one';
+
+  @override
+  String get onboardingArchetypeReport => 'Finish the report';
+
+  @override
+  String get onboardingArchetypeEmails => 'Sort my emails';
+
+  @override
+  String get onboardingArchetypeGroceries => 'Buy groceries';
+
+  @override
+  String get onboardingArchetypeRead => 'Read 10 pages';
+
+  @override
+  String get onboardingArchetypeTidy => 'Tidy my desk';
+
+  @override
+  String get onboardingArchetypeWater => 'Drink water';
 }

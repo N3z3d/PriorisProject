@@ -1,5 +1,16 @@
 # Deferred Work
 
+## Deferred from: code review of 10-17-onboarding-actif-activation-event (2026-06-28)
+
+- **Assertion faible du test reveal** [test/presentation/pages/onboarding/onboarding_flow_controller_test.dart:89] [LOW] : le test « transition duel → reveal » n'assert que `revealedTask isNotNull`. Comme `_FakeDuelService.processWinner` ne modifie aucun ELO, toutes les tâches restent à 1200 et la logique de sélection top-task (`reduce` sur `eloScore` max) n'est pas réellement exercée — `reduce` renvoie simplement la première. Renforcer en injectant des ELO distincts (fake qui mute le score) et asserter l'identité de la tâche révélée.
+
+## Deferred from: dev-story 10-17-onboarding-actif-activation-event (2026-06-27)
+
+_Dettes préexistantes constatées pendant le dev de 10-17 (hors scope — fichiers non touchés par la story). Détectées via `puro flutter test`/`analyze` global._
+
+- **`list_detail_page.dart` dépasse la contrainte 500 lignes (515)** [lib/presentation/pages/list_detail_page.dart] [MEDIUM] : fait échouer `test/solid_compliance/clean_code_constraints_test.dart` (« All classes must be under 500 lines »). Fichier inchangé par 10-17 (diff vide vs HEAD). Violation Clean Code à résorber par extraction (story de refactor dédiée). Lié à la complexité déjà notée sur ce fichier (cf. items 8.3).
+- **Dette d'analyse statique massive préexistante (~2420 issues, dont erreurs)** [lib/presentation/theme/systems/premium_animation_system.dart ; lib/presentation/widgets/indicators/services/premium_sync_style_service.dart ; lib/presentation/widgets/onboarding/components/onboarding_header.dart ; test/test_utils/mock_factory.dart ; test/test_utils/safe_mock_factory.dart ; …] [HIGH→story 11-1/11-2] : `undefined_identifier`, `uri_does_not_exist`, `const_with_non_const`, `argument_type_not_assignable`. Aucune dans les fichiers de 10-17. Recoupe les stories CI/CD planifiées (11-1 `corriger-cicd-casse`, 11-2 `renforcer-cicd-gates-test-et-analyse`). À traiter dans Epic 11.
+
 ## Deferred from: revue working tree complet (2026-06-14)
 
 _Revue du working tree non commité (refactor DIP/Hexagonal Epic 9/10 empilé sur ~12 stories `done` non commitées). Le gros du diff est sain. Items résiduels :_

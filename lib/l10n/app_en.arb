@@ -2468,5 +2468,64 @@
   "forgotPasswordCheckInbox": "Check your inbox and follow the instructions to reset your password.",
   "send": "Send",
   "forgotPasswordIntro": "Enter your email address to receive a link to reset your password.",
-  "duelRankingSaved": "Ranking saved"
+  "duelRankingSaved": "Ranking saved",
+  "onboardingCaptureTitle": "What's on your mind right now?",
+  "@onboardingCaptureTitle": {
+    "description": "Onboarding active capture step title"
+  },
+  "onboardingCaptureHint": "One task per line. Don't overthink it.",
+  "@onboardingCaptureHint": {
+    "description": "Onboarding capture text field hint"
+  },
+  "onboardingArchetypesLabel": "Quick ideas",
+  "@onboardingArchetypesLabel": {
+    "description": "Label above the archetype suggestion chips"
+  },
+  "onboardingTaskCounter": "{count, plural, =0{No tasks yet} =1{1 task} other{{count} tasks}}",
+  "@onboardingTaskCounter": {
+    "description": "Count of captured tasks in the onboarding",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "onboardingStartButton": "Let's go",
+  "@onboardingStartButton": {
+    "description": "Button starting the guided duels"
+  },
+  "onboardingDuelQuestion": "Between these two tasks, which one matters most right now?",
+  "@onboardingDuelQuestion": {
+    "description": "Onboarding duel step question"
+  },
+  "onboardingDuelProgress": "Duel {index}/{total}",
+  "@onboardingDuelProgress": {
+    "description": "Onboarding duel progress indicator",
+    "placeholders": {
+      "index": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "onboardingRevealTitle": "Here's what you really want to do first.",
+  "@onboardingRevealTitle": {
+    "description": "Onboarding reveal step title"
+  },
+  "onboardingRevealContinue": "Continue to the app",
+  "@onboardingRevealContinue": {
+    "description": "Onboarding reveal continue button"
+  },
+  "onboardingRevealMarkDone": "Mark as done when it's accomplished",
+  "@onboardingRevealMarkDone": {
+    "description": "Onboarding reveal mark-as-done button"
+  },
+  "onboardingSkip": "Skip",
+  "@onboardingSkip": {
+    "description": "Skip the onboarding flow"
+  },
+  "onboardingArchetypeSport": "Exercise",
+  "onboardingArchetypeCall": "Call a loved one",
+  "onboardingArchetypeReport": "Finish the report",
+  "onboardingArchetypeEmails": "Sort my emails",
+  "onboardingArchetypeGroceries": "Buy groceries",
+  "onboardingArchetypeRead": "Read 10 pages",
+  "onboardingArchetypeTidy": "Tidy my desk",
+  "onboardingArchetypeWater": "Drink water"
 }

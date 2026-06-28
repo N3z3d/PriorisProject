@@ -4157,6 +4157,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ranking saved'**
   String get duelRankingSaved;
+
+  /// Onboarding active capture step title
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s on your mind right now?'**
+  String get onboardingCaptureTitle;
+
+  /// Onboarding capture text field hint
+  ///
+  /// In en, this message translates to:
+  /// **'One task per line. Don\'t overthink it.'**
+  String get onboardingCaptureHint;
+
+  /// Label above the archetype suggestion chips
+  ///
+  /// In en, this message translates to:
+  /// **'Quick ideas'**
+  String get onboardingArchetypesLabel;
+
+  /// Count of captured tasks in the onboarding
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No tasks yet} =1{1 task} other{{count} tasks}}'**
+  String onboardingTaskCounter(int count);
+
+  /// Button starting the guided duels
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s go'**
+  String get onboardingStartButton;
+
+  /// Onboarding duel step question
+  ///
+  /// In en, this message translates to:
+  /// **'Between these two tasks, which one matters most right now?'**
+  String get onboardingDuelQuestion;
+
+  /// Onboarding duel progress indicator
+  ///
+  /// In en, this message translates to:
+  /// **'Duel {index}/{total}'**
+  String onboardingDuelProgress(int index, int total);
+
+  /// Onboarding reveal step title
+  ///
+  /// In en, this message translates to:
+  /// **'Here\'s what you really want to do first.'**
+  String get onboardingRevealTitle;
+
+  /// Onboarding reveal continue button
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to the app'**
+  String get onboardingRevealContinue;
+
+  /// Onboarding reveal mark-as-done button
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as done when it\'s accomplished'**
+  String get onboardingRevealMarkDone;
+
+  /// Skip the onboarding flow
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get onboardingSkip;
+
+  /// No description provided for @onboardingArchetypeSport.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise'**
+  String get onboardingArchetypeSport;
+
+  /// No description provided for @onboardingArchetypeCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Call a loved one'**
+  String get onboardingArchetypeCall;
+
+  /// No description provided for @onboardingArchetypeReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish the report'**
+  String get onboardingArchetypeReport;
+
+  /// No description provided for @onboardingArchetypeEmails.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort my emails'**
+  String get onboardingArchetypeEmails;
+
+  /// No description provided for @onboardingArchetypeGroceries.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy groceries'**
+  String get onboardingArchetypeGroceries;
+
+  /// No description provided for @onboardingArchetypeRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Read 10 pages'**
+  String get onboardingArchetypeRead;
+
+  /// No description provided for @onboardingArchetypeTidy.
+  ///
+  /// In en, this message translates to:
+  /// **'Tidy my desk'**
+  String get onboardingArchetypeTidy;
+
+  /// No description provided for @onboardingArchetypeWater.
+  ///
+  /// In en, this message translates to:
+  /// **'Drink water'**
+  String get onboardingArchetypeWater;
 }
 
 class _AppLocalizationsDelegate
