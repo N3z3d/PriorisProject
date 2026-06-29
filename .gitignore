@@ -92,3 +92,32 @@ coverage/
 
 # Worktrees / clones temporaires (ne jamais versionner comme gitlinks)
 .codex-*/
+
+# Outils IA / agents (gardes en local, non versionnes)
+.agent/
+.agents/
+.augment/
+.claude/
+.cline/
+.codebuddy/
+.crush/
+.cursor/
+.gemini/
+.iflow/
+.junie/
+.kilocode/
+.kiro/
+.ona/
+.opencode/
+.pi/
+.qoder/
+.qwen/
+.roo/
+.rovodev/
+.trae/
+.windsurf/
+.github/skills/
+_bmad/
+_bmad-output/
+CLAUDE.md
+AGENTS.md
