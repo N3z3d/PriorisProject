@@ -8,6 +8,10 @@ class OnboardingCaptureStep extends StatefulWidget {
   final ValueChanged<String> onStart;
   final VoidCallback onSkip;
 
+  /// Verrouille « Passer » et « C'est parti » pendant la persistance des tâches
+  /// (anti double-tap / anti completeOnboarding concurrent à la capture).
+  final bool processing;
+
   /// Nombre de lignes non vides requis pour activer le bouton de démarrage.
   static const int requiredTasks = 5;
 
@@ -15,6 +19,7 @@ class OnboardingCaptureStep extends StatefulWidget {
     super.key,
     required this.onStart,
     required this.onSkip,
+    this.processing = false,
   });
 
   @override
@@ -64,7 +69,8 @@ class _OnboardingCaptureStepState extends State<OnboardingCaptureStep> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final canStart = _taskCount >= OnboardingCaptureStep.requiredTasks;
+    final canStart =
+        _taskCount >= OnboardingCaptureStep.requiredTasks && !widget.processing;
 
     return Padding(
       padding: const EdgeInsets.all(24),
@@ -74,7 +80,7 @@ class _OnboardingCaptureStepState extends State<OnboardingCaptureStep> {
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
-              onPressed: widget.onSkip,
+              onPressed: widget.processing ? null : widget.onSkip,
               child: Text(l10n.onboardingSkip),
             ),
           ),

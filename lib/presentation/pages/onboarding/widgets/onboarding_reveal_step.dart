@@ -9,11 +9,16 @@ class OnboardingRevealStep extends StatelessWidget {
   final VoidCallback onContinue;
   final VoidCallback onMarkDone;
 
+  /// Verrouille les boutons pendant la finalisation (anti double-tap : éviter un
+  /// double markCompleted / une mutation après démontage du contrôleur).
+  final bool processing;
+
   const OnboardingRevealStep({
     super.key,
     required this.task,
     required this.onContinue,
     required this.onMarkDone,
+    this.processing = false,
   });
 
   @override
@@ -35,12 +40,12 @@ class OnboardingRevealStep extends StatelessWidget {
           if (task != null) _buildRevealCard(context, task!),
           const SizedBox(height: 32),
           OutlinedButton(
-            onPressed: onMarkDone,
+            onPressed: processing ? null : onMarkDone,
             child: Text(l10n.onboardingRevealMarkDone),
           ),
           const SizedBox(height: 12),
           FilledButton(
-            onPressed: onContinue,
+            onPressed: processing ? null : onContinue,
             style: FilledButton.styleFrom(
               backgroundColor: AppTheme.primaryColor,
               padding: const EdgeInsets.symmetric(vertical: 16),

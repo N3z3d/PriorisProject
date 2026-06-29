@@ -1,5 +1,11 @@
 # Deferred Work
 
+## Deferred from: code review of 10-17-onboarding-actif-activation-event (2026-06-29)
+
+- **Branche morte `if (pair.length < 2)` dans le widget duel** [onboarding_duel_step.dart] [LOW] : le contrôleur ne transitionne vers `OnboardingStep.duel` qu'après que `_loadNextDuel` ait confirmé `pair.length >= 2` (le cas `<2` route vers reveal). La branche est inatteignable pour tout état réel produit par le contrôleur. Code défensif inerte à nettoyer.
+- **Reveal dégénéré sans carte** [onboarding_flow_controller.dart:155-173, onboarding_reveal_step.dart:35] [LOW] : si `loadDuelTasks` renvoie `<2` (toutes tâches complétées/filtrées) et `allPrioritizationTasksProvider` est vide, `revealedTask` est `null` → l'Acte 3 affiche titre + boutons mais aucune carte de tâche. Géré sans crash mais dead-end UX confus. Ajouter un message/garde dédié pour ce cas borderline.
+- **Incohérence interne de spec : « 10 tâches » vs 5** [10-17 AC2 vs AC3/AC4] [LOW] : le titre et l'Acte 1 décrivent « 10 tâches » alors que l'implémentation active à `requiredTasks=5` et exécute `totalDuels=5` (dans la borne AC4 « 5-7 »). Le champ permet de saisir 10 (capacité satisfaite) mais rien n'y pousse. Clarifier la spec (code conforme à AC3).
+
 ## Deferred from: code review of 10-17-onboarding-actif-activation-event (2026-06-28)
 
 - **Assertion faible du test reveal** [test/presentation/pages/onboarding/onboarding_flow_controller_test.dart:89] [LOW] : le test « transition duel → reveal » n'assert que `revealedTask isNotNull`. Comme `_FakeDuelService.processWinner` ne modifie aucun ELO, toutes les tâches restent à 1200 et la logique de sélection top-task (`reduce` sur `eloScore` max) n'est pas réellement exercée — `reduce` renvoie simplement la première. Renforcer en injectant des ELO distincts (fake qui mute le score) et asserter l'identité de la tâche révélée.

@@ -38,10 +38,13 @@ class OnboardingFlowPage extends ConsumerWidget {
           key: const ValueKey('onboarding-capture'),
           onStart: controller.submitCapturedTasks,
           onSkip: controller.completeOnboarding,
+          processing: state.isProcessing,
         );
       case OnboardingStep.duel:
         return OnboardingDuelStep(
-          key: const ValueKey('onboarding-duel'),
+          // Clé par index : chaque duel est un nouvel enfant pour
+          // l'AnimatedSwitcher → vraie transition + animation d'entrée rejouée.
+          key: ValueKey('onboarding-duel-${state.duelIndex}'),
           pair: state.currentPair,
           index: state.duelIndex,
           total: OnboardingFlowController.totalDuels,
@@ -54,6 +57,7 @@ class OnboardingFlowPage extends ConsumerWidget {
           task: state.revealedTask,
           onContinue: controller.completeOnboarding,
           onMarkDone: controller.markRevealedTaskDoneAndComplete,
+          processing: state.isProcessing,
         );
     }
   }

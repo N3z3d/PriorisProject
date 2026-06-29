@@ -95,6 +95,33 @@ La valeur de Prioris n'est pas dans l'outil, elle est dans le *moment* : quand u
 
 **Tests ajoutés par la review :** `onboarding_task_parser_test.dart` (6) + contrôleur « 5 lignes / 1 titre unique → reste en capture » + widget « doublons → bouton désactivé ». Tous verts (18/18 sur le périmètre onboarding), `analyze` 0 nouvelle erreur.
 
+### Review Findings (code review 2026-06-29)
+
+Revue adversariale 3 couches (Blind Hunter + Edge Case Hunter + Acceptance Auditor). Le finding HIGH a été signalé **indépendamment par 2 reviewers** et confirmé statiquement (sémantique Riverpod) en lisant le code réel.
+
+**Décisions tranchées + patches appliqués le 2026-06-29** (les 7 correctifs sont mergés dans le code ; 36 tests onboarding verts + auth_wrapper 4/4 + analyze 0 nouvelle erreur). D1 → latch côté gate ; D2 → persistance du flag dès le reveal.
+
+**Décisions requises (à trancher avant patch) :**
+
+- [x] [Review][Decision→Patch] **L'onboarding se détruit avant l'Acte 2 — le gate se reconstruit réactivement** — résolu : `OnboardingGate` devient `ConsumerStatefulWidget` qui latche sa décision et sort sur l'état terminal `finished` du contrôleur (plus aucun teardown sur le compteur de tâches). [onboarding_flow_controller.dart:96 ↔ onboarding_providers.dart:34-39 ↔ onboarding_gate.dart:15-17] — `submitCapturedTasks` persiste les tâches puis `invalidate(allPrioritizationTasksProvider)`. Or `totalTaskCountProvider`→`shouldShowOnboardingProvider` en dépendent, et `OnboardingGate` les `watch`. À l'invalidation : total=5>0 → `shouldShow=false` → le gate remplace `OnboardingFlowPage` par un spinner puis `HomePage`. **Les Actes 2 (duels) et 3 (reveal) ne sont jamais atteints via le vrai gate ; l'activation event n'est jamais émis.** Les tests ne le voient pas car ils overrident `shouldShowOnboardingProvider`. Fix : latcher la décision du gate (rester sur l'onboarding une fois monté, jusqu'au flag `completeOnboarding`) au lieu de re-dériver du compteur de tâches en temps réel. Le fix au niveau contrôleur (ne pas invalider) casse le chargement des duels → le fix doit être côté gate. **Approche à valider (zone sensible : flux auth).**
+- [x] [Review][Decision→Patch] **Activation event (log) et flag persistés non atomiques — fenêtre de réaffichage/re-log (AC4)** — résolu : `markCompleted()` est appelé dès l'entrée au reveal (chemin duels complets) dans `_revealTopTask`, rendant « log + flag » atomique. `completeOnboarding` réécrit le flag (idempotent) + pose `finished`. Test dédié « reveal persiste le flag de façon atomique (AC4) ».
+
+**Patches (correctifs non ambigus) :**
+
+- [x] [Review][Patch] Gardes `if (!mounted) return;` après chaque `await` dans les méthodes async (sécurité post-dispose, contrôleur `autoDispose`) [onboarding_flow_controller.dart]
+- [x] [Review][Patch] `try/finally` + `_resetProcessing()` pour réinitialiser `isProcessing` sur exception (sinon deadlock doux : cartes/bouton verrouillés sans erreur affichée) [onboarding_flow_controller.dart]
+- [x] [Review][Patch] Gardes de ré-entrance `if (state.isProcessing) return;` sur `completeOnboarding` + `markRevealedTaskDoneAndComplete` ; boutons reveal/skip/start désactivés pendant `processing` [onboarding_flow_controller.dart, onboarding_reveal_step.dart, onboarding_capture_step.dart, onboarding_flow_page.dart]
+- [x] [Review][Patch] `totalTaskCountProvider` attend `ensureListsLoadedProvider` (nouveau seam mockable) avant de compter les items de listes → plus de faux positif onboarding pendant le bootstrap async [onboarding_providers.dart]
+- [x] [Review][Patch] `AnimatedSwitcher` keyé par `duelIndex` (`ValueKey('onboarding-duel-$duelIndex')`) → vraie transition entre duels [onboarding_flow_page.dart]
+
+**Différés (faible priorité) :**
+
+- [x] [Review][Defer] Branche morte `if (pair.length < 2)` dans le widget duel (le contrôleur route déjà vers reveal) [onboarding_duel_step.dart] — deferred, faible priorité
+- [x] [Review][Defer] Reveal dégénéré (paire indisponible + 0 tâche) affiche un écran « voici ta priorité » sans carte — geré sans crash mais dead-end confus [onboarding_flow_controller.dart:155-173, onboarding_reveal_step.dart:35] — deferred, faible priorité
+- [x] [Review][Defer] Incohérence interne de spec : narratif « 10 tâches » (Acte 1) vs `requiredTasks=5`/`totalDuels=5` implémentés — deferred, clarification de spec
+
+**Écartés (bruit / hors périmètre / artefact de scoping) :** scope leak `habits_page.dart` (changement valide d'une autre feature, hors onboarding) ; ARB/`app_localizations*` absents du diff (artefact de mon découpage — groupe i18n exclu, clés vérifiées présentes dans le working tree) ; texte T4.4 obsolète (superseded par le review patch précédent) ; « déclenchement automatique » du duel interprété comme button-gated (un tap n'est pas une navigation) ; `minTasksToStart=2` vs `requiredTasks=5` (décision D1 documentée).
+
 ## Dev Notes
 
 ### Architecture actuelle (lue avant rédaction)

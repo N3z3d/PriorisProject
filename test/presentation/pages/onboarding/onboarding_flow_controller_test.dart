@@ -107,10 +107,37 @@ void main() {
       expect(fakeDuel.processWinnerCalls, OnboardingFlowController.totalDuels);
     });
 
-    test('completeOnboarding appelle markCompleted', () async {
+    test('reveal persiste le flag de façon atomique (AC4)', () async {
+      // Le flag doit être écrit dès l'entrée au reveal — pas seulement au tap
+      // « Continuer » — pour qu'une fermeture au moment révélateur ne réaffiche
+      // pas l'onboarding au prochain lancement.
+      await controller().submitCapturedTasks('A\nB\nC\nD\nE');
+      for (var i = 0; i < OnboardingFlowController.totalDuels; i++) {
+        final pair = state().currentPair;
+        await controller().recordDuelChoice(pair[0], pair[1]);
+      }
+      expect(state().step, OnboardingStep.reveal);
+      expect(fakeRepo.markCompletedCalls, 1);
+      expect(fakeRepo.completed, isTrue);
+    });
+
+    test('completeOnboarding appelle markCompleted et marque finished',
+        () async {
       await controller().completeOnboarding();
       expect(fakeRepo.markCompletedCalls, 1);
       expect(fakeRepo.completed, isTrue);
+      expect(state().finished, isTrue);
+      expect(state().isProcessing, isFalse);
+    });
+
+    test('completeOnboarding ré-entrant : second appel concurrent ignoré',
+        () async {
+      // Deux taps concurrents (non attendus) → un seul markCompleted grâce à la
+      // garde isProcessing.
+      final first = controller().completeOnboarding();
+      final second = controller().completeOnboarding();
+      await Future.wait([first, second]);
+      expect(fakeRepo.markCompletedCalls, 1);
     });
   });
 }

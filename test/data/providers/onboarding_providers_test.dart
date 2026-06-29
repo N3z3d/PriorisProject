@@ -46,6 +46,9 @@ ProviderContainer _container({
           .overrideWithValue(_FakeOnboardingRepository(completed)),
       allPrioritizationTasksProvider.overrideWith((ref) async => classicTasks),
       listsProvider.overrideWithValue(lists),
+      // Court-circuite la chaîne d'init des listes : la valeur de listsProvider
+      // est déjà fournie ci-dessus, on a seulement besoin que l'attente passe.
+      ensureListsLoadedProvider.overrideWith((ref) async {}),
     ],
   );
 }

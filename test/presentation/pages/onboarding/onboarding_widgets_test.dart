@@ -115,5 +115,25 @@ void main() {
       await tester.pump();
       expect(doneTapped, isTrue);
     });
+
+    testWidgets('processing=true : boutons reveal désactivés (anti double-tap)',
+        (tester) async {
+      await tester.pumpWidget(_wrap(OnboardingRevealStep(
+        task: Task(title: 'Tâche'),
+        onContinue: () {},
+        onMarkDone: () {},
+        processing: true,
+      )));
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.widget<FilledButton>(find.byType(FilledButton)).onPressed,
+        isNull,
+      );
+      expect(
+        tester.widget<OutlinedButton>(find.byType(OutlinedButton)).onPressed,
+        isNull,
+      );
+    });
   });
 }

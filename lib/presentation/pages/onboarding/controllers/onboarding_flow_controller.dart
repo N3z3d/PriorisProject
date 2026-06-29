@@ -21,12 +21,19 @@ class OnboardingFlowState {
   final Task? revealedTask;
   final bool isProcessing;
 
+  /// État terminal : l'onboarding est achevé, le gate peut basculer vers
+  /// HomePage. Piloté par [OnboardingFlowController.completeOnboarding] — c'est
+  /// le seul signal de sortie du gate (et non le compteur de tâches, qui change
+  /// dès la capture et démonterait le flux en cours).
+  final bool finished;
+
   const OnboardingFlowState({
     this.step = OnboardingStep.capture,
     this.currentPair = const [],
     this.duelIndex = 0,
     this.revealedTask,
     this.isProcessing = false,
+    this.finished = false,
   });
 
   const OnboardingFlowState.initial() : this();
@@ -37,6 +44,7 @@ class OnboardingFlowState {
     int? duelIndex,
     Object? revealedTask = _unset,
     bool? isProcessing,
+    bool? finished,
   }) {
     return OnboardingFlowState(
       step: step ?? this.step,
@@ -46,6 +54,7 @@ class OnboardingFlowState {
           ? this.revealedTask
           : revealedTask as Task?,
       isProcessing: isProcessing ?? this.isProcessing,
+      finished: finished ?? this.finished,
     );
   }
 }
@@ -91,40 +100,87 @@ class OnboardingFlowController extends StateNotifier<OnboardingFlowState> {
     }
 
     state = state.copyWith(isProcessing: true);
-    _capturedTasks = await _persistTasks(titles);
-    _ref.invalidate(allTasksProvider);
-    _ref.invalidate(allPrioritizationTasksProvider);
-    await _loadNextDuel(startIndex: 0);
+    try {
+      _capturedTasks = await _persistTasks(titles);
+      if (!mounted) return;
+      _ref.invalidate(allTasksProvider);
+      _ref.invalidate(allPrioritizationTasksProvider);
+      await _loadNextDuel(startIndex: 0);
+    } catch (error) {
+      LoggerService.instance
+          .error('Onboarding capture failed: $error', context: 'Onboarding');
+    } finally {
+      _resetProcessing();
+    }
   }
 
   /// Acte 2 : enregistre un choix de duel et avance (ou révèle).
   Future<void> recordDuelChoice(Task winner, Task loser) async {
     if (state.isProcessing) return; // Anti ré-entrance (double-tap carte).
     state = state.copyWith(isProcessing: true);
-    await _duelService.processWinner(winner, loser);
-
-    final nextIndex = state.duelIndex + 1;
-    if (nextIndex >= totalDuels) {
-      await _revealTopTask(duelsCompleted: nextIndex);
-    } else {
-      await _loadNextDuel(startIndex: nextIndex);
+    try {
+      await _duelService.processWinner(winner, loser);
+      if (!mounted) return;
+      final nextIndex = state.duelIndex + 1;
+      if (nextIndex >= totalDuels) {
+        await _revealTopTask(duelsCompleted: nextIndex);
+      } else {
+        await _loadNextDuel(startIndex: nextIndex);
+      }
+    } catch (error) {
+      LoggerService.instance
+          .error('Onboarding duel failed: $error', context: 'Onboarding');
+    } finally {
+      _resetProcessing();
     }
   }
 
   /// Acte 3 : marque l'onboarding terminé et libère le gate vers HomePage.
   Future<void> completeOnboarding() async {
-    await _onboardingRepository.markCompleted();
-    _ref.invalidate(onboardingCompletedProvider);
-    _ref.invalidate(shouldShowOnboardingProvider);
+    if (state.isProcessing) return; // Anti ré-entrance (double-tap bouton).
+    state = state.copyWith(isProcessing: true);
+    await _finishOnboarding();
   }
 
   /// Acte 3 : marque la tâche révélée comme faite puis termine l'onboarding.
   Future<void> markRevealedTaskDoneAndComplete() async {
+    if (state.isProcessing) return; // Anti ré-entrance (double-tap bouton).
+    state = state.copyWith(isProcessing: true);
     final task = state.revealedTask;
-    if (task != null) {
-      await _duelService.updateTask(task.copyWith(isCompleted: true));
+    try {
+      if (task != null) {
+        await _duelService.updateTask(task.copyWith(isCompleted: true));
+        if (!mounted) return;
+      }
+    } catch (error) {
+      LoggerService.instance
+          .error('Onboarding markDone failed: $error', context: 'Onboarding');
     }
-    await completeOnboarding();
+    await _finishOnboarding();
+  }
+
+  /// Persiste le flag durable et signale l'état terminal au gate.
+  Future<void> _finishOnboarding() async {
+    try {
+      await _onboardingRepository.markCompleted();
+      if (!mounted) return;
+      _ref.invalidate(onboardingCompletedProvider);
+      _ref.invalidate(shouldShowOnboardingProvider);
+      state = state.copyWith(finished: true, isProcessing: false);
+    } catch (error) {
+      LoggerService.instance
+          .error('Onboarding finish failed: $error', context: 'Onboarding');
+      _resetProcessing();
+    }
+  }
+
+  /// Réinitialise le verrou si une exception l'a laissé actif (évite un
+  /// deadlock doux : cartes/boutons figés sans erreur affichée). Ne touche
+  /// jamais un notifier démonté.
+  void _resetProcessing() {
+    if (mounted && state.isProcessing) {
+      state = state.copyWith(isProcessing: false);
+    }
   }
 
   Future<List<Task>> _persistTasks(List<String> titles) async {
@@ -140,6 +196,7 @@ class OnboardingFlowController extends StateNotifier<OnboardingFlowState> {
 
   Future<void> _loadNextDuel({required int startIndex}) async {
     final pair = await _duelService.loadDuelTasks(count: 2);
+    if (!mounted) return;
     if (pair.length < 2) {
       await _revealTopTask(duelsCompleted: startIndex);
       return;
@@ -155,6 +212,7 @@ class OnboardingFlowController extends StateNotifier<OnboardingFlowState> {
   Future<void> _revealTopTask({required int duelsCompleted}) async {
     _ref.invalidate(allPrioritizationTasksProvider);
     final tasks = await _ref.read(allPrioritizationTasksProvider.future);
+    if (!mounted) return;
     final top = tasks.isEmpty
         ? null
         : tasks.reduce((a, b) => a.eloScore >= b.eloScore ? a : b);
@@ -164,6 +222,12 @@ class OnboardingFlowController extends StateNotifier<OnboardingFlowState> {
     // de faux activation event.
     if (duelsCompleted >= totalDuels) {
       _emitActivationEvent(duelsCompleted);
+      // AC4 : « activation event = log + flag persisté » de façon atomique.
+      // Persister dès l'entrée au reveal (et non au seul tap « Continuer »)
+      // évite un réaffichage / re-log si l'utilisateur ferme l'app pile au
+      // moment révélateur. completeOnboarding réécrira le flag (idempotent).
+      await _onboardingRepository.markCompleted();
+      if (!mounted) return;
     }
     state = state.copyWith(
       step: OnboardingStep.reveal,
