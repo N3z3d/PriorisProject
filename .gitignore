@@ -89,3 +89,6 @@ coverage/
 .env
 .env.*
 !.env.example
+
+# Worktrees / clones temporaires (ne jamais versionner comme gitlinks)
+.codex-*/
