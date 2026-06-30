@@ -239,7 +239,7 @@ class OnboardingFlowController extends StateNotifier<OnboardingFlowState> {
   void _emitActivationEvent(int duelsCompleted) {
     // Activation event = log structuré + flag persisté (completeOnboarding).
     // Le branchement sur un vrai funnel analytics (PostHog) est déféré à
-    // l'Epic 15 — story 15-4-funnel-activation.
+    // l'Epic 12 — story 12-4-funnel-activation.
     LoggerService.instance.info(
       'activation_event tasksCreated=${_capturedTasks.length} '
       'duelsCompleted=$duelsCompleted',
