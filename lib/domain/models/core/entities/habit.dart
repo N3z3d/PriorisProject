@@ -184,6 +184,12 @@ class Habit extends HiveObject {
     completions[today] = value;
   }
 
+  // Retirer la valeur enregistrée aujourd'hui (rollback quantitatif)
+  void clearTodayValue() {
+    final today = _getDateKey(DateTime.now());
+    completions.remove(today);
+  }
+
   // Vérifier si accompli aujourd'hui
   bool isCompletedToday() {
     final today = _getDateKey(DateTime.now());

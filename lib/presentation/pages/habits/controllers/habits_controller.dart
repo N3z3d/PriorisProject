@@ -103,6 +103,41 @@ class HabitsController extends StateNotifier<HabitsControllerState> {
     }
   }
 
+  Future<void> recordQuantitativeValue(Habit habit, double value) async {
+    if (habit.type != HabitType.quantitative) return;
+    if (state.recordingHabitIds.contains(habit.id)) return;
+    final previous = habit.getTodayValue();
+    state = state.copyWith(
+      recordingHabitIds: {...state.recordingHabitIds, habit.id},
+    );
+    try {
+      habit.recordValue(value);
+      await _ref.read(habitsStateProvider.notifier).updateHabit(habit);
+      if (!mounted) return;
+      state = state.copyWith(
+        lastAction: HabitAction.recorded,
+        lastActionMessage: _l10n.habitsActionRecordSuccess(habit.name),
+        actionResult: ActionResult.success,
+        recordingHabitIds: state.recordingHabitIds.difference({habit.id}),
+      );
+    } catch (error) {
+      if (previous == null) {
+        habit.clearTodayValue();
+      } else {
+        habit.recordValue((previous as num).toDouble());
+      }
+      if (!mounted) return;
+      state = state.copyWith(
+        lastAction: HabitAction.recorded,
+        lastActionMessage: _l10n.habitsActionUpdateError(
+          ExceptionHandler.handle(error).displayMessage,
+        ),
+        actionResult: ActionResult.error,
+        recordingHabitIds: state.recordingHabitIds.difference({habit.id}),
+      );
+    }
+  }
+
   void clearLastAction() {
     state = state.copyWith(
       lastAction: null,

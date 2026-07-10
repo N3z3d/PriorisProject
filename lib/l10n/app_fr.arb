@@ -730,6 +730,7 @@
   "@habitsMenuRecord": {
     "description": "Libellé pour enregistrer une habitude"
   },
+  "habitsRecordValueTooltip": "Enregistrer une valeur",
   "habitsMenuEdit": "Modifier",
   "@habitsMenuEdit": {
     "description": "Libellé pour modifier une habitude"

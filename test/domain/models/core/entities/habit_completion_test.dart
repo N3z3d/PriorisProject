@@ -26,6 +26,32 @@ void main() {
     });
   });
 
+  group('Habit.recordValue / clearTodayValue', () {
+    test('recordValue écrit la valeur du jour', () {
+      final habit = Habit(name: 'H', type: HabitType.quantitative, targetValue: 8);
+      habit.recordValue(5);
+      expect(habit.getTodayValue(), 5.0);
+    });
+
+    test('clearTodayValue retire la valeur du jour (rollback)', () {
+      final habit = Habit(name: 'H', type: HabitType.quantitative, targetValue: 8);
+      habit.recordValue(5);
+      expect(habit.getTodayValue(), 5.0);
+
+      habit.clearTodayValue();
+
+      expect(habit.getTodayValue(), isNull);
+      final todayKey = dateKey(DateTime.now());
+      expect(habit.completions.containsKey(todayKey), isFalse);
+    });
+
+    test('clearTodayValue est sans effet si aucune valeur du jour', () {
+      final habit = Habit(name: 'H', type: HabitType.quantitative, targetValue: 8);
+      expect(() => habit.clearTodayValue(), returnsNormally);
+      expect(habit.getTodayValue(), isNull);
+    });
+  });
+
   group('Habit.isCompletedToday', () {
     test('retourne true apres markCompleted(true)', () {
       final habit = Habit(name: 'H', type: HabitType.binary);

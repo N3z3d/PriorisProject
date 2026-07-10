@@ -15,6 +15,7 @@ Widget _buildList({
       recordingHabitIds: recordingHabitIds,
       onDeleteHabit: (_, __) {},
       onRecordHabit: (_) async {},
+      onRecordValue: (_, __) async {},
       onCreateHabit: () {},
       onEditHabit: (_) {},
     ),

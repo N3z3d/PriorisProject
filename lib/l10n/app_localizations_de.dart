@@ -1306,6 +1306,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get habitsMenuRecord => 'Eintragen';
 
   @override
+  String get habitsRecordValueTooltip => 'Wert erfassen';
+
+  @override
   String get habitsMenuEdit => 'Bearbeiten';
 
   @override

@@ -1300,6 +1300,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get habitsMenuRecord => 'Registrar';
 
   @override
+  String get habitsRecordValueTooltip => 'Registrar un valor';
+
+  @override
   String get habitsMenuEdit => 'Editar';
 
   @override

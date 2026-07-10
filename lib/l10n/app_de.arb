@@ -709,6 +709,7 @@
   "habitsErrorLoadFailure": "Gewohnheiten konnten nicht geladen werden.",
   "habitsMenuTooltip": "Aktionen",
   "habitsMenuRecord": "Eintragen",
+  "habitsRecordValueTooltip": "Wert erfassen",
   "habitsMenuEdit": "Bearbeiten",
   "habitsMenuDelete": "Löschen",
   "habitsCategoryDefault": "Allgemein",

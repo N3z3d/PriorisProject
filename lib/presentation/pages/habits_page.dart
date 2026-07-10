@@ -67,6 +67,9 @@ class _HabitsPageState extends ConsumerState<HabitsPage> {
                 onDeleteHabit: _showDeleteConfirmation,
                 onRecordHabit:
                     ref.read(habitsControllerProvider.notifier).recordHabit,
+                onRecordValue: ref
+                    .read(habitsControllerProvider.notifier)
+                    .recordQuantitativeValue,
                 onCreateHabit: _showCreateHabitModal,
                 onEditHabit: (habit) =>
                     _showCreateHabitModal(initialHabit: habit),

@@ -10,6 +10,7 @@ class HabitsBody extends StatelessWidget {
   final String? error;
   final void Function(String, String) onDeleteHabit;
   final Future<void> Function(Habit) onRecordHabit;
+  final Future<void> Function(Habit, double) onRecordValue;
   final VoidCallback onCreateHabit;
   final void Function(Habit) onEditHabit;
   final VoidCallback onRetry;
@@ -22,6 +23,7 @@ class HabitsBody extends StatelessWidget {
     this.error,
     required this.onDeleteHabit,
     required this.onRecordHabit,
+    required this.onRecordValue,
     required this.onCreateHabit,
     required this.onEditHabit,
     required this.onRetry,
@@ -54,6 +56,7 @@ class HabitsBody extends StatelessWidget {
       habits: sortedHabits,
       onDeleteHabit: onDeleteHabit,
       onRecordHabit: onRecordHabit,
+      onRecordValue: onRecordValue,
       onCreateHabit: onCreateHabit,
       onEditHabit: onEditHabit,
       recordingHabitIds: recordingHabitIds,

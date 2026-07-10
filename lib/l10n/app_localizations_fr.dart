@@ -1304,6 +1304,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get habitsMenuRecord => 'Marquer comme fait';
 
   @override
+  String get habitsRecordValueTooltip => 'Enregistrer une valeur';
+
+  @override
   String get habitsMenuEdit => 'Modifier';
 
   @override

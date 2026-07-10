@@ -7,6 +7,7 @@ import 'package:prioris/presentation/theme/premium_micro_interactions.dart';
 import 'package:prioris/presentation/pages/habits/components/habit_progress_display.dart';
 import 'package:prioris/presentation/pages/habits/components/habit_avatar.dart';
 import 'package:prioris/presentation/pages/habits/components/habit_menu.dart';
+import 'package:prioris/presentation/widgets/dialogs/habit_record_dialog.dart';
 
 /// Card component for individual habit following SRP
 /// Responsible only for rendering a single habit card
@@ -14,6 +15,7 @@ class HabitCard extends StatelessWidget {
   final Habit habit;
   final VoidCallback onDelete;
   final VoidCallback onRecord;
+  final Future<void> Function(Habit habit, double value) onRecordValue;
   final VoidCallback onEdit;
   final VoidCallback onTap;
   final bool isRecording;
@@ -23,6 +25,7 @@ class HabitCard extends StatelessWidget {
     required this.habit,
     required this.onDelete,
     required this.onRecord,
+    required this.onRecordValue,
     required this.onEdit,
     required this.onTap,
     this.isRecording = false,
@@ -30,9 +33,10 @@ class HabitCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isQuantitative = habit.type == HabitType.quantitative;
     return PremiumMicroInteractions.elevatedCardAnimation(
       child: PremiumMicroInteractions.hapticFeedbackAnimation(
-        onTap: onTap,
+        onTap: isQuantitative ? () => _openRecordDialog(context) : onTap,
         child: Container(
           margin: const EdgeInsets.only(bottom: 16),
           decoration: _buildCardDecoration(),
@@ -78,6 +82,20 @@ class HabitCard extends StatelessWidget {
   }
 
   Widget _buildRecordButton(BuildContext context, bool completedToday) {
+    if (habit.type == HabitType.quantitative) {
+      return IconButton(
+        onPressed: isRecording ? null : () => _openRecordDialog(context),
+        tooltip: AppLocalizations.of(context)!.habitsRecordValueTooltip,
+        icon: Icon(
+          completedToday ? Icons.check_circle : Icons.add_circle_outline,
+          color: isRecording
+              ? null
+              : completedToday
+                  ? AppTheme.successColor
+                  : null,
+        ),
+      );
+    }
     return IconButton(
       onPressed: isRecording ? null : onRecord,
       tooltip: AppLocalizations.of(context)!.habitsMenuRecord,
@@ -88,6 +106,20 @@ class HabitCard extends StatelessWidget {
             : completedToday
                 ? AppTheme.successColor
                 : null,
+      ),
+    );
+  }
+
+  /// Un enregistrement deja en vol serait avale par la garde de re-entrance du
+  /// controleur, sans aucun feedback : ne pas ouvrir le dialog dans ce cas.
+  Future<void> _openRecordDialog(BuildContext context) async {
+    if (isRecording) return;
+    await showDialog<void>(
+      context: context,
+      builder: (_) => HabitRecordDialog(
+        habit: habit,
+        currentValue: habit.getTodayValue(),
+        onSave: (value) => onRecordValue(habit, (value as num).toDouble()),
       ),
     );
   }

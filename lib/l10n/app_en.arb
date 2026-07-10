@@ -1501,6 +1501,10 @@
   "@habitsMenuRecord": {
     "description": "Menu label to record a habit"
   },
+  "habitsRecordValueTooltip": "Record a value",
+  "@habitsRecordValueTooltip": {
+    "description": "Tooltip for the record button on a quantitative habit card"
+  },
   "habitsMenuEdit": "Edit",
   "@habitsMenuEdit": {
     "description": "Menu label to edit a habit"

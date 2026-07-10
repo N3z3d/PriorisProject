@@ -2478,6 +2478,12 @@ abstract class AppLocalizations {
   /// **'Mark as done'**
   String get habitsMenuRecord;
 
+  /// Tooltip for the record button on a quantitative habit card
+  ///
+  /// In en, this message translates to:
+  /// **'Record a value'**
+  String get habitsRecordValueTooltip;
+
   /// Menu label to edit a habit
   ///
   /// In en, this message translates to:

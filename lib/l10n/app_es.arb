@@ -703,6 +703,7 @@
   "habitsErrorLoadFailure": "No se pudieron cargar los hábitos.",
   "habitsMenuTooltip": "Acciones",
   "habitsMenuRecord": "Registrar",
+  "habitsRecordValueTooltip": "Registrar un valor",
   "habitsMenuEdit": "Editar",
   "habitsMenuDelete": "Eliminar",
   "habitsCategoryDefault": "General",

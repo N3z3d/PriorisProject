@@ -34,19 +34,30 @@ class _HabitRecordDialogState extends State<HabitRecordDialog> {
     _controller = TextEditingController(
       text: (widget.currentValue as num?)?.toDouble().toString() ?? '',
     );
+    _controller.addListener(_onTextChanged);
   }
 
   @override
   void dispose() {
+    _controller.removeListener(_onTextChanged);
     _controller.dispose();
     super.dispose();
   }
 
-  void _saveValue() {
+  void _onTextChanged() => setState(() {});
+
+  /// `double.tryParse` accepte "NaN", "Infinity" et les negatifs : une valeur
+  /// non finie fausse durablement `isCompletedToday()` une fois persistee.
+  double? get _parsedValue {
     final value = double.tryParse(_controller.text);
-    if (value != null) {
-      widget.onSave(value);
-    }
+    if (value == null || !value.isFinite || value < 0) return null;
+    return value;
+  }
+
+  void _saveValue() {
+    final value = _parsedValue;
+    if (value == null) return;
+    widget.onSave(value);
     Navigator.of(context).pop();
   }
 
@@ -61,7 +72,7 @@ class _HabitRecordDialogState extends State<HabitRecordDialog> {
           child: Text(AppLocalizations.of(context)!.cancel),
         ),
         ElevatedButton(
-          onPressed: _saveValue,
+          onPressed: _parsedValue == null ? null : _saveValue,
           child: Text(AppLocalizations.of(context)!.save),
         ),
       ],

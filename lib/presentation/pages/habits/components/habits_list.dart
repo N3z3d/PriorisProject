@@ -10,6 +10,7 @@ class HabitsList extends StatelessWidget {
   final List<Habit> habits;
   final Function(String, String) onDeleteHabit;
   final Future<void> Function(Habit) onRecordHabit;
+  final Future<void> Function(Habit, double) onRecordValue;
   final VoidCallback onCreateHabit;
   final Function(Habit) onEditHabit;
   final Set<String> recordingHabitIds;
@@ -19,6 +20,7 @@ class HabitsList extends StatelessWidget {
     required this.habits,
     required this.onDeleteHabit,
     required this.onRecordHabit,
+    required this.onRecordValue,
     required this.onCreateHabit,
     required this.onEditHabit,
     this.recordingHabitIds = const {},
@@ -40,6 +42,7 @@ class HabitsList extends StatelessWidget {
         habit: habit,
         onDelete: () => onDeleteHabit(habit.id, habit.name),
         onRecord: () async { await onRecordHabit(habit); },
+        onRecordValue: onRecordValue,
         onEdit: () => onEditHabit(habit),
         onTap: () => _handleTap(context, habit),
         isRecording: recordingHabitIds.contains(habit.id),

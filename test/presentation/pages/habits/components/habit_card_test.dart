@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:prioris/domain/models/core/entities/habit.dart';
 import 'package:prioris/presentation/pages/habits/components/habit_card.dart';
+import 'package:prioris/presentation/widgets/dialogs/habit_record_dialog.dart';
 import '../../../../helpers/localized_widget.dart';
 
 Widget _buildCard({
   required Habit habit,
   VoidCallback? onRecord,
+  Future<void> Function(Habit, double)? onRecordValue,
   VoidCallback? onEdit,
   VoidCallback? onDelete,
   VoidCallback? onTap,
@@ -16,6 +18,7 @@ Widget _buildCard({
     HabitCard(
       habit: habit,
       onRecord: onRecord ?? () {},
+      onRecordValue: onRecordValue ?? (_, __) async {},
       onEdit: onEdit ?? () {},
       onDelete: onDelete ?? () {},
       onTap: onTap ?? () {},
@@ -29,6 +32,25 @@ Habit _completedHabit() {
   habit.markCompleted(true);
   return habit;
 }
+
+Habit _quantitativeHabit({double? todayValue}) {
+  final habit = Habit(
+    name: 'Boire',
+    type: HabitType.quantitative,
+    targetValue: 8,
+    unit: 'verres',
+  );
+  if (todayValue != null) {
+    habit.recordValue(todayValue);
+  }
+  return habit;
+}
+
+Finder _findQuantButton() => find.byWidgetPredicate(
+      (w) =>
+          w is IconButton &&
+          (w.tooltip?.contains('Enregistrer une valeur') ?? false),
+    );
 
 Finder _findRecordIcon() => find.byWidgetPredicate(
       (w) =>
@@ -149,6 +171,109 @@ void main() {
 
       expect(find.text('Modifier'), findsOneWidget);
       expect(find.text('Supprimer'), findsOneWidget);
+    });
+  });
+
+  group('HabitCard — habitude quantitative (story 10.20)', () {
+    testWidgets('Q1 — affiche le bouton "Enregistrer une valeur"',
+        (tester) async {
+      await tester.pumpWidget(_buildCard(habit: _quantitativeHabit()));
+      expect(_findQuantButton(), findsOneWidget);
+    });
+
+    testWidgets('Q2 — non-régression : une habitude binaire n\'a pas ce bouton',
+        (tester) async {
+      await tester.pumpWidget(
+        _buildCard(habit: Habit(name: 'Test', type: HabitType.binary)),
+      );
+      expect(_findQuantButton(), findsNothing);
+    });
+
+    testWidgets('Q3 — taper le bouton ouvre HabitRecordDialog (réutilisation)',
+        (tester) async {
+      await tester.pumpWidget(_buildCard(habit: _quantitativeHabit()));
+
+      await tester.tap(_findQuantButton());
+      await tester.pumpAndSettle();
+
+      expect(find.byType(HabitRecordDialog), findsOneWidget);
+    });
+
+    testWidgets('Q4 — saisir une valeur et valider appelle onRecordValue(value)',
+        (tester) async {
+      double? saved;
+      await tester.pumpWidget(
+        _buildCard(
+          habit: _quantitativeHabit(),
+          onRecordValue: (_, value) async {
+            saved = value;
+          },
+        ),
+      );
+
+      await tester.tap(_findQuantButton());
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextFormField), '5');
+      await tester.pump(); // la saisie reactive le bouton Enregistrer
+      await tester.tap(find.byType(ElevatedButton));
+      await tester.pumpAndSettle();
+
+      expect(saved, 5.0);
+    });
+
+    testWidgets('Q5 — cible atteinte aujourd\'hui → icône check_circle',
+        (tester) async {
+      await tester.pumpWidget(
+        _buildCard(habit: _quantitativeHabit(todayValue: 8)),
+      );
+
+      final icon = tester.widget<Icon>(
+        find.descendant(of: _findQuantButton(), matching: find.byType(Icon)),
+      );
+      expect(icon.icon, Icons.check_circle);
+    });
+
+    testWidgets('Q6 — cible non atteinte → icône add_circle_outline',
+        (tester) async {
+      await tester.pumpWidget(
+        _buildCard(habit: _quantitativeHabit(todayValue: 2)),
+      );
+
+      final icon = tester.widget<Icon>(
+        find.descendant(of: _findQuantButton(), matching: find.byType(Icon)),
+      );
+      expect(icon.icon, Icons.add_circle_outline);
+    });
+
+    testWidgets('Q7 — isRecording=true désactive le bouton quantitatif',
+        (tester) async {
+      await tester.pumpWidget(
+        _buildCard(habit: _quantitativeHabit(), isRecording: true),
+      );
+      expect(tester.widget<IconButton>(_findQuantButton()).onPressed, isNull);
+    });
+
+    testWidgets('Q8 — tap plein-carte ouvre le dialog quand aucun enregistrement en cours',
+        (tester) async {
+      await tester.pumpWidget(_buildCard(habit: _quantitativeHabit()));
+
+      await tester.tap(find.text('Boire'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(HabitRecordDialog), findsOneWidget);
+    });
+
+    testWidgets('Q9 — tap plein-carte n\'ouvre pas le dialog pendant un enregistrement',
+        (tester) async {
+      await tester.pumpWidget(
+        _buildCard(habit: _quantitativeHabit(), isRecording: true),
+      );
+
+      await tester.tap(find.text('Boire'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(HabitRecordDialog), findsNothing,
+          reason: 'un second enregistrement serait avale par la garde de re-entrance, sans feedback');
     });
   });
 }
