@@ -1961,13 +1961,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyConsentBody =>
-      'Prioris collects your personal data (tasks, habits, profile) to provide the service. Your data is stored securely and is not shared with third parties for advertising purposes.';
+      'Without your consent, we cannot process your personal data (tasks, habits, profile). It is stored securely and is never shared with third parties for advertising purposes.';
 
   @override
   String get privacyConsentAcceptButton => 'I accept and continue';
 
   @override
   String get privacyConsentReadPolicyLink => 'Read the privacy policy';
+
+  @override
+  String get consentGateSignOutError => 'Sign-out failed. Please try again.';
+
+  @override
+  String get consentGateActionPrompt => 'What would you like to do?';
 
   @override
   String get privacyPolicyTitle => 'Privacy Policy';

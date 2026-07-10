@@ -28,6 +28,7 @@ class ConsentNotifier extends StateNotifier<AsyncValue<bool>> {
   }
 
   Future<void> accept() async {
+    state = const AsyncValue.loading();
     try {
       await _service.acceptConsent();
       if (mounted) state = const AsyncValue.data(true);
@@ -37,6 +38,7 @@ class ConsentNotifier extends StateNotifier<AsyncValue<bool>> {
   }
 
   Future<void> revoke() async {
+    state = const AsyncValue.loading();
     try {
       await _service.revokeConsent();
       if (mounted) state = const AsyncValue.data(false);

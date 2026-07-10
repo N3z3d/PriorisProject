@@ -3423,7 +3423,7 @@ abstract class AppLocalizations {
   /// Explanation text for GDPR consent
   ///
   /// In en, this message translates to:
-  /// **'Prioris collects your personal data (tasks, habits, profile) to provide the service. Your data is stored securely and is not shared with third parties for advertising purposes.'**
+  /// **'Without your consent, we cannot process your personal data (tasks, habits, profile). It is stored securely and is never shared with third parties for advertising purposes.'**
   String get privacyConsentBody;
 
   /// GDPR consent accept button
@@ -3437,6 +3437,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Read the privacy policy'**
   String get privacyConsentReadPolicyLink;
+
+  /// Message shown when signing out from the consent gate fails
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-out failed. Please try again.'**
+  String get consentGateSignOutError;
+
+  /// Action-oriented question shown on the consent gate (3 choices)
+  ///
+  /// In en, this message translates to:
+  /// **'What would you like to do?'**
+  String get consentGateActionPrompt;
 
   /// Title of the privacy policy page
   ///

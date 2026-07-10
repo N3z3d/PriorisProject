@@ -1112,7 +1112,7 @@
   "@privacyConsentTitle": {
     "description": "Title of the GDPR consent page"
   },
-  "privacyConsentBody": "Prioris collects your personal data (tasks, habits, profile) to provide the service. Your data is stored securely and is not shared with third parties for advertising purposes.",
+  "privacyConsentBody": "Sin tu consentimiento, no podemos tratar tus datos personales (tareas, hábitos, perfil). Se almacenan de forma segura y nunca se comparten con terceros con fines publicitarios.",
   "@privacyConsentBody": {
     "description": "Explanation text for GDPR consent"
   },
@@ -1123,6 +1123,14 @@
   "privacyConsentReadPolicyLink": "Read the privacy policy",
   "@privacyConsentReadPolicyLink": {
     "description": "Link to privacy policy on consent page"
+  },
+  "consentGateSignOutError": "Error al cerrar sesión. Inténtalo de nuevo.",
+  "@consentGateSignOutError": {
+    "description": "Mensaje mostrado cuando falla el cierre de sesión desde la puerta de consentimiento"
+  },
+  "consentGateActionPrompt": "¿Qué desea hacer?",
+  "@consentGateActionPrompt": {
+    "description": "Action-oriented question shown on the consent gate (3 choices)"
   },
   "privacyPolicyTitle": "Privacy Policy",
   "@privacyPolicyTitle": {

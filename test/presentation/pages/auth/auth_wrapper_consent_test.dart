@@ -86,5 +86,31 @@ void main() {
       await tester.pump();
       expect(find.byType(ConsentGatePage), findsNothing);
     });
+
+    // Story 10.18 — AC3 : retirer le consentement (sans navigation impérative)
+    // ramène vers la gate, car AuthWrapper est réactif à l'état persistant.
+    testWidgets('revoke() pendant la session → ConsentGatePage réapparaît', (tester) async {
+      SharedPreferences.setMockInitialValues({'privacy_consent_v1': true});
+      final container = ProviderContainer(
+        overrides: [
+          authUIStateProvider.overrideWithValue(AuthUIState.signedIn),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: localizedApp(const AuthWrapper()),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(ConsentGatePage), findsNothing);
+
+      await container.read(consentProvider.notifier).revoke();
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ConsentGatePage), findsOneWidget);
+    });
   });
 }

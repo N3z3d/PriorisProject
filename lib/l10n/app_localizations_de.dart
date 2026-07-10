@@ -1957,13 +1957,20 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get privacyConsentBody =>
-      'Prioris erfasst deine persönlichen Daten (Aufgaben, Gewohnheiten, Profil), um den Dienst bereitzustellen. Deine Daten werden sicher gespeichert und nicht zu Werbezwecken an Dritte weitergegeben.';
+      'Ohne deine Einwilligung können wir deine personenbezogenen Daten (Aufgaben, Gewohnheiten, Profil) nicht verarbeiten. Sie werden sicher gespeichert und niemals zu Werbezwecken an Dritte weitergegeben.';
 
   @override
   String get privacyConsentAcceptButton => 'Ich stimme zu und fahre fort';
 
   @override
   String get privacyConsentReadPolicyLink => 'Datenschutzrichtlinie lesen';
+
+  @override
+  String get consentGateSignOutError =>
+      'Abmeldung fehlgeschlagen. Bitte versuche es erneut.';
+
+  @override
+  String get consentGateActionPrompt => 'Was möchten Sie tun?';
 
   @override
   String get privacyPolicyTitle => 'Datenschutzrichtlinie';

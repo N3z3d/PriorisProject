@@ -5,6 +5,7 @@ import 'package:prioris/data/repositories/list_item_repository.dart';
 import 'package:prioris/data/repositories/hive_list_item_repository.dart';
 import 'package:prioris/data/repositories/interfaces/repository_interfaces.dart';
 import 'package:prioris/data/providers/auth_providers.dart';
+import 'package:prioris/data/providers/consent_providers.dart';
 import 'package:prioris/data/providers/service_providers.dart';
 
 /// SOLID: Exception personalizada para erros de inicialização
@@ -201,14 +202,8 @@ final listItemRepositorySyncProvider = Provider<Future<ListItemRepository>>((ref
 /// SOLID: Single Responsibility - délègue la sélection au service spécialisé
 /// Clean Code: Provider concis utilisant le service de sélection
 final adaptiveListItemRepositoryProvider = FutureProvider<ListItemRepository>((ref) async {
-  final isSignedIn = ref.watch(isSignedInProvider);
-  final strategy = ref.watch(repositoryStrategyProvider);
-
-  return await RepositorySelectionService.selectListItemRepository(
-    ref,
-    isSignedIn,
-    strategy,
-  );
+  final useCloud = ref.watch(useCloudRepositoryProvider);
+  return await RepositorySelectionService.selectListItemRepository(ref, useCloud);
 });
 
 /// Provider synchrone pour compatibilité ascendante - À SUPPRIMER PROGRESSIVEMENT
@@ -228,14 +223,8 @@ final adaptiveListItemRepositorySyncProvider = Provider<Future<ListItemRepositor
 /// SOLID: Single Responsibility - délègue la sélection au service spécialisé
 /// Clean Code: Provider concis utilisant le service de sélection
 final adaptiveCustomListRepositoryProvider = FutureProvider<CustomListCrudRepositoryInterface>((ref) async {
-  final isSignedIn = ref.watch(isSignedInProvider);
-  final strategy = ref.watch(repositoryStrategyProvider);
-
-  return await RepositorySelectionService.selectCustomListRepository(
-    ref,
-    isSignedIn,
-    strategy,
-  );
+  final useCloud = ref.watch(useCloudRepositoryProvider);
+  return await RepositorySelectionService.selectCustomListRepository(ref, useCloud);
 });
 
 /// Provider synchrone pour compatibilité ascendante - À SUPPRIMER PROGRESSIVEMENT
@@ -264,29 +253,50 @@ final repositoryStrategyProvider = StateProvider<RepositoryStrategy>((ref) {
 // ========== REPOSITORY SELECTION STRATEGIES ==========
 
 /// SOLID: Single Responsibility - determina qual repository usar baseado na auth
-/// Clean Code: Função pura, sem efeitos colaterais
-bool shouldUseCloudRepository(bool isSignedIn, RepositoryStrategy strategy) {
+/// e no consentement RGPD (story 10.18).
+/// Clean Code: Função pura, sem efeitos colaterais.
+///
+/// RGPD Art. 6.1/7.3 : sur les stratégies automatiques (auto/hybrid), aucune
+/// donnée personnelle ne part vers le cloud sans consentement valide. Retirer
+/// le consentement gèle donc le traitement en basculant sur le stockage local.
+bool shouldUseCloudRepository(
+  bool isSignedIn,
+  bool hasConsent,
+  RepositoryStrategy strategy,
+) {
   switch (strategy) {
     case RepositoryStrategy.auto:
-      return isSignedIn;
+      return isSignedIn && hasConsent;
     case RepositoryStrategy.supabase:
       return true;
     case RepositoryStrategy.hive:
       return false;
     case RepositoryStrategy.hybrid:
-      return isSignedIn; // Para hybrid, usa cloud se autenticado
+      return isSignedIn && hasConsent; // cloud si authentifié ET consentant
   }
 }
+
+/// Décision cloud/local dérivée (auth + consentement + stratégie).
+///
+/// Provider intermédiaire : en n'exposant qu'un booléen, les repositories
+/// adaptatifs ne se reconstruisent que lorsque la DÉCISION change réellement.
+/// Une transition d'AsyncValue du consentement (loading→data) qui ne modifie
+/// pas le booléen ne propage donc aucun rebuild (Riverpod compare par ==).
+final useCloudRepositoryProvider = Provider<bool>((ref) {
+  final isSignedIn = ref.watch(isSignedInProvider);
+  final hasConsent = ref.watch(consentProvider.select((s) => s.value ?? false));
+  final strategy = ref.watch(repositoryStrategyProvider);
+  return shouldUseCloudRepository(isSignedIn, hasConsent, strategy);
+});
 
 /// SOLID: Single Responsibility - cria repositories seguindo estratégia
 /// Clean Code: Factory method com responsabilidade única
 class RepositorySelectionService {
   static Future<ListItemRepository> selectListItemRepository(
     Ref ref,
-    bool isSignedIn,
-    RepositoryStrategy strategy,
+    bool useCloud,
   ) async {
-    if (shouldUseCloudRepository(isSignedIn, strategy)) {
+    if (useCloud) {
       return ref.read(supabaseListItemRepositoryProvider);
     } else {
       return await ref.watch(hiveListItemRepositoryProvider.future);
@@ -295,10 +305,9 @@ class RepositorySelectionService {
 
   static Future<CustomListCrudRepositoryInterface> selectCustomListRepository(
     Ref ref,
-    bool isSignedIn,
-    RepositoryStrategy strategy,
+    bool useCloud,
   ) async {
-    if (shouldUseCloudRepository(isSignedIn, strategy)) {
+    if (useCloud) {
       return ref.read(supabaseCustomListRepositoryProvider);
     } else {
       return await ref.watch(hiveCustomListRepositoryProvider.future);

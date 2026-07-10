@@ -1274,7 +1274,7 @@
   "@privacyConsentTitle": {
     "description": "Titre de la page de consentement RGPD"
   },
-  "privacyConsentBody": "Prioris collecte vos données personnelles (tâches, habitudes, profil) pour vous fournir le service. Vos données sont stockées de façon sécurisée et ne sont pas partagées avec des tiers à des fins publicitaires.",
+  "privacyConsentBody": "Sans votre consentement, nous ne pouvons pas traiter vos données personnelles (tâches, habitudes, profil). Elles sont stockées de façon sécurisée et ne sont jamais partagées avec des tiers à des fins publicitaires.",
   "@privacyConsentBody": {
     "description": "Texte d'explication du consentement RGPD"
   },
@@ -1285,6 +1285,14 @@
   "privacyConsentReadPolicyLink": "Lire la politique de confidentialité",
   "@privacyConsentReadPolicyLink": {
     "description": "Lien vers la politique de confidentialité sur la page de consentement"
+  },
+  "consentGateActionPrompt": "Que souhaitez-vous faire ?",
+  "@consentGateActionPrompt": {
+    "description": "Question orientée action affichée sur la gate de consentement (3 choix)"
+  },
+  "consentGateSignOutError": "La déconnexion a échoué. Réessayez.",
+  "@consentGateSignOutError": {
+    "description": "Message affiché quand la déconnexion depuis la gate de consentement échoue"
   },
   "privacyPolicyTitle": "Politique de confidentialité",
   "@privacyPolicyTitle": {

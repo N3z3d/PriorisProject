@@ -25,11 +25,15 @@ class DuelController extends StateNotifier<DuelState> {
     try {
       await _duelService.ensureListsLoaded();
       await _settingsNotifier.ensureLoaded();
+      // Le controller peut être disposé pendant les await (rebuild des providers
+      // de persistance sur résolution auth/consentement) : ne pas toucher l'état.
+      if (!mounted) return;
 
       final settings = _currentSettings;
       state = state.copyWith(settings: settings);
       await _loadNewDuelWithSettings(settings);
     } catch (e) {
+      if (!mounted) return;
       state = state.copyWith(
         isLoading: false,
         errorMessage: "Erreur lors de l'initialisation: $e",
@@ -43,10 +47,12 @@ class DuelController extends StateNotifier<DuelState> {
 
     try {
       await _settingsNotifier.ensureLoaded();
+      if (!mounted) return;
       final settings = _currentSettings;
       state = state.copyWith(settings: settings);
       await _loadNewDuelWithSettings(settings);
     } catch (e) {
+      if (!mounted) return;
       state = state.copyWith(
         isLoading: false,
         errorMessage: 'Erreur lors du chargement: $e',
@@ -65,11 +71,13 @@ class DuelController extends StateNotifier<DuelState> {
     try {
       await _duelService.processWinner(winner, loser);
       await loadNewDuel();
+      if (!mounted) return;
       state = state.copyWith(
         lastWinner: winner,
         lastLoser: loser,
       );
     } catch (e) {
+      if (!mounted) return;
       state = state.copyWith(
         isLoading: false,
         errorMessage: 'Erreur lors de la selection: $e',
@@ -91,11 +99,13 @@ class DuelController extends StateNotifier<DuelState> {
     try {
       await _duelService.processRanking(orderedTasks);
       await loadNewDuel();
+      if (!mounted) return;
       state = state.copyWith(
         lastWinner: orderedTasks.first,
         lastLoser: orderedTasks.last,
       );
     } catch (e) {
+      if (!mounted) return;
       state = state.copyWith(
         isLoading: false,
         errorMessage: "Erreur lors de l'enregistrement du classement: $e",
@@ -117,6 +127,7 @@ class DuelController extends StateNotifier<DuelState> {
       }
 
       await loadNewDuel();
+      if (!mounted) return;
       state = state.copyWith(
         lastWinner: randomWinner,
         lastLoser: others.isNotEmpty ? others.last : null,
@@ -135,6 +146,7 @@ class DuelController extends StateNotifier<DuelState> {
       await _duelService.updateTask(updatedTask);
       await loadNewDuel();
     } catch (e) {
+      if (!mounted) return;
       state = state.copyWith(
         isLoading: false,
         errorMessage: 'Erreur mise a jour: $e',
@@ -145,11 +157,13 @@ class DuelController extends StateNotifier<DuelState> {
   /// Bascule la visibilite des scores ELO.
   Future<void> toggleEloVisibility() async {
     await _settingsNotifier.toggleHideElo();
+    if (!mounted) return;
     state = state.copyWith(settings: _currentSettings);
   }
 
   Future<void> updateMode(DuelMode mode) async {
     await _settingsNotifier.updateMode(mode);
+    if (!mounted) return;
     final settings = _currentSettings;
     state = state.copyWith(settings: settings);
     await _loadNewDuelWithSettings(settings);
@@ -157,6 +171,7 @@ class DuelController extends StateNotifier<DuelState> {
 
   Future<void> updateCardsPerRound(int cardsPerRound) async {
     await _settingsNotifier.updateCardsPerRound(cardsPerRound);
+    if (!mounted) return;
     final settings = _currentSettings;
     state = state.copyWith(settings: settings);
     await _loadNewDuelWithSettings(settings);
@@ -174,6 +189,7 @@ class DuelController extends StateNotifier<DuelState> {
     try {
       final tasks =
           await _duelService.loadDuelTasks(count: settings.cardsPerRound);
+      if (!mounted) return;
       if (tasks.length >= 2) {
         state = state.copyWith(
           currentDuel: tasks,
@@ -189,6 +205,7 @@ class DuelController extends StateNotifier<DuelState> {
         errorMessage: 'Pas assez de taches eligibles pour creer un duel',
       );
     } on DuelLoadingException catch (error) {
+      if (!mounted) return;
       state = state.copyWith(
         currentDuel: null,
         isLoading: false,

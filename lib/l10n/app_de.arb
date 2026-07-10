@@ -1143,7 +1143,7 @@
   "@privacyConsentTitle": {
     "description": "Title of the GDPR consent page"
   },
-  "privacyConsentBody": "Prioris erfasst deine persönlichen Daten (Aufgaben, Gewohnheiten, Profil), um den Dienst bereitzustellen. Deine Daten werden sicher gespeichert und nicht zu Werbezwecken an Dritte weitergegeben.",
+  "privacyConsentBody": "Ohne deine Einwilligung können wir deine personenbezogenen Daten (Aufgaben, Gewohnheiten, Profil) nicht verarbeiten. Sie werden sicher gespeichert und niemals zu Werbezwecken an Dritte weitergegeben.",
   "@privacyConsentBody": {
     "description": "Explanation text for GDPR consent"
   },
@@ -1154,6 +1154,14 @@
   "privacyConsentReadPolicyLink": "Datenschutzrichtlinie lesen",
   "@privacyConsentReadPolicyLink": {
     "description": "Link to privacy policy on consent page"
+  },
+  "consentGateSignOutError": "Abmeldung fehlgeschlagen. Bitte versuche es erneut.",
+  "@consentGateSignOutError": {
+    "description": "Meldung, wenn die Abmeldung über das Einwilligungs-Gate fehlschlägt"
+  },
+  "consentGateActionPrompt": "Was möchten Sie tun?",
+  "@consentGateActionPrompt": {
+    "description": "Action-oriented question shown on the consent gate (3 choices)"
   },
   "privacyPolicyTitle": "Datenschutzrichtlinie",
   "@privacyPolicyTitle": {

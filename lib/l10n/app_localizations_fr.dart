@@ -1973,7 +1973,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get privacyConsentBody =>
-      'Prioris collecte vos données personnelles (tâches, habitudes, profil) pour vous fournir le service. Vos données sont stockées de façon sécurisée et ne sont pas partagées avec des tiers à des fins publicitaires.';
+      'Sans votre consentement, nous ne pouvons pas traiter vos données personnelles (tâches, habitudes, profil). Elles sont stockées de façon sécurisée et ne sont jamais partagées avec des tiers à des fins publicitaires.';
 
   @override
   String get privacyConsentAcceptButton => 'J\'accepte et je continue';
@@ -1981,6 +1981,12 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get privacyConsentReadPolicyLink =>
       'Lire la politique de confidentialité';
+
+  @override
+  String get consentGateSignOutError => 'La déconnexion a échoué. Réessayez.';
+
+  @override
+  String get consentGateActionPrompt => 'Que souhaitez-vous faire ?';
 
   @override
   String get privacyPolicyTitle => 'Politique de confidentialité';
