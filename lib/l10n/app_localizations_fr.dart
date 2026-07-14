@@ -2477,4 +2477,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get onboardingArchetypeWater => 'Boire de l\'eau';
+
+  @override
+  String get onboardingListName => 'Mes premières priorités';
 }

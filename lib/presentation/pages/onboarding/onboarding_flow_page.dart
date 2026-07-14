@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/pages/onboarding/controllers/onboarding_flow_controller.dart';
 import 'package:prioris/presentation/pages/onboarding/widgets/onboarding_capture_step.dart';
 import 'package:prioris/presentation/pages/onboarding/widgets/onboarding_duel_step.dart';
@@ -22,13 +23,14 @@ class OnboardingFlowPage extends ConsumerWidget {
       body: SafeArea(
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),
-          child: _buildStep(state, controller),
+          child: _buildStep(context, state, controller),
         ),
       ),
     );
   }
 
   Widget _buildStep(
+    BuildContext context,
     OnboardingFlowState state,
     OnboardingFlowController controller,
   ) {
@@ -36,7 +38,12 @@ class OnboardingFlowPage extends ConsumerWidget {
       case OnboardingStep.capture:
         return OnboardingCaptureStep(
           key: const ValueKey('onboarding-capture'),
-          onStart: controller.submitCapturedTasks,
+          // Le nom de la liste dédiée est localisé ici : le contrôleur n'a pas
+          // de contexte, et une chaîne en dur y serait un bug d'i18n.
+          onStart: (rawText) => controller.submitCapturedTasks(
+            rawText,
+            listName: AppLocalizations.of(context)!.onboardingListName,
+          ),
           onSkip: controller.completeOnboarding,
           processing: state.isProcessing,
         );

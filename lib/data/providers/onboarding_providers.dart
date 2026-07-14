@@ -3,6 +3,7 @@ import 'package:prioris/data/providers/lists_controller_provider.dart';
 import 'package:prioris/data/providers/prioritization_providers.dart';
 import 'package:prioris/data/repositories/shared_preferences_onboarding_repository.dart';
 import 'package:prioris/domain/ports/onboarding_repository.dart';
+import 'package:prioris/presentation/pages/onboarding/services/onboarding_persistence.dart';
 
 /// Adapter SharedPreferences pour l'état d'onboarding (ADR-001).
 final onboardingRepositoryProvider = Provider<IOnboardingRepository>(
@@ -43,12 +44,28 @@ final totalTaskCountProvider = FutureProvider<int>((ref) async {
 
 /// Décide si l'onboarding actif doit être affiché.
 ///
-/// Invariant robuste : l'afficher uniquement à un *nouvel* utilisateur
-/// (0 tâche au total) qui n'a pas déjà complété ou passé l'onboarding. Le flag
-/// persisté évite de re-piéger un utilisateur ayant skippé puis vidé ses tâches.
+/// Décision produit : l'onboarding s'affiche pour **tout le monde**, pas
+/// seulement aux comptes vides. Le nombre de tâches ne conditionne donc plus
+/// l'affichage — il ne décide que le *mode* (cf. [onboardingModeProvider]). Le
+/// flag persisté reste le seul verrou : il évite de re-piéger un utilisateur
+/// qui a déjà complété ou passé le flux.
 final shouldShowOnboardingProvider = FutureProvider<bool>((ref) async {
   final completed = await ref.watch(onboardingCompletedProvider.future);
-  if (completed) return false;
+  return !completed;
+});
+
+/// Décide le mode de l'onboarding, une fois, explicitement.
+///
+/// S'appuie sur [totalTaskCountProvider], qui attend le chargement effectif des
+/// listes ([ensureListsLoadedProvider]) : sans cette attente, un utilisateur
+/// existant serait compté à 0 pendant le bootstrap, classé [OnboardingMode.real]
+/// — et on lui créerait une liste en écrasant la promesse « aucune écriture ».
+final onboardingModeProvider = FutureProvider<OnboardingMode>((ref) async {
   final total = await ref.watch(totalTaskCountProvider.future);
-  return total == 0;
+  return total == 0 ? OnboardingMode.real : OnboardingMode.sandbox;
+});
+
+/// Écritures de listes exposées à l'onboarding (mode réel uniquement).
+final onboardingListsWriterProvider = Provider<OnboardingListsWriter>((ref) {
+  return ListsControllerWriter(() => ref.read(listsControllerProvider.notifier));
 });

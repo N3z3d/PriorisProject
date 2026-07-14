@@ -2539,5 +2539,6 @@
   "onboardingArchetypeGroceries": "Buy groceries",
   "onboardingArchetypeRead": "Read 10 pages",
   "onboardingArchetypeTidy": "Tidy my desk",
-  "onboardingArchetypeWater": "Drink water"
+  "onboardingArchetypeWater": "Drink water",
+  "onboardingListName": "My first priorities"
 }

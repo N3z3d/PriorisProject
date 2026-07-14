@@ -1,12 +1,13 @@
+import 'dart:math' as math;
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/data/providers/onboarding_providers.dart';
-import 'package:prioris/data/providers/prioritization_providers.dart';
-import 'package:prioris/data/repositories/task_repository.dart';
 import 'package:prioris/domain/models/core/entities/task.dart';
 import 'package:prioris/domain/ports/onboarding_repository.dart';
 import 'package:prioris/infrastructure/services/logger_service.dart';
 import 'package:prioris/presentation/pages/duel/services/duel_service.dart';
 import 'package:prioris/presentation/pages/onboarding/onboarding_task_parser.dart';
+import 'package:prioris/presentation/pages/onboarding/services/onboarding_persistence.dart';
 
 /// Acte courant du flux d'onboarding actif.
 enum OnboardingStep { capture, duel, reveal }
@@ -61,12 +62,20 @@ class OnboardingFlowState {
 
 /// Orchestre l'onboarding actif menant à l'activation event.
 ///
-/// Réutilise [DuelFlowService] pour le calcul ELO (aucune duplication) et
-/// [IOnboardingRepository] pour le flag durable d'activation (ADR-001).
+/// Invariant central : **les trois actes travaillent sur la même source**,
+/// [_capturedTasks]. Les duels y tirent leurs paires et le reveal y calcule son
+/// vainqueur — jamais dans les tâches préexistantes de l'utilisateur. C'est ce
+/// qui garantit qu'un onboarding ne peut ni corrompre l'ELO réel, ni révéler
+/// une tâche qui n'a jamais participé aux duels.
+///
+/// Ce qui est *persisté* dépend du mode ([OnboardingPersistence]) ; ce qui est
+/// *calculé* n'en dépend pas : l'ELO évolue à l'identique dans les deux modes,
+/// sinon le reveal du mode sandbox dégénérerait (toutes les tâches à 1200).
 class OnboardingFlowController extends StateNotifier<OnboardingFlowState> {
   final Ref _ref;
   final DuelFlowService _duelService;
   final IOnboardingRepository _onboardingRepository;
+  final math.Random _random;
 
   /// Nombre de duels guidés avant la révélation.
   static const int totalDuels = 5;
@@ -81,18 +90,33 @@ class OnboardingFlowController extends StateNotifier<OnboardingFlowState> {
   static const OnboardingTaskParser _parser = OnboardingTaskParser();
 
   List<Task> _capturedTasks = const [];
+  OnboardingPersistence? _persistence;
 
   OnboardingFlowController(
     this._ref, {
     DuelFlowService? duelService,
     IOnboardingRepository? onboardingRepository,
+    OnboardingPersistence? persistence,
+    math.Random? random,
   })  : _duelService = duelService ?? DuelService(_ref),
         _onboardingRepository =
             onboardingRepository ?? _ref.read(onboardingRepositoryProvider),
+        _persistence = persistence,
+        _random = random ?? math.Random(),
         super(const OnboardingFlowState.initial());
 
-  /// Acte 1 → Acte 2 : persiste les tâches saisies puis lance le premier duel.
-  Future<void> submitCapturedTasks(String rawText) async {
+  /// Les tâches de l'onboarding, avec leur ELO courant. Source de vérité des
+  /// actes 2 et 3.
+  List<Task> get capturedTasks => List.unmodifiable(_capturedTasks);
+
+  /// Acte 1 → Acte 2 : matérialise les tâches saisies puis lance le premier duel.
+  ///
+  /// [listName] est le nom de la liste dédiée créée en mode réel ; il vient de
+  /// l'UI, seule détentrice du contexte de localisation.
+  Future<void> submitCapturedTasks(
+    String rawText, {
+    required String listName,
+  }) async {
     if (state.isProcessing) return; // Anti ré-entrance (double-tap).
     final titles = _parseTitles(rawText);
     if (titles.length < minTasksToStart) {
@@ -101,10 +125,10 @@ class OnboardingFlowController extends StateNotifier<OnboardingFlowState> {
 
     state = state.copyWith(isProcessing: true);
     try {
-      _capturedTasks = await _persistTasks(titles);
+      final persistence = await _resolvePersistence();
       if (!mounted) return;
-      _ref.invalidate(allTasksProvider);
-      _ref.invalidate(allPrioritizationTasksProvider);
+      _capturedTasks = await persistence.captureTasks(titles, listName: listName);
+      if (!mounted) return;
       await _loadNextDuel(startIndex: 0);
     } catch (error) {
       LoggerService.instance
@@ -119,8 +143,12 @@ class OnboardingFlowController extends StateNotifier<OnboardingFlowState> {
     if (state.isProcessing) return; // Anti ré-entrance (double-tap carte).
     state = state.copyWith(isProcessing: true);
     try {
-      await _duelService.processWinner(winner, loser);
+      final persistence = await _resolvePersistence();
       if (!mounted) return;
+      await persistence.recordDuel(winner, loser);
+      if (!mounted) return;
+      _applyDuelOutcome(winner, loser);
+
       final nextIndex = state.duelIndex + 1;
       if (nextIndex >= totalDuels) {
         await _revealTopTask(duelsCompleted: nextIndex);
@@ -149,7 +177,9 @@ class OnboardingFlowController extends StateNotifier<OnboardingFlowState> {
     final task = state.revealedTask;
     try {
       if (task != null) {
-        await _duelService.updateTask(task.copyWith(isCompleted: true));
+        final persistence = await _resolvePersistence();
+        if (!mounted) return;
+        await persistence.markTaskDone(task);
         if (!mounted) return;
       }
     } catch (error) {
@@ -157,6 +187,26 @@ class OnboardingFlowController extends StateNotifier<OnboardingFlowState> {
           .error('Onboarding markDone failed: $error', context: 'Onboarding');
     }
     await _finishOnboarding();
+  }
+
+  /// Résout le mode **une seule fois**, à l'entrée du flux, puis le fige.
+  ///
+  /// Le comptage sous-jacent attend le chargement effectif des données : le
+  /// résoudre paresseusement (et non à la construction du notifier) évite de
+  /// classer `real` un utilisateur dont les listes ne sont pas encore chargées.
+  Future<OnboardingPersistence> _resolvePersistence() async {
+    final cached = _persistence;
+    if (cached != null) return cached;
+
+    final mode = await _ref.read(onboardingModeProvider.future);
+    final resolved = mode == OnboardingMode.sandbox
+        ? const SandboxOnboardingPersistence()
+        : RealOnboardingPersistence(
+            listsWriter: _ref.read(onboardingListsWriterProvider),
+            duelService: _duelService,
+          );
+    _persistence = resolved;
+    return resolved;
   }
 
   /// Persiste le flag durable et signale l'état terminal au gate.
@@ -183,20 +233,35 @@ class OnboardingFlowController extends StateNotifier<OnboardingFlowState> {
     }
   }
 
-  Future<List<Task>> _persistTasks(List<String> titles) async {
-    final repository = _ref.read(taskRepositoryProvider);
-    final created = <Task>[];
-    for (final title in titles) {
-      final task = Task(title: title);
-      await repository.saveTask(task);
-      created.add(task);
-    }
-    return created;
+  /// Reporte l'issue du duel sur les tâches captées.
+  ///
+  /// Les deux nouveaux scores sont calculés à partir des scores *d'origine* des
+  /// deux adversaires — d'où les copies : muter le vainqueur d'abord fausserait
+  /// le calcul du perdant.
+  void _applyDuelOutcome(Task winner, Task loser) {
+    final updatedWinner = winner.copyWith()..updateEloScore(loser, true);
+    final updatedLoser = loser.copyWith()..updateEloScore(winner, false);
+
+    _capturedTasks = [
+      for (final task in _capturedTasks)
+        if (task.id == updatedWinner.id)
+          updatedWinner
+        else if (task.id == updatedLoser.id)
+          updatedLoser
+        else
+          task,
+    ];
+  }
+
+  /// Tire la prochaine paire **exclusivement** dans les tâches de l'onboarding.
+  List<Task> _nextPair() {
+    if (_capturedTasks.length < minTasksToStart) return const [];
+    final pool = List<Task>.from(_capturedTasks)..shuffle(_random);
+    return pool.take(2).toList(growable: false);
   }
 
   Future<void> _loadNextDuel({required int startIndex}) async {
-    final pair = await _duelService.loadDuelTasks(count: 2);
-    if (!mounted) return;
+    final pair = _nextPair();
     if (pair.length < 2) {
       await _revealTopTask(duelsCompleted: startIndex);
       return;
@@ -210,22 +275,22 @@ class OnboardingFlowController extends StateNotifier<OnboardingFlowState> {
   }
 
   Future<void> _revealTopTask({required int duelsCompleted}) async {
-    _ref.invalidate(allPrioritizationTasksProvider);
-    final tasks = await _ref.read(allPrioritizationTasksProvider.future);
-    if (!mounted) return;
-    final top = tasks.isEmpty
+    final top = _capturedTasks.isEmpty
         ? null
-        : tasks.reduce((a, b) => a.eloScore >= b.eloScore ? a : b);
+        : _capturedTasks.reduce((a, b) => a.eloScore >= b.eloScore ? a : b);
+
     // L'activation event ne matérialise que le *vrai* moment de valeur :
     // les duels guidés complétés. Le chemin de repli dégénéré (paire
     // indisponible) révèle pour ne pas bloquer l'utilisateur, mais n'émet pas
     // de faux activation event.
     if (duelsCompleted >= totalDuels) {
       _emitActivationEvent(duelsCompleted);
-      // AC4 : « activation event = log + flag persisté » de façon atomique.
+      // « activation event = log + flag persisté » de façon atomique.
       // Persister dès l'entrée au reveal (et non au seul tap « Continuer »)
       // évite un réaffichage / re-log si l'utilisateur ferme l'app pile au
       // moment révélateur. completeOnboarding réécrira le flag (idempotent).
+      // Seule écriture légitime du mode sandbox : sans elle, l'utilisateur
+      // existant se referait l'onboarding à chaque lancement.
       await _onboardingRepository.markCompleted();
       if (!mounted) return;
     }

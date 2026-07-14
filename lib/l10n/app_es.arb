@@ -1343,5 +1343,6 @@
   "onboardingArchetypeGroceries": "Hacer la compra",
   "onboardingArchetypeRead": "Leer 10 páginas",
   "onboardingArchetypeTidy": "Ordenar el escritorio",
-  "onboardingArchetypeWater": "Beber agua"
+  "onboardingArchetypeWater": "Beber agua",
+  "onboardingListName": "Mis primeras prioridades"
 }

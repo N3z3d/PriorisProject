@@ -2462,4 +2462,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get onboardingArchetypeWater => 'Wasser trinken';
+
+  @override
+  String get onboardingListName => 'Meine ersten Prioritäten';
 }

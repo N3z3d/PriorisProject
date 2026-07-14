@@ -8,6 +8,7 @@ import 'package:prioris/domain/models/core/entities/list_item.dart';
 import 'package:prioris/domain/models/core/entities/task.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
 import 'package:prioris/domain/ports/onboarding_repository.dart';
+import 'package:prioris/presentation/pages/onboarding/services/onboarding_persistence.dart';
 
 class _FakeOnboardingRepository implements IOnboardingRepository {
   _FakeOnboardingRepository(this._completed);
@@ -54,45 +55,79 @@ ProviderContainer _container({
 }
 
 void main() {
-  group('onboarding providers', () {
-    test('shouldShowOnboarding=true : 0 tâche + non complété', () async {
+  group('shouldShowOnboarding — l\'onboarding s\'affiche pour tout le monde', () {
+    // Décision produit (2026-07-12) : le nombre de tâches ne conditionne plus
+    // l'affichage, seulement le MODE. Un utilisateur existant traverse
+    // l'onboarding en sandbox, sans qu'aucune de ses données ne soit touchée.
+
+    test('true : nouvel utilisateur (0 tâche) qui n\'a pas fait l\'onboarding',
+        () async {
       final c = _container(completed: false, classicTasks: const []);
       addTearDown(c.dispose);
+
       expect(await c.read(shouldShowOnboardingProvider.future), isTrue);
     });
 
-    test('shouldShowOnboarding=false : au moins une tâche classique', () async {
+    test('true : utilisateur existant qui n\'a pas fait l\'onboarding',
+        () async {
       final c = _container(
         completed: false,
         classicTasks: [Task(title: 'A')],
+        lists: [_listWithItems(2)],
       );
       addTearDown(c.dispose);
-      expect(await c.read(shouldShowOnboardingProvider.future), isFalse);
+
+      expect(await c.read(shouldShowOnboardingProvider.future), isTrue);
     });
 
-    test('shouldShowOnboarding=false : seulement des items de listes', () async {
+    test('false : onboarding déjà complété ou passé', () async {
+      final c = _container(completed: true, classicTasks: const []);
+      addTearDown(c.dispose);
+
+      expect(await c.read(shouldShowOnboardingProvider.future), isFalse);
+    });
+  });
+
+  group('onboardingMode — décidé sur un comptage fiable (AC5)', () {
+    test('real : aucune tâche existante', () async {
+      final c = _container(completed: false, classicTasks: const []);
+      addTearDown(c.dispose);
+
+      expect(await c.read(onboardingModeProvider.future), OnboardingMode.real);
+    });
+
+    test('sandbox : au moins une tâche classique', () async {
+      final c = _container(completed: false, classicTasks: [Task(title: 'A')]);
+      addTearDown(c.dispose);
+
+      expect(
+          await c.read(onboardingModeProvider.future), OnboardingMode.sandbox);
+    });
+
+    test('sandbox : seulement des items de listes', () async {
+      // Le cas qui a causé la corruption : un utilisateur dont toutes les
+      // données sont des items de listes doit être classé sandbox.
       final c = _container(
         completed: false,
         classicTasks: const [],
         lists: [_listWithItems(2)],
       );
       addTearDown(c.dispose);
-      expect(await c.read(shouldShowOnboardingProvider.future), isFalse);
-    });
 
-    test('shouldShowOnboarding=false : complété même si 0 tâche', () async {
-      final c = _container(completed: true, classicTasks: const []);
-      addTearDown(c.dispose);
-      expect(await c.read(shouldShowOnboardingProvider.future), isFalse);
+      expect(
+          await c.read(onboardingModeProvider.future), OnboardingMode.sandbox);
     });
+  });
 
-    test('totalTaskCount additionne tâches classiques et items', () async {
+  group('totalTaskCount', () {
+    test('additionne tâches classiques et items de listes', () async {
       final c = _container(
         completed: false,
         classicTasks: [Task(title: 'A'), Task(title: 'B')],
         lists: [_listWithItems(3)],
       );
       addTearDown(c.dispose);
+
       expect(await c.read(totalTaskCountProvider.future), 5);
     });
   });

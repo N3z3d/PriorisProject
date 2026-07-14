@@ -4289,6 +4289,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Drink water'**
   String get onboardingArchetypeWater;
+
+  /// No description provided for @onboardingListName.
+  ///
+  /// In en, this message translates to:
+  /// **'My first priorities'**
+  String get onboardingListName;
 }
 
 class _AppLocalizationsDelegate
