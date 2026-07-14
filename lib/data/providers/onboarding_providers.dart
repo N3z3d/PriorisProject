@@ -27,7 +27,28 @@ final ensureListsLoadedProvider = FutureProvider<void>((ref) async {
   await ref.watch(listsInitializationManagerProvider.future);
   await ref.watch(listsPersistenceManagerProvider.future);
   await ref.read(listsControllerProvider.notifier).loadLists();
+  await _waitForListsToFinishLoading(ref);
 });
+
+/// Attend la fin *effective* du chargement des listes.
+///
+/// Le `loadLists()` ci-dessus peut être un no-op silencieux : tant que le
+/// bootstrap du contrôleur n'a pas posé son flag d'initialisation, l'executor
+/// ignore l'appel (`!controllerInitialized`). Sans cette attente, le comptage
+/// qui suit lirait des listes vides et classerait `real` un utilisateur qui
+/// possède déjà des données — la corruption que l'onboarding doit éviter. Même
+/// garde que `DuelService._waitForListsToFinishLoading`.
+Future<void> _waitForListsToFinishLoading(
+  Ref ref, {
+  Duration pollInterval = const Duration(milliseconds: 50),
+  Duration timeout = const Duration(seconds: 2),
+}) async {
+  final deadline = DateTime.now().add(timeout);
+  while (DateTime.now().isBefore(deadline)) {
+    if (!ref.read(listsControllerProvider).isLoading) return;
+    await Future.delayed(pollInterval);
+  }
+}
 
 /// Nombre total de tâches de l'utilisateur : tâches classiques + items de listes.
 ///

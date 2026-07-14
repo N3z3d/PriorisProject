@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:prioris/data/providers/lists_controller_provider.dart';
@@ -8,6 +10,7 @@ import 'package:prioris/domain/models/core/entities/list_item.dart';
 import 'package:prioris/domain/models/core/entities/task.dart';
 import 'package:prioris/domain/models/core/enums/list_enums.dart';
 import 'package:prioris/domain/ports/onboarding_repository.dart';
+import 'package:prioris/presentation/pages/lists/interfaces/lists_managers_interfaces.dart';
 import 'package:prioris/presentation/pages/onboarding/services/onboarding_persistence.dart';
 
 class _FakeOnboardingRepository implements IOnboardingRepository {
@@ -131,4 +134,111 @@ void main() {
       expect(await c.read(totalTaskCountProvider.future), 5);
     });
   });
+
+  group('onboardingMode — attend la fin réelle du chargement des listes (AC5, race)', () {
+    // Régression : sans attente de la fin du bootstrap du contrôleur, le
+    // `loadLists()` explicite de `ensureListsLoadedProvider` est un no-op
+    // silencieux (garde `!controllerInitialized` de l'executor) tant que le
+    // bootstrap n'a pas posé son flag. Le compteur lisait alors des listes
+    // vides et classait `real` un utilisateur « listes seules » — la corruption
+    // exacte que la story 11.10 combat. Même garde que DuelService.
+    test(
+      'sandbox : un utilisateur « listes seules » n\'est pas classé real pendant le bootstrap',
+      () async {
+        // Le bootstrap du contrôleur est bloqué tant que initializeAsync n'est
+        // pas résolu : c'est la fenêtre de la race.
+        final initGate = Completer<void>();
+
+        final container = ProviderContainer(overrides: [
+          allPrioritizationTasksProvider.overrideWith((ref) async => const []),
+          listsInitializationManagerProvider
+              .overrideWith((_) async => _GatedInitManager(initGate.future)),
+          listsPersistenceManagerProvider
+              .overrideWith((_) async => _PersistenceManagerWithLists([
+                    _listWithItems(2),
+                  ])),
+        ]);
+        addTearDown(container.dispose);
+
+        // Démarre la résolution du mode ; le bootstrap atteint sa porte bloquée.
+        final modeFuture = container.read(onboardingModeProvider.future);
+        await Future.delayed(const Duration(milliseconds: 20));
+
+        // Débloque le bootstrap : les 2 items de liste deviennent visibles.
+        initGate.complete();
+
+        expect(await modeFuture, OnboardingMode.sandbox);
+      },
+    );
+  });
+}
+
+/// Manager d'init dont `initializeAsync` reste bloqué jusqu'à [_gate] :
+/// reproduit la fenêtre où le contrôleur de listes n'est pas encore initialisé.
+class _GatedInitManager implements IListsInitializationManager {
+  _GatedInitManager(this._gate);
+  final Future<void> _gate;
+
+  @override
+  Future<void> initializeAsync() => _gate;
+
+  @override
+  Future<void> initializeAdaptive() async {}
+
+  @override
+  Future<void> initializeLegacy() async {}
+
+  @override
+  bool get isInitialized => false;
+
+  @override
+  String get initializationMode => 'gated';
+}
+
+class _PersistenceManagerWithLists implements IListsPersistenceManager {
+  _PersistenceManagerWithLists(this._lists);
+  final List<CustomList> _lists;
+
+  @override
+  Future<List<CustomList>> loadAllLists() async => _lists;
+
+  @override
+  Future<List<CustomList>> forceReloadFromPersistence() async => _lists;
+
+  @override
+  Future<void> saveList(CustomList list) async {}
+
+  @override
+  Future<void> updateList(CustomList list) async {}
+
+  @override
+  Future<void> deleteList(String listId) async {}
+
+  @override
+  Future<List<ListItem>> loadListItems(String listId) async => const [];
+
+  @override
+  Future<void> saveListItem(ListItem item) async {}
+
+  @override
+  Future<void> updateListItem(ListItem item) async {}
+
+  @override
+  Future<void> deleteListItem(String itemId) async {}
+
+  @override
+  Future<void> saveMultipleItems(List<ListItem> items,
+      {void Function(int, int)? onProgress}) async {}
+
+  @override
+  Future<void> clearAllData() async {}
+
+  @override
+  Future<void> verifyListPersistence(String listId) async {}
+
+  @override
+  Future<void> verifyItemPersistence(String itemId) async {}
+
+  @override
+  Future<void> rollbackItems(List<ListItem> items) async {}
 }
