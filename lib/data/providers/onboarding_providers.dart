@@ -95,7 +95,7 @@ final totalTaskCountProvider = FutureProvider<int>((ref) async {
 /// *mode* (cf. [onboardingModeProvider]).
 final shouldShowOnboardingProvider = FutureProvider<bool>((ref) async {
   final state = await ref.watch(onboardingRepositoryProvider).loadState();
-  if (state.completedAt == null) return true;
+  if (!state.hasCompleted) return true;
 
   final lastSeen = state.lastSeenAt;
   if (lastSeen == null) return false; // complété sans repère : pas dormant.

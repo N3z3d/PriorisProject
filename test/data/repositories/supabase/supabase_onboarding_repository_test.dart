@@ -15,8 +15,8 @@ class _SignedInAuth implements IAuthService {
 }
 
 /// Faux [SupabaseTableAdapter] simulant une table mono-ligne (une par
-/// utilisateur). Ignore le `builder` (`.eq(...)`) : les gardes/mapping testés
-/// ici ne dépendent pas de l'exécution réseau de la requête.
+/// utilisateur). Exécute le `builder` contre une requête enregistreuse pour
+/// **asservir le scoping** `.eq('user_id', ...)` — le cœur sécurité de la story.
 class _FakeTableAdapter extends SupabaseTableAdapter {
   _FakeTableAdapter() : super(Object());
 
@@ -24,12 +24,21 @@ class _FakeTableAdapter extends SupabaseTableAdapter {
   final List<Map<String, dynamic>> inserts = [];
   final List<Map<String, dynamic>> updates = [];
 
+  /// Filtres `.eq(colonne, valeur)` capturés depuis les `builder`.
+  final List<({String column, Object? value})> eqFilters = [];
+
+  void _capture(SupabaseQueryBuilderCallback? builder) {
+    if (builder != null) builder(_RecordingQuery(eqFilters));
+  }
+
   @override
   Future<Map<String, dynamic>?> selectSingle({
     String columns = '*',
     SupabaseQueryBuilderCallback? builder,
-  }) async =>
-      row == null ? null : Map<String, dynamic>.from(row!);
+  }) async {
+    _capture(builder);
+    return row == null ? null : Map<String, dynamic>.from(row!);
+  }
 
   @override
   Future<void> insert(Map<String, dynamic> values) async {
@@ -42,8 +51,20 @@ class _FakeTableAdapter extends SupabaseTableAdapter {
     required Map<String, dynamic> values,
     SupabaseQueryBuilderCallback? builder,
   }) async {
+    _capture(builder);
     updates.add(Map<String, dynamic>.from(values));
     row = {...?row, ...values};
+  }
+}
+
+/// Requête factice enregistrant les appels `.eq(...)` du `builder`.
+class _RecordingQuery {
+  _RecordingQuery(this._sink);
+  final List<({String column, Object? value})> _sink;
+
+  dynamic eq(String column, dynamic value) {
+    _sink.add((column: column, value: value));
+    return this;
   }
 }
 
@@ -141,13 +162,65 @@ void main() {
       expect(table.inserts.single['last_seen_at'], now.toIso8601String());
     });
 
-    test('sans authentification → lève', () async {
+    test(
+        'markCompleted : ligne pré-existante sans completed_at → update (pas insert)',
+        () async {
+      // Vrai chemin nouveau-compte : le gate a créé la ligne via touchLastSeen,
+      // puis l'utilisateur termine l'onboarding → completed_at posé par update.
+      final table = _FakeTableAdapter()
+        ..row = {
+          'user_id': 'user-1',
+          'last_seen_at': '2026-07-01T00:00:00.000Z',
+        };
+      final now = DateTime.utc(2026, 7, 15, 12);
+
+      await _repo(table, now: () => now).markCompleted();
+
+      expect(table.inserts, isEmpty);
+      expect(table.updates, hasLength(1));
+      expect(table.updates.single['completed_at'], now.toIso8601String());
+    });
+
+    test('scoping : les écritures/lectures filtrent user_id = compte courant',
+        () async {
+      final table = _FakeTableAdapter();
+      final repo = _repo(table, auth: _SignedInAuth('user-99'));
+
+      await repo.loadState(); // selectSingle
+      await repo.touchLastSeen(); // insert (ligne absente) → pas d'eq
+      table.row = {'user_id': 'user-99', 'last_seen_at': 'x'};
+      await repo.touchLastSeen(); // update → eq
+
+      expect(
+        table.eqFilters,
+        everyElement(
+          predicate<({String column, Object? value})>(
+            (f) => f.column == 'user_id' && f.value == 'user-99',
+            'filtre user_id = user-99',
+          ),
+        ),
+      );
+      expect(
+        table.eqFilters,
+        contains((column: 'user_id', value: 'user-99')),
+      );
+    });
+
+    test('sans authentification → lève une erreur d\'authentification',
+        () async {
       final table = _FakeTableAdapter();
       final repo = _repo(table, auth: const NullAuthService());
 
-      expect(repo.loadState(), throwsA(anything));
-      expect(repo.markCompleted(), throwsA(anything));
-      expect(repo.touchLastSeen(), throwsA(anything));
+      final authError = throwsA(
+        isA<Exception>().having(
+          (e) => e.toString(),
+          'message',
+          contains('not authenticated'),
+        ),
+      );
+      expect(repo.loadState(), authError);
+      expect(repo.markCompleted(), authError);
+      expect(repo.touchLastSeen(), authError);
     });
   });
 }

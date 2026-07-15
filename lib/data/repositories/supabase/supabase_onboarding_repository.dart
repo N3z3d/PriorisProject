@@ -1,4 +1,5 @@
 import 'package:logger/logger.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show PostgrestException;
 import 'package:prioris/domain/ports/auth_service.dart';
 import 'package:prioris/domain/ports/onboarding_repository.dart';
 import 'package:prioris/infrastructure/services/supabase_service.dart';
@@ -50,12 +51,15 @@ class SupabaseOnboardingRepository implements IOnboardingRepository {
 
     final now = _now().toIso8601String();
     if (row == null) {
-      await _table().insert({
-        'user_id': _auth.currentUserId!,
-        'completed_at': now,
-        'last_seen_at': now,
-        'updated_at': now,
-      });
+      await _insertOrUpdate(
+        insertValues: {
+          'user_id': _auth.currentUserId!,
+          'completed_at': now,
+          'last_seen_at': now,
+          'updated_at': now,
+        },
+        updateValues: {'completed_at': now, 'updated_at': now},
+      );
     } else {
       await _table().update(
         values: {'completed_at': now, 'updated_at': now},
@@ -70,14 +74,39 @@ class SupabaseOnboardingRepository implements IOnboardingRepository {
     final row = await _requireRow();
     final now = _now().toIso8601String();
     if (row == null) {
-      await _table().insert({
-        'user_id': _auth.currentUserId!,
-        'last_seen_at': now,
-        'updated_at': now,
-      });
+      await _insertOrUpdate(
+        insertValues: {
+          'user_id': _auth.currentUserId!,
+          'last_seen_at': now,
+          'updated_at': now,
+        },
+        updateValues: {'last_seen_at': now, 'updated_at': now},
+      );
     } else {
       await _table().update(
         values: {'last_seen_at': now, 'updated_at': now},
+        builder: (query) => query.eq('user_id', _auth.currentUserId!),
+      );
+    }
+  }
+
+  /// Insère la ligne du compte, avec repli sur `update` si une écriture
+  /// concurrente l'a créée entre notre `selectSingle` et cet `insert`.
+  ///
+  /// Sans `upsert` natif dans [SupabaseTableAdapter], deux premiers writes
+  /// simultanés verraient tous deux `row == null` et insèreraient : le second
+  /// viole la PK `user_id` (code Postgres `23505`). On rattrape ce seul cas et
+  /// on retombe sur un `update` ; toute autre erreur est propagée.
+  Future<void> _insertOrUpdate({
+    required Map<String, dynamic> insertValues,
+    required Map<String, dynamic> updateValues,
+  }) async {
+    try {
+      await _table().insert(insertValues);
+    } on PostgrestException catch (e) {
+      if (e.code != '23505') rethrow;
+      await _table().update(
+        values: updateValues,
         builder: (query) => query.eq('user_id', _auth.currentUserId!),
       );
     }

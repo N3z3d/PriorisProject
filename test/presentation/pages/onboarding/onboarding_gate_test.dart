@@ -143,5 +143,25 @@ void main() {
       expect(find.byType(OnboardingFlowPage), findsNothing);
       expect(spy.touchLastSeenCalls, 1);
     });
+
+    testWidgets(
+        'erreur de lecture → HomePage mais aucune écriture de last_seen_at',
+        (tester) async {
+      // Fail-open sans corruption : quand `loadState` échoue, l'état n'a pas été
+      // lu ; toucher `last_seen_at` effacerait une dormance qu'on n'a pas pu
+      // mesurer. Un seul échec transitoire ne doit pas défaire le re-accueil 90j.
+      final spy = _SpyOnboardingRepository();
+      await tester.pumpWidget(_wrap(
+        [
+          shouldShowOnboardingProvider
+              .overrideWith((ref) async => throw Exception('backend injoignable')),
+        ],
+        repo: spy,
+      ));
+      await tester.pump();
+
+      expect(find.byType(OnboardingFlowPage), findsNothing);
+      expect(spy.touchLastSeenCalls, 0);
+    });
   });
 }

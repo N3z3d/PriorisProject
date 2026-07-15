@@ -109,6 +109,22 @@ void main() {
       expect(await c.read(shouldShowOnboardingProvider.future), isFalse);
     });
 
+    test('false : dernière connexion il y a exactement 90 jours (borne stricte)',
+        () async {
+      // Sémantique explicite : la dormance est `> seuil`, pas `>=`. À 90 jours
+      // pile l'utilisateur n'est pas encore reproposé (re-accueil au 91e jour).
+      final c = _container(
+        state: OnboardingState(
+          completedAt: completed,
+          lastSeenAt: now.subtract(kOnboardingDormancyThreshold),
+        ),
+        now: () => now,
+      );
+      addTearDown(c.dispose);
+
+      expect(await c.read(shouldShowOnboardingProvider.future), isFalse);
+    });
+
     test('true : dernière connexion il y a 91 jours (> seuil)', () async {
       final c = _container(
         state: OnboardingState(
