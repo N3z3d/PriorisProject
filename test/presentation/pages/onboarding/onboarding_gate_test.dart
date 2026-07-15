@@ -5,18 +5,45 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:prioris/data/providers/onboarding_providers.dart';
+import 'package:prioris/domain/ports/onboarding_repository.dart';
 import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/pages/onboarding/controllers/onboarding_flow_controller.dart';
 import 'package:prioris/presentation/pages/onboarding/onboarding_flow_page.dart';
 import 'package:prioris/presentation/pages/onboarding/onboarding_gate.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 /// Pilote `shouldShowOnboarding` pour simuler une invalidation du compteur.
 final _showFlagProvider = StateProvider<bool>((ref) => true);
 
-Widget _wrap(List<Override> overrides) {
+/// Repository espion : compte les appels à `touchLastSeen` (AC2/T5) sans
+/// toucher au réseau. `markCompleted` fait avancer l'état comme l'adapter réel.
+class _SpyOnboardingRepository implements IOnboardingRepository {
+  int touchLastSeenCalls = 0;
+  OnboardingState _state = const OnboardingState();
+
+  @override
+  Future<OnboardingState> loadState() async => _state;
+
+  @override
+  Future<void> markCompleted() async {
+    _state = OnboardingState(
+      completedAt: _state.completedAt ?? DateTime.utc(2026),
+      lastSeenAt: _state.lastSeenAt,
+    );
+  }
+
+  @override
+  Future<void> touchLastSeen() async {
+    touchLastSeenCalls++;
+  }
+}
+
+Widget _wrap(List<Override> overrides, {_SpyOnboardingRepository? repo}) {
   return ProviderScope(
-    overrides: overrides,
+    overrides: [
+      onboardingRepositoryProvider
+          .overrideWithValue(repo ?? _SpyOnboardingRepository()),
+      ...overrides,
+    ],
     child: MaterialApp(
       locale: const Locale('fr'),
       theme: ThemeData(splashFactory: NoSplash.splashFactory),
@@ -85,7 +112,6 @@ void main() {
 
     testWidgets('sortie : finished=true → bascule vers HomePage',
         (tester) async {
-      SharedPreferences.setMockInitialValues({});
       await tester.pumpWidget(_wrap([
         shouldShowOnboardingProvider.overrideWith((ref) async => true),
       ]));
@@ -100,6 +126,22 @@ void main() {
       await tester.pump();
 
       expect(find.byType(OnboardingFlowPage), findsNothing);
+    });
+
+    testWidgets(
+        'T5 : touchLastSeen appelé exactement une fois en atteignant HomePage',
+        (tester) async {
+      final spy = _SpyOnboardingRepository();
+      await tester.pumpWidget(_wrap(
+        [shouldShowOnboardingProvider.overrideWith((ref) async => false)],
+        repo: spy,
+      ));
+      await tester.pump();
+      // Un rebuild supplémentaire ne doit pas ré-enregistrer la connexion.
+      await tester.pump();
+
+      expect(find.byType(OnboardingFlowPage), findsNothing);
+      expect(spy.touchLastSeenCalls, 1);
     });
   });
 }

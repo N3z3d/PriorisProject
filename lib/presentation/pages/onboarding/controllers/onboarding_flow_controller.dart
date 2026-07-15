@@ -214,7 +214,6 @@ class OnboardingFlowController extends StateNotifier<OnboardingFlowState> {
     try {
       await _onboardingRepository.markCompleted();
       if (!mounted) return;
-      _ref.invalidate(onboardingCompletedProvider);
       _ref.invalidate(shouldShowOnboardingProvider);
       state = state.copyWith(finished: true, isProcessing: false);
     } catch (error) {

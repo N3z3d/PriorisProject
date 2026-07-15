@@ -17,13 +17,18 @@ class _FakeOnboardingRepository implements IOnboardingRepository {
   int markCompletedCalls = 0;
 
   @override
-  Future<bool> hasCompletedOnboarding() async => completed;
+  Future<OnboardingState> loadState() async => OnboardingState(
+        completedAt: completed ? DateTime.utc(2026) : null,
+      );
 
   @override
   Future<void> markCompleted() async {
     markCompletedCalls++;
     completed = true;
   }
+
+  @override
+  Future<void> touchLastSeen() async {}
 }
 
 class _FakeDuelService implements DuelFlowService {

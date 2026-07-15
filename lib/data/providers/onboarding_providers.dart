@@ -1,18 +1,39 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:prioris/data/providers/auth_providers.dart';
 import 'package:prioris/data/providers/lists_controller_provider.dart';
 import 'package:prioris/data/providers/prioritization_providers.dart';
-import 'package:prioris/data/repositories/shared_preferences_onboarding_repository.dart';
+import 'package:prioris/data/providers/service_providers.dart';
+import 'package:prioris/data/repositories/supabase/supabase_onboarding_repository.dart';
 import 'package:prioris/domain/ports/onboarding_repository.dart';
 import 'package:prioris/presentation/pages/onboarding/services/onboarding_persistence.dart';
 
-/// Adapter SharedPreferences pour l'état d'onboarding (ADR-001).
-final onboardingRepositoryProvider = Provider<IOnboardingRepository>(
-  (ref) => SharedPreferencesOnboardingRepository(),
+/// Seuil de dormance : au-delà de cette absence, l'onboarding est reproposé.
+///
+/// Constante nommée (AC4) — pas de nombre magique. Règle produit (2026-07-12) :
+/// reproposer l'onboarding après 90 jours sans connexion.
+const Duration kOnboardingDormancyThreshold = Duration(days: 90);
+
+/// Horloge injectable pour la logique de décision temporelle (AC4).
+///
+/// Overridable en test pour figer le temps. Ne **jamais** appeler
+/// `DateTime.now()` directement dans la logique de dormance — mémoire projet
+/// (tests flaky dépendants de la date, cf. story 11.8).
+final nowProvider = Provider<DateTime Function()>(
+  (ref) => () => DateTime.now().toUtc(),
 );
 
-/// Vrai si l'utilisateur a déjà complété ou passé l'onboarding (flag durable).
-final onboardingCompletedProvider = FutureProvider<bool>((ref) {
-  return ref.watch(onboardingRepositoryProvider).hasCompletedOnboarding();
+/// Adapter **account-scoped** de l'état d'onboarding (ADR-001).
+///
+/// L'état suit le compte (Supabase), pas le device : un utilisateur qui a
+/// complété l'onboarding ne le revoit pas sur un navigateur/appareil neuf. Le
+/// tunnel d'onboarding vit toujours derrière l'authentification
+/// (`auth_wrapper.dart`), donc l'adapter — qui exige l'auth — est la seule
+/// source de vérité (pas de fallback device).
+final onboardingRepositoryProvider = Provider<IOnboardingRepository>((ref) {
+  return SupabaseOnboardingRepository(
+    supabaseService: ref.read(supabaseServiceProvider),
+    authService: ref.read(authServiceProvider),
+  );
 });
 
 /// Garantit que les listes sont chargées avant tout comptage.
@@ -65,14 +86,22 @@ final totalTaskCountProvider = FutureProvider<int>((ref) async {
 
 /// Décide si l'onboarding actif doit être affiché.
 ///
-/// Décision produit : l'onboarding s'affiche pour **tout le monde**, pas
-/// seulement aux comptes vides. Le nombre de tâches ne conditionne donc plus
-/// l'affichage — il ne décide que le *mode* (cf. [onboardingModeProvider]). Le
-/// flag persisté reste le seul verrou : il évite de re-piéger un utilisateur
-/// qui a déjà complété ou passé le flux.
+/// Deux verrous, lus depuis le **compte** (pas le device) :
+/// 1. jamais complété (`completedAt == null`) → afficher ;
+/// 2. complété mais dormant : dernière connexion il y a plus de
+///    [kOnboardingDormancyThreshold] → re-accueil.
+///
+/// Le nombre de tâches ne conditionne pas l'affichage — il ne décide que le
+/// *mode* (cf. [onboardingModeProvider]).
 final shouldShowOnboardingProvider = FutureProvider<bool>((ref) async {
-  final completed = await ref.watch(onboardingCompletedProvider.future);
-  return !completed;
+  final state = await ref.watch(onboardingRepositoryProvider).loadState();
+  if (state.completedAt == null) return true;
+
+  final lastSeen = state.lastSeenAt;
+  if (lastSeen == null) return false; // complété sans repère : pas dormant.
+
+  final now = ref.watch(nowProvider)();
+  return now.difference(lastSeen) > kOnboardingDormancyThreshold;
 });
 
 /// Décide le mode de l'onboarding, une fois, explicitement.

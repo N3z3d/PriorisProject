@@ -25,15 +25,18 @@ class _OnboardingGateState extends ConsumerState<OnboardingGate> {
   /// `null` tant que la décision initiale n'est pas résolue, puis figée.
   bool? _showOnboarding;
 
+  /// Garantit un unique `touchLastSeen` par session (le build est ré-exécuté).
+  bool _lastSeenTouched = false;
+
   @override
   Widget build(BuildContext context) {
-    if (_showOnboarding == false) return const HomePage();
+    if (_showOnboarding == false) return _home();
     if (_showOnboarding == true) {
       // Sortie pilotée par le contrôleur, pas par le compteur de tâches.
       final finished = ref.watch(
         onboardingFlowControllerProvider.select((s) => s.finished),
       );
-      return finished ? const HomePage() : const OnboardingFlowPage();
+      return finished ? _home() : const OnboardingFlowPage();
     }
 
     final shouldShow = ref.watch(shouldShowOnboardingProvider);
@@ -42,11 +45,27 @@ class _OnboardingGateState extends ConsumerState<OnboardingGate> {
       // watch du compteur de tâches, donc l'invalidation ne démonte plus rien.
       data: (show) {
         _showOnboarding = show;
-        return show ? const OnboardingFlowPage() : const HomePage();
+        return show ? const OnboardingFlowPage() : _home();
       },
       loading: () =>
           const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (_, __) => const HomePage(),
+      error: (_, __) => _home(),
     );
+  }
+
+  /// Rend HomePage et enregistre la dernière connexion.
+  ///
+  /// L'enregistrement se fait **après** que la décision d'affichage a lu l'état
+  /// (via `shouldShowOnboardingProvider`) : toucher `last_seen_at` plus tôt
+  /// effacerait la dormance qu'on veut détecter. Fire-and-forget et non
+  /// bloquant : une écriture ratée ne doit jamais empêcher l'app de s'ouvrir.
+  Widget _home() {
+    if (!_lastSeenTouched) {
+      _lastSeenTouched = true;
+      ref.read(onboardingRepositoryProvider).touchLastSeen().catchError(
+            (_) {},
+          );
+    }
+    return const HomePage();
   }
 }

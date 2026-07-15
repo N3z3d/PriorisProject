@@ -13,15 +13,24 @@ import 'package:prioris/domain/ports/onboarding_repository.dart';
 import 'package:prioris/presentation/pages/lists/interfaces/lists_managers_interfaces.dart';
 import 'package:prioris/presentation/pages/onboarding/services/onboarding_persistence.dart';
 
+/// Repository in-memory renvoyant un état d'onboarding figé.
 class _FakeOnboardingRepository implements IOnboardingRepository {
-  _FakeOnboardingRepository(this._completed);
-  bool _completed;
+  _FakeOnboardingRepository(this._state);
+  OnboardingState _state;
 
   @override
-  Future<bool> hasCompletedOnboarding() async => _completed;
+  Future<OnboardingState> loadState() async => _state;
 
   @override
-  Future<void> markCompleted() async => _completed = true;
+  Future<void> markCompleted() async {
+    _state = OnboardingState(
+      completedAt: _state.completedAt ?? DateTime.utc(2026),
+      lastSeenAt: _state.lastSeenAt,
+    );
+  }
+
+  @override
+  Future<void> touchLastSeen() async {}
 }
 
 CustomList _listWithItems(int count) {
@@ -40,67 +49,104 @@ CustomList _listWithItems(int count) {
 }
 
 ProviderContainer _container({
-  required bool completed,
-  required List<Task> classicTasks,
+  required OnboardingState state,
+  List<Task> classicTasks = const [],
   List<CustomList> lists = const [],
+  DateTime Function()? now,
 }) {
   return ProviderContainer(
     overrides: [
       onboardingRepositoryProvider
-          .overrideWithValue(_FakeOnboardingRepository(completed)),
+          .overrideWithValue(_FakeOnboardingRepository(state)),
       allPrioritizationTasksProvider.overrideWith((ref) async => classicTasks),
       listsProvider.overrideWithValue(lists),
       // Court-circuite la chaîne d'init des listes : la valeur de listsProvider
       // est déjà fournie ci-dessus, on a seulement besoin que l'attente passe.
       ensureListsLoadedProvider.overrideWith((ref) async {}),
+      if (now != null) nowProvider.overrideWithValue(now),
     ],
   );
 }
 
 void main() {
-  group('shouldShowOnboarding — l\'onboarding s\'affiche pour tout le monde', () {
-    // Décision produit (2026-07-12) : le nombre de tâches ne conditionne plus
-    // l'affichage, seulement le MODE. Un utilisateur existant traverse
-    // l'onboarding en sandbox, sans qu'aucune de ses données ne soit touchée.
-
-    test('true : nouvel utilisateur (0 tâche) qui n\'a pas fait l\'onboarding',
-        () async {
-      final c = _container(completed: false, classicTasks: const []);
+  group('shouldShowOnboarding — état lu depuis le compte (AC1/AC3)', () {
+    test('true : jamais complété (completedAt == null)', () async {
+      final c = _container(state: const OnboardingState());
       addTearDown(c.dispose);
 
       expect(await c.read(shouldShowOnboardingProvider.future), isTrue);
     });
 
-    test('true : utilisateur existant qui n\'a pas fait l\'onboarding',
-        () async {
+    test('false : complété récemment', () async {
+      final now = DateTime.utc(2026, 7, 15);
       final c = _container(
-        completed: false,
-        classicTasks: [Task(title: 'A')],
-        lists: [_listWithItems(2)],
+        state: OnboardingState(
+          completedAt: DateTime.utc(2026, 1, 1),
+          lastSeenAt: DateTime.utc(2026, 7, 10), // il y a 5 jours
+        ),
+        now: () => now,
       );
-      addTearDown(c.dispose);
-
-      expect(await c.read(shouldShowOnboardingProvider.future), isTrue);
-    });
-
-    test('false : onboarding déjà complété ou passé', () async {
-      final c = _container(completed: true, classicTasks: const []);
       addTearDown(c.dispose);
 
       expect(await c.read(shouldShowOnboardingProvider.future), isFalse);
     });
   });
 
-  group('onboardingMode — décidé sur un comptage fiable (AC5)', () {
+  group('shouldShowOnboarding — dormance 90j (AC2/AC4, horloge injectable)', () {
+    final completed = DateTime.utc(2025, 1, 1);
+    final now = DateTime.utc(2026, 7, 15, 12);
+
+    test('false : dernière connexion il y a 89 jours (< seuil)', () async {
+      final c = _container(
+        state: OnboardingState(
+          completedAt: completed,
+          lastSeenAt: now.subtract(const Duration(days: 89)),
+        ),
+        now: () => now,
+      );
+      addTearDown(c.dispose);
+
+      expect(await c.read(shouldShowOnboardingProvider.future), isFalse);
+    });
+
+    test('true : dernière connexion il y a 91 jours (> seuil)', () async {
+      final c = _container(
+        state: OnboardingState(
+          completedAt: completed,
+          lastSeenAt: now.subtract(const Duration(days: 91)),
+        ),
+        now: () => now,
+      );
+      addTearDown(c.dispose);
+
+      expect(await c.read(shouldShowOnboardingProvider.future), isTrue);
+    });
+
+    test('false : complété mais lastSeenAt absent (pas de repère de dormance)',
+        () async {
+      final c = _container(
+        state: OnboardingState(completedAt: completed),
+        now: () => now,
+      );
+      addTearDown(c.dispose);
+
+      expect(await c.read(shouldShowOnboardingProvider.future), isFalse);
+    });
+  });
+
+  group('onboardingMode — décidé sur un comptage fiable', () {
     test('real : aucune tâche existante', () async {
-      final c = _container(completed: false, classicTasks: const []);
+      final c = _container(state: const OnboardingState());
       addTearDown(c.dispose);
 
       expect(await c.read(onboardingModeProvider.future), OnboardingMode.real);
     });
 
     test('sandbox : au moins une tâche classique', () async {
-      final c = _container(completed: false, classicTasks: [Task(title: 'A')]);
+      final c = _container(
+        state: const OnboardingState(),
+        classicTasks: [Task(title: 'A')],
+      );
       addTearDown(c.dispose);
 
       expect(
@@ -111,8 +157,7 @@ void main() {
       // Le cas qui a causé la corruption : un utilisateur dont toutes les
       // données sont des items de listes doit être classé sandbox.
       final c = _container(
-        completed: false,
-        classicTasks: const [],
+        state: const OnboardingState(),
         lists: [_listWithItems(2)],
       );
       addTearDown(c.dispose);
@@ -125,7 +170,7 @@ void main() {
   group('totalTaskCount', () {
     test('additionne tâches classiques et items de listes', () async {
       final c = _container(
-        completed: false,
+        state: const OnboardingState(),
         classicTasks: [Task(title: 'A'), Task(title: 'B')],
         lists: [_listWithItems(3)],
       );
@@ -135,7 +180,8 @@ void main() {
     });
   });
 
-  group('onboardingMode — attend la fin réelle du chargement des listes (AC5, race)', () {
+  group('onboardingMode — attend la fin réelle du chargement des listes (race)',
+      () {
     // Régression : sans attente de la fin du bootstrap du contrôleur, le
     // `loadLists()` explicite de `ensureListsLoadedProvider` est un no-op
     // silencieux (garde `!controllerInitialized` de l'executor) tant que le
