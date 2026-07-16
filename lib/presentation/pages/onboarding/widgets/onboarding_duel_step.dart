@@ -43,6 +43,16 @@ class OnboardingDuelStep extends StatelessWidget {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleMedium,
           ),
+          // Pont posé avant le tout premier duel : l'utilisateur sait combien de
+          // choix il va faire et qu'il n'y a ni classement ni chiffre (AC3).
+          if (index == 0) ...[
+            const SizedBox(height: 12),
+            Text(
+              l10n.onboardingDuelIntro(total),
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ],
           const SizedBox(height: 24),
           Expanded(child: _buildCard(context, left, right)),
           const SizedBox(height: 16),

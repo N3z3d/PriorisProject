@@ -2489,15 +2489,27 @@
   "@onboardingCaptureHint": {
     "description": "Onboarding capture text field hint"
   },
+  "onboardingCaptureIntro": "Jot down what's on your mind. We'll then help you choose what to start with. Under a minute.",
+  "@onboardingCaptureIntro": {
+    "description": "Short framing shown on the first onboarding screen: what Prioris does and how long it takes"
+  },
   "onboardingArchetypesLabel": "Quick ideas",
   "@onboardingArchetypesLabel": {
     "description": "Label above the archetype suggestion chips"
   },
-  "onboardingTaskCounter": "{count, plural, =0{No tasks yet} =1{1 task} other{{count} tasks}}",
-  "@onboardingTaskCounter": {
-    "description": "Count of captured tasks in the onboarding",
+  "onboardingTaskProgress": "{count} / {required}",
+  "@onboardingTaskProgress": {
+    "description": "Progress toward the task threshold that unlocks the onboarding start button (e.g. 3 / 5)",
     "placeholders": {
-      "count": { "type": "int" }
+      "count": { "type": "int" },
+      "required": { "type": "int" }
+    }
+  },
+  "onboardingTasksRemaining": "{remaining, plural, =1{Add 1 more task to start} other{Add {remaining} more tasks to start}}",
+  "@onboardingTasksRemaining": {
+    "description": "Hint shown while the start button is disabled, stating how many tasks are still needed",
+    "placeholders": {
+      "remaining": { "type": "int" }
     }
   },
   "onboardingStartButton": "Let's go",
@@ -2507,6 +2519,13 @@
   "onboardingDuelQuestion": "Between these two tasks, which one matters most right now?",
   "@onboardingDuelQuestion": {
     "description": "Onboarding duel step question"
+  },
+  "onboardingDuelIntro": "You'll make {total} choices. No ranking, no numbers to manage — you decide.",
+  "@onboardingDuelIntro": {
+    "description": "Introduction shown before the first onboarding duel to set expectations",
+    "placeholders": {
+      "total": { "type": "int" }
+    }
   },
   "onboardingDuelProgress": "Duel {index}/{total}",
   "@onboardingDuelProgress": {
@@ -2520,11 +2539,15 @@
   "@onboardingRevealTitle": {
     "description": "Onboarding reveal step title"
   },
-  "onboardingRevealContinue": "Continue to the app",
+  "onboardingRevealExplanation": "You didn't sort anything — you chose. Here's the task that rose to the top.",
+  "@onboardingRevealExplanation": {
+    "description": "Explains the reveal mechanism: the top task emerged from the user's choices"
+  },
+  "onboardingRevealContinue": "Continue",
   "@onboardingRevealContinue": {
     "description": "Onboarding reveal continue button"
   },
-  "onboardingRevealMarkDone": "Mark as done when it's accomplished",
+  "onboardingRevealMarkDone": "Mark as done",
   "@onboardingRevealMarkDone": {
     "description": "Onboarding reveal mark-as-done button"
   },

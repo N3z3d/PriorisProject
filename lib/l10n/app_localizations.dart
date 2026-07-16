@@ -4188,17 +4188,29 @@ abstract class AppLocalizations {
   /// **'One task per line. Don\'t overthink it.'**
   String get onboardingCaptureHint;
 
+  /// Short framing shown on the first onboarding screen: what Prioris does and how long it takes
+  ///
+  /// In en, this message translates to:
+  /// **'Jot down what\'s on your mind. We\'ll then help you choose what to start with. Under a minute.'**
+  String get onboardingCaptureIntro;
+
   /// Label above the archetype suggestion chips
   ///
   /// In en, this message translates to:
   /// **'Quick ideas'**
   String get onboardingArchetypesLabel;
 
-  /// Count of captured tasks in the onboarding
+  /// Progress toward the task threshold that unlocks the onboarding start button (e.g. 3 / 5)
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =0{No tasks yet} =1{1 task} other{{count} tasks}}'**
-  String onboardingTaskCounter(int count);
+  /// **'{count} / {required}'**
+  String onboardingTaskProgress(int count, int required);
+
+  /// Hint shown while the start button is disabled, stating how many tasks are still needed
+  ///
+  /// In en, this message translates to:
+  /// **'{remaining, plural, =1{Add 1 more task to start} other{Add {remaining} more tasks to start}}'**
+  String onboardingTasksRemaining(int remaining);
 
   /// Button starting the guided duels
   ///
@@ -4212,6 +4224,12 @@ abstract class AppLocalizations {
   /// **'Between these two tasks, which one matters most right now?'**
   String get onboardingDuelQuestion;
 
+  /// Introduction shown before the first onboarding duel to set expectations
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll make {total} choices. No ranking, no numbers to manage — you decide.'**
+  String onboardingDuelIntro(int total);
+
   /// Onboarding duel progress indicator
   ///
   /// In en, this message translates to:
@@ -4224,16 +4242,22 @@ abstract class AppLocalizations {
   /// **'Here\'s what you really want to do first.'**
   String get onboardingRevealTitle;
 
+  /// Explains the reveal mechanism: the top task emerged from the user's choices
+  ///
+  /// In en, this message translates to:
+  /// **'You didn\'t sort anything — you chose. Here\'s the task that rose to the top.'**
+  String get onboardingRevealExplanation;
+
   /// Onboarding reveal continue button
   ///
   /// In en, this message translates to:
-  /// **'Continue to the app'**
+  /// **'Continue'**
   String get onboardingRevealContinue;
 
   /// Onboarding reveal mark-as-done button
   ///
   /// In en, this message translates to:
-  /// **'Mark as done when it\'s accomplished'**
+  /// **'Mark as done'**
   String get onboardingRevealMarkDone;
 
   /// Skip the onboarding flow

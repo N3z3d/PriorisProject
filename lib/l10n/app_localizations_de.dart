@@ -2400,16 +2400,24 @@ class AppLocalizationsDe extends AppLocalizations {
       'Eine Aufgabe pro Zeile. Denk nicht zu lange nach.';
 
   @override
+  String get onboardingCaptureIntro =>
+      'Notiere, was dir im Kopf herumgeht. Wir helfen dir dann bei der Wahl, womit du anfängst. Weniger als eine Minute.';
+
+  @override
   String get onboardingArchetypesLabel => 'Schnelle Ideen';
 
   @override
-  String onboardingTaskCounter(int count) {
+  String onboardingTaskProgress(int count, int required) {
+    return '$count / $required';
+  }
+
+  @override
+  String onboardingTasksRemaining(int remaining) {
     String _temp0 = intl.Intl.pluralLogic(
-      count,
+      remaining,
       locale: localeName,
-      other: '$count Aufgaben',
-      one: '1 Aufgabe',
-      zero: 'Keine Aufgaben',
+      other: 'Füge noch $remaining Aufgaben hinzu, um zu starten',
+      one: 'Füge noch 1 Aufgabe hinzu, um zu starten',
     );
     return '$_temp0';
   }
@@ -2422,6 +2430,11 @@ class AppLocalizationsDe extends AppLocalizations {
       'Welche dieser beiden Aufgaben ist gerade wichtiger?';
 
   @override
+  String onboardingDuelIntro(int total) {
+    return 'Du triffst $total Entscheidungen. Keine Rangliste, keine Zahlen — du entscheidest.';
+  }
+
+  @override
   String onboardingDuelProgress(int index, int total) {
     return 'Duell $index/$total';
   }
@@ -2430,11 +2443,14 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboardingRevealTitle => 'Das willst du wirklich zuerst tun.';
 
   @override
-  String get onboardingRevealContinue => 'Weiter zur App';
+  String get onboardingRevealExplanation =>
+      'Du hast nichts sortiert — du hast gewählt. Das ist die Aufgabe, die nach oben gekommen ist.';
 
   @override
-  String get onboardingRevealMarkDone =>
-      'Als erledigt markieren, wenn es geschafft ist';
+  String get onboardingRevealContinue => 'Weiter';
+
+  @override
+  String get onboardingRevealMarkDone => 'Als erledigt markieren';
 
   @override
   String get onboardingSkip => 'Überspringen';

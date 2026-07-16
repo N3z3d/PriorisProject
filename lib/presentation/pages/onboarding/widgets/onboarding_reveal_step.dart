@@ -37,7 +37,18 @@ class OnboardingRevealStep extends StatelessWidget {
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 24),
-          if (task != null) _buildRevealCard(context, task!),
+          // Le pay-off : relier explicitement les choix au résultat. Gardé sous
+          // `task != null` — sans tâche, « voici ce qui est remonté » n'a pas de
+          // sens (AC4, sans aggraver le cas dégénéré sans carte).
+          if (task != null) ...[
+            Text(
+              l10n.onboardingRevealExplanation,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 16),
+            _buildRevealCard(context, task!),
+          ],
           const SizedBox(height: 32),
           OutlinedButton(
             onPressed: processing ? null : onMarkDone,

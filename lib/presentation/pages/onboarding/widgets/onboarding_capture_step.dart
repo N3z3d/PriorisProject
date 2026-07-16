@@ -66,6 +66,46 @@ class _OnboardingCaptureStepState extends State<OnboardingCaptureStep> {
         l10n.onboardingArchetypeWater,
       ];
 
+  Widget _buildArchetypes(AppLocalizations l10n) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        for (final archetype in _archetypes(l10n))
+          ActionChip(
+            label: Text(archetype),
+            onPressed: () => _appendArchetype(archetype),
+          ),
+      ],
+    );
+  }
+
+  /// Compteur de progression vers le seuil (« 3 / 5 ») + aide contextuelle tant
+  /// que le seuil n'est pas atteint : le bouton grisé cesse d'être muet (AC1).
+  Widget _buildProgress(AppLocalizations l10n) {
+    const required = OnboardingCaptureStep.requiredTasks;
+    final remaining = required - _taskCount;
+    // Numérateur plafonné au seuil : au-delà de 5 tâches on affiche « 5 / 5 »,
+    // pas « 7 / 5 » (le surplus est réel mais illisible comme progression).
+    final shownCount = _taskCount.clamp(0, required);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          l10n.onboardingTaskProgress(shownCount, required),
+          style: Theme.of(context).textTheme.labelLarge,
+        ),
+        if (remaining > 0) ...[
+          const SizedBox(height: 4),
+          Text(
+            l10n.onboardingTasksRemaining(remaining),
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -93,6 +133,11 @@ class _OnboardingCaptureStepState extends State<OnboardingCaptureStep> {
                     l10n.onboardingCaptureTitle,
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.onboardingCaptureIntro,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                   const SizedBox(height: 16),
                   TextField(
                     controller: _controller,
@@ -110,19 +155,9 @@ class _OnboardingCaptureStepState extends State<OnboardingCaptureStep> {
                     style: Theme.of(context).textTheme.labelLarge,
                   ),
                   const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      for (final archetype in _archetypes(l10n))
-                        ActionChip(
-                          label: Text(archetype),
-                          onPressed: () => _appendArchetype(archetype),
-                        ),
-                    ],
-                  ),
+                  _buildArchetypes(l10n),
                   const SizedBox(height: 16),
-                  Text(l10n.onboardingTaskCounter(_taskCount)),
+                  _buildProgress(l10n),
                 ],
               ),
             ),

@@ -2378,16 +2378,24 @@ class AppLocalizationsEs extends AppLocalizations {
       'Una tarea por línea. No le des muchas vueltas.';
 
   @override
+  String get onboardingCaptureIntro =>
+      'Anota lo que tengas en mente. Luego te ayudamos a elegir por dónde empezar. Menos de un minuto.';
+
+  @override
   String get onboardingArchetypesLabel => 'Ideas rápidas';
 
   @override
-  String onboardingTaskCounter(int count) {
+  String onboardingTaskProgress(int count, int required) {
+    return '$count / $required';
+  }
+
+  @override
+  String onboardingTasksRemaining(int remaining) {
     String _temp0 = intl.Intl.pluralLogic(
-      count,
+      remaining,
       locale: localeName,
-      other: '$count tareas',
-      one: '1 tarea',
-      zero: 'Ninguna tarea',
+      other: 'Añade $remaining tareas más para empezar',
+      one: 'Añade 1 tarea más para empezar',
     );
     return '$_temp0';
   }
@@ -2400,6 +2408,11 @@ class AppLocalizationsEs extends AppLocalizations {
       'Entre estas dos tareas, ¿cuál importa más ahora?';
 
   @override
+  String onboardingDuelIntro(int total) {
+    return 'Vas a hacer $total elecciones. Sin clasificación ni números que gestionar: tú decides.';
+  }
+
+  @override
   String onboardingDuelProgress(int index, int total) {
     return 'Duelo $index/$total';
   }
@@ -2409,11 +2422,14 @@ class AppLocalizationsEs extends AppLocalizations {
       'Esto es lo que realmente quieres hacer primero.';
 
   @override
-  String get onboardingRevealContinue => 'Continuar a la app';
+  String get onboardingRevealExplanation =>
+      'No ordenaste nada — elegiste. Esta es la tarea que subió a lo más alto.';
 
   @override
-  String get onboardingRevealMarkDone =>
-      'Marcar como hecho cuando esté logrado';
+  String get onboardingRevealContinue => 'Continuar';
+
+  @override
+  String get onboardingRevealMarkDone => 'Marcar como hecho';
 
   @override
   String get onboardingSkip => 'Omitir';
