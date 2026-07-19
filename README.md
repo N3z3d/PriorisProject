@@ -88,8 +88,12 @@ Android SDK 34+ / iOS 16+
 > **Version Flutter autoritaire : `3.41.7`**, déclarée dans le fichier [`.flutter-version`](.flutter-version)
 > à la racine du dépôt — **source unique de vérité**.
 >
-> - **CI** : `ci.yml` et `deploy-pilot-pages.yml` lisent ce fichier via `flutter-version-file:`
->   (aucune version n'est hardcodée dans un workflow).
+> - **CI** : `ci.yml` et `deploy-pilot-pages.yml` lisent ce fichier dans un step dédié
+>   (`Resolve authoritative Flutter version`) et passent la valeur à `flutter-version:`.
+>   Aucune version n'est hardcodée dans un workflow.
+>   ⚠️ Ne **pas** revenir à `flutter-version-file:` : l'option existe mais n'a pas épinglé la
+>   version lors de l'essai du 2026-07-19 (la CI est repartie sur le dernier stable, 3.44.6),
+>   ce qui a fait passer la suite de 1 à 35 rouges.
 > - **Local** : `puro use stable` (l'environnement `stable` est en 3.41.7).
 >
 > L'environnement local a longtemps tourné en 3.32.8 pendant que la CI était en 3.41.7 : un vert

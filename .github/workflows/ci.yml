@@ -41,10 +41,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Resolve authoritative Flutter version
+      id: flutter
+      run: echo "version=$(cat .flutter-version)" >> "$GITHUB_OUTPUT"
+
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version-file: .flutter-version
+        flutter-version: ${{ steps.flutter.outputs.version }}
         channel: 'stable'
 
     - name: Verify Dart version
@@ -99,10 +103,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Resolve authoritative Flutter version
+      id: flutter
+      run: echo "version=$(cat .flutter-version)" >> "$GITHUB_OUTPUT"
+
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version-file: .flutter-version
+        flutter-version: ${{ steps.flutter.outputs.version }}
         channel: 'stable'
 
     - name: Setup environment file
