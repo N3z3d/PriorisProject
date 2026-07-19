@@ -44,7 +44,7 @@ jobs:
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.41.7'
+        flutter-version-file: .flutter-version
         channel: 'stable'
 
     - name: Verify Dart version
@@ -102,7 +102,7 @@ jobs:
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.41.7'
+        flutter-version-file: .flutter-version
         channel: 'stable'
 
     - name: Setup environment file

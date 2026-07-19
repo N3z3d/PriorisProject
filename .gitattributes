@@ -11,6 +11,9 @@
 *.sh text eol=lf
 *.bat text eol=crlf
 
+# Version Flutter autoritaire : lue octet par octet par subosito/flutter-action
+.flutter-version text eol=lf
+
 # Binary files
 *.png binary
 *.jpg binary

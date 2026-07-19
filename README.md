@@ -68,7 +68,7 @@
 
 ### 🛠️ Technologies
 
-- **Frontend**: Flutter 3.22.0+ / Dart 3.4.0+
+- **Frontend**: Flutter 3.41.7 / Dart 3.11.5
 - **State Management**: Riverpod 2.5.1
 - **Base de données**: Hive 4.0.0 (NoSQL locale)
 - **Cache**: Persistance AES-256 chiffrée
@@ -80,10 +80,22 @@
 ### 📋 Prérequis
 
 ```bash
-Flutter 3.22.0+
-Dart 3.4.0+
+Flutter 3.41.7   # version autoritaire — voir .flutter-version
+Dart 3.11.5      # fourni par Flutter 3.41.7
 Android SDK 34+ / iOS 16+
 ```
+
+> **Version Flutter autoritaire : `3.41.7`**, déclarée dans le fichier [`.flutter-version`](.flutter-version)
+> à la racine du dépôt — **source unique de vérité**.
+>
+> - **CI** : `ci.yml` et `deploy-pilot-pages.yml` lisent ce fichier via `flutter-version-file:`
+>   (aucune version n'est hardcodée dans un workflow).
+> - **Local** : `puro use stable` (l'environnement `stable` est en 3.41.7).
+>
+> L'environnement local a longtemps tourné en 3.32.8 pendant que la CI était en 3.41.7 : un vert
+> local ne garantissait donc pas un vert en CI. Cet écart a été réconcilié le 2026-07-16 (story 11.6).
+> La version ne peut pas redescendre sous 3.41.7 : Flutter 3.32.8 embarque Dart ~3.8, incompatible
+> avec `test_api 0.7.11` qui exige Dart ≥ 3.10.
 
 ### ⚡ Installation & Lancement
 
