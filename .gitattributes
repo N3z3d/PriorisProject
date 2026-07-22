@@ -11,7 +11,8 @@
 *.sh text eol=lf
 *.bat text eol=crlf
 
-# Version Flutter autoritaire : lue octet par octet par subosito/flutter-action
+# Version Flutter autoritaire : lue par le step CI "Resolve authoritative
+# Flutter version" — un CR parasite corromprait la valeur passée à l'action
 .flutter-version text eol=lf
 
 # Binary files

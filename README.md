@@ -2,8 +2,8 @@
 
 > **Application Flutter moderne** pour la gestion de tâches, habitudes et listes personnalisées avec système ELO de classement et suivi avancé de productivité.
 
-[![Flutter](https://img.shields.io/badge/Flutter-3.22.0+-blue.svg)](https://flutter.dev/)
-[![Dart](https://img.shields.io/badge/Dart-3.4.0+-blue.svg)](https://dart.dev/)
+[![Flutter](https://img.shields.io/badge/Flutter-3.41.7-blue.svg)](https://flutter.dev/)
+[![Dart](https://img.shields.io/badge/Dart-3.11.5-blue.svg)](https://dart.dev/)
 [![Version](https://img.shields.io/badge/Version-1.1.0-blue.svg)](CHANGELOG.md)
 [![Quality](https://img.shields.io/badge/Code%20Quality-9.8/10-brightgreen.svg)](https://dart.dev/tools/linter)
 [![Tests](https://img.shields.io/badge/Tests-1715/1801%20(95.2%25)-brightgreen.svg)](docs/STATUS_RELEASE.md)
@@ -91,13 +91,15 @@ Android SDK 34+ / iOS 16+
 > - **CI** : `ci.yml` et `deploy-pilot-pages.yml` lisent ce fichier dans un step dédié
 >   (`Resolve authoritative Flutter version`) et passent la valeur à `flutter-version:`.
 >   Aucune version n'est hardcodée dans un workflow.
->   ⚠️ Ne **pas** revenir à `flutter-version-file:` : l'option existe mais n'a pas épinglé la
->   version lors de l'essai du 2026-07-19 (la CI est repartie sur le dernier stable, 3.44.6),
->   ce qui a fait passer la suite de 1 à 35 rouges.
-> - **Local** : `puro use stable` (l'environnement `stable` est en 3.41.7).
+>   ⚠️ Ne **pas** revenir à `flutter-version-file:` sans re-test préalable : constaté le
+>   2026-07-19 sur le run `29687860114`, l'option n'a pas épinglé la version (CI repartie
+>   sur le dernier stable, 3.44.6 → 1 à 35 rouges). Cause racine non établie — le step de
+>   lecture explicite, lui, valide le format et échoue bruyamment.
+> - **Local** : `puro use prioris-3417` (environnement puro épinglé sur 3.41.7 — ne pas
+>   utiliser `stable`, qui est un canal flottant et dériverait au prochain `puro upgrade`).
 >
 > L'environnement local a longtemps tourné en 3.32.8 pendant que la CI était en 3.41.7 : un vert
-> local ne garantissait donc pas un vert en CI. Cet écart a été réconcilié le 2026-07-16 (story 11.6).
+> local ne garantissait donc pas un vert en CI. Cet écart a été réconcilié le 2026-07-19 (story 11.6).
 > La version ne peut pas redescendre sous 3.41.7 : Flutter 3.32.8 embarque Dart ~3.8, incompatible
 > avec `test_api 0.7.11` qui exige Dart ≥ 3.10.
 

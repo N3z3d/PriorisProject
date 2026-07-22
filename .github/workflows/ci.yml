@@ -43,7 +43,14 @@ jobs:
 
     - name: Resolve authoritative Flutter version
       id: flutter
-      run: echo "version=$(cat .flutter-version)" >> "$GITHUB_OUTPUT"
+      shell: bash
+      run: |
+        version="$(head -n1 .flutter-version | tr -d '[:space:]')"
+        if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          echo "::error::.flutter-version absent, vide ou mal formé (lu : '$version')"
+          exit 1
+        fi
+        echo "version=$version" >> "$GITHUB_OUTPUT"
 
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
@@ -51,8 +58,17 @@ jobs:
         flutter-version: ${{ steps.flutter.outputs.version }}
         channel: 'stable'
 
-    - name: Verify Dart version
-      run: dart --version
+    - name: Verify Flutter version matches .flutter-version
+      shell: bash
+      run: |
+        expected='${{ steps.flutter.outputs.version }}'
+        actual="$(flutter --version | head -n1 | awk '{print $2}')"
+        if [ "$actual" != "$expected" ]; then
+          echo "::error::Flutter $actual installé, $expected attendu (.flutter-version)"
+          exit 1
+        fi
+        echo "✅ Flutter $actual conforme à .flutter-version"
+        dart --version
 
     - name: Setup environment file
       run: |
@@ -105,13 +121,31 @@ jobs:
 
     - name: Resolve authoritative Flutter version
       id: flutter
-      run: echo "version=$(cat .flutter-version)" >> "$GITHUB_OUTPUT"
+      shell: bash
+      run: |
+        version="$(head -n1 .flutter-version | tr -d '[:space:]')"
+        if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          echo "::error::.flutter-version absent, vide ou mal formé (lu : '$version')"
+          exit 1
+        fi
+        echo "version=$version" >> "$GITHUB_OUTPUT"
 
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
         flutter-version: ${{ steps.flutter.outputs.version }}
         channel: 'stable'
+
+    - name: Verify Flutter version matches .flutter-version
+      shell: bash
+      run: |
+        expected='${{ steps.flutter.outputs.version }}'
+        actual="$(flutter --version | head -n1 | awk '{print $2}')"
+        if [ "$actual" != "$expected" ]; then
+          echo "::error::Flutter $actual installé, $expected attendu (.flutter-version)"
+          exit 1
+        fi
+        echo "✅ Flutter $actual conforme à .flutter-version"
 
     - name: Setup environment file
       run: |
