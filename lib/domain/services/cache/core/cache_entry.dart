@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:prioris/domain/services/cache/interfaces/cache_system_interfaces.dart';
 
 class CacheEntry implements ICacheEntry {
+  /// [now] : horloge injectable pour des tests déterministes (défaut : DateTime.now)
   CacheEntry({
     required this.value,
     required this.sizeBytes,
@@ -13,12 +14,16 @@ class CacheEntry implements ICacheEntry {
     DateTime? createdAt,
     DateTime? lastAccessed,
     DateTime? expiresAt,
+    DateTime Function()? now,
   })  : priority = priority.clamp(0, 100),
         frequency = max(1, frequency),
-        _createdAt = createdAt ?? DateTime.now(),
-        _lastAccessed = lastAccessed ?? DateTime.now(),
-        _expiresAt =
-            expiresAt ?? (ttl == null ? null : (createdAt ?? DateTime.now()).add(ttl));
+        _now = now ?? DateTime.now,
+        _createdAt = createdAt ?? (now ?? DateTime.now)(),
+        _lastAccessed = lastAccessed ?? (now ?? DateTime.now)(),
+        _expiresAt = expiresAt ??
+            (ttl == null
+                ? null
+                : (createdAt ?? (now ?? DateTime.now)()).add(ttl));
 
   @override
   final dynamic value;
@@ -32,6 +37,7 @@ class CacheEntry implements ICacheEntry {
   @override
   int frequency;
 
+  final DateTime Function() _now;
   final DateTime _createdAt;
   DateTime _lastAccessed;
   DateTime? _expiresAt;
@@ -47,11 +53,11 @@ class CacheEntry implements ICacheEntry {
 
   @override
   bool get isExpired =>
-      _expiresAt != null && DateTime.now().isAfter(_expiresAt!);
+      _expiresAt != null && _now().isAfter(_expiresAt!);
 
   @override
   void updateAccess() {
-    _lastAccessed = DateTime.now();
+    _lastAccessed = _now();
   }
 
   @override
@@ -62,7 +68,7 @@ class CacheEntry implements ICacheEntry {
 
   @override
   int get ageInSeconds {
-    final diffMs = DateTime.now().difference(_createdAt).inMilliseconds;
+    final diffMs = _now().difference(_createdAt).inMilliseconds;
     final seconds = (diffMs / 1000).ceil();
     return max(1, seconds);
   }
@@ -82,7 +88,8 @@ class CacheEntry implements ICacheEntry {
       frequency: frequency,
       createdAt: _createdAt,
       lastAccessed: _lastAccessed,
-      expiresAt: ttl == null ? null : DateTime.now().add(ttl),
+      expiresAt: ttl == null ? null : _now().add(ttl),
+      now: _now,
     );
   }
 

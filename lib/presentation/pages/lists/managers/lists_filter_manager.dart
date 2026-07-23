@@ -10,6 +10,11 @@ import '../interfaces/lists_managers_interfaces.dart';
 /// **Open/Closed Principle (OCP)** : Extensible pour de nouveaux filtres sans modification
 /// **Performance optimized** : Cache et optimisations pour grandes collections
 class ListsFilterManager implements IListsFilterManager {
+  /// [now] : horloge injectable pour des tests déterministes (défaut : DateTime.now)
+  ListsFilterManager({DateTime Function()? now}) : _now = now ?? DateTime.now;
+
+  final DateTime Function() _now;
+
   // === Cache pour améliorer les performances ===
   final Map<String, List<CustomList>> _filterCache = {};
   final Map<String, DateTime> _cacheTimestamps = {};
@@ -159,7 +164,7 @@ class ListsFilterManager implements IListsFilterManager {
   List<CustomList> filterByDate(List<CustomList> lists, String? dateFilter) {
     if (dateFilter == null || dateFilter.isEmpty) return lists;
 
-    final now = DateTime.now();
+    final now = _now();
     final today = DateTime(now.year, now.month, now.day);
 
     return lists.where((list) {
@@ -277,7 +282,7 @@ class ListsFilterManager implements IListsFilterManager {
     if (timestamp == null) return null;
 
     // Vérifier si le cache n'a pas expiré
-    if (DateTime.now().difference(timestamp) > _cacheTimeout) {
+    if (_now().difference(timestamp) > _cacheTimeout) {
       _filterCache.remove(key);
       _cacheTimestamps.remove(key);
       return null;
@@ -289,7 +294,7 @@ class ListsFilterManager implements IListsFilterManager {
   /// Met un résultat en cache
   void _putInCache(String key, List<CustomList> result) {
     _filterCache[key] = List.from(result); // Copie défensive
-    _cacheTimestamps[key] = DateTime.now();
+    _cacheTimestamps[key] = _now();
 
     // Nettoyage du cache si trop grand
     if (_filterCache.length > 100) {
@@ -299,7 +304,7 @@ class ListsFilterManager implements IListsFilterManager {
 
   /// Nettoie les entrées expirées du cache
   void _cleanupExpiredCache() {
-    final now = DateTime.now();
+    final now = _now();
     final expiredKeys = <String>[];
 
     for (final entry in _cacheTimestamps.entries) {

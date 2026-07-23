@@ -141,51 +141,59 @@ class PointsCalculationService {
   }
 
   /// Calcule les points par jour (moyenne sur 7 jours)
-  /// 
+  ///
   /// [habits] : Liste des habitudes
   /// [tasks] : Liste des tâches
+  /// [now] : horloge injectable pour des tests déterministes (défaut : DateTime.now())
   /// Retourne : Points moyens par jour
-  static double calculateAveragePointsPerDay(List<Habit> habits, List<Task> tasks) {
+  static double calculateAveragePointsPerDay(List<Habit> habits, List<Task> tasks, {DateTime? now}) {
     if (habits.isEmpty && tasks.isEmpty) return 0.0;
-    
+    final reference = now ?? DateTime.now();
+
     // Calculer les points basés sur les taux de réussite des habitudes
     double habitPointsPerDay = 0.0;
     if (habits.isNotEmpty) {
       habitPointsPerDay = habits
-          .map((habit) => habit.getSuccessRate() * habitPoints)
+          .map((habit) => habit.getSuccessRate(now: reference) * habitPoints)
           .fold(0.0, (a, b) => a + b);
     }
-    
+
     // Calculer les points des tâches complétées récemment (7 derniers jours)
-    final now = DateTime.now();
     final recentTaskPoints = tasks
-        .where((task) => task.isCompleted && 
+        .where((task) => task.isCompleted &&
                         task.completedAt != null &&
-                        task.completedAt!.isAfter(now.subtract(const Duration(days: 7))))
+                        task.completedAt!.isAfter(reference.subtract(const Duration(days: 7))))
         .length * completedTaskPoints;
-    
+
     return (habitPointsPerDay + recentTaskPoints) / 7;
   }
 
   /// Calcule les points de la semaine en cours
-  /// 
+  ///
   /// [habits] : Liste des habitudes
   /// [tasks] : Liste des tâches
+  /// [now] : horloge injectable pour des tests déterministes (défaut : DateTime.now())
   /// Retourne : Points de la semaine en cours
-  static int calculateWeeklyPoints(List<Habit> habits, List<Task> tasks) {
+  static int calculateWeeklyPoints(List<Habit> habits, List<Task> tasks, {DateTime? now}) {
     if (habits.isEmpty && tasks.isEmpty) return 0;
-    
+    final reference = now ?? DateTime.now();
+
     // Points des habitudes basés sur le taux de réussite de la semaine
     int habitPointsValue = 0;
     if (habits.isNotEmpty) {
       habitPointsValue = habits
-          .map((habit) => (habit.getSuccessRate() * habitPoints).round())
+          .map((habit) => (habit.getSuccessRate(now: reference) * habitPoints).round())
           .reduce((a, b) => a + b);
     }
-    
-    // Points des tâches complétées cette semaine
-    final now = DateTime.now();
-    final weekStart = now.subtract(Duration(days: now.weekday - 1));
+
+    // Points des tâches complétées cette semaine.
+    // Tronqué à minuit : sans troncature, une tâche complétée le lundi
+    // avant l'heure du run était exclue de sa propre semaine (bug du lundi).
+    final weekStart = DateTime(
+      reference.year,
+      reference.month,
+      reference.day - (reference.weekday - 1),
+    );
     final weeklyTaskPoints = tasks
         .where((task) => task.isCompleted && 
                         task.completedAt != null &&
@@ -196,24 +204,25 @@ class PointsCalculationService {
   }
 
   /// Calcule les points du mois en cours
-  /// 
+  ///
   /// [habits] : Liste des habitudes
   /// [tasks] : Liste des tâches
+  /// [now] : horloge injectable pour des tests déterministes (défaut : DateTime.now())
   /// Retourne : Points du mois en cours
-  static int calculateMonthlyPoints(List<Habit> habits, List<Task> tasks) {
+  static int calculateMonthlyPoints(List<Habit> habits, List<Task> tasks, {DateTime? now}) {
     if (habits.isEmpty && tasks.isEmpty) return 0;
-    
+    final reference = now ?? DateTime.now();
+
     // Points des habitudes basés sur le taux de réussite du mois
     int habitPointsValue = 0;
     if (habits.isNotEmpty) {
       habitPointsValue = habits
-          .map((habit) => (habit.getSuccessRate() * habitPoints).round())
+          .map((habit) => (habit.getSuccessRate(now: reference) * habitPoints).round())
           .reduce((a, b) => a + b);
     }
-    
+
     // Points des tâches complétées ce mois
-    final now = DateTime.now();
-    final monthStart = DateTime(now.year, now.month, 1);
+    final monthStart = DateTime(reference.year, reference.month, 1);
     final monthlyTaskPoints = tasks
         .where((task) => task.isCompleted && 
                         task.completedAt != null &&

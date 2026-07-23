@@ -211,12 +211,13 @@ class Habit extends HiveObject {
   }
 
   // Calculer le taux de réussite (7 derniers jours)
-  double getSuccessRate({int days = 7}) {
-    final now = DateTime.now();
+  // [now] : horloge injectable pour des tests déterministes (défaut : DateTime.now())
+  double getSuccessRate({int days = 7, DateTime? now}) {
+    final reference = now ?? DateTime.now();
     var successfulDays = 0;
-    
+
     for (int i = 0; i < days; i++) {
-      final date = now.subtract(Duration(days: i));
+      final date = reference.subtract(Duration(days: i));
       final dateKey = _getDateKey(date);
       final value = completions[dateKey];
       
