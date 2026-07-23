@@ -234,16 +234,13 @@ void main() {
         expect(result, equals(0.0));
       });
 
-      test('should calculate average points per day', () {
-        final now = DateTime.now();
+      test('should calculate average points per day with fixed clock', () {
+        // Horloge fixe : mercredi 22 juillet 2026, 14h00
+        final now = DateTime(2026, 7, 22, 14, 0);
         final habit = Habit(name: 'Habit 1', type: HabitType.binary);
-        
-        // Simuler 100% de réussite sur 7 jours
-        for (int i = 0; i < 7; i++) {
-          final date = now.subtract(Duration(days: i));
-          final dateKey = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-          habit.completions[dateKey] = true;
-        }
+
+        // 100% de réussite sur les 7 jours précédant l'horloge fixe
+        _seedCompletions(habit, from: now, days: 7);
 
         final task = Task(
           title: 'Task 1',
@@ -251,13 +248,28 @@ void main() {
           completedAt: now.subtract(const Duration(days: 3)),
         );
 
-        final result = PointsCalculationService.calculateAveragePointsPerDay([habit], [task]);
-        
+        final result = PointsCalculationService
+            .calculateAveragePointsPerDay([habit], [task], now: now);
+
         // Habitude : 100% * 50 = 50 points / 7 jours = 7.14
         // Tâche : 25 points / 7 jours = 3.57
         // Total : ~10.71 points par jour
         expect(result, greaterThan(10.0));
         expect(result, lessThan(11.0));
+      });
+
+      test('should exclude tasks completed more than 7 days before the clock', () {
+        final now = DateTime(2026, 7, 22, 14, 0);
+        final oldTask = Task(
+          title: 'Old task',
+          isCompleted: true,
+          completedAt: now.subtract(const Duration(days: 8)),
+        );
+
+        final result = PointsCalculationService
+            .calculateAveragePointsPerDay([], [oldTask], now: now);
+
+        expect(result, equals(0.0));
       });
     });
 
@@ -267,26 +279,71 @@ void main() {
         expect(result, equals(0));
       });
 
-      test('should calculate weekly points', () {
-        final now = DateTime.now();
-        final habit = Habit(name: 'Habit 1', type: HabitType.binary);
-        
-        // Simuler 100% de réussite sur 7 jours
-        for (int i = 0; i < 7; i++) {
-          final date = now.subtract(Duration(days: i));
-          final dateKey = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-          habit.completions[dateKey] = true;
-        }
-
-        // Créer une tâche complétée dans la semaine en cours (aujourd'hui)
+      test('should include a task completed monday morning when run monday afternoon', () {
+        // Bug du lundi : weekStart non tronqué à minuit excluait toute tâche
+        // complétée le lundi avant l'heure du run.
+        final mondayAfternoon = DateTime(2026, 7, 20, 14, 0);
         final task = Task(
           title: 'Task 1',
           isCompleted: true,
-          completedAt: now,
+          completedAt: DateTime(2026, 7, 20, 9, 0),
         );
 
-        final result = PointsCalculationService.calculateWeeklyPoints([habit], [task]);
-        
+        final result = PointsCalculationService
+            .calculateWeeklyPoints([], [task], now: mondayAfternoon);
+
+        expect(result, equals(25));
+      });
+
+      test('should include a task completed just after monday midnight', () {
+        // Passage de minuit : run à 00h05 le lundi, tâche complétée à 00h01
+        final justAfterMidnight = DateTime(2026, 7, 20, 0, 5);
+        final task = Task(
+          title: 'Task 1',
+          isCompleted: true,
+          completedAt: DateTime(2026, 7, 20, 0, 1),
+        );
+
+        final result = PointsCalculationService
+            .calculateWeeklyPoints([], [task], now: justAfterMidnight);
+
+        expect(result, equals(25));
+      });
+
+      test('should exclude tasks completed before the current week', () {
+        // Mercredi 22 juillet 2026 : la semaine commence le lundi 20 à minuit
+        final wednesday = DateTime(2026, 7, 22, 14, 0);
+        final sundayTask = Task(
+          title: 'Sunday task',
+          isCompleted: true,
+          completedAt: DateTime(2026, 7, 19, 23, 0),
+        );
+        final mondayTask = Task(
+          title: 'Monday task',
+          isCompleted: true,
+          completedAt: DateTime(2026, 7, 20, 0, 30),
+        );
+
+        final result = PointsCalculationService
+            .calculateWeeklyPoints([], [sundayTask, mondayTask], now: wednesday);
+
+        expect(result, equals(25));
+      });
+
+      test('should calculate weekly points with habits and tasks', () {
+        final now = DateTime(2026, 7, 22, 14, 0);
+        final habit = Habit(name: 'Habit 1', type: HabitType.binary);
+        _seedCompletions(habit, from: now, days: 7);
+
+        final task = Task(
+          title: 'Task 1',
+          isCompleted: true,
+          completedAt: DateTime(2026, 7, 21, 10, 0),
+        );
+
+        final result = PointsCalculationService
+            .calculateWeeklyPoints([habit], [task], now: now);
+
         // Habitude : 100% * 50 = 50 points
         // Tâche : 25 points (complétée dans la semaine)
         // Total : 75 points
@@ -300,33 +357,66 @@ void main() {
         expect(result, equals(0));
       });
 
-      test('should calculate monthly points', () {
-        final now = DateTime.now();
+      test('should calculate monthly points with fixed clock', () {
+        final now = DateTime(2026, 7, 15, 14, 0);
         final habit = Habit(name: 'Habit 1', type: HabitType.binary);
-        
-        // Simuler 100% de réussite sur 30 jours
-        for (int i = 0; i < 30; i++) {
-          final date = now.subtract(Duration(days: i));
-          final dateKey = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-          habit.completions[dateKey] = true;
-        }
+        _seedCompletions(habit, from: now, days: 7);
 
-        // Tâche complétée aujourd'hui — garantit qu'elle est dans le mois en cours
-        // (completedAt: now.subtract(days: 5) échoue du 1er au 5 du mois)
         final task = Task(
           title: 'Task 1',
           isCompleted: true,
-          completedAt: now,
+          completedAt: DateTime(2026, 7, 10, 9, 0),
         );
 
-        final result = PointsCalculationService.calculateMonthlyPoints([habit], [task]);
+        final result = PointsCalculationService
+            .calculateMonthlyPoints([habit], [task], now: now);
 
         // Habitude : 100% * 50 = 50 points
         // Tâche : 25 points
         // Total : 75 points
         expect(result, equals(75));
       });
+
+      test('should include a task completed on the 1st when run on the 1st', () {
+        // 1er du mois : le mois commence le 1er à minuit
+        final firstOfMonth = DateTime(2026, 7, 1, 9, 0);
+        final task = Task(
+          title: 'Task 1',
+          isCompleted: true,
+          completedAt: DateTime(2026, 7, 1, 8, 0),
+        );
+
+        final result = PointsCalculationService
+            .calculateMonthlyPoints([], [task], now: firstOfMonth);
+
+        expect(result, equals(25));
+      });
+
+      test('should exclude tasks completed the previous month', () {
+        final now = DateTime(2026, 7, 15, 14, 0);
+        final juneTask = Task(
+          title: 'June task',
+          isCompleted: true,
+          completedAt: DateTime(2026, 6, 30, 23, 0),
+        );
+
+        final result = PointsCalculationService
+            .calculateMonthlyPoints([], [juneTask], now: now);
+
+        expect(result, equals(0));
+      });
     });
   });
-} 
+}
+
+/// Remplit [habit] avec 100% de réussite sur les [days] jours
+/// précédant [from] (inclus), avec des clés de date déterministes.
+void _seedCompletions(Habit habit, {required DateTime from, required int days}) {
+  for (int i = 0; i < days; i++) {
+    final date = from.subtract(Duration(days: i));
+    final dateKey =
+        '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+    habit.completions[dateKey] = true;
+  }
+}
 

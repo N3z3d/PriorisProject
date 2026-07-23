@@ -24,22 +24,16 @@ void main() {
 
       test('should create entry with TTL and expiration', () {
         const ttl = Duration(minutes: 5);
+        final fixedNow = DateTime(2026, 7, 22, 14, 0);
         final entry = CacheEntry(
           value: 'test',
           sizeBytes: 100,
           ttl: ttl,
+          now: () => fixedNow,
         );
 
-        expect(entry.expiresAt, isNotNull);
         expect(entry.isExpired, isFalse);
-
-        // Verify expiration is approximately correct (within 1 second tolerance)
-        final expectedExpiry = DateTime.now().add(ttl);
-        final actualExpiry = entry.expiresAt!;
-        expect(
-          actualExpiry.difference(expectedExpiry).abs().inSeconds,
-          lessThan(1),
-        );
+        expect(entry.expiresAt, equals(fixedNow.add(ttl)));
       });
 
       test('should create entry without TTL (no expiration)', () {
@@ -55,23 +49,23 @@ void main() {
 
     group('Access Tracking', () {
       test('should update access time when updateAccess is called', () {
-        final entry = CacheEntry(value: 'test', sizeBytes: 100);
+        var current = DateTime(2026, 7, 22, 14, 0);
+        final entry = CacheEntry(value: 'test', sizeBytes: 100, now: () => current);
         final originalAccess = entry.lastAccessed;
 
-        // Small delay to ensure different timestamp
-        Future.delayed(const Duration(milliseconds: 1), () {
-          entry.updateAccess();
-          expect(entry.lastAccessed.isAfter(originalAccess), isTrue);
-        });
+        current = current.add(const Duration(milliseconds: 1));
+        entry.updateAccess();
+
+        expect(entry.lastAccessed.isAfter(originalAccess), isTrue);
       });
 
-      test('should increment frequency and update access', () async {
-        final entry = CacheEntry(value: 'test', sizeBytes: 100);
+      test('should increment frequency and update access', () {
+        var current = DateTime(2026, 7, 22, 14, 0);
+        final entry = CacheEntry(value: 'test', sizeBytes: 100, now: () => current);
         final originalFrequency = entry.frequency;
         final originalAccess = entry.lastAccessed;
 
-        // Small delay to ensure different timestamp
-        await Future.delayed(const Duration(milliseconds: 1));
+        current = current.add(const Duration(milliseconds: 1));
         entry.incrementFrequency();
 
         expect(entry.frequency, equals(originalFrequency + 1));
@@ -81,29 +75,30 @@ void main() {
 
     group('Expiration', () {
       test('should detect expired entries', () {
+        var current = DateTime(2026, 7, 22, 14, 0);
         final entry = CacheEntry(
           value: 'test',
           sizeBytes: 100,
           ttl: const Duration(milliseconds: 1),
+          now: () => current,
         );
 
         // Entry should not be expired immediately
         expect(entry.isExpired, isFalse);
 
-        // Wait for expiration
-        return Future.delayed(const Duration(milliseconds: 2), () {
-          expect(entry.isExpired, isTrue);
-        });
+        // Avance d'horloge simulée au-delà du TTL
+        current = current.add(const Duration(milliseconds: 2));
+        expect(entry.isExpired, isTrue);
       });
 
       test('should not expire entries without TTL', () {
-        final entry = CacheEntry(value: 'test', sizeBytes: 100);
+        var current = DateTime(2026, 7, 22, 14, 0);
+        final entry = CacheEntry(value: 'test', sizeBytes: 100, now: () => current);
         expect(entry.isExpired, isFalse);
 
-        // Even after some time, should not expire
-        return Future.delayed(const Duration(milliseconds: 10), () {
-          expect(entry.isExpired, isFalse);
-        });
+        // Même bien plus tard, pas d'expiration sans TTL
+        current = current.add(const Duration(days: 365));
+        expect(entry.isExpired, isFalse);
       });
     });
 
@@ -150,22 +145,24 @@ void main() {
       });
 
       test('should increase age over time', () {
-        final entry = CacheEntry(value: 'test', sizeBytes: 100);
+        var current = DateTime(2026, 7, 22, 14, 0);
+        final entry = CacheEntry(value: 'test', sizeBytes: 100, now: () => current);
         final initialAge = entry.ageInSeconds;
 
-        return Future.delayed(const Duration(seconds: 1), () {
-          expect(entry.ageInSeconds, greaterThan(initialAge));
-        });
+        current = current.add(const Duration(seconds: 2));
+        expect(entry.ageInSeconds, greaterThan(initialAge));
       });
     });
 
     group('Entry Copying', () {
       test('should create copy with new TTL', () {
+        final fixedNow = DateTime(2026, 7, 22, 14, 0);
         final original = CacheEntry(
           value: 'test',
           sizeBytes: 100,
           priority: 5,
           frequency: 3,
+          now: () => fixedNow,
         );
 
         const newTTL = Duration(hours: 1);
@@ -175,7 +172,8 @@ void main() {
         expect(copy.sizeBytes, equals(original.sizeBytes));
         expect(copy.priority, equals(original.priority));
         expect(copy.frequency, equals(original.frequency));
-        expect(copy.expiresAt, isNotNull);
+        // L'horloge injectée est propagée à la copie
+        expect(copy.expiresAt, equals(fixedNow.add(newTTL)));
       });
 
       test('should create copy without TTL', () {

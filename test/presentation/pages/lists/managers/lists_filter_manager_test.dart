@@ -187,21 +187,43 @@ void main() {
     });
 
     group('Date Filtering', () {
-      test('filterByDate filters by today', () {
-        final todayList = todoList.copyWith(createdAt: DateTime.now());
-        final listsWithToday = [todayList, shoppingList];
+      // Horloge fixe injectée : les verdicts ne dépendent plus du jour du run
+      final fixedNow = DateTime(2026, 7, 22, 14, 0);
+      late ListsFilterManager fixedClockManager;
 
-        final result = filterManager.filterByDate(listsWithToday, 'today');
+      setUp(() {
+        fixedClockManager = ListsFilterManager(now: () => fixedNow);
+      });
+
+      test('filterByDate filters by today using the injected clock', () {
+        final todayList = todoList.copyWith(createdAt: DateTime(2026, 7, 22, 9, 0));
+        final olderList = shoppingList.copyWith(createdAt: DateTime(2026, 7, 15, 9, 0));
+
+        final result = fixedClockManager.filterByDate([todayList, olderList], 'today');
 
         expect(result, hasLength(1));
         expect(result.first.id, todayList.id);
       });
 
-      test('filterByDate filters by week', () {
-        final result = filterManager.filterByDate(testLists, 'week');
+      test('filterByDate excludes a list created before a midnight crossing', () {
+        // Scénario du flaky : liste créée à 23h59, filtre exécuté à 00h01
+        final justAfterMidnight =
+            ListsFilterManager(now: () => DateTime(2026, 7, 23, 0, 1));
+        final lateList = todoList.copyWith(createdAt: DateTime(2026, 7, 22, 23, 59));
 
-        // Lists created within the last week
-        expect(result.length, greaterThan(0));
+        final result = justAfterMidnight.filterByDate([lateList], 'today');
+
+        expect(result, isEmpty);
+      });
+
+      test('filterByDate filters by week using the injected clock', () {
+        final recentList = todoList.copyWith(createdAt: DateTime(2026, 7, 20));
+        final oldList = shoppingList.copyWith(createdAt: DateTime(2026, 7, 1));
+
+        final result = fixedClockManager.filterByDate([recentList, oldList], 'week');
+
+        expect(result, hasLength(1));
+        expect(result.first.id, recentList.id);
       });
 
       test('filterByDate returns all for null filter', () {
@@ -326,6 +348,20 @@ void main() {
         expect(stats['cacheHits'], 1);
         expect(stats['cacheMisses'], 2);
         expect(stats['hitRate'], closeTo(0.33, 0.1));
+      });
+
+      test('cached results expire after the TTL when the clock advances', () {
+        var current = DateTime(2026, 7, 22, 14, 0);
+        final manager = ListsFilterManager(now: () => current);
+        final state = ListsState(lists: testLists, searchQuery: 'work');
+
+        manager.applyFilters(testLists, state);
+        current = current.add(const Duration(minutes: 6)); // TTL = 5 min
+        manager.applyFilters(testLists, state);
+
+        final stats = manager.getCacheStats();
+        expect(stats['cacheHits'], 0);
+        expect(stats['cacheMisses'], 2);
       });
 
       test('resetStats clears performance statistics', () {
