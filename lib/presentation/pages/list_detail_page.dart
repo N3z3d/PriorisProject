@@ -1,11 +1,9 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prioris/data/providers/lists_controller_provider.dart';
 import 'package:prioris/domain/models/core/entities/custom_list.dart';
 import 'package:prioris/domain/models/core/entities/list_item.dart';
 import 'package:prioris/domain/services/id_generation_service.dart';
-import 'package:prioris/domain/services/text/text_normalization_service.dart';
 import 'package:prioris/l10n/app_localizations.dart';
 import 'package:prioris/presentation/pages/lists/models/task_sort_field.dart';
 import 'package:prioris/presentation/pages/lists/widgets/list_detail_header.dart';
@@ -18,9 +16,9 @@ import 'package:prioris/presentation/theme/app_theme.dart';
 import 'package:prioris/domain/services/duplicate_detection_service.dart';
 import 'package:prioris/infrastructure/services/import_interrupt_service.dart';
 import 'package:prioris/presentation/pages/lists/services/list_detail_item_service.dart';
+import 'package:prioris/presentation/pages/lists/services/list_items_sorter.dart';
 import 'package:prioris/presentation/widgets/dialogs/bulk_add_dialog.dart';
 import 'package:prioris/presentation/widgets/dialogs/duplicate_warning_dialog.dart';
-import 'package:uuid/uuid.dart';
 
 /// Page de dÃ©tail d'une liste personnalisÃ©e
 ///
@@ -50,10 +48,16 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
   @override
   void initState() {
     super.initState();
-    _baseRandomSeed = _normalizeSeed(widget.list.id.hashCode);
+    _baseRandomSeed = ListItemsSorter.normalizeSeed(widget.list.id.hashCode);
     _randomSeed = _baseRandomSeed;
     WidgetsBinding.instance.addPostFrameCallback((_) => _checkForPendingImport());
   }
+
+  ListDetailItemService get _itemService => ListDetailItemService(
+        context: context,
+        ref: ref,
+        listId: widget.list.id,
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +137,12 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
         searchQuery: _searchQuery,
       );
     }
-    final sortedItems = _applySorting(filteredItems);
+    final sortedItems = const ListItemsSorter().sort(
+      filteredItems,
+      _sortField,
+      isAscending: _isAscending,
+      randomSeed: _randomSeed,
+    );
     return Column(
       children: [
         ListSortToolbar(
@@ -145,13 +154,9 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
               // FIX: When selecting random, shuffle immediately
               // When re-selecting random (already selected), reshuffle
               if (field == TaskSortField.random) {
-                if (_sortField == TaskSortField.random) {
-                  // Already random: reshuffle
-                  _reshuffleRandomSeed();
-                } else {
-                  // First time selecting random: reset to base seed
-                  _resetRandomSeed();
-                }
+                _randomSeed = _sortField == TaskSortField.random
+                    ? ListItemsSorter.reshuffleSeed(_baseRandomSeed)
+                    : _baseRandomSeed;
               }
               _sortField = field;
               if (field == TaskSortField.elo) {
@@ -169,8 +174,8 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
           child: ListItemsListView(
             items: sortedItems,
             syncingItems: syncingItems,
-            onEdit: _showRenameItemDialog,
-            onDelete: _confirmDeleteItem,
+            onEdit: _itemService.showRenameItemDialog,
+            onDelete: _itemService.confirmDeleteItem,
             onToggleCompletion: _toggleItemCompletion,
             onMenuAction: _handleItemAction,
           ),
@@ -428,46 +433,6 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
     Navigator.of(context).pop(); // Retour Ã  la page prÃ©cÃ©dente
   }
 
-  /// Confirme la suppression d'un Ã©lÃ©ment
-  void _confirmDeleteItem(ListItem item) {
-    final l10n = AppLocalizations.of(context);
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title:
-            Text(l10n?.listConfirmDeleteItemTitle ?? 'Supprimer l\'Ã©lÃ©ment'),
-        content: Text(
-          l10n?.listConfirmDeleteItemMessage(item.title) ??
-              'ÃŠtes-vous sÃ»r de vouloir supprimer "${item.title}" ?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(l10n?.cancel ?? 'Annuler'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              _deleteItem(item);
-            },
-            child: Text(
-              l10n?.listDeleteConfirm ?? 'Supprimer',
-              style: const TextStyle(color: Colors.red),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Supprime un ?l?ment
-  /// Supprime un Ã©lÃ©ment
-  void _deleteItem(ListItem item) {
-    ref
-        .read(listsControllerProvider.notifier)
-        .removeItemFromList(widget.list.id, item.id);
-  }
-
   Future<void> _toggleItemCompletion(ListItem item) async {
     final updatedItem = item.isCompleted
         ? item.copyWith(
@@ -483,128 +448,17 @@ class _ListDetailPageState extends ConsumerState<ListDetailPage> {
         .updateListItem(widget.list.id, updatedItem);
   }
 
-  List<ListItem> _applySorting(List<ListItem> items) {
-    final sorted = [...items];
-    switch (_sortField) {
-      case TaskSortField.elo:
-        sorted.sort((a, b) => _isAscending
-            ? a.eloScore.compareTo(b.eloScore)
-            : b.eloScore.compareTo(a.eloScore));
-        break;
-      case TaskSortField.name:
-        // FIX: Use TextNormalizationService for accent-insensitive sorting
-        const normalizer = TextNormalizationService();
-        sorted.sort((a, b) {
-          final comparison =
-              normalizer.compareIgnoringAccents(a.title, b.title);
-          return _isAscending ? comparison : -comparison;
-        });
-        break;
-      case TaskSortField.random:
-        final random = Random(_randomSeed);
-        for (var i = sorted.length - 1; i > 0; i--) {
-          final j = random.nextInt(i + 1);
-          final tmp = sorted[i];
-          sorted[i] = sorted[j];
-          sorted[j] = tmp;
-        }
-        break;
-    }
-    return sorted;
-  }
-
   void _handleItemAction(String action, ListItem item) {
     switch (action) {
       case 'rename':
-        _showRenameItemDialog(item);
+        _itemService.showRenameItemDialog(item);
         break;
       case 'move':
-        _showMoveItemDialog(item);
+        _itemService.showMoveItemDialog(item);
         break;
       case 'duplicate':
-        _duplicateItem(item);
+        _itemService.duplicateItem(item);
         break;
-    }
-  }
-
-  int _normalizeSeed(int rawSeed) {
-    final normalized = rawSeed & 0x7fffffff;
-    return normalized == 0 ? 1 : normalized;
-  }
-
-  void _resetRandomSeed() {
-    _randomSeed = _baseRandomSeed;
-  }
-
-  void _reshuffleRandomSeed() {
-    final salt = DateTime.now().microsecondsSinceEpoch & 0x7fffffff;
-    _randomSeed = _normalizeSeed(_baseRandomSeed ^ salt);
-  }
-
-  Future<void> _showRenameItemDialog(ListItem item) async {
-    final l10n = AppLocalizations.of(context);
-    final controller = TextEditingController(text: item.title);
-    final result = await showDialog<String>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n?.listRenameDialogTitle ?? "Renommer l'élément"),
-        content: TextField(
-          controller: controller,
-          decoration: InputDecoration(
-            labelText: l10n?.listRenameDialogLabel ?? "Nom de l'élément",
-          ),
-          autofocus: true,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(l10n?.cancel ?? "Annuler"),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(controller.text.trim()),
-            child: Text(l10n?.save ?? "Enregistrer"),
-          ),
-        ],
-      ),
-    );
-    if (result == null || result.isEmpty || result == item.title) return;
-    final updated = item.copyWith(title: result);
-    await ref
-        .read(listsControllerProvider.notifier)
-        .updateListItem(widget.list.id, updated);
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n?.listRenameSaved ?? "Élément renommé."),
-        ),
-      );
-    }
-  }
-
-  Future<void> _showMoveItemDialog(ListItem item) async {
-    await ListDetailItemService(
-      context: context,
-      ref: ref,
-      listId: widget.list.id,
-    ).showMoveItemDialog(item);
-  }
-
-  Future<void> _duplicateItem(ListItem item) async {
-    final l10n = AppLocalizations.of(context);
-    final controller = ref.read(listsControllerProvider.notifier);
-    final duplicated = item.copyWith(
-      id: const Uuid().v4(),
-      title: "${item.title} (copie)",
-      isCompleted: false,
-      forceCompletedAtNull: true,
-    );
-    await controller.addListItem(widget.list.id, duplicated);
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n?.listDuplicateSaved ?? "Élément dupliqué."),
-        ),
-      );
     }
   }
 }
